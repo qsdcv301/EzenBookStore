@@ -15,8 +15,6 @@ public class UserService{
 
     public Long save(User user) {
         user.setEmail(user.getEmail());
-        user.setProvider(user.getProvider());
-        user.setProviderId(user.getProviderId());
         user.setName(user.getName());
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         return userRepository.save(user).getId();

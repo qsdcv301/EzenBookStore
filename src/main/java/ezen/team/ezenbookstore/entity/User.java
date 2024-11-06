@@ -27,12 +27,6 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "provider")
-    private String provider;
-
-    @Column(name = "provider_id", unique = true)
-    private String providerId;
-
     @Column(name = "email")
     private String email;
 
@@ -51,9 +45,7 @@ public class User implements UserDetails {
     private Timestamp lastLogin;
 
     @Builder
-    public User(String provider, String providerId, String email, String name, String password) {
-        this.provider = provider;
-        this.providerId = providerId;
+    public User(String email, String name, String password) {
         this.email = email;
         this.name = name;
         this.password = password;
