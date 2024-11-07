@@ -56,12 +56,12 @@ public class Book {
     private Integer subcategoryId;
 
     @Column(name = "count")
-    private Integer count;
+    private Long count;
 
     @Builder
     public void Builder(Long id, String title, String author, String publisher, Timestamp publishDate, Integer isbn,
                             Integer stock, String imagePath, Byte ifkr, Integer price, Integer categoryId,
-                            Integer subcategoryId, Integer count) {
+                            Integer subcategoryId, Long count) {
         this.id = id;
         this.title = title;
         this.author = author;

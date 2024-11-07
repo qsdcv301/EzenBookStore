@@ -37,10 +37,10 @@ public class Payment {
     private String method;
 
     @Column(name = "status")
-    private Byte status;
+    private String status;
 
     @Builder
-    public void Builder(Long id, Long orderId, Integer amount, String method, Byte status) {
+    public void Builder(Long id, Long orderId, Integer amount, String method, String status) {
         this.id = id;
         this.orderId = orderId;
         this.amount = amount;

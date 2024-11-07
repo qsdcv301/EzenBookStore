@@ -36,24 +36,35 @@ public class User implements UserDetails {
     @Column(name = "password")
     private String password;
 
+    @Column(name = "tel")
+    private String tel;
+
+    @Column(name = "addr")
+    private String addr;
+
     @Column(name = "created_at")
     @CreationTimestamp
     private Timestamp createdAt;
 
-    @Column(name = "last_login")
-    @CreationTimestamp
-    private Timestamp lastLogin;
+    @Column(name = "birthday")
+    private Integer birthday;
+
+    @Column(name = "grade")
+    private Integer grade;
+
+    @Column(name = "point")
+    private Integer point;
 
     @Builder
-    public User(String email, String name, String password) {
+    public void Builder(Long id, String email, String name, String password, String tel, String addr, Integer grade, Integer point) {
+        this.id = id;
         this.email = email;
         this.name = name;
         this.password = password;
-    }
-
-    public User update(String name){
-        this.name = name;
-        return this;
+        this.tel = tel;
+        this.addr = addr;
+        this.grade = grade;
+        this.point = point;
     }
 
     @Override

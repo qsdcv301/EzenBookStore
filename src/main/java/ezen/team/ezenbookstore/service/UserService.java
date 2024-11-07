@@ -8,15 +8,13 @@ import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
-public class UserService{
+public class UserService {
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public Long save(User user) {
-        user.setEmail(user.getEmail());
-        user.setName(user.getName());
+    public User create(User user) {
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-        return userRepository.save(user).getId();
+        return userRepository.save(user);
     }
 }

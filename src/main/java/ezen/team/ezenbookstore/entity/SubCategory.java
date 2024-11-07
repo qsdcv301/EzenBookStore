@@ -20,12 +20,16 @@ public class SubCategory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "category_id")
+    private Long categoryId;
+
     @Column(name = "name")
     private String name;
 
     @Builder
-    public void Builder(Long id, String name) {
+    public void Builder(Long id, Long categoryId, String name) {
         this.id = id;
+        this.categoryId = categoryId;
         this.name = name;
     }
 
