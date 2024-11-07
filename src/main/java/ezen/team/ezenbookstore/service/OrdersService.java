@@ -1,7 +1,7 @@
 package ezen.team.ezenbookstore.service;
 
-import ezen.team.ezenbookstore.entity.Order;
-import ezen.team.ezenbookstore.repository.OrderRepository;
+import ezen.team.ezenbookstore.entity.Orders;
+import ezen.team.ezenbookstore.repository.OrdersRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -9,24 +9,24 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class OrderService {
+public class OrdersService {
 
-    private final OrderRepository orderRepository;
+    private final OrdersRepository orderRepository;
 
-    public Order findById(Long id) {
+    public Orders findById(Long id) {
         return orderRepository.findById(id).orElse(null);
     }
 
-    public List<Order> findAll() {
+    public List<Orders> findAll() {
         return orderRepository.findAll();
     }
 
-    public Order create(Order order) {
+    public Orders create(Orders order) {
         return orderRepository.save(order);
     }
 
-    public Order update(Long id, Order order) {
-        Order newOrder = findById(id);
+    public Orders update(Long id, Orders order) {
+        Orders newOrder = findById(id);
         newOrder.Builder(newOrder.getId(), order.getUserId(),
                 order.getTotalPrice(), order.getStatus());
         return orderRepository.save(newOrder);
