@@ -29,7 +29,7 @@ public class CustomOAuth2User implements OAuth2User {
         if (oauth2User.getAttributes().containsKey("response")) {
             // 네이버의 경우
             Map<String, Object> response = (Map<String, Object>) oauth2User.getAttributes().get("response");
-            return (String) response.get("nickname");
+            return (String) response.get("name");
         } else if (oauth2User.getAttributes().containsKey("kakao_account")) {
             // 카카오의 경우
             Map<String, Object> kakaoAccount = (Map<String, Object>) oauth2User.getAttributes().get("kakao_account");
