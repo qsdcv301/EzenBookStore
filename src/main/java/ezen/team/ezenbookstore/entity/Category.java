@@ -1,18 +1,17 @@
 package ezen.team.ezenbookstore.entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 @Data
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @DynamicInsert
 @DynamicUpdate
+@Builder
 @Table(name = "category")
 public class Category {
 
@@ -22,11 +21,5 @@ public class Category {
 
     @Column(name = "name")
     private String name;
-
-    @Builder
-    public void Builder(Long id, String name) {
-        this.id = id;
-        this.name = name;
-    }
 
 }

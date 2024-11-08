@@ -26,8 +26,12 @@ public class CartService {
     }
 
     public Cart update(Long id, Cart cart) {
-        Cart newCart = findById(id);
-        newCart.Builder(newCart.getId(), cart.getUserId(), cart.getBookId(), cart.getQuantity());
+        Cart newCart = Cart.builder()
+                .id(id)
+                .userId(cart.getUserId())
+                .bookId(cart.getBookId())
+                .quantity(cart.getQuantity())
+                .build();
         return cartRepository.save(newCart);
     }
 

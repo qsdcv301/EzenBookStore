@@ -26,9 +26,14 @@ public class PaymentService {
     }
 
     public Payment update(Long id, Payment payment) {
-        Payment newPayment = findById(id);
-        newPayment.Builder(newPayment.getId(), payment.getOrderId(), payment.getAmount(),
-                payment.getMethod(), payment.getStatus());
+        Payment newPayment = Payment.builder()
+                .id(id)
+                .orderId(payment.getOrderId())
+                .paymentDate(payment.getPaymentDate())
+                .amount(payment.getAmount())
+                .method(payment.getMethod())
+                .status(payment.getStatus())
+                .build();
         return paymentRepository.save(newPayment);
     }
 

@@ -55,4 +55,16 @@ public class CustomOAuth2User implements OAuth2User {
             return oauth2User.getAttribute("email");
         }
     }
+    public String getProvider() {
+        if (oauth2User.getAttributes().containsKey("response")) {
+            // 네이버의 경우
+            return "naver";
+        } else if (oauth2User.getAttributes().containsKey("kakao_account")) {
+            // 카카오의 경우
+            return "kakao";
+        } else {
+            // 구글의 경우
+            return "google";
+        }
+    }
 }

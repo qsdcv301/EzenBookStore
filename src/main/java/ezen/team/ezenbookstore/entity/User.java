@@ -1,10 +1,7 @@
 package ezen.team.ezenbookstore.entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
@@ -18,14 +15,19 @@ import java.util.List;
 @Data
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @DynamicInsert
 @DynamicUpdate
+@Builder
 @Table(name = "user")
 public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "provider")
+    private String provider;
 
     @Column(name = "email")
     private String email;
@@ -54,18 +56,6 @@ public class User implements UserDetails {
 
     @Column(name = "point")
     private Integer point;
-
-    @Builder
-    public void Builder(Long id, String email, String name, String password, String tel, String addr, Integer grade, Integer point) {
-        this.id = id;
-        this.email = email;
-        this.name = name;
-        this.password = password;
-        this.tel = tel;
-        this.addr = addr;
-        this.grade = grade;
-        this.point = point;
-    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

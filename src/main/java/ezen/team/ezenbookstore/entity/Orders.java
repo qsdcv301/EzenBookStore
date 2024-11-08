@@ -1,10 +1,7 @@
 package ezen.team.ezenbookstore.entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
@@ -14,8 +11,10 @@ import java.sql.Timestamp;
 @Data
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @DynamicInsert
 @DynamicUpdate
+@Builder
 @Table(name = "order")
 public class Orders {
 
@@ -35,13 +34,5 @@ public class Orders {
 
     @Column(name = "status")
     private String status;
-
-    @Builder
-    public void Builder(Long id, Long userId, Integer totalPrice, String status) {
-        this.id = id;
-        this.userId = userId;
-        this.totalPrice = totalPrice;
-        this.status = status;
-    }
 
 }

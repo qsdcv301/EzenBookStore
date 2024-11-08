@@ -26,9 +26,13 @@ public class OrdersService {
     }
 
     public Orders update(Long id, Orders order) {
-        Orders newOrder = findById(id);
-        newOrder.Builder(newOrder.getId(), order.getUserId(),
-                order.getTotalPrice(), order.getStatus());
+        Orders newOrder = Orders.builder()
+                .id(id)
+                .userId(order.getUserId())
+                .orderDate(order.getOrderDate())
+                .totalPrice(order.getTotalPrice())
+                .status(order.getStatus())
+                .build();
         return orderRepository.save(newOrder);
     }
 

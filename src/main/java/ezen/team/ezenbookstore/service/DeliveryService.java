@@ -26,9 +26,14 @@ public class DeliveryService {
     }
 
     public Delivery update(Long id, Delivery delivery) {
-        Delivery newDelivery = findById(id);
-        newDelivery.Builder(newDelivery.getId(), delivery.getOrderId(), delivery.getTrackingNum(),
-                delivery.getEndDate(), delivery.getStatus());
+        Delivery newDelivery = Delivery.builder()
+                .id(id)
+                .orderId(delivery.getOrderId())
+                .trackingNum(delivery.getTrackingNum())
+                .startDate(delivery.getStartDate())
+                .endDate(delivery.getEndDate())
+                .status(delivery.getStatus())
+                .build();
         return deliveryRepository.save(newDelivery);
     }
 

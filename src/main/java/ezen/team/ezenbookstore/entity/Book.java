@@ -1,10 +1,7 @@
 package ezen.team.ezenbookstore.entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -13,8 +10,10 @@ import java.sql.Timestamp;
 @Data
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @DynamicInsert
 @DynamicUpdate
+@Builder
 @Table(name = "book")
 public class Book {
 
@@ -35,7 +34,7 @@ public class Book {
     private Timestamp publishDate;
 
     @Column(name = "isbn")
-    private Integer isbn;
+    private String isbn;
 
     @Column(name = "stock")
     private Integer stock;
@@ -57,24 +56,5 @@ public class Book {
 
     @Column(name = "count")
     private Long count;
-
-    @Builder
-    public void Builder(Long id, String title, String author, String publisher, Timestamp publishDate, Integer isbn,
-                            Integer stock, String imagePath, Byte ifkr, Integer price, Integer categoryId,
-                            Integer subcategoryId, Long count) {
-        this.id = id;
-        this.title = title;
-        this.author = author;
-        this.publisher = publisher;
-        this.publishDate = publishDate;
-        this.isbn = isbn;
-        this.stock = stock;
-        this.imagePath = imagePath;
-        this.ifkr = ifkr;
-        this.price = price;
-        this.categoryId = categoryId;
-        this.subcategoryId = subcategoryId;
-        this.count = count;
-    }
 
 }

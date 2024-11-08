@@ -26,11 +26,21 @@ public class BookService {
     }
 
     public Book update(Long id, Book book) {
-        Book newBook = findById(id);
-        newBook.Builder(newBook.getId(), book.getTitle(), book.getAuthor(),
-                book.getPublisher(), book.getPublishDate(), book.getIsbn(),
-                book.getStock(), book.getImagePath(), book.getIfkr(), book.getPrice(),
-                book.getCategoryId(), book.getSubcategoryId(), book.getCount());
+        Book newBook = Book.builder()
+                .id(id)
+                .title(book.getTitle())
+                .author(book.getAuthor())
+                .publisher(book.getPublisher())
+                .publishDate(book.getPublishDate())
+                .isbn(book.getIsbn())
+                .stock(book.getStock())
+                .imagePath(book.getImagePath())
+                .ifkr(book.getIfkr())
+                .price(book.getPrice())
+                .categoryId(book.getCategoryId())
+                .subcategoryId(book.getSubcategoryId())
+                .count(book.getCount())
+                .build();
         return bookRepository.save(newBook);
     }
 

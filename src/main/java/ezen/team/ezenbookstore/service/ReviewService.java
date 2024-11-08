@@ -26,9 +26,14 @@ public class ReviewService {
     }
 
     public Review update(Long id, Review review) {
-        Review newReview = findById(id);
-        newReview.Builder(newReview.getId(), review.getBookId(), review.getUserId(),
-                review.getRating(), review.getComment());
+        Review newReview = Review.builder()
+                .id(id)
+                .bookId(review.getBookId())
+                .userId(review.getUserId())
+                .rating(review.getRating())
+                .comment(review.getComment())
+                .createAt(review.getCreateAt())
+                .build();
         return reviewRepository.save(newReview);
     }
 
