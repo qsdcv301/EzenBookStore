@@ -37,4 +37,53 @@ public class BookService {
     public void delete(Long id) {
         bookRepository.deleteById(id);
     }
+
+    public List<Book> findByTitleContaining(String title) {
+        return bookRepository.findByTitleContaining(title);
+    }
+
+    public List<Book> findByAuthorContaining(String author) {
+        return bookRepository.findByAuthorContaining(author);
+    }
+
+    public List<Book> findByPublisherContaining(String publisher) {
+        return bookRepository.findByPublisherContaining(publisher);
+    }
+
+    public List<Book> findByIsbnContaining(Integer isbn) {
+        return bookRepository.findByIsbnContaining(isbn);
+    }
+
+//    public List<Book> findByTitleContainingAndCategoryIdAndSubcategoryId(String title, Integer categoryId, Integer subcategoryId) {
+//        return bookRepository.findByTitleContainingAndCategoryIdAndSubcategoryId(title, categoryId, subcategoryId);
+//    }
+//
+//    public List<Book> findByAuthorContainingAndCategoryIdAndSubcategoryId(String author, Integer categoryId, Integer subcategoryId) {
+//        return bookRepository.findByAuthorContainingAndCategoryIdAndSubcategoryId(author, categoryId, subcategoryId);
+//    }
+//
+//    public List<Book> findByPublisherContainingAndCategoryIdAndSubcategoryId(String publisher, Integer categoryId, Integer subcategoryId) {
+//        return bookRepository.findByPublisherContainingAndCategoryIdAndSubcategoryId(publisher, categoryId, subcategoryId);
+//    }
+//
+//    public List<Book> findByIsbnContainingAndCategoryIdAndSubcategoryId(String isbn, Integer categoryId, Integer subcategoryId) {
+//        return bookRepository.findByIsbnContainingAndCategoryIdAndSubcategoryId(isbn, categoryId, subcategoryId);
+//    }
+
+    public List<Book> findByTitleContainingAndCategoryIdAndSubcategoryIdAndIfkr(String title, Integer categoryId, Integer subcategoryId, Byte ifkr) {
+        return bookRepository.findByTitleContainingAndCategoryIdAndSubcategoryIdAndIfkr(title, categoryId, subcategoryId, ifkr);
+    }
+
+    public List<Book> findByAuthorContainingAndCategoryIdAndSubcategoryIdAndIfkr(String author, Integer categoryId, Integer subcategoryId, Byte ifkr) {
+        return bookRepository.findByAuthorContainingAndCategoryIdAndSubcategoryIdAndIfkr(author, categoryId, subcategoryId, ifkr);
+    }
+
+    public List<Book> findByPublisherContainingAndCategoryIdAndSubcategoryIdAndIfkr(String publisher, Integer categoryId, Integer subcategoryId, Byte ifkr) {
+        return bookRepository.findByPublisherContainingAndCategoryIdAndSubcategoryIdAndIfkr(publisher, categoryId, subcategoryId, ifkr);
+    }
+
+    public List<Book> findByIsbnContainingAndCategoryIdAndSubcategoryIdAndIfkr(String isbn, Integer categoryId, Integer subcategoryId, Byte ifkr) {
+        return bookRepository.findByIsbnContainingAndCategoryIdAndSubcategoryIdAndIfkr(isbn, categoryId, subcategoryId, ifkr);
+    }
+
 }
