@@ -34,7 +34,6 @@ public class BookService {
                 .publishDate(book.getPublishDate())
                 .isbn(book.getIsbn())
                 .stock(book.getStock())
-                .imagePath(book.getImagePath())
                 .ifkr(book.getIfkr())
                 .price(book.getPrice())
                 .categoryId(book.getCategoryId())
