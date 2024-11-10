@@ -39,6 +39,8 @@ public class BookService {
                 .categoryId(book.getCategoryId())
                 .subcategoryId(book.getSubcategoryId())
                 .count(book.getCount())
+                .discount(book.getDiscount())
+                .bookdescriptionId(book.getBookdescriptionId())
                 .build();
         return bookRepository.save(newBook);
     }

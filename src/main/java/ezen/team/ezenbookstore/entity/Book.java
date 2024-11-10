@@ -54,4 +54,10 @@ public class Book {
     @Column(name = "count")
     private Long count;
 
+    @Column(name = "discount")
+    private Integer discount;
+
+    @Column(name = "bookdescription_id")
+    private Long bookdescriptionId;
+
 }

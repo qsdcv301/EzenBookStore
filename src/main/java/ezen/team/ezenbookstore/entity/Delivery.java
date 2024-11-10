@@ -36,6 +36,6 @@ public class Delivery {
     private Timestamp endDate;
 
     @Column(name = "status")
-    private String status;
+    private Byte status;
 
 }

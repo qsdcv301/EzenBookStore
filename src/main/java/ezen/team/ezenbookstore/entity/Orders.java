@@ -33,6 +33,6 @@ public class Orders {
     private Integer totalPrice;
 
     @Column(name = "status")
-    private String status;
+    private Byte status;
 
 }

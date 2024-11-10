@@ -15,30 +15,21 @@ import java.sql.Timestamp;
 @DynamicInsert
 @DynamicUpdate
 @Builder
-@Table(name = "payment")
-public class Payment {
+@Table(name = "notice")
+public class Notice {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "order_id")
-    private Long orderId;
+    @Column(name = "title")
+    private String title;
 
-    @Column(name = "user_id")
-    private Long userId;
+    @Column(name = "content")
+    private String content;
 
-    @Column(name = "payment_date")
+    @Column(name = "create_at")
     @CreationTimestamp
-    private Timestamp paymentDate;
-
-    @Column(name = "amount")
-    private Integer amount;
-
-    @Column(name = "method")
-    private Byte method;
-
-    @Column(name = "status")
-    private Byte status;
+    private Timestamp createAt;
 
 }

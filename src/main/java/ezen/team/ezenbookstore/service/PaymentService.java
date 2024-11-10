@@ -29,6 +29,7 @@ public class PaymentService {
         Payment newPayment = Payment.builder()
                 .id(id)
                 .orderId(payment.getOrderId())
+                .userId(payment.getUserId())
                 .paymentDate(payment.getPaymentDate())
                 .amount(payment.getAmount())
                 .method(payment.getMethod())
