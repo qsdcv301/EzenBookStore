@@ -15,7 +15,7 @@ import java.sql.Timestamp;
 @DynamicInsert
 @DynamicUpdate
 @Builder
-@Table(name = "order")
+@Table(name = "orders")
 public class Orders {
 
     @Id
@@ -25,7 +25,7 @@ public class Orders {
     @Column(name = "user_id")
     private Long userId;
 
-    @Column(name = "order_date")
+    @Column(name = "orders_date")
     @CreationTimestamp
     private Timestamp orderDate;
 
