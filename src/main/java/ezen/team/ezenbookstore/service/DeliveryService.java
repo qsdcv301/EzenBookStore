@@ -17,7 +17,7 @@ public class DeliveryService {
         return deliveryRepository.findById(id).orElse(null);
     }
 
-    public List<Delivery> findByAll() {
+    public List<Delivery> findAll() {
         return deliveryRepository.findAll();
     }
 

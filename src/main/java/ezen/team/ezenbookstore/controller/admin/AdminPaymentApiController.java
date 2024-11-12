@@ -1,13 +1,29 @@
 package ezen.team.ezenbookstore.controller.admin;
 
+import ezen.team.ezenbookstore.entity.Payment;
+import ezen.team.ezenbookstore.service.PaymentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @Controller
 @RequestMapping("/admin/payment")
 public class AdminPaymentApiController {
+
+    private final PaymentService paymentService;
+
+    @GetMapping("")
+    public String paymentControl(Model model) {
+        List<Payment> paymentList = paymentService.findAll();
+
+        model.addAttribute("paymentList", paymentList);
+
+        return "/admin/paymentControl";
+    }
 
     // 결제 내역 조회
     @PostMapping("/list")

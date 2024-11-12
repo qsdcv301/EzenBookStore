@@ -47,7 +47,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/ezbook?allowPublicKeyRetrieval=true&useSSL=false
     username: root
-    password: 1234
+    password: 5094
     driver-class-name: com.mysql.cj.jdbc.Driver
 #  mail:
 #    host: smtp.naver.com

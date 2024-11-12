@@ -1,13 +1,29 @@
 package ezen.team.ezenbookstore.controller.admin;
 
+import ezen.team.ezenbookstore.entity.QnA;
+import ezen.team.ezenbookstore.service.QnAService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @Controller
 @RequestMapping("/admin/qna")
 public class AdminQnAApiController {
+
+    private final QnAService qnAService;
+
+    @GetMapping("")
+    public String qnAControl(Model model) {
+        List<QnA> qnAList = qnAService.findAll();
+
+        model.addAttribute("qnAList", qnAList);
+
+        return "/admin/qnaControl";
+    }
 
     // QnA 목록 조회
     @PostMapping("/list")

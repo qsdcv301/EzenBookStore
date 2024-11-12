@@ -1,13 +1,29 @@
 package ezen.team.ezenbookstore.controller.admin;
 
+import ezen.team.ezenbookstore.entity.Review;
+import ezen.team.ezenbookstore.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @Controller
 @RequestMapping("/admin/review")
 public class AdminReviewApiController {
+
+    private final ReviewService reviewService;
+
+    @GetMapping("")
+    public String reviewControl(Model model) {
+        List<Review> reviewList = reviewService.findAll();
+
+        model.addAttribute("reviewList", reviewList);
+
+        return "/admin/reviewControl";
+    }
 
     // 리뷰 목록 조회
     @PostMapping("/list")

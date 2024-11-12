@@ -7,24 +7,24 @@ import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @Controller
-@RequestMapping("/payment")
+@RequestMapping("/order/payment")
 public class PaymentApiController {
 
-    @GetMapping("/payment")
-    public String viewPayment() {
+    @GetMapping("")
+    public String index() {
         return "payment";
     }
 
 
     //결제 완료
-    @PostMapping("/add")
-    public String addPayment(@ModelAttribute Payment payment) {
+    @PostMapping("/success")
+    public String completePayment(@ModelAttribute Payment payment) {
         //결제 완료 와 오류 처리
         return "redirect:/payment";
     }
 
     //결제 취소
-    @PostMapping("/delete")
+    @PostMapping("/cancel")
     public String deletePayment(@RequestParam long paymentId) {
         return "redirect:/payment";
     }

@@ -1,13 +1,30 @@
 package ezen.team.ezenbookstore.controller.admin;
 
+import ezen.team.ezenbookstore.entity.Book;
+import ezen.team.ezenbookstore.entity.Orders;
+import ezen.team.ezenbookstore.service.OrdersService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @Controller
 @RequestMapping("/admin/order")
 public class AdminOrderApiController {
+
+    private final OrdersService ordersService;
+
+    @GetMapping("")
+    public String ordersControl(Model model) {
+        List<Orders> ordersList = ordersService.findAll();
+
+        model.addAttribute("ordersList", ordersList);
+
+        return "/admin/orderControl";
+    }
 
     // 주문 목록 조회
     @PostMapping("/list")

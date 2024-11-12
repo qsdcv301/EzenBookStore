@@ -1,13 +1,29 @@
 package ezen.team.ezenbookstore.controller.admin;
 
+import ezen.team.ezenbookstore.entity.User;
+import ezen.team.ezenbookstore.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @Controller
 @RequestMapping("/admin/user")
 public class AdminUserApiController {
+
+    private final UserService userService;
+
+    @GetMapping("")
+    public String userControl(Model model) {
+        List<User> userList = userService.findAll();
+
+        model.addAttribute("userList", userList);
+
+        return "/admin/userControl";
+    }
 
     // 회원 목록 조회
     @PostMapping("/list")
