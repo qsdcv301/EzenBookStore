@@ -1,11 +1,12 @@
 package ezen.team.ezenbookstore.controller.admin;
 
 import ezen.team.ezenbookstore.entity.Book;
+import ezen.team.ezenbookstore.service.BookService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import java.util.ArrayList;
+
 import java.util.List;
 
 
@@ -13,6 +14,17 @@ import java.util.List;
 @Controller
 @RequestMapping("/admin/book") //책 관리 컨트롤러
 public class AdminBookApiController {
+
+    private final BookService bookService;
+
+    @GetMapping("")
+    public String bookControl(Model model) {
+        List<Book> bookList = bookService.findAll();
+
+        model.addAttribute("bookList", bookList);
+
+        return "/admin/bookControl";
+    }
 
     // 책 등록
     @PostMapping("/add")
@@ -35,13 +47,6 @@ public class AdminBookApiController {
         return "redirect:/admin/book";
     }
 
-    // 책 목록 조회
-    @PostMapping("/list")
-    public ResponseEntity<List<Book>> getBookList() {
-        // 책 목록 조회 로직
-        List<Book> books = new ArrayList<>(); // 예시 데이터
-        return ResponseEntity.ok(books);
-    }
 
     // 책 상세 조회 << 모달이나 접힘 방식이면 필요 없을 예정
 //    @PostMapping("/detail")

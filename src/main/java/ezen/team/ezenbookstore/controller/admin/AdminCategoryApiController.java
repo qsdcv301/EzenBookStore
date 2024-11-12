@@ -1,13 +1,29 @@
 package ezen.team.ezenbookstore.controller.admin;
 
+import ezen.team.ezenbookstore.entity.Category;
+import ezen.team.ezenbookstore.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @Controller
 @RequestMapping("/admin/category")
 public class AdminCategoryApiController {
+
+    private final CategoryService categoryService;
+
+    @GetMapping("")
+    public String categoryControl(Model model) {
+        List<Category> categoryList = categoryService.findAll();
+
+        model.addAttribute("categoryList", categoryList);
+
+        return "/admin/categoryControl";
+    }
 
     // 국내도서 카테고리 목록 조회
     @PostMapping("/list/domestic")

@@ -1,8 +1,13 @@
 package ezen.team.ezenbookstore.controller.admin;
 
+import ezen.team.ezenbookstore.entity.Delivery;
+import ezen.team.ezenbookstore.service.DeliveryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @RequiredArgsConstructor
@@ -10,6 +15,16 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/admin/delivery")
 public class AdminDeliveryApiController {
 
+    private final DeliveryService deliveryService;
+
+    @GetMapping("")
+    public String deliveryControl(Model model) {
+        List<Delivery> deliveryList = deliveryService.findAll();
+
+        model.addAttribute("deliveryList", deliveryList);
+
+        return "/admin/bookControl";
+    }
 
     // 배송 목록 조회
     @PostMapping("/list")
