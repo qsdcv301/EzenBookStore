@@ -44,20 +44,25 @@ public class UserApiController {
     }
 
     @GetMapping("/loginSuccess")
-    public String getLoginInfo(Model model, @AuthenticationPrincipal CustomOAuth2User principal) {
-        String provider = principal.getProvider();
-        String email = principal.getEmail();
-        String name = principal.getName();
-        User findUser = userService.findByEmailAndProvider(email, provider);
+    public String getLoginInfo(@AuthenticationPrincipal CustomOAuth2User user, Model model) {
+        String provider = user.getProvider();
+        String email = user.getEmail();
+        String name = user.getName();
+
+        // 기존 사용자 검색
+        User findUser = userService.findByEmail(email);
+
+        // 사용자가 존재하지 않을 경우 새로운 사용자 생성
         if (findUser == null) {
-            // 새로운 User 객체 생성
             User newUser = User.builder()
                     .provider(provider)
                     .email(email)
                     .name(name)
                     .build();
             userService.create(newUser);
+            findUser = newUser;
         }
+
         return "redirect:/payment/" + email;
     }
 
