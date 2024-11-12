@@ -3,6 +3,21 @@ $(document).ready(function () {
     const shippingFeeThreshold = 15000; // 배송비가 무료가 되는 기준 금액
     const baseShippingFee = 3000; // 기본 배송비
 
+    $('.edit-delete-buttons .cart-edit').on('click', function () {
+        const $cartItem = $(this).closest('.cart-item');
+        $cartItem.find('.quantity').prop("readonly", false); // readonly를 해제
+        $(this).closest('.cart-item').find('.edit-delete-buttons').hide();
+        $(this).closest('.cart-item').find('.save-cancel-buttons').show();
+    });
+
+    // 취소 버튼 클릭 시
+    $('.save-cancel-buttons .cart-cancel').on('click', function () {
+        const $cartItem = $(this).closest('.cart-item');
+        $cartItem.find('.quantity').prop("readonly", true); // readonly를 설정
+        $(this).closest('.cart-item').find('.save-cancel-buttons').hide();
+        $(this).closest('.cart-item').find('.edit-delete-buttons').show();
+    });
+
     // 전체 선택/해제
     $("#selectAll").click(function () {
         const isChecked = $(this).is(":checked");
@@ -25,7 +40,7 @@ $(document).ready(function () {
     // 선택 삭제 버튼 클릭 이벤트
     $("#deleteSelected").click(function () {
         const selectedIds = $(".cart-checkbox:checked").map(function () {
-            return $(this).closest(".cart-item").find(".cart-delete").data("cart-id");
+            return $(this).closest(".cart-item").find(".cart-delete").data("data-cart-id");
         }).get();
 
         if (selectedIds.length === 0) {
@@ -38,7 +53,7 @@ $(document).ready(function () {
 
     // 개별 삭제 버튼 클릭 이벤트
     $(".cart-delete").click(function () {
-        const cartId = $(this).data("cart-id");
+        const cartId = $(this).data("data-cart-id");
         deleteCartItems([cartId]);
     });
 
@@ -71,10 +86,13 @@ $(document).ready(function () {
 
         $(".cart-checkbox:checked").each(function () {
             const cardBody = $(this).closest(".card-body");
-            const price = parseInt(cardBody.find(".price").text().replace(/[^0-9]/g, ""));
-            const discountPercent = parseFloat(cardBody.find(".discount span").text().replace(/[^0-9.]/g, ""));
-            const quantity = parseInt(cardBody.find(".quantity").val());
 
+            // 가격과 할인율, 수량을 추출하고 숫자로 변환 (기본값을 0으로 설정)
+            const price = parseInt(cardBody.find(".price").text().replace(/[^0-9]/g, "")) || 0;
+            const discountPercent = parseFloat(cardBody.find(".discount").text().replace(/[^0-9.]/g, "")) || 0;
+            const quantity = parseInt(cardBody.find(".quantity").val()) || 0;
+
+            // 개별 항목 계산
             const itemTotal = price * quantity;
             const itemDiscount = itemTotal * (discountPercent / 100);
 
@@ -84,7 +102,7 @@ $(document).ready(function () {
         });
 
         // 배송비 계산
-        let shippingFee = totalPrice - totalDiscount >= shippingFeeThreshold ? 0 : baseShippingFee;
+        let shippingFee = (totalPrice - totalDiscount >= shippingFeeThreshold) ? 0 : baseShippingFee;
 
         // 주문 요약에 값 반영
         $("#total-items").text(totalItems);
@@ -123,20 +141,6 @@ $(document).ready(function () {
     });
 //     paymentModal
 // 결제 모달 버튼 클릭 시 초기화 및 계산
-    $("#used-points").on("input", function () {
-        const min = parseInt($(this).attr("min")) || 0;
-        const max = parseInt($(this).attr("max")) || 0;
-        let value = parseInt($(this).val()) || 0;
-
-        // 입력 값이 min보다 작으면 min으로, max보다 크면 max로 조정
-        if (value < min) {
-            value = min;
-        } else if (value > max) {
-            value = max;
-        }
-        $(this).val(value);
-    });
-
     $(".paymentModalBtn").click(function () {
         $(".modal-items").empty(); // 모달의 기존 항목 비우기
 
@@ -150,20 +154,25 @@ $(document).ready(function () {
 
         checkboxes.each(function () {
             const cardBody = $(this).closest(".paymentModal-Data");
-            const title = cardBody.find(".title").text();
-            const quantity = parseInt(cardBody.find(".quantity").val());
-            const price = parseInt(cardBody.find(".price").text().replace(/[^0-9]/g, ""));
-            const discount = parseFloat(cardBody.find(".discount").text().replace(/[^0-9.]/g, ""));
 
+            // 각 값들을 올바르게 가져오고 기본값 설정
+            const title = cardBody.find(".title").text().trim() || "상품명 없음";
+            const quantity = parseInt(cardBody.find(".quantity").val()) || 0;
+            const price = parseInt(cardBody.find(".price").text().replace(/[^0-9]/g, "")) || 0;
+            const discount = parseFloat(cardBody.find(".discount").text().replace(/[^0-9.]/g, "")) || 0;
+
+            // 개별 상품의 총 가격 및 할인 적용 가격 계산
             const itemTotalPrice = price * quantity;
             const itemDiscount = itemTotalPrice * (discount / 100);
             const itemDiscountedPrice = itemTotalPrice - itemDiscount;
 
+            // 총합 계산
             totalItems += quantity;
             totalOriginalPrice += itemTotalPrice;
             totalDiscountedPrice += itemDiscountedPrice;
             totalDiscount += itemDiscount;
 
+            // 모달에 표시할 개별 상품 정보 HTML 생성
             const modalItem = `
             <div class="card col">
                 <div class="row g-0">
@@ -171,7 +180,7 @@ $(document).ready(function () {
                         <div class="card-body">
                             <p>상품명: <span class="modalBookTitle">${title}</span></p>
                             <p>수량: <span class="modalQuantity">${quantity}</span></p>
-                            <p>가격: <span class="modalTotalPrice">${itemTotalPrice}</span>원</p>
+                            <p>가격: <span class="modalTotalPrice">${itemTotalPrice.toLocaleString()}</span>원</p>
                             <p>할인율: <span class="modalDiscount">${discount}%</span></p>
                             <p>할인가: <span class="modalDiscountedPrice">${itemDiscountedPrice.toLocaleString()}</span>원</p>
                         </div>
@@ -181,10 +190,11 @@ $(document).ready(function () {
         `;
             $(".modal-items").append(modalItem);
         });
+
         let shippingFee = totalDiscountedPrice >= shippingFeeThreshold ? 0 : baseShippingFee;
 
         // 사용 가능한 적립금 및 총 결제 금액 초기 계산 및 업데이트
-        const availablePoints = parseInt($("#available-points").text().replace(/[^0-9]/g, ""));
+        const availablePoints = parseInt($("#available-points").text().replace(/[^0-9]/g, "")) || 0;
         const usedPoints = parseInt($("#used-points").val()) || 0;
         updateOrderSummary(totalOriginalPrice, totalDiscount, shippingFee, totalDiscountedPrice, usedPoints);
 
