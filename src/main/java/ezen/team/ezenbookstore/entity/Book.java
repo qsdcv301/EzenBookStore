@@ -50,7 +50,7 @@ public class Book {
     private Category category;
 
     @OneToOne
-    @JoinColumn(name = "category_id", referencedColumnName = "id")
+    @JoinColumn(name = "subcategory_id", referencedColumnName = "id")
     private SubCategory subcategory;
 
     @Column(name = "count")

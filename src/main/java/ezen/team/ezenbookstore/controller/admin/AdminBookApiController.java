@@ -3,6 +3,9 @@ package ezen.team.ezenbookstore.controller.admin;
 import ezen.team.ezenbookstore.entity.Book;
 import ezen.team.ezenbookstore.service.BookService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -18,8 +21,11 @@ public class AdminBookApiController {
     private final BookService bookService;
 
     @GetMapping("")
-    public String bookControl(Model model) {
-        List<Book> bookList = bookService.findAll();
+    public String bookControl(Model model,
+                              @RequestParam(defaultValue = "0") int page,  // 페이지 번호 (기본값 0)
+                              @RequestParam(defaultValue = "10") int size) { // 페이지 크기 (기본값 10)
+        Pageable pageable = PageRequest.of(page, size);  // Pageable 생성
+        Page<Book> bookList = bookService.findAll(pageable);  // bookService에 Pageable 전달
 
         model.addAttribute("bookList", bookList);
 
