@@ -32,6 +32,10 @@ public class DeliveryService {
                 .startDate(delivery.getStartDate())
                 .endDate(delivery.getEndDate())
                 .status(delivery.getStatus())
+                .name(delivery.getName())
+                .tel(delivery.getTel())
+                .addr(delivery.getAddr())
+                .addrextra(delivery.getAddrextra())
                 .build();
         return deliveryRepository.save(newDelivery);
     }
