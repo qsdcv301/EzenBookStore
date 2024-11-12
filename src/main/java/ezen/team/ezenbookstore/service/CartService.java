@@ -28,8 +28,8 @@ public class CartService {
     public Cart update(Long id, Cart cart) {
         Cart newCart = Cart.builder()
                 .id(id)
-                .userId(cart.getUserId())
-                .bookId(cart.getBookId())
+                .user(cart.getUser())
+                .book(cart.getBook())
                 .quantity(cart.getQuantity())
                 .build();
         return cartRepository.save(newCart);
@@ -38,4 +38,9 @@ public class CartService {
     public void delete(Long id) {
         cartRepository.deleteById(id);
     }
+
+    public List<Cart> findAllByUserId(Long userId) {
+        return cartRepository.findAllByUserId(userId);
+    }
+
 }

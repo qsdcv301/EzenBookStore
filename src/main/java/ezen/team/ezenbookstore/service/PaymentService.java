@@ -28,7 +28,7 @@ public class PaymentService {
     public Payment update(Long id, Payment payment) {
         Payment newPayment = Payment.builder()
                 .id(id)
-                .orderId(payment.getOrderId())
+                .user(payment.getUser())
                 .paymentDate(payment.getPaymentDate())
                 .amount(payment.getAmount())
                 .method(payment.getMethod())

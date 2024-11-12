@@ -28,7 +28,10 @@ public class OrdersService {
     public Orders update(Long id, Orders order) {
         Orders newOrder = Orders.builder()
                 .id(id)
-                .userId(order.getUserId())
+                .user(order.getUser())
+                .orderItems(order.getOrderItems())
+                .delivery(order.getDelivery())
+                .payment(order.getPayment())
                 .orderDate(order.getOrderDate())
                 .totalPrice(order.getTotalPrice())
                 .status(order.getStatus())

@@ -44,6 +44,9 @@ public class User implements UserDetails {
     @Column(name = "addr")
     private String addr;
 
+    @Column(name = "addrextra")
+    private String addrextra;
+
     @Column(name = "created_at")
     @CreationTimestamp
     private Timestamp createdAt;

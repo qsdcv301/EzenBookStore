@@ -28,7 +28,7 @@ public class SubCategoryService {
     public SubCategory update(Long id, SubCategory subCategory) {
         SubCategory newSubCategory = SubCategory.builder()
                 .id(id)
-                .categoryId(subCategory.getCategoryId())
+                .category(subCategory.getCategory())
                 .name(subCategory.getName())
                 .build();
         return subCategoryRepository.save(newSubCategory);

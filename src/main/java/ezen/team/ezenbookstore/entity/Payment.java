@@ -22,8 +22,9 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "order_id")
-    private Long orderId;
+    @OneToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User user;
 
     @Column(name = "payment_date")
     @CreationTimestamp
@@ -33,9 +34,9 @@ public class Payment {
     private Integer amount;
 
     @Column(name = "method")
-    private String method;
+    private Byte method;
 
     @Column(name = "status")
-    private String status;
+    private Byte status;
 
 }
