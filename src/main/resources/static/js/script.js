@@ -40,7 +40,7 @@ $(document).ready(function () {
     // 선택 삭제 버튼 클릭 이벤트
     $("#deleteSelected").click(function () {
         const selectedIds = $(".cart-checkbox:checked").map(function () {
-            return $(this).closest(".cart-item").find(".cart-delete").data("data-cart-id");
+            return $(this).closest(".cart-item").find(".cart-delete").attr("data-cart-id");
         }).get();
 
         if (selectedIds.length === 0) {
@@ -53,7 +53,7 @@ $(document).ready(function () {
 
     // 개별 삭제 버튼 클릭 이벤트
     $(".cart-delete").click(function () {
-        const cartId = $(this).data("data-cart-id");
+        const cartId = $(this).attr("data-cart-id");
         deleteCartItems([cartId]);
     });
 
