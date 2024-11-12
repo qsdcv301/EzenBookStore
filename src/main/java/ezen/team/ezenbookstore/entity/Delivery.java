@@ -22,9 +22,6 @@ public class Delivery {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "order_id")
-    private Long orderId;
-
     @Column(name = "tracking_num")
     private String trackingNum;
 

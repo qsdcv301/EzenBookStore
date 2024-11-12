@@ -28,7 +28,6 @@ public class DeliveryService {
     public Delivery update(Long id, Delivery delivery) {
         Delivery newDelivery = Delivery.builder()
                 .id(id)
-                .orderId(delivery.getOrderId())
                 .trackingNum(delivery.getTrackingNum())
                 .startDate(delivery.getStartDate())
                 .endDate(delivery.getEndDate())

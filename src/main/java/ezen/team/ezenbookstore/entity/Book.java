@@ -45,11 +45,13 @@ public class Book {
     @Column(name = "price")
     private Integer price;
 
-    @Column(name = "category_id")
-    private Integer categoryId;
+    @OneToOne
+    @JoinColumn(name = "category_id", referencedColumnName = "id")
+    private Category category;
 
-    @Column(name = "subcategory_id")
-    private Integer subcategoryId;
+    @OneToOne
+    @JoinColumn(name = "category_id", referencedColumnName = "id")
+    private SubCategory subcategory;
 
     @Column(name = "count")
     private Long count;
@@ -57,7 +59,8 @@ public class Book {
     @Column(name = "discount")
     private Integer discount;
 
-    @Column(name = "bookdescription_id")
-    private Long bookdescriptionId;
+    @OneToOne
+    @JoinColumn(name = "bookdescription_id", referencedColumnName = "id")
+    private BookDescription bookdescription;
 
 }

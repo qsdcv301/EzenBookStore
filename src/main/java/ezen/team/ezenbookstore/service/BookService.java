@@ -36,11 +36,11 @@ public class BookService {
                 .stock(book.getStock())
                 .ifkr(book.getIfkr())
                 .price(book.getPrice())
-                .categoryId(book.getCategoryId())
-                .subcategoryId(book.getSubcategoryId())
+                .category(book.getCategory())
+                .subcategory(book.getSubcategory())
                 .count(book.getCount())
                 .discount(book.getDiscount())
-                .bookdescriptionId(book.getBookdescriptionId())
+                .bookdescription(book.getBookdescription())
                 .build();
         return bookRepository.save(newBook);
     }

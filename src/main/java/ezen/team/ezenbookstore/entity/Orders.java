@@ -7,6 +7,7 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 @Data
 @Entity
@@ -22,8 +23,21 @@ public class Orders {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "user_id")
-    private Long userId;
+    @OneToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User user;
+
+    @OneToMany
+    @JoinColumn(name = "orderitem_id", referencedColumnName = "id")
+    private List<OrderItem> orderItems;
+
+    @OneToOne
+    @JoinColumn(name = "delivery_id", referencedColumnName = "id")
+    private Delivery delivery;
+
+    @OneToOne
+    @JoinColumn(name = "payment_id", referencedColumnName = "id")
+    private Payment payment;
 
     @Column(name = "orders_date")
     @CreationTimestamp
@@ -34,5 +48,7 @@ public class Orders {
 
     @Column(name = "status")
     private Byte status;
+
+
 
 }

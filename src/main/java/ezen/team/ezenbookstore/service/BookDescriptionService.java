@@ -28,8 +28,7 @@ public class BookDescriptionService {
     public BookDescription update(BookDescription bookDescription) {
         BookDescription newBookDescription = BookDescription.builder()
                 .id(bookDescription.getId())
-                .bookId(bookDescription.getBookId())
-                .book(bookDescription.getBook())
+                .description(bookDescription.getDescription())
                 .writer(bookDescription.getWriter())
                 .contents(bookDescription.getContents())
                 .build();
