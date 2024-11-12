@@ -17,7 +17,7 @@ public class CartService {
         return cartRepository.findById(id).orElse(null);
     }
 
-    public List<Cart> findAll(Long id) {
+    public List<Cart> findAll() {
         return cartRepository.findAll();
     }
 
@@ -35,7 +35,7 @@ public class CartService {
         return cartRepository.save(newCart);
     }
 
-    public void delete(Long id) {
+    public void deleteById(Long id) {
         cartRepository.deleteById(id);
     }
 

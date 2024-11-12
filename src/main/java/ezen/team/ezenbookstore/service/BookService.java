@@ -41,6 +41,7 @@ public class BookService {
                 .count(book.getCount())
                 .discount(book.getDiscount())
                 .bookdescription(book.getBookdescription())
+                .review(book.getReview())
                 .build();
         return bookRepository.save(newBook);
     }

@@ -1,0 +1,209 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>책 상세페이지</title>
+    <link rel="canonical" href="https://getbootstrap.kr/docs/5.1/examples/blog/">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet">
+    <link href="/css/bootstrap.min.css" rel="stylesheet"/>
+    <!--    <link href="/css/style.css" rel="stylesheet"/>-->
+    <script src="/js/jquery-1.12.4.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/popper.min.js"></script>
+    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!--<script src="/js/script.js"></script>-->
+    <style>
+        #main-image {
+            width: 1000px;
+            height: 500px;
+        }
+
+        .img-thumbnail {
+            width: 250px;
+            height: 100px;
+        }
+    </style>
+
+<body>
+<div class="container mt-5">
+    <div class="row">
+        <!-- 상품 이미지 -->
+        <div class="col-md-7 mb-4">
+            <!--            <img src="" alt="">-->
+        </div>
+
+        <!-- 상품 정보 -->
+        <div class="col-md-4 ms-5">
+            <h1 class="mb-3" th:text="${book.title}"></h1>
+            <p><strong>저자:</strong> <span th:text="${book.author}"></span></p>
+            <p><strong>출판사:</strong> <span th:text="${book.publisher}"></span></p>
+            <p><strong>ISBN:</strong> <span th:text="${book.isbn}"></span></p>
+            <p><strong>출간일:</strong> <span th:text="${#dates.format(book.publishDate, 'yyyy-MM-dd')}"></span></p>
+            <p>
+                <strong>가격:</strong>
+                <span class="text-decoration-line-through" th:text="${book.price}+' 원'">가격</span>
+                <span class="text-danger fw-bold" th:text="${book.discount}+'%'">할인 퍼센트</span>
+            </p>
+            <p><strong>배송 정보:</strong> 배송비 3,000원</p>
+
+            <div class="mb-3">
+                <label for="quantity" class="form-label">수량:</label>
+                <input type="number" class="form-control" id="quantity" value="1" min="1" style="width: 100px;">
+            </div>
+
+            <button class="btn btn-primary me-2" id="add-to-cart">
+                <i class="bi bi-cart-plus"></i> 장바구니 담기
+            </button>
+            <button class="btn btn-success" id="buy-now" data-bs-toggle="modal" data-bs-target="#buyNowModal">
+                <i class="bi bi-credit-card"></i> 바로 구매하기
+            </button>
+        </div>
+    </div>
+
+    <!-- 탭 섹션 -->
+    <div class="row mt-3">
+        <div class="col">
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="intro-tab" data-bs-toggle="tab" data-bs-target="#intro"
+                            type="button" role="tab">책 소개
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="review-tab" data-bs-toggle="tab" data-bs-target="#review"
+                            type="button" role="tab">리뷰
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="return-tab" data-bs-toggle="tab" data-bs-target="#return"
+                            type="button" role="tab">반품/교환
+                    </button>
+                </li>
+            </ul>
+            <div class="tab-content" id="myTabContent">
+                <div class="tab-pane fade show active overflow-auto" style="max-height: 300px;" id="intro"
+                     role="tabpanel">
+                    <h2 class="mt-3">책 소개</h2>
+                    <p th:text="${book.bookdescription.description}"></p>
+                    <h3>목차</h3>
+                    <p th:text="${book.bookdescription.contents}"></p>
+                    <h3>저자 소개</h3>
+                    <p th:text="${book.bookdescription.writer}"></p>
+                </div>
+                <div class="tab-pane fade overflow-auto" style="max-height: 300px;" id="review" role="tabpanel">
+                    <h2 class="mt-3">리뷰</h2>
+                    <div id="review-list">
+                        <!-- 리뷰 내용 -->
+                        <div class="card mb-3" th:each="review : ${book.review}">
+                            <div class="card-body">
+                                <h5 class="card-title" th:text="${review.title}"></h5>
+                                <p class="card-text" th:text="${review.comment}"></p>
+                                <p class="card-text"><small class="text-muted"
+                                                            th:text="'작성자 : '+${review.user.name}+' | '">작성자</small><small
+                                        class="text-muted"
+                                        th:text="'날짜 : '+${#dates.format(review.createAt, 'yyyy-MM-dd')}">날짜</small></p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- <button class="btn btn-primary mt-3" id="write-review">리뷰 작성</button> -->
+                </div>
+                <div class="tab-pane fade overflow-auto" style="max-height: 300px;" id="return" role="tabpanel">
+                    <h2 class="mt-3">반품/교환</h2>
+                    <p>구매하신 상품의 반품/교환은 상품 수령 후 7일 이내에 가능합니다. 단, 제품의 하자나 오배송의 경우는 30일 이내에 가능합니다.</p>
+                    <h3>배송 관련 FAQ</h3>
+                    <p><strong>Q: 배송은 얼마나 걸리나요?</strong><br>A: 일반적으로 결제 완료 후 1-3일 내에 배송이 시작되며, 지역에 따라 1-2일 정도 소요됩니다.
+                    </p>
+                    <p><strong>Q: 배송 조회는 어떻게 하나요?</strong><br>A: 주문 내역에서 송장번호를 확인하신 후, 해당 택배사 웹사이트에서 조회하실 수 있습니다.
+                    </p>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 선택상품 구매하기 모달 -->
+<div class="modal fade" id="buyNowModal" tabindex="-1" aria-labelledby="buyNowModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="buyNowModalLabel">주문 확인</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body overflow-auto" style="max-height:750px">
+                <div class="row">
+                    <div class="col-6">
+                        <h4>구매하실 상품</h4>
+                        <div class="card col">
+                            <div class="row g-0">
+                                <div class="col-md-4">
+                                    <img src="faker1.jpg" class="img-fluid rounded-start" alt=""
+                                         style="width: 100%; height: 100%;">
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="card-body">
+                                        <p>상품명: <span id="modalBookTitle">대상혁이 미래다</span></p>
+                                        <p>수량: <span id="modalQuantity">1</span></p>
+                                        <p>가격: <span id="modalTotalPrice">0</span>원</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <form class="col-6">
+                        <h5>배송지정보</h5>
+                        <div class="mb-3">
+                            <label for="name" class="form-label">이름</label>
+                            <input type="text" class="form-control" id="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">연락처</label>
+                            <input type="tel" class="form-control" id="phone" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="address" class="form-label">배송 주소</label>
+                            <input type="text" class="form-control" id="address" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="address2" class="form-label">상세주소</label>
+                            <input type="text" class="form-control" id="address2" required>
+                        </div>
+                        <hr>
+                        <h5>결제정보</h5>
+                        <div class="mb-5">
+                            <p>사용가능한 적립금: <span>999,999</span>원</p>
+                            <label for="point" class="form-label">사용할 적립금</label>
+                            <input type="number" class="form-control" id="point" required>
+                            <p>결제수단</p>
+                            <div class="col">
+                                <div class="col-md-5 btn btn-primary btn-lg me-2">무통장입금</div>
+                                <div class="col-md-5 btn btn-success btn-lg">신용카드</div>
+                            </div>
+                        </div>
+                        <hr class="mt-5">
+                        <div class="mb-3">
+                            <p>총 상품금액: <span>0</span>원</p>
+                            <p>배송비: <span>3,000</span>원</p>
+                            <p>적립금 사용: <span>0</span>원</p>
+                        </div>
+                        <hr>
+                        <div>
+                            <h3>총 결제금액</h3>
+                            <p class="text-end"><span>0</span>원</p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                <button type="button" class="btn btn-primary" id="confirmPurchase">결제 하기</button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+</html>

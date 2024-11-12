@@ -23,7 +23,7 @@ public class Review {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "book_id", referencedColumnName = "id")
+    @JoinColumn(name = "book_id")
     private Book book;
 
     @OneToOne
@@ -32,6 +32,9 @@ public class Review {
 
     @Column(name = "rating")
     private Byte rating;
+
+    @Column(name = "title")
+    private String title;
 
     @Column(name = "comment")
     private String comment;

@@ -6,6 +6,7 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 @Data
 @Entity
@@ -62,5 +63,8 @@ public class Book {
     @OneToOne
     @JoinColumn(name = "bookdescription_id", referencedColumnName = "id")
     private BookDescription bookdescription;
+
+    @OneToMany(mappedBy = "book")
+    private List<Review> review;
 
 }
