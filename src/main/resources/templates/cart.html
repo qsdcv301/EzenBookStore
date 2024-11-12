@@ -47,7 +47,7 @@
                         <i class="bi bi-trash"></i> 선택 삭제
                     </button>
                 </div>
-                <div class="card-body overflow-auto" style="max-height: 700px;">
+                <div class="paymentModal-Data card-body overflow-auto" style="max-height: 700px;">
                     <!-- 상품 1 -->
                     <div class="cart-item card" th:each="cart : ${cartList}">
                         <div class="card-body">
@@ -59,7 +59,7 @@
                                     <h5 class="card-title title" th:text="'제목 : '+${cart.book.title}">제목 : </h5>
                                     <p class="card-text mb-0" th:text="'저자 : '+${cart.book.author}">저자 : </p>
                                     <p class="card-text mb-0 price" th:text="'가격 : '+${cart.book.price}+'원'">가격: 18,000원</p>
-                                    <p class="card-text mb-0 discount"><span class="text-danger fw-bold" th:text="${cart.book.discount}+'%'">할인 퍼센트</span></p>
+                                    <p class="card-text mb-0"><span class="text-danger fw-bold discount" th:text="${cart.book.discount}+'%'">할인 퍼센트</span></p>
                                 </div>
                                 <div class="col-md-5">
                                     <div class="d-flex align-items-center justify-content-around">
@@ -89,10 +89,10 @@
                     <p>사용가능 적립금: <span id="ez-point" th:text="${user.point}+'Point'"></span></p>
                     <hr>
                     <h5>총 결제 금액: <span id="final-total">65,000원</span></h5>
-                    <button class="btn btn-primary w-100 mt-3 paymentModalBtn" id="order-all" data-toggle="modal"
+                    <button class="btn btn-primary w-100 mt-3 paymentModalBtn" th:data-type="all" data-toggle="modal"
                             data-target="#paymentModal">전체 상품 주문
                     </button>
-                    <button class="btn btn-outline-primary w-100 mt-2 paymentModalBtn" id="order-selected"
+                    <button class="btn btn-outline-primary w-100 mt-2 paymentModalBtn"  th:data-type="selected"
                             data-toggle="modal"
                             data-target="#paymentModal">선택 상품 주문
                     </button>

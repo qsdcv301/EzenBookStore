@@ -28,6 +28,7 @@
     </style>
 
 <body>
+<header th:replace="~{fragments/header :: header}"></header>
 <div class="container mt-5">
     <div class="row">
         <!-- 상품 이미지 -->
@@ -36,27 +37,30 @@
         </div>
 
         <!-- 상품 정보 -->
-        <div class="col-md-4 ms-5">
-            <h1 class="mb-3" th:text="${book.title}"></h1>
+        <div class="col-md-4 ms-5 paymentModal-Data">
+            <input class="form-check-input cart-checkbox d-none" type="checkbox" checked>
+            <h1 class="mb-3" th:class="title" th:text="${book.title}"></h1>
             <p><strong>저자:</strong> <span th:text="${book.author}"></span></p>
             <p><strong>출판사:</strong> <span th:text="${book.publisher}"></span></p>
             <p><strong>ISBN:</strong> <span th:text="${book.isbn}"></span></p>
             <p><strong>출간일:</strong> <span th:text="${#dates.format(book.publishDate, 'yyyy-MM-dd')}"></span></p>
             <p>
                 <strong>가격:</strong>
-                <span class="text-decoration-line-through" th:text="${book.price}+' 원'">가격</span>
-                <span class="text-danger fw-bold" th:text="${book.discount}+'%'">할인 퍼센트</span>
+                <span class="text-decoration-line-through price" th:text="${book.price}+' 원'">가격</span>
+                <span class="text-danger fw-bold discount" th:text="${book.discount}+'%'">할인 퍼센트</span>
             </p>
             <p><strong>배송 정보:</strong> 배송비 3,000원</p>
 
             <div class="mb-3">
-                <label for="quantity" class="form-label">수량:</label>
-                <input type="number" class="form-control" id="quantity" value="1" min="1" style="width: 100px;">
+                <label class="form-label">수량:</label>
+                <input type="number" class="form-control quantity" value="1" min="1" style="width: 100px;">
             </div>
             <button class="btn btn-primary me-2" id="bookDetail-cartAdd" th:data-book-id="${book.id}">
                 <i class="bi bi-cart-plus"></i> 장바구니 담기
             </button>
-            <button class="btn btn-success" id="buy-now" data-bs-toggle="modal" data-bs-target="#buyNowModal">
+            <button class="btn btn-success me-2 paymentModalBtn" th:data-type="selected"
+                    data-toggle="modal"
+                    data-target="#paymentModal">
                 <i class="bi bi-credit-card"></i> 바로 구매하기
             </button>
         </div>
@@ -123,6 +127,7 @@
         </div>
     </div>
 </div>
-
+<div th:replace="~{fragments/paymentModal :: paymentModal}"></div>
+<footer th:replace="~{fragments/footer :: footer}"></footer>
 </body>
 </html>

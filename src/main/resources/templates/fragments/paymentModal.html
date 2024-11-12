@@ -16,7 +16,7 @@
                         <div class="modal-items"></div>
                     </div>
                     <form class="col-6">
-                        <h5 data-toggle="collapse" href="#collapseExam">주문자정보</h5>
+                        <h5 data-toggle="collapse" href="#collapseExam">주문자 정보</h5>
                         <div id="collapseExam" class="collapse">
                             <div class="mb-3">
                                 <label class="form-label">이름</label>
@@ -40,9 +40,9 @@
                         <hr>
                         <h5>결제 정보</h5>
                         <div class="mb-5">
-                            <p>사용 가능한 적립금: <span th:text="${user.point}">999,999</span>원</p>
+                            <p>사용 가능한 적립금: <span id="available-points" th:text="${user.point}">999,999</span>원</p>
                             <label class="form-label">사용할 적립금</label>
-                            <input type="number" class="form-control payment-point" required>
+                            <input type="number" class="form-control payment-point" id="used-points" value="0" th:min="0" step="100" th:max="${user.point}">
                             <p>결제 수단</p>
                             <div class="col">
                                 <div class="col-md-5 btn btn-primary btn-lg me-2">무통장 입금</div>
@@ -52,11 +52,10 @@
                         <hr class="mt-5">
                         <h4>주문 확인</h4>
                         <div class="mt-3">
-                            <p>총 상품 금액: <span>0</span>원</p>
-                            <p>배송비: <span>3,000</span>원</p>
-                            <p>적립금 사용: <span>0</span>원</p>
-                            <p>총 결제 금액:</p>
-                            <p class="text-end"><span>0</span>원</p>
+                            <p>총 상품 금액: <span id="order-original-price"></span></p>
+                            <p>배송비: <span id="order-shipping-fee"></span></p>
+                            <p>총 결제 금액: <span id="order-final-total"></span></p>
+                            <div id="order-deduction-summary" class="pl-5 text-muted"></div>
                         </div>
                     </form>
                 </div>
