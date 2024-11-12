@@ -1,4 +1,4 @@
-package ezen.team.ezenbookstore.controller;
+package ezen.team.ezenbookstore.controller.User;
 
 import ezen.team.ezenbookstore.entity.CustomOAuth2User;
 import ezen.team.ezenbookstore.entity.User;

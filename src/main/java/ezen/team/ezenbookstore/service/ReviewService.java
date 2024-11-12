@@ -28,8 +28,8 @@ public class ReviewService {
     public Review update(Long id, Review review) {
         Review newReview = Review.builder()
                 .id(id)
-                .bookId(review.getBookId())
-                .userId(review.getUserId())
+                .book(review.getBook())
+                .user(review.getUser())
                 .rating(review.getRating())
                 .comment(review.getComment())
                 .createAt(review.getCreateAt())
