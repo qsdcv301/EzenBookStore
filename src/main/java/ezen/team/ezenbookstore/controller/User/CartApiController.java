@@ -30,6 +30,7 @@ public class CartApiController {
         String userEmail = userService.getUserEmail();
         User user = userService.findByEmail(userEmail);
         List<Cart> cartList = cartService.findAllByUserId(user.getId());
+        model.addAttribute("user", user);
         model.addAttribute("cartList", cartList);
         return "cart";
     }
