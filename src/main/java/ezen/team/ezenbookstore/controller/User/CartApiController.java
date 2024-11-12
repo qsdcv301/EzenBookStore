@@ -10,18 +10,23 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/cart")
 public class CartApiController {
     // 추가
-    @PostMapping("/addCart")
+    @GetMapping("/cart")
+    String viewCart(@ModelAttribute Cart cart) {
+        return "cart";
+    }
+
+    @PostMapping("/add")
     public String addCart(@ModelAttribute Cart cart) {
         // cart추가
         return "redirect:/cart";
     }
     // 업데이트
-    @PostMapping("/updateCart")
+    @PostMapping("/update")
     public String updateCart(@ModelAttribute Cart cart) {
         return "redirect:/cart";
     }
     // 삭제
-    @PostMapping("/deleteCart")
+    @PostMapping("/delete")
     public String deleteCart(@RequestParam long cartId) {
         return "redirect:/cart";
     }
