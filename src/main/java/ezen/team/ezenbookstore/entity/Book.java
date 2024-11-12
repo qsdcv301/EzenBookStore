@@ -34,7 +34,7 @@ public class Book {
     private Timestamp publishDate;
 
     @Column(name = "isbn")
-    private String isbn;
+    private Long isbn;
 
     @Column(name = "stock")
     private Integer stock;
@@ -57,7 +57,7 @@ public class Book {
     private Long count;
 
     @Column(name = "discount")
-    private Integer discount;
+    private Byte discount;
 
     @OneToOne
     @JoinColumn(name = "bookdescription_id", referencedColumnName = "id")
