@@ -28,7 +28,7 @@ public class QnAService {
     public QnA update(QnA qnA) {
         QnA newQnA = QnA.builder()
                 .id(qnA.getId())
-                .userId(qnA.getUserId())
+                .user(qnA.getUser())
                 .category(qnA.getCategory())
                 .title(qnA.getTitle())
                 .question(qnA.getQuestion())

@@ -12,18 +12,16 @@ import org.hibernate.annotations.DynamicUpdate;
 @DynamicInsert
 @DynamicUpdate
 @Builder
-@Table(name = "orderitem")
+@Table(name = "orderItem")
 public class OrderItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "book_id")
-    private Long bookId;
-
-    @Column(name = "order_id")
-    private Long orderId;
+    @OneToOne
+    @JoinColumn(name = "book_id", referencedColumnName = "id")
+    private Book book;
 
     @Column(name = "quantity")
     private Integer quantity;

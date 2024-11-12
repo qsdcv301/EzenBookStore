@@ -28,8 +28,7 @@ public class OrderItemService {
     public OrderItem update(Long id, OrderItem orderItem) {
         OrderItem newOrderItem = OrderItem.builder()
                 .id(id)
-                .bookId(orderItem.getBookId())
-                .orderId(orderItem.getOrderId())
+                .book(orderItem.getBook())
                 .quantity(orderItem.getQuantity())
                 .build();
         return orderItemRepository.save(newOrderItem);
