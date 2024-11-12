@@ -8,7 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet"/>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet">
     <link href="/css/bootstrap.min.css" rel="stylesheet"/>
-    <!--    <link href="/css/style.css" rel="stylesheet"/>-->
+    <link href="/css/style.css" rel="stylesheet"/>
     <script src="/js/jquery-1.12.4.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
     <script src="/js/popper.min.js"></script>
@@ -53,8 +53,7 @@
                 <label for="quantity" class="form-label">수량:</label>
                 <input type="number" class="form-control" id="quantity" value="1" min="1" style="width: 100px;">
             </div>
-            <input type="hidden" th:value="${book.id}" id="bookId">
-            <button class="btn btn-primary me-2" id="bookDetail-cartAdd">
+            <button class="btn btn-primary me-2" id="bookDetail-cartAdd" th:data-book-id="${book.id}">
                 <i class="bi bi-cart-plus"></i> 장바구니 담기
             </button>
             <button class="btn btn-success" id="buy-now" data-bs-toggle="modal" data-bs-target="#buyNowModal">
