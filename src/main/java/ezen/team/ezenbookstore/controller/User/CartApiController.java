@@ -35,6 +35,7 @@ public class CartApiController {
         return "cart";
     }
 
+    // 추가
     @PostMapping("/add")
     public ResponseEntity<Map<String, Boolean>> addCart(@RequestParam List<String> bookId,
                                                         @RequestParam List<String> quantity) {
@@ -72,25 +73,32 @@ public class CartApiController {
 
     // 업데이트
     @PostMapping("/update")
-    public ResponseEntity<Map<String, Boolean>> updateCart(@ModelAttribute Cart cart,
-                                                           @RequestParam(name = "bookId") Long bookId) {
+    public ResponseEntity<Map<String, Boolean>> updateCart(@RequestParam List<String> cartId,
+                                                           @RequestParam List<String> quantity) {
         Map<String, Boolean> response = new HashMap<>();
+        // cartId가 일치하지 않거나 비어 있는 경우에 대한 검증
+        if (cartId == null || cartId.isEmpty() || quantity == null || quantity.isEmpty() || cartId.size() != quantity.size()) {
+            response.put("success", false);
+            return ResponseEntity.ok(response); // 추가 실패 반환
+        }
         try {
             // 현재 사용자 이메일을 가져와 User 객체 조회
             String userEmail = userService.getUserEmail();
             User user = userService.findByEmail(userEmail);
-
-            // 새로운 Cart 객체 생성
-            Cart newCart = Cart.builder()
-                    .id(cart.getId())
-                    .user(user)
-                    .book(bookService.findById(bookId))
-                    .quantity(cart.getQuantity())
-                    .build();
-
-            // Cart 저장 처리
-            cartService.update(cart.getId(), newCart);
-
+            // bookId와 quantity를 인덱스를 기준으로 순환
+            for (int i = 0; i < cartId.size(); i++) {
+                Long cartIdValue = Long.parseLong(cartId.get(i)); // String을 Long으로 변환
+                Integer quantityValue = Integer.parseInt(quantity.get(i)); // String을 Integer로 변환
+                Cart cart = cartService.findById(cartIdValue);
+                Cart newCart = Cart.builder()
+                        .id(cartIdValue)
+                        .user(user)
+                        .book(cart.getBook())
+                        .quantity(quantityValue)
+                        .build();
+                // Cart 저장 처리
+                cartService.update(cartIdValue, newCart);
+            }
             response.put("success", true);
             return ResponseEntity.ok(response); // 성공 시 200 OK와 함께 반환
         } catch (Exception e) {

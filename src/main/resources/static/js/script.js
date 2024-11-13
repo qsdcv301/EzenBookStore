@@ -51,6 +51,32 @@ $(document).ready(function () {
         deleteCartItems(selectedIds);
     });
 
+    // 카트 업데이트 버튼 클릭 이벤트
+    $(".cart-update").click(function () {
+        const cartId = $(this).attr("data-cart-id");
+        const quantity = $(this).closest(".paymentModal-Data").find(".quantity").val();
+        $.ajax({
+            url: '/cart/update',
+            type: 'POST',
+            traditional: true, // 배열을 쿼리 문자열로 전송하기 위해 추가
+            data: {
+                cartId: [cartId],
+                quantity: [quantity]
+            },
+            success: function (response) {
+                if (response.success) {
+                    alert("해당항목을 수정 되었습니다.");
+                    location.reload();
+                } else {
+                    alert("해당항목을 수정 실패했습니다.");
+                }
+            },
+            error: function () {
+                alert("서버 오류가 발생했습니다.");
+            }
+        });
+    });
+
     // 개별 삭제 버튼 클릭 이벤트
     $(".cart-delete").click(function () {
         const cartId = $(this).attr("data-cart-id");
