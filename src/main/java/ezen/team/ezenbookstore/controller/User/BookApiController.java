@@ -51,7 +51,7 @@ public class BookApiController {
         List<Book> bookList = bookPage.getContent();
         model.addAttribute("user", user);
         model.addAttribute("keyword", keyword);
-        model.addAttribute("val",val);
+        model.addAttribute("val", val);
         model.addAttribute("sort", sort);
         model.addAttribute("direction", direction);
         model.addAttribute("bookList", bookList);
@@ -64,6 +64,24 @@ public class BookApiController {
         String userEmail = userService.getUserEmail();
         User user = userService.findByEmail(userEmail);
         Book book = bookService.findById(bookId);
+        Book newBook = Book.builder()
+                .id(book.getId())
+                .title(book.getTitle())
+                .author(book.getAuthor())
+                .publisher(book.getPublisher())
+                .publishDate(book.getPublishDate())
+                .isbn(book.getIsbn())
+                .stock(book.getStock())
+                .ifkr(book.getIfkr())
+                .price(book.getPrice())
+                .category(book.getCategory())
+                .subcategory(book.getSubcategory())
+                .count(book.getCount() + 1)
+                .discount(book.getDiscount())
+                .bookdescription(book.getBookdescription())
+                .review(book.getReview())
+                .build();
+        bookService.update(bookId, newBook);
         model.addAttribute("user", user);
         model.addAttribute("book", book);
         return "bookDetail";
