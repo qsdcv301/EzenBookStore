@@ -34,6 +34,10 @@ public class SubCategoryService {
         return subCategoryRepository.save(newSubCategory);
     }
 
+    public List<SubCategory> getSubCategoriesByCategoryId(Long categoryId) {
+        return subCategoryRepository.findByCategoryId(categoryId);
+    }
+
     public void delete(Long id) {
         subCategoryRepository.deleteById(id);
     }

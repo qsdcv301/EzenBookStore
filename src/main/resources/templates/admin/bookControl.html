@@ -145,34 +145,48 @@
         $.ajax({
             url: '/admin/categories',
             method: 'GET',
-            success: function(categories) {
+            success: function (categories) {
+                console.log('카테고리 데이터:', categories); // 카테고리 데이터 확인용 로그
                 $('#category').empty();
-                categories.forEach(function(category) {
+                $('#category').append(new Option("카테고리를 선택하세요", "")); // 기본 옵션 추가
+                categories.forEach(function (category) {
                     $('#category').append(new Option(`${category.id}: ${category.name}`, category.id));
                 });
             },
-            error: function(xhr, status, error) {
+            error: function (xhr, status, error) {
                 console.error('카테고리 로드 실패:', error);
             }
         });
 
-        // 세부 카테고리 목록 로드
-        $.ajax({
-            url: '/admin/subcategories',
-            method: 'GET',
-            success: function(subcategories) {
-                $('#subcategory').empty();
-                subcategories.forEach(function(subcategory) {
-                    $('#subcategory').append(new Option(`${subcategory.id}: ${subcategory.name}`, subcategory.id));
+// 카테고리 선택 변경 시 관련 서브카테고리 로드
+        $('#category').on('change', function () {
+            const selectedCategoryId = $(this).val();
+            console.log('선택된 카테고리 ID:', selectedCategoryId); // 선택된 카테고리 확인용 로그
+
+            if (selectedCategoryId) {
+                $.ajax({
+                    url: `/admin/subcategories/${selectedCategoryId}`,
+                    method: 'GET',
+                    success: function (subcategories) {
+                        console.log('서브카테고리 데이터:', subcategories); // 서브카테고리 데이터 확인용 로그
+                        $('#subcategory').empty();
+                        $('#subcategory').append(new Option("서브카테고리를 선택하세요", ""));
+                        subcategories.forEach(function (subcategory) {
+                            $('#subcategory').append(new Option(`${subcategory.id}: ${subcategory.name}`, subcategory.id));
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('서브카테고리 로드 실패:', error);
+                    }
                 });
-            },
-            error: function(xhr, status, error) {
-                console.error('세부 카테고리 로드 실패:', error);
+            } else {
+                $('#subcategory').empty();
+                $('#subcategory').append(new Option("서브카테고리를 선택하세요", ""));
             }
         });
     });
 
-    // 날짜 포맷 변환 함수 (ISO 형식으로 변환)
+        // 날짜 포맷 변환 함수 (ISO 형식으로 변환)
     function formatDateToISOString(date) {
         const d = new Date(date);
         return d.toISOString(); // ISO 형식으로 반환
