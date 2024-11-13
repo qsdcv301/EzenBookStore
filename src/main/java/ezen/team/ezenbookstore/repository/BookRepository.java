@@ -15,7 +15,7 @@ public interface BookRepository extends JpaRepository<Book, Long> {
 
     Page<Book> findByPublisherContaining(String publisher, Pageable pageable);
 
-    Page<Book> findByIsbnContaining(Integer isbn, Pageable pageable);
+    Page<Book> findByIsbnContaining(String isbn, Pageable pageable);
 
     // 주석 처리된 메서드들 페이징 추가
     // Page<Book> findByTitleContainingAndCategoryIdAndSubcategoryId(String title, Integer categoryId, Integer subcategoryId, Pageable pageable);

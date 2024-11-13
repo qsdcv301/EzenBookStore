@@ -62,7 +62,7 @@ public class BookService {
         return bookRepository.findByPublisherContaining(publisher, pageable);
     }
 
-    public Page<Book> findByIsbnContaining(Integer isbn, Pageable pageable) {
+    public Page<Book> findByIsbnContaining(String isbn, Pageable pageable) {
         return bookRepository.findByIsbnContaining(isbn, pageable);
     }
 

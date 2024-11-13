@@ -36,7 +36,7 @@ public class Book {
     private Timestamp publishDate;
 
     @Column(name = "isbn")
-    private Long isbn;
+    private String isbn;
 
     @Column(name = "stock")
     private Integer stock;

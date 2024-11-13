@@ -312,4 +312,31 @@ $(document).ready(function () {
         window.location.href = `/book/search?keyword=${keyword}&page=${page}&val=${val}&sort=${selectedOption}&direction=${direction}`;
     });
 
+    $('.research-btn').click(function () {
+        const researchBox = $(this).closest('.research-data');
+        const researchInput = researchBox.find('.research-input').val().trim();
+
+        // 체크된 모든 키워드의 값을 배열로 수집하고 쉼표로 결합
+        let keywords = [];
+        $(".research-checkbox:checked").each(function () {
+            keywords.push($(this).attr("data-type"));
+        });
+        let combinedKeywords = keywords.join(",");
+
+        // URL의 기존 파라미터를 가져오기
+        let urlParams = getUrlParams();
+        const existingKeyword = urlParams['keyword'] || "";
+        const existingVal = urlParams['val'] || "";
+        const page = urlParams['page'] || "0";
+        const sort = urlParams['sort'] || "";
+        const direction = urlParams['direction'] || "";
+
+        // 기존 값과 새로운 값을 쉼표로 구분하여 결합
+        let newKeyword = existingKeyword ? `${existingKeyword},${combinedKeywords}` : combinedKeywords;
+        let newVal = existingVal ? `${existingVal},${researchInput}` : researchInput;
+
+        // 검색 페이지로 리다이렉트
+        window.location.href = `/book/search?keyword=${newKeyword}&val=${newVal}&page=${page}&sort=${sort}&direction=${direction}`;
+    });
+
 });

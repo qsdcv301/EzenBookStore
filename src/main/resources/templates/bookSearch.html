@@ -53,32 +53,42 @@
                 <nav class="col-md-2 sidebar" style="margin-top: 220px;">
                     <div class="position-sticky">
                         <h5 class="mb-3">결과 내 재검색</h5>
-                        <form>
+                        <div class="research-data">
                             <div class="mb-3">
-                                <input type="text" class="form-control" id="searchInput" placeholder="검색어 입력">
+                                <input type="text" class="form-control research-input" placeholder="검색어 입력">
                             </div>
                             <div class="mb-3">
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="titleIsbn">
-                                    <label class="form-check-label" for="titleIsbn">
-                                        제목/ISBN
+                                    <input class="form-check-input research-checkbox" type="checkbox"
+                                    th:data-type="title">
+                                    <label class="form-check-label">
+                                        제목
                                     </label>
                                 </div>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="authorTranslator">
-                                    <label class="form-check-label" for="authorTranslator">
-                                        저자/역자
+                                    <input class="form-check-input research-checkbox" type="checkbox"
+                                           th:data-type="author">
+                                    <label class="form-check-label">
+                                        작가
                                     </label>
                                 </div>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="publisher">
-                                    <label class="form-check-label" for="publisher">
+                                    <input class="form-check-input research-checkbox" type="checkbox"
+                                           th:data-type="isbn">
+                                    <label class="form-check-label">
+                                        ISBN
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input research-checkbox" type="checkbox"
+                                           th:data-type="publisher">
+                                    <label class="form-check-label">
                                         출판사
                                     </label>
                                 </div>
                             </div>
-                            <button type="submit" class="btn btn-primary w-100">검색</button>
-                        </form>
+                            <button type="button" class="btn btn-primary w-100 research-btn">검색</button>
+                        </div>
                     </div>
                 </nav>
 
