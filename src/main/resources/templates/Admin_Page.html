@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>관리자 페이지</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <style>
+    .sidebar {
+      background-color: #f8f9fa;;
+      height: 100vh;
+    }
+    .sidebar ul {
+      list-style: none;
+    }
+    .sidebar ul li {
+      padding: 7px 0;
+    }
+    .sidebar ul li ul {
+      display: none; /* 하위 메뉴 숨기기 */
+      padding-left: 20px;
+      font-size: 15px; /* 하위 메뉴는 기본 글씨 크기로 설정 */
+    }
+    .sidebar ul li strong {
+      cursor: pointer; /* 클릭 가능한 스타일 추가 */
+      font-size: 18px; /* 상위 메뉴 글씨 크기 키우기 */
+    }
+    .content {
+      padding: 20px;
+      height: 100vh;
+    }
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    /* 링크 스타일 */
+    .sidebar ul li a {
+      text-decoration: none;
+      color: #495057;
+      position: relative;
+      padding: 5px 0;
+    }
+
+    /* 밑줄 애니메이션 추가 */
+    .sidebar ul li a .underline {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 0;
+      height: 2px;
+      background-color: #007bff;
+      transition: width 0.3s ease;
+    }
+
+    /* 링크 호버 시 밑줄 애니메이션 */
+    .sidebar ul li a:hover .underline {
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container-fluid">
+    <div class="row">
+      
+      <!-- 관리자 페이지 Sidebar 부분 -->
+      <nav class="col-md-3 col-lg-2 sidebar">
+        <h2 class="mt-5 mb-5" style="text-align: center; font-weight: bold;">관리자 모드</h2>
+        <ul>
+          <li><strong>상품관리</strong>
+            <ul>
+              <li>도서</li>
+              <li>도서카테고리</li>
+            </ul>
+          </li>
+
+          <li><strong>주문 및 배송관리</strong>
+            <ul>
+              <li><a href="javascript:void(0)" onclick="loadOrderHistory()" style="text-decoration: none; color: inherit; position: relative;">주문 조회 및 상태
+                <div class="underline"></div> <!-- 밑줄을 위한 div 추가 -->
+              </a></li>
+              <li>취소/반품/교환 요청 관리</li>
+            </ul>
+          </li>
+
+          <li><strong>회원관리</strong>
+            <ul>
+              <li>회원정보관리</li>
+            </ul>
+          </li>
+          <li><strong>게시판관리</strong>
+            <ul>
+              <li>공지사항 관리</li>
+              <li>FAQ 관리</li>
+              <li>문의하기</li>
+              <li>리뷰평점관리</li>
+            </ul>
+          </li>
+          <li><strong>사이트관리</strong>
+            <ul>
+              <li>메인페이지</li>
+              <li>이벤트관리</li>
+            </ul>
+          </li>
+          <li><strong>결제관리</strong>
+            <ul>
+              <li>결제내역 조회</li>
+              <li>결제취소 환불처리 관리</li>
+              <li>PG사 연동 설정 관리</li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      
+      <!-- Main Content -->
+      <main class="col-md-9 col-lg-10 content">
+        <div class="bg-light p-5" style="height: 100%;">
+          <!-- iframe을 통해 Order_History.html 로드 -->
+          <iframe id="order-history-frame" src="" style="display: none;"></iframe>
+        </div>
+      </main>
+
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // 사이드바 메뉴 클릭 시 Order_History.html 로드
+    function loadOrderHistory() {
+      var iframe = document.getElementById('order-history-frame');
+      iframe.src = 'Order_History.html';  // Order_History.html 파일 경로 설정
+      iframe.style.display = 'block';  // iframe을 화면에 보이도록 설정
+    }
+
+    // 사이드바 메뉴 클릭 시 슬라이드 토글
+    $(document).ready(function() {
+      $('.sidebar ul li strong').click(function() {
+        $(this).next('ul').slideToggle();
+      });
+    });
+  </script>
+</body>
+</html>

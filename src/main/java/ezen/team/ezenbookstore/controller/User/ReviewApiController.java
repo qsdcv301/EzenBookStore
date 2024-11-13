@@ -3,15 +3,14 @@ package ezen.team.ezenbookstore.controller.User;
 import ezen.team.ezenbookstore.entity.Review;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @Controller
+@RequestMapping("review")
 public class ReviewApiController {
-    @GetMapping("/review")public String viewReview(){return "review";}
+    @GetMapping
+    public String viewReview(){return "/review";}
     //리뷰 추가
     @PostMapping("/add")
     public String addReview(@ModelAttribute Review review) {

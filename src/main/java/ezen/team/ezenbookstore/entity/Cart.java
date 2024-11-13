@@ -25,9 +25,9 @@ public class Cart {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
-    @OneToMany
+    @OneToOne
     @JoinColumn(name = "book_id", referencedColumnName = "id")
-    private List<Book> book;
+    private Book book;
 
     @Column(name = "quantity")
     private Integer quantity;

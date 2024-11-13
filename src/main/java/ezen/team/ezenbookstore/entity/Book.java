@@ -1,11 +1,13 @@
 package ezen.team.ezenbookstore.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 @Data
 @Entity
@@ -34,13 +36,14 @@ public class Book {
     private Timestamp publishDate;
 
     @Column(name = "isbn")
-    private Long isbn;
+    private String isbn;
 
     @Column(name = "stock")
     private Integer stock;
 
     @Column(name = "ifkr")
     private Byte ifkr;
+    //0이 국내 1이 국외
 
     @Column(name = "price")
     private Integer price;
@@ -50,9 +53,10 @@ public class Book {
     private Category category;
 
     @OneToOne
-    @JoinColumn(name = "category_id", referencedColumnName = "id")
+    @JoinColumn(name = "subcategory_id", referencedColumnName = "id")
     private SubCategory subcategory;
 
+    //조회수
     @Column(name = "count")
     private Long count;
 
@@ -62,5 +66,9 @@ public class Book {
     @OneToOne
     @JoinColumn(name = "bookdescription_id", referencedColumnName = "id")
     private BookDescription bookdescription;
+
+    @OneToMany(mappedBy = "book")
+    @JsonIgnore // 직렬화에서 제외 나중에 수정해야할?
+    private List<Review> review;
 
 }

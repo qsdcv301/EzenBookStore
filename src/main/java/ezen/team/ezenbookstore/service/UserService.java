@@ -68,6 +68,10 @@ public class UserService {
     }
 
     public User create(User user) {
+        if (user.getPassword() == null || user.getPassword().isEmpty()) {
+            // 비밀번호가 null일 경우 기본 비밀번호를 설정
+            user.setPassword("소셜 로그인 유저");
+        }
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }

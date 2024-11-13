@@ -31,6 +31,7 @@ public class ReviewService {
                 .book(review.getBook())
                 .user(review.getUser())
                 .rating(review.getRating())
+                .title(review.getTitle())
                 .comment(review.getComment())
                 .createAt(review.getCreateAt())
                 .build();
