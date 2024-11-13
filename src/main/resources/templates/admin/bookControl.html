@@ -224,15 +224,40 @@
         });
     });
 
-    // 폼 제출 시 수정 또는 추가 요청 보내기
-    // 폼 제출 시 수정 또는 추가 요청 보내기
+    // 책 설명 ID 변경 시 새로운 데이터 로드
+    $('#bookdescriptionId').on('change', function() {
+        const descriptionId = $(this).val();
+        if (descriptionId) {
+            $.ajax({
+                url: `/admin/bookdescription/${descriptionId}`,  // 해당 ID로 요청
+                method: 'GET',
+                success: function(data) {
+                    // 받은 데이터로 필드 업데이트
+                    $('#description').val(data.description || '');
+                    $('#writer').val(data.writer || '');
+                    $('#contents').val(data.contents || '');
+                },
+                error: function(xhr, status, error) {
+                    console.error('책 설명 정보 로드 실패:', error);
+                }
+            });
+        } else {
+            // ID가 없는 경우 입력 필드 초기화
+            $('#description').val('');
+            $('#writer').val('');
+            $('#contents').val('');
+        }
+    });
+
+    // 폼 제출 시 Book 수정 요청
     $('#productForm').on('submit', function(event) {
         event.preventDefault();
-        var bookId = $('#bookId').val();
-
-        // publishDate를 ISO 형식으로 변환
+        const bookId = $('#bookId').val();
         const publishDateISO = formatDateToISOString($('#publishDate').val());
 
+        console.log("BookDescription ID:", $('#bookdescriptionId').val());
+
+        // Book 업데이트 요청
         $.ajax({
             url: bookId ? '/admin/book/update' : '/admin/book/add',
             method: bookId ? 'PUT' : 'POST',
@@ -252,25 +277,42 @@
                 subcategory: { id: $('#subcategory').val() },
                 publishDate: publishDateISO,
                 bookdescription: {
-                    id: $('#bookdescriptionId').val(),
-                    description: $('#description').val(),
-                    writer: $('#writer').val(),
-                    contents: $('#contents').val()
+                    id: $('#bookdescriptionId').val()
                 }
             }),
             success: function(response) {
-                $('#productModal').modal('hide');
-                location.reload();
+                // Book 업데이트 성공 시 BookDescription 업데이트 요청
+                const bookDescriptionId = $('#bookdescriptionId').val();
+                console.log("BookDescription ID:", $('#bookdescriptionId').val());
+
+                if (bookDescriptionId) {
+                    $.ajax({
+                        url: `/admin/bookdescription/update/${bookDescriptionId}`,
+                        method: 'PUT',
+                        contentType: 'application/json',
+                        data: JSON.stringify({
+                            id: bookDescriptionId,
+                            description: $('#description').val(),
+                            writer: $('#writer').val(),
+                            contents: $('#contents').val()
+                        }),
+                        success: function() {
+                            $('#productModal').modal('hide');
+                            location.reload();
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('BookDescription 수정 실패:', error);
+                        }
+                    });
+                } else {
+                    console.error('BookDescription ID가 유효하지 않습니다.');
+                }
             },
             error: function(xhr, status, error) {
-                console.error('수정 또는 추가 실패:', error);
-                console.log(xhr.responseText);
+                console.error('Book 수정 실패:', error);
             }
         });
     });
-
-
-
 </script>
 
 </body>
