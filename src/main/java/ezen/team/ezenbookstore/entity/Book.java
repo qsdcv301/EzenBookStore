@@ -1,5 +1,6 @@
 package ezen.team.ezenbookstore.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
@@ -42,6 +43,7 @@ public class Book {
 
     @Column(name = "ifkr")
     private Byte ifkr;
+    //0이 국내 1이 국외
 
     @Column(name = "price")
     private Integer price;
@@ -54,6 +56,7 @@ public class Book {
     @JoinColumn(name = "subcategory_id", referencedColumnName = "id")
     private SubCategory subcategory;
 
+    //조회수
     @Column(name = "count")
     private Long count;
 
@@ -65,6 +68,7 @@ public class Book {
     private BookDescription bookdescription;
 
     @OneToMany(mappedBy = "book")
+    @JsonIgnore // 직렬화에서 제외 나중에 수정해야할?
     private List<Review> review;
 
 }

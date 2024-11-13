@@ -7,6 +7,7 @@
 </head>
 <body>
 
+<!-- 상품 관리 테이블 -->
 <div class="col-md-9 p-4">
     <h2 class="mb-4">상품 관리</h2>
     <table class="table table-hover">
@@ -19,37 +20,173 @@
         </tr>
         </thead>
         <tbody>
-        <!-- 반복되는 상품 행 -->
-        <tr th:each="book, index : ${bookList}">
+        <tr th:each="book : ${bookList}">
             <td th:text="${book.title}"></td>
             <td th:text="${book.author}"></td>
             <td th:text="${book.publisher}"></td>
             <td>
-                <button class="btn btn-success btn-sm" data-toggle="modal" data-target="#editModal">수정</button>
+                <button class="btn btn-success btn-sm"
+                        th:data-book-id="${book.id}"
+                        data-toggle="modal"
+                        data-target="#productModal">
+                    수정
+                </button>
                 <button class="btn btn-danger btn-sm">삭제</button>
             </td>
         </tr>
         </tbody>
     </table>
-
-    <!-- 페이지네이션 -->
-    <nav aria-label="Page navigation example">
-        <ul class="pagination justify-content-center">
-            <li class="page-item disabled">
-                <a class="page-link" href="#" tabindex="-1">이전</a>
-            </li>
-            <li class="page-item"><a class="page-link" href="#">1</a></li>
-            <li class="page-item"><a class="page-link" href="#">2</a></li>
-            <li class="page-item"><a class="page-link" href="#">3</a></li>
-            <li class="page-item">
-                <a class="page-link" href="#">다음</a>
-            </li>
-        </ul>
-    </nav>
-
-    <button class="btn btn-primary mt-3">상품 추가</button>
 </div>
 
+<!-- 추가 및 수정 모달 -->
+<div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="productForm">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="productModalLabel">상품 관리</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="bookId" name="id" />
+                    <div class="form-group">
+                        <label for="title">제목</label>
+                        <input type="text" class="form-control" id="title" name="title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="author">저자</label>
+                        <input type="text" class="form-control" id="author" name="author" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="publisher">출판사</label>
+                        <input type="text" class="form-control" id="publisher" name="publisher" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="isbn">ISBN</label>
+                        <input type="number" class="form-control" id="isbn" name="isbn" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="stock">재고</label>
+                        <input type="number" class="form-control" id="stock" name="stock" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="ifkr">국내/국외</label>
+                        <input type="text" class="form-control" id="ifkr" name="ifkr" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="price">가격</label>
+                        <input type="number" class="form-control" id="price" name="price" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="category">카테고리</label>
+                        <input type="text" class="form-control" id="category" name="category" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="subcategory">세부 카테고리</label>
+                        <input type="text" class="form-control" id="subcategory" name="subcategory" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="discount">할인율</label>
+                        <input type="number" class="form-control" id="discount" name="discount" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="bookdescription">책 세부정보</label>
+                        <input type="text" class="form-control" id="bookdescription" name="bookdescription" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">취소</button>
+                    <button type="submit" class="btn btn-primary">저장</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript 코드 -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.min.js"></script>
+
+<script>
+    // 수정 버튼을 눌러 모달이 열릴 때 실행
+    $('#productModal').on('show.bs.modal', function (event) {
+        console.log("모달 열림 이벤트 실행됨"); // 이벤트가 실행되는지 확인
+        var button = $(event.relatedTarget); // 클릭된 버튼
+        var bookId = button.data('book-id'); // data-book-id 속성 값 읽기
+        console.log('Book ID:', bookId); // Book ID가 올바르게 출력되는지 확인
+
+        if (!bookId) {
+            console.warn("Book ID가 없습니다. 추가 모드로 전환합니다.");
+            $('#productForm')[0].reset(); // 추가 모드 시 폼 초기화
+            return;
+        }
+
+        // AJAX 요청으로 데이터베이스에서 책 정보 가져오기
+        $.ajax({
+            url: '/admin/book/' + bookId,
+            method: 'GET',
+            success: function(data) {
+                console.log("데이터 로드 성공:", data); // 데이터 확인
+
+                // 받아온 데이터로 모달의 입력 필드 채우기
+                $('#bookId').val(data.id || '');
+                $('#title').val(data.title || '');
+                $('#author').val(data.author || '');
+                $('#publisher').val(data.publisher || '');
+                $('#isbn').val(data.isbn || '');
+                $('#stock').val(data.stock || '');
+                $('#ifkr').val(data.ifkr || '');
+                $('#price').val(data.price || '');
+                $('#discount').val(data.discount || '');
+                $('#category').val(data.category ? data.category.id : '');
+                $('#subcategory').val(data.subcategory ? data.subcategory.id : '');
+                $('#bookdescription').val(data.bookdescription ? data.bookdescription.id : '');
+            },
+            error: function(xhr, status, error) {
+                console.error('데이터 로드 실패:', error);
+                console.log(xhr.responseText); // 오류 메시지 확인
+            }
+        });
+    });
+
+    // 폼 제출 시 수정 또는 추가 요청 보내기
+    $('#productForm').on('submit', function(event) {
+        event.preventDefault(); // 기본 제출 방지
+        var bookId = $('#bookId').val();
+
+        $.ajax({
+            url: bookId ? '/admin/book/update' : '/admin/book/add',
+            method: bookId ? 'PUT' : 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                id: bookId,
+                title: $('#title').val(),
+                author: $('#author').val(),
+                publisher: $('#publisher').val(),
+                isbn: $('#isbn').val(),
+                stock: $('#stock').val(),
+                ifkr: $('#ifkr').val(),
+                price: $('#price').val(),
+                discount: $('#discount').val(),
+                category: { id: $('#category').val() },
+                subcategory: { id: $('#subcategory').val() },
+                bookdescription: { id: $('#bookdescription').val() }
+            }),
+            success: function(response) {
+                console.log('수정 또는 추가 성공:', response);
+                $('#productModal').modal('hide'); // 모달 닫기
+                location.reload(); // 페이지 새로고침
+            },
+            error: function(xhr, status, error) {
+                console.error('수정 또는 추가 실패:', error);
+                console.log(xhr.responseText);
+            }
+        });
+    });
+</script>
 
 </body>
 </html>
