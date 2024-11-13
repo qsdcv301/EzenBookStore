@@ -26,13 +26,13 @@ public class NoticeService {
     }
 
     public Notice update(Notice notice) {
-        Notice newNotice = Notice.builder()
+        Notice updateNotice = Notice.builder()
                 .id(notice.getId())
                 .title(notice.getTitle())
                 .content(notice.getContent())
                 .createAt(notice.getCreateAt())
                 .build();
-        return noticeRepository.save(newNotice);
+        return noticeRepository.save(updateNotice);
     }
 
     public void delete(Long id) {
