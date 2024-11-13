@@ -37,7 +37,7 @@
         </div>
 
         <!-- 상품 정보 -->
-        <div class="col-md-4 ms-5 paymentModal-Data">
+        <div class="col-md-4 ms-5 paymentModal-Data cart-Data">
             <input class="form-check-input cart-checkbox d-none" type="checkbox" checked>
             <h1 class="mb-3" th:class="title" th:text="${book.title}"></h1>
             <p><strong>저자:</strong> <span th:text="${book.author}"></span></p>
@@ -55,7 +55,8 @@
                 <label class="form-label">수량:</label>
                 <input type="number" class="form-control quantity" value="1" min="1" style="width: 100px;">
             </div>
-            <button class="btn btn-primary me-2" id="bookDetail-cartAdd" th:data-book-id="${book.id}">
+            <button class="btn btn-primary me-2 cartAdd" th:data-book-id="${book.id}"
+                    th:data-type="selected">
                 <i class="bi bi-cart-plus"></i> 장바구니 담기
             </button>
             <button class="btn btn-success me-2 paymentModalBtn" th:data-type="selected"

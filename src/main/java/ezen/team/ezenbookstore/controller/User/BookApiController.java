@@ -36,6 +36,8 @@ public class BookApiController {
                        @RequestParam(name = "sort", defaultValue = "count", required = false) String sort,
                        @RequestParam(name = "direction", defaultValue = "asc", required = false) String direction,
                        Model model) {
+        String userEmail = userService.getUserEmail();
+        User user = userService.findByEmail(userEmail);
         Page<Book> bookPage = null;
         int size = 5; // 가져올 항목 개수
         Sort.Direction sortDirection = direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
@@ -47,6 +49,7 @@ public class BookApiController {
             default -> bookService.findAll(pageable);
         };
         List<Book> bookList = bookPage.getContent();
+        model.addAttribute("user", user);
         model.addAttribute("keyword", keyword);
         model.addAttribute("val",val);
         model.addAttribute("sort", sort);

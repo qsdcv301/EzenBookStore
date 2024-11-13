@@ -141,16 +141,43 @@ $(document).ready(function () {
     // 페이지 초기 로드 시 주문 요약 업데이트
     updateSummary();
 //     bookDetail
-    $("#bookDetail-cartAdd").click(function () {
-        const bookId = $(this).attr("data-book-id");
-        const quantity = $(".quantity").val();
+    $(".cartAdd").click(function () {
+        let selectedBookIds = [];
+        let selectedBookQuantity = [];
+        if ($(this).closest(".cart-Data").find(".cartAdd").attr("data-type") === "one") {
+            selectedBookIds = $(this).closest(".cart-Data").find(".cart-checkbox").map(function () {
+                return $(this).closest(".cart-Data").find(".cartAdd").attr("data-book-id");
+            }).get();
+
+            selectedBookQuantity = $(this).closest(".cart-Data").find(".cart-checkbox").map(function () {
+                return $(this).closest(".cart-Data").find(".quantity").val();
+            }).get();
+        } else {
+            selectedBookIds = $(".cart-checkbox:checked").map(function () {
+                return $(this).closest(".cart-Data").find(".cartAdd").attr("data-book-id");
+            }).get();
+
+            selectedBookQuantity = $(".cart-checkbox:checked").map(function () {
+                return $(this).closest(".cart-Data").find(".quantity").val();
+            }).get();
+        }
+
+        if (selectedBookIds.length === 0) {
+            alert("장바구니에 추가하실 상품을 선택해주세요.");
+            return;
+        }
+        addCartItems(selectedBookIds, selectedBookQuantity);
+    });
+
+    // AJAX를 통한 선택된 항목 추가 함수
+    function addCartItems(bookId, quantity) {
         $.ajax({
             url: '/cart/add',
             type: 'POST',
             traditional: true, // 배열을 쿼리 문자열로 전송하기 위해 추가
             data: {
-                bookId: [bookId],
-                quantity: [quantity]
+                bookId: bookId,
+                quantity: quantity
             },
             success: function (response) {
                 if (response.success) {
@@ -164,14 +191,15 @@ $(document).ready(function () {
                 alert("서버 오류가 발생했습니다.");
             }
         });
-    });
+    }
+
 //     paymentModal
 // 결제 모달 버튼 클릭 시 초기화 및 계산
     $(".paymentModalBtn").click(function () {
         $(".modal-items").empty(); // 모달의 기존 항목 비우기
 
         const isAllSelected = $(this).data("type") === "all";
-        const checkboxes = isAllSelected ? $(".cart-checkbox") : $(".cart-checkbox:checked");
+        const checkboxes = isAllSelected ? $(".cart-checkbox") : $(this).data("type") === "one" ? $(this).closest(".paymentModal-Data").find(".cart-checkbox") : $(".cart-checkbox:checked");
 
         let totalItems = 0;
         let totalOriginalPrice = 0;
