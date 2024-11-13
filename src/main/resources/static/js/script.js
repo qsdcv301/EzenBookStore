@@ -143,7 +143,7 @@ $(document).ready(function () {
 //     bookDetail
     $("#bookDetail-cartAdd").click(function () {
         const bookId = $(this).attr("data-book-id");
-        const quantity = $("#quantity").val();
+        const quantity = $(".quantity").val();
         $.ajax({
             url: '/cart/add',
             type: 'POST',
