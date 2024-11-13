@@ -79,21 +79,44 @@
                         <label for="price">가격</label>
                         <input type="number" class="form-control" id="price" name="price" required>
                     </div>
+
+                    <!-- 카테고리 선택 -->
                     <div class="form-group">
                         <label for="category">카테고리</label>
-                        <input type="text" class="form-control" id="category" name="category" required>
+                        <select id="category" name="category" class="form-control">
+                            <option value="">카테고리를 선택하세요</option>
+                        </select>
                     </div>
+
+                    <!-- 세부 카테고리 선택 -->
                     <div class="form-group">
                         <label for="subcategory">세부 카테고리</label>
-                        <input type="text" class="form-control" id="subcategory" name="subcategory" required>
+                        <select id="subcategory" name="subcategory" class="form-control">
+                            <option value="">세부 카테고리를 선택하세요</option>
+                        </select>
                     </div>
+
                     <div class="form-group">
                         <label for="discount">할인율</label>
                         <input type="number" class="form-control" id="discount" name="discount" required>
                     </div>
+
+                    <!-- 책 설명 -->
                     <div class="form-group">
-                        <label for="bookdescription">책 세부정보</label>
-                        <input type="text" class="form-control" id="bookdescription" name="bookdescription" required>
+                        <label for="bookdescription">책 설명 ID</label>
+                        <input type="text" class="form-control" id="bookdescriptionId" name="bookdescription" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="description">설명</label>
+                        <input type="text" class="form-control" id="description" name="description">
+                    </div>
+                    <div class="form-group">
+                        <label for="writer">작가 설명</label>
+                        <input type="text" class="form-control" id="writer" name="writer">
+                    </div>
+                    <div class="form-group">
+                        <label for="contents">목차</label>
+                        <input type="text" class="form-control" id="contents" name="contents">
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -111,27 +134,51 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.min.js"></script>
 
 <script>
+    $(document).ready(function() {
+        // 카테고리 목록 로드
+        $.ajax({
+            url: '/admin/categories',
+            method: 'GET',
+            success: function(categories) {
+                categories.forEach(function(category) {
+                    $('#category').append(new Option(`${category.id}: ${category.name}`, category.id));
+                });
+            },
+            error: function(xhr, status, error) {
+                console.error('카테고리 로드 실패:', error);
+            }
+        });
+
+        // 세부 카테고리 목록 로드
+        $.ajax({
+            url: '/admin/subcategories',
+            method: 'GET',
+            success: function(subcategories) {
+                subcategories.forEach(function(subcategory) {
+                    $('#subcategory').append(new Option(`${subcategory.id}: ${subcategory.name}`, subcategory.id));
+                });
+            },
+            error: function(xhr, status, error) {
+                console.error('세부 카테고리 로드 실패:', error);
+            }
+        });
+    });
+
     // 수정 버튼을 눌러 모달이 열릴 때 실행
     $('#productModal').on('show.bs.modal', function (event) {
-        console.log("모달 열림 이벤트 실행됨"); // 이벤트가 실행되는지 확인
-        var button = $(event.relatedTarget); // 클릭된 버튼
-        var bookId = button.data('book-id'); // data-book-id 속성 값 읽기
-        console.log('Book ID:', bookId); // Book ID가 올바르게 출력되는지 확인
+        var button = $(event.relatedTarget);
+        var bookId = button.data('book-id');
 
         if (!bookId) {
-            console.warn("Book ID가 없습니다. 추가 모드로 전환합니다.");
-            $('#productForm')[0].reset(); // 추가 모드 시 폼 초기화
+            $('#productForm')[0].reset();
             return;
         }
 
-        // AJAX 요청으로 데이터베이스에서 책 정보 가져오기
+        // 책 정보 가져오기
         $.ajax({
             url: '/admin/book/' + bookId,
             method: 'GET',
             success: function(data) {
-                console.log("데이터 로드 성공:", data); // 데이터 확인
-
-                // 받아온 데이터로 모달의 입력 필드 채우기
                 $('#bookId').val(data.id || '');
                 $('#title').val(data.title || '');
                 $('#author').val(data.author || '');
@@ -141,20 +188,27 @@
                 $('#ifkr').val(data.ifkr || '');
                 $('#price').val(data.price || '');
                 $('#discount').val(data.discount || '');
+
+                // 카테고리 및 세부 카테고리 선택 설정
                 $('#category').val(data.category ? data.category.id : '');
                 $('#subcategory').val(data.subcategory ? data.subcategory.id : '');
-                $('#bookdescription').val(data.bookdescription ? data.bookdescription.id : '');
+
+                // 책 설명 정보 설정
+                $('#bookdescriptionId').val(data.bookdescription ? data.bookdescription.id : '');
+                $('#description').val(data.bookdescription ? data.bookdescription.description : '');
+                $('#writer').val(data.bookdescription ? data.bookdescription.writer : '');
+                $('#contents').val(data.bookdescription ? data.bookdescription.contents : '');
             },
             error: function(xhr, status, error) {
                 console.error('데이터 로드 실패:', error);
-                console.log(xhr.responseText); // 오류 메시지 확인
+                console.log(xhr.responseText);
             }
         });
     });
 
     // 폼 제출 시 수정 또는 추가 요청 보내기
     $('#productForm').on('submit', function(event) {
-        event.preventDefault(); // 기본 제출 방지
+        event.preventDefault();
         var bookId = $('#bookId').val();
 
         $.ajax({
@@ -173,12 +227,16 @@
                 discount: $('#discount').val(),
                 category: { id: $('#category').val() },
                 subcategory: { id: $('#subcategory').val() },
-                bookdescription: { id: $('#bookdescription').val() }
+                bookdescription: {
+                    id: $('#bookdescriptionId').val(),
+                    description: $('#description').val(),
+                    writer: $('#writer').val(),
+                    contents: $('#contents').val()
+                }
             }),
             success: function(response) {
-                console.log('수정 또는 추가 성공:', response);
-                $('#productModal').modal('hide'); // 모달 닫기
-                location.reload(); // 페이지 새로고침
+                $('#productModal').modal('hide');
+                location.reload();
             },
             error: function(xhr, status, error) {
                 console.error('수정 또는 추가 실패:', error);
