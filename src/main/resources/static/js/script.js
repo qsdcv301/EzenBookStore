@@ -278,24 +278,11 @@ $(document).ready(function () {
 
 //     bookSerach
 
-    // URL의 쿼리 파라미터를 객체 형태로 변환하는 함수
-    function getUrlParams() {
-        let params = {};
-        let queryString = window.location.search.slice(1); // '?' 제거
-        let queryArray = queryString.split('&');
-
-        queryArray.forEach(function (param) {
-            let pair = param.split('=');
-            params[pair[0]] = decodeURIComponent(pair[1] || '');
-        });
-
-        return params;
-    }
-
     $('#sortOptions').change(function () {
         // 선택된 <option> 요소의 data 속성 값을 가져옴
         const selectedOption = $('#sortOptions option:selected').attr("data-option");
         const selectedDirection = $('#sortOptions option:selected').attr("data-direction");
+
         // 방향 설정
         let direction;
         if (selectedDirection === "low" || selectedDirection === "new") {
@@ -303,25 +290,39 @@ $(document).ready(function () {
         } else if (selectedDirection === "high") {
             direction = "desc";
         }
+
         let urlParams = getUrlParams();
         // undefined 값을 빈 문자열로 대체
-        const keyword = urlParams['keyword'] || "";
-        const page = urlParams['page'] || "";
-        const val = urlParams['val'] || "";
+        const existingKeyword = urlParams['keyword'] || "";
+        const existingVal = urlParams['val'] || "";
+        const page = urlParams['page'] || "0";
+
+        // URL 인코딩 적용
+        const encodedKeyword = encodeURIComponent(existingKeyword);
+        const encodedVal = encodeURIComponent(existingVal);
+        const encodedSort = encodeURIComponent(selectedOption);
+        const encodedDirection = encodeURIComponent(direction);
+
         // 페이지 리로드 및 쿼리 파라미터에 sort 추가
-        window.location.href = `/book/search?keyword=${keyword}&page=${page}&val=${val}&sort=${selectedOption}&direction=${direction}`;
+        window.location.href = `/book/search?keyword=${encodedKeyword}&page=${page}&val=${encodedVal}&sort=${encodedSort}&direction=${encodedDirection}`;
     });
 
     $('.research-btn').click(function () {
         const researchBox = $(this).closest('.research-data');
         const researchInput = researchBox.find('.research-input').val().trim();
 
-        // 체크된 모든 키워드의 값을 배열로 수집하고 쉼표로 결합
-        let keywords = [];
+        // 체크된 키워드들을 그룹으로 묶기
+        let keywordGroups = [];
+        let selectedKeywords = [];
+
         $(".research-checkbox:checked").each(function () {
-            keywords.push($(this).attr("data-type"));
+            selectedKeywords.push($(this).attr("data-type"));
         });
-        let combinedKeywords = keywords.join(",");
+
+        // 그룹화된 키워드를 배열에 추가
+        if (selectedKeywords.length > 0) {
+            keywordGroups.push("[" + selectedKeywords.join(",") + "]");
+        }
 
         // URL의 기존 파라미터를 가져오기
         let urlParams = getUrlParams();
@@ -331,12 +332,30 @@ $(document).ready(function () {
         const sort = urlParams['sort'] || "";
         const direction = urlParams['direction'] || "";
 
-        // 기존 값과 새로운 값을 쉼표로 구분하여 결합
-        let newKeyword = existingKeyword ? `${existingKeyword},${combinedKeywords}` : combinedKeywords;
+        // 기존 그룹과 새로운 그룹을 결합하여 저장
+        let newKeyword = existingKeyword ? `${existingKeyword},${keywordGroups.join(",")}` : keywordGroups.join(",");
         let newVal = existingVal ? `${existingVal},${researchInput}` : researchInput;
 
+        // URL 인코딩 적용
+        const encodedKeyword = encodeURIComponent(newKeyword);
+        const encodedVal = encodeURIComponent(newVal);
+        const encodedSort = encodeURIComponent(sort);
+        const encodedDirection = encodeURIComponent(direction);
+
         // 검색 페이지로 리다이렉트
-        window.location.href = `/book/search?keyword=${newKeyword}&val=${newVal}&page=${page}&sort=${sort}&direction=${direction}`;
+        window.location.href = `/book/search?keyword=${encodedKeyword}&val=${encodedVal}&page=${page}&sort=${encodedSort}&direction=${encodedDirection}`;
     });
+
+// URL 파라미터를 객체 형태로 가져오는 함수
+    function getUrlParams() {
+        let params = {};
+        let queryString = window.location.search.substring(1);
+        let regex = /([^&=]+)=([^&]*)/g;
+        let m;
+        while (m = regex.exec(queryString)) {
+            params[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
+        }
+        return params;
+    }
 
 });

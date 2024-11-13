@@ -6,32 +6,19 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface BookRepository extends JpaRepository<Book, Long> {
 
-    Page<Book> findByTitleContaining(String title, Pageable pageable);
+    List<Book> findByTitleContaining(String title);
 
-    Page<Book> findByAuthorContaining(String author, Pageable pageable);
+    List<Book> findByAuthorContaining(String author);
 
-    Page<Book> findByPublisherContaining(String publisher, Pageable pageable);
+    List<Book> findByPublisherContaining(String publisher);
 
-    Page<Book> findByIsbnContaining(String isbn, Pageable pageable);
+    List<Book> findByIsbnContaining(String isbn);
 
-    // 주석 처리된 메서드들 페이징 추가
-    // Page<Book> findByTitleContainingAndCategoryIdAndSubcategoryId(String title, Integer categoryId, Integer subcategoryId, Pageable pageable);
-
-    // Page<Book> findByAuthorContainingAndCategoryIdAndSubcategoryId(String author, Integer categoryId, Integer subcategoryId, Pageable pageable);
-
-    // Page<Book> findByPublisherContainingAndCategoryIdAndSubcategoryId(String publisher, Integer categoryId, Integer subcategoryId, Pageable pageable);
-
-    // Page<Book> findByIsbnContainingAndCategoryIdAndSubcategoryId(String isbn, Integer categoryId, Integer subcategoryId, Pageable pageable);
-
-    Page<Book> findByTitleContainingAndCategoryIdAndSubcategoryIdAndIfkr(String title, Integer categoryId, Integer subcategoryId, Byte ifkr, Pageable pageable);
-
-    Page<Book> findByAuthorContainingAndCategoryIdAndSubcategoryIdAndIfkr(String author, Integer categoryId, Integer subcategoryId, Byte ifkr, Pageable pageable);
-
-    Page<Book> findByPublisherContainingAndCategoryIdAndSubcategoryIdAndIfkr(String publisher, Integer categoryId, Integer subcategoryId, Byte ifkr, Pageable pageable);
-
-    Page<Book> findByIsbnContainingAndCategoryIdAndSubcategoryIdAndIfkr(String isbn, Integer categoryId, Integer subcategoryId, Byte ifkr, Pageable pageable);
+    Page<Book> findAll(Pageable pageable);
 
 }
