@@ -275,4 +275,41 @@ $(document).ready(function () {
     `;
         $("#order-deduction-summary").html(deductionSummary);
     }
+
+//     bookSerach
+
+    // URL의 쿼리 파라미터를 객체 형태로 변환하는 함수
+    function getUrlParams() {
+        let params = {};
+        let queryString = window.location.search.slice(1); // '?' 제거
+        let queryArray = queryString.split('&');
+
+        queryArray.forEach(function (param) {
+            let pair = param.split('=');
+            params[pair[0]] = decodeURIComponent(pair[1] || '');
+        });
+
+        return params;
+    }
+
+    $('#sortOptions').change(function () {
+        // 선택된 <option> 요소의 data 속성 값을 가져옴
+        const selectedOption = $('#sortOptions option:selected').attr("data-option");
+        const selectedDirection = $('#sortOptions option:selected').attr("data-direction");
+        // 방향 설정
+        let direction;
+        if (selectedDirection === "low" || selectedDirection === "new") {
+            direction = "asc";
+        } else if (selectedDirection === "high") {
+            direction = "desc";
+        }
+        let urlParams = getUrlParams();
+        // undefined 값을 빈 문자열로 대체
+        const keyword = urlParams['keyword'] || "";
+        const page = urlParams['page'] || "";
+        const val = urlParams['val'] || "";
+        // 페이지 리로드 및 쿼리 파라미터에 sort 추가
+        window.location.href = `/book/search?keyword=${keyword}&page=${page}&val=${val}&sort=${selectedOption}&direction=${direction}`;
+    });
+
 });
