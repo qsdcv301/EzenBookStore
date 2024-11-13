@@ -25,19 +25,19 @@ public class AdminNoticeApiController {
 
         model.addAttribute("noticeList", noticeList);
 
-        return "/admin/noticeEventControl";
+        return "admin/sampleAdminNotice"; // 수정함"/admin/noticeEventControl";
     }
 
     // 공지사항 생성
     @PostMapping("/add")
-    public String addNotice(@RequestBody Notice notice) {
+    public String addNotice(@ModelAttribute Notice notice) {
         // 공지사항 생성 로직
         return "redirect:/admin/notice-event";
     }
 
     // 공지사항 수정
     @PostMapping("/update")
-    public String updateNotice(@RequestBody Notice notice) {
+    public String updateNotice(@ModelAttribute Notice notice) {
         // 공지사항 수정 로직
         return "redirect:/admin/notice-event";
     }
