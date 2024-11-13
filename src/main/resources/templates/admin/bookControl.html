@@ -64,6 +64,11 @@
                         <input type="text" class="form-control" id="publisher" name="publisher" required>
                     </div>
                     <div class="form-group">
+                        <label for="publishDate">출판 날짜</label>
+                        <input type="date" class="form-control" id="publishDate" name="publishDate" required>
+                    </div>
+
+                    <div class="form-group">
                         <label for="isbn">ISBN</label>
                         <input type="number" class="form-control" id="isbn" name="isbn" required>
                     </div>
@@ -135,11 +140,13 @@
 
 <script>
     $(document).ready(function() {
+
         // 카테고리 목록 로드
         $.ajax({
             url: '/admin/categories',
             method: 'GET',
             success: function(categories) {
+                $('#category').empty();
                 categories.forEach(function(category) {
                     $('#category').append(new Option(`${category.id}: ${category.name}`, category.id));
                 });
@@ -154,6 +161,7 @@
             url: '/admin/subcategories',
             method: 'GET',
             success: function(subcategories) {
+                $('#subcategory').empty();
                 subcategories.forEach(function(subcategory) {
                     $('#subcategory').append(new Option(`${subcategory.id}: ${subcategory.name}`, subcategory.id));
                 });
@@ -164,6 +172,12 @@
         });
     });
 
+    // 날짜 포맷 변환 함수 (ISO 형식으로 변환)
+    function formatDateToISOString(date) {
+        const d = new Date(date);
+        return d.toISOString(); // ISO 형식으로 반환
+    }
+
     // 수정 버튼을 눌러 모달이 열릴 때 실행
     $('#productModal').on('show.bs.modal', function (event) {
         var button = $(event.relatedTarget);
@@ -171,6 +185,7 @@
 
         if (!bookId) {
             $('#productForm')[0].reset();
+            $('#bookId').val('');
             return;
         }
 
@@ -188,6 +203,9 @@
                 $('#ifkr').val(data.ifkr || '');
                 $('#price').val(data.price || '');
                 $('#discount').val(data.discount || '');
+
+                // 날짜를 yyyy-MM-dd 형식으로 설정 (ISO 형식에서 날짜 부분만 추출)
+                $('#publishDate').val(data.publishDate ? data.publishDate.split('T')[0] : '');
 
                 // 카테고리 및 세부 카테고리 선택 설정
                 $('#category').val(data.category ? data.category.id : '');
@@ -207,9 +225,13 @@
     });
 
     // 폼 제출 시 수정 또는 추가 요청 보내기
+    // 폼 제출 시 수정 또는 추가 요청 보내기
     $('#productForm').on('submit', function(event) {
         event.preventDefault();
         var bookId = $('#bookId').val();
+
+        // publishDate를 ISO 형식으로 변환
+        const publishDateISO = formatDateToISOString($('#publishDate').val());
 
         $.ajax({
             url: bookId ? '/admin/book/update' : '/admin/book/add',
@@ -225,8 +247,10 @@
                 ifkr: $('#ifkr').val(),
                 price: $('#price').val(),
                 discount: $('#discount').val(),
+                count: $('#count').val() || 0,
                 category: { id: $('#category').val() },
                 subcategory: { id: $('#subcategory').val() },
+                publishDate: publishDateISO,
                 bookdescription: {
                     id: $('#bookdescriptionId').val(),
                     description: $('#description').val(),
@@ -244,6 +268,9 @@
             }
         });
     });
+
+
+
 </script>
 
 </body>
