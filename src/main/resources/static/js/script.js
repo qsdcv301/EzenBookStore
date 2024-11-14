@@ -383,4 +383,147 @@ $(document).ready(function () {
         return params;
     }
 
+//     findIdPw
+    // 첫 번째 버튼: 아이디 찾기에서 이메일 인증
+    $('#sendVerificationCodeForId').on('click', function (event) {
+        event.preventDefault(); // 기본 동작 방지
+        const email = $('#emailForId').val(); // 이메일 입력 필드 값 가져오기
+
+        if (!email) {
+            alert('이메일을 입력하세요.');
+            return;
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: '/emailAuthentication',
+            data: {email: email},
+            success: function (response) {
+                if (response.isEmail) {
+                    alert('인증 코드가 이메일로 발송되었습니다.');
+                    $('#verificationCodeGroupForId').show(); // 인증번호 입력 필드 보이기
+                } else {
+                    alert('이메일이 일치하지 않습니다.');
+                }
+            },
+            error: function () {
+                alert('이메일 인증 요청 중 오류가 발생했습니다.');
+            }
+        });
+    });
+
+    // 두 번째 버튼: 비밀번호 재설정에서 이메일 인증
+    $('#sendVerificationCodeForPw').on('click', function (event) {
+        event.preventDefault(); // 기본 동작 방지
+        const email = $('#emailForPw').val(); // 이메일 입력 필드 값 가져오기
+
+        if (!email) {
+            alert('이메일을 입력하세요.');
+            return;
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: '/emailAuthentication',
+            data: {email: email},
+            success: function (response) {
+                if (response.isEmail) {
+                    alert('인증 코드가 이메일로 발송되었습니다.');
+                    $('#verificationCodeGroupForPw').show(); // 인증번호 입력 필드 보이기
+                } else {
+                    alert('이메일이 일치하지 않습니다.');
+                }
+            },
+            error: function () {
+                alert('이메일 인증 요청 중 오류가 발생했습니다.');
+            }
+        });
+    });
+
+    $('#findIdBtn').on('click', function (event) {
+        event.preventDefault(); // 폼 제출 기본 동작 방지
+        const name = $("#nameForId").val(); // 이름 입력
+        const email = $("#emailForId").val(); // 이메일 입력
+        const verificationCode = $("#verificationCodeForId").val(); // 인증 코드 입력
+        console.log(name, email, verificationCode);
+        $.ajax({
+            type: 'POST',
+            url: '/findId',
+            data: {
+                name: name,
+                email: email,
+                verificationCode: verificationCode
+            },
+            success: function (response) {
+                if (response.success) {
+                    $('#idResult').html(`당신의 아이디는 ${response.findUserName} 입니다.`).show();
+                } else {
+                    alert('이름, 이메일 또는 인증번호가 일치하지 않습니다.');
+                }
+            },
+            error: function () {
+                alert('이메일 인증 요청 중 오류가 발생했습니다.');
+            }
+        });
+    });
+
+    // 비밀번호 재설정 요청
+    $('#newPassword').on('click', function (event) {
+        event.preventDefault(); // 폼 제출 기본 동작 방지
+        const name = $("#idForPw").val(); // 이름 입력
+        const email = $("#emailForPw").val(); // 이메일 입력
+        const verificationCode = $("#verificationCodeForPw").val(); // 인증 코드 입력
+
+        $.ajax({
+            type: 'POST',
+            url: '/newPassword',
+            data: {name: name, email: email, verificationCode: verificationCode},
+            success: function (response) {
+                if (response.success) {
+                    // 카드 헤더 변경
+                    $('#cardHeader h3').text('비밀번호 재설정');
+                    $("#hiddenName").val(name);
+                    // 카드 바디 내용 변경
+                    $('#beforeFind').hide();
+                    $('#afterFind').show();
+                } else {
+                    alert('아이디, 이메일 또는 인증번호가 일치하지 않습니다.');
+                }
+            },
+            error: function () {
+                alert('비밀번호 재설정 중 오류가 발생했습니다.');
+            }
+        });
+    });
+
+    // 비밀번호 업데이트 요청
+    $('#updateBtn').on('click', function (event) {
+        event.preventDefault(); // 폼 제출 기본 동작 방지
+
+        const name = $("#hiddenName").val(); // 아이디 입력
+        const newPw = $("#newPw").val(); // 이메일 입력
+        const confirmPassword = $('#confirmPassword').val();
+
+        if (newPw !== confirmPassword) {
+            $('#pwResultSuccess').html('비밀번호가 일치하지 않습니다.').show();
+            return;
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: '/updateUserPw',
+            data: {uid: uid, newPw: newPw},
+            success: function (response) {
+                if (response.success) {
+                    alert("비밀번호가 변경되었습니다. 로그인창으로 이동합니다.");
+                    location.replace("/login");
+                } else {
+                    alert('비밀번호 재설정 중 오류가 발생했습니다.');
+                }
+            },
+            error: function () {
+                alert('비밀번호 재설정 중 오류가 발생했습니다.');
+            }
+        });
+    });
 });

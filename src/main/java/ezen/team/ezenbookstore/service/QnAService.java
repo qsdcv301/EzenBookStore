@@ -38,8 +38,12 @@ public class QnAService {
         return qnARepository.save(newQnA);
     }
 
-    public void delete(Long id) {
+    public void deleteById(Long id) {
         qnARepository.deleteById(id);
+    }
+
+    public List<QnA> findAllByUserId(Long userId) {
+        return qnARepository.findAllByUserId(userId);
     }
     
 }
