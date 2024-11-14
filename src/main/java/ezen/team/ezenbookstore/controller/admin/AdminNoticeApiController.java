@@ -21,17 +21,18 @@ public class AdminNoticeApiController {
     @GetMapping
     public String noticeControl(Model model) {
 
-        List<Notice> noticeList = noticeService.findAll();
+        List<Notice> noticeLists = noticeService.findAll();
 
-        model.addAttribute("noticeList", noticeList);
+        model.addAttribute("noticelists", noticeLists);
 
-        return "admin/sampleAdminNotice"; // 수정함"/admin/noticeEventControl";
+        return "/admin/noticeEventControl";
     }
 
-    // 공지사항 생성
+    // 공지사항 생성 ajax 처리
     @PostMapping("/add")
     public String addNotice(@ModelAttribute Notice notice) {
         // 공지사항 생성 로직
+        noticeService.create(notice);
         return "redirect:/admin/notice-event";
     }
 
@@ -39,6 +40,7 @@ public class AdminNoticeApiController {
     @PostMapping("/update")
     public String updateNotice(@ModelAttribute Notice notice) {
         // 공지사항 수정 로직
+        noticeService.update(notice);
         return "redirect:/admin/notice-event";
     }
 
@@ -46,6 +48,7 @@ public class AdminNoticeApiController {
     @PostMapping("/delete")
     public String deleteNotice(@RequestParam Long noticeId) {
         // 공지사항 삭제 로직
+        noticeService.delete(noticeId);
         return "redirect:/admin/notice-event";
     }
     }

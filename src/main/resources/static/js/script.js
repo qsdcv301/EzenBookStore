@@ -124,7 +124,7 @@ $(document).ready(function () {
 
             totalItems += quantity;
             totalPrice += itemTotal;
-            totalDiscount += itemDiscount;
+            totalDiscount += Math.floor(itemDiscount);
         });
 
         // 배송비 계산
@@ -217,8 +217,8 @@ $(document).ready(function () {
 
             // 개별 상품의 총 가격 및 할인 적용 가격 계산
             const itemTotalPrice = price * quantity;
-            const itemDiscount = itemTotalPrice * (discount / 100);
-            const itemDiscountedPrice = itemTotalPrice - itemDiscount;
+            const itemDiscount = Math.floor(itemTotalPrice * (discount / 100));
+            const itemDiscountedPrice = Math.floor(itemTotalPrice - itemDiscount);
 
             // 총합 계산
             totalItems += quantity;
@@ -277,6 +277,31 @@ $(document).ready(function () {
     }
 
 //     bookSerach
+
+    $(".paymentModal-Data").each(function () {
+        const $this = $(this);
+
+        // 각 항목의 원래 가격과 할인율 요소 가져오기
+        const priceElement = $this.find(".price");
+        const discountElement = $this.find(".discount");
+        const discountPriceElement = $this.find(".discountPrice");
+
+        // 가격과 할인율을 숫자로 변환
+        const price = parseInt(priceElement.text(), 10);
+        const discount = parseInt(discountElement.text(), 10);
+
+        // 천 단위 콤마 추가 함수
+        function formatPrice(value) {
+            return value.toLocaleString("ko-KR") + "원";
+        }
+
+        // 원래 가격에 천 단위 콤마 추가
+        priceElement.text(formatPrice(price));
+
+        // 할인된 가격 계산 및 표시
+        const discountedPrice = price * (1 - discount / 100);
+        discountPriceElement.text(formatPrice(Math.round(discountedPrice)));
+    });
 
     $('#sortOptions').change(function () {
         // 선택된 <option> 요소의 data 속성 값을 가져옴
