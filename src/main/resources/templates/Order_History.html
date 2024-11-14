@@ -215,6 +215,24 @@
     filterOrders(status);
   }
 
+  function filterOrders(status) {
+  // 모든 버튼의 'active' 클래스 제거
+  $('.filter-option').removeClass('active');
+
+  // 클릭한 버튼에 'active' 클래스 추가
+  if (status === '전체') $('#status-all').addClass('active');
+  else if (status === '상품준비중') $('#status-preparing').addClass('active');
+  else if (status === '배송중') $('#status-shipping').addClass('active');
+  else if (status === '배송완료') $('#status-completed').addClass('active');
+  else if (status === '보류중') $('#status-on-hold').addClass('active');
+
+  // 주문 목록 필터링 및 렌더링
+  const filteredOrders = status === '전체' ? orders : orders.filter(order => order.status === status);
+  renderOrders(filteredOrders);
+  updateStatusCounts();
+}
+
+
   function openOrderModal(orderId) {
     currentOrderId = orderId;
     const order = orders.find(o => o.id === orderId);
