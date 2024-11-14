@@ -56,11 +56,11 @@ public class AdminBookApiController {
         return ResponseEntity.ok(updatedBook);
     }
 
-    // 책 삭제
-    @PostMapping("/delete")
-    public String deleteBook(@RequestParam Long bookId) {
-        // 책 삭제 로직 수행
-        return "redirect:/admin/book";
+    // 책 삭제 메서드
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> deleteBook(@PathVariable Long id) {
+        bookService.delete(id);
+        return ResponseEntity.ok("Book deleted successfully");
     }
 
 
