@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>주문 조회 및 상태</title>
+  <title>주문 조회 및 상태 관리</title>
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
@@ -32,16 +32,18 @@
 <body>
 
 <div class="container mt-5">
-  <h3 class="mb-4">주문 조회 및 상태</h3>
-
-  <!-- 배송 상태 필터 바 -->
+  <h3 class="font-weight-bold mb-4">주문 조회 및 상태 관리</h3>
+  <P>전체 주문건을 확인하고 주문 상태를 관리할 수 있는 페이지입니다.</P>
+  
+  <!-- 배송 상태별 건수 -->
   <div class="d-flex justify-content-start mb-3">
-    <span class="filter-option active" onclick="filterOrders('전체')">전체</span>
-    <span class="filter-option" onclick="filterOrders('상품준비중')">상품준비중</span>
-    <span class="filter-option" onclick="filterOrders('배송중')">배송중</span>
-    <span class="filter-option" onclick="filterOrders('배송완료')">배송완료</span>
-    <span class="filter-option" onclick="filterOrders('보류중')">보류중</span>
+    <span id="status-all" class="filter-option active" onclick="filterOrders('전체')">전체 (0건)</span>
+    <span id="status-preparing" class="filter-option" onclick="filterOrders('상품준비중')">상품준비중 (0건)</span>
+    <span id="status-shipping" class="filter-option" onclick="filterOrders('배송중')">배송중 (0건)</span>
+    <span id="status-completed" class="filter-option" onclick="filterOrders('배송완료')">배송완료 (0건)</span>
+    <span id="status-on-hold" class="filter-option" onclick="filterOrders('보류중')">보류중 (0건)</span>
   </div>
+  <hr> <!-- 구분선 추가 -->
 
   <!-- 검색 섹션 -->
   <div class="search-section mb-4 d-flex align-items-center">
@@ -110,7 +112,7 @@
         </p>
         <div class="d-flex mt-3">
           <button class="btn btn-secondary mr-2" data-dismiss="modal">취소</button>
-          <button class="btn btn-primary" onclick="saveStatus()">완료</button>
+          <button class="btn btn-primary" onclick="saveStatus()">수정하기</button>
         </div>
       </div>
     </div>
@@ -132,113 +134,145 @@
     { id: '008', userId: 'admin8', productDay: '2024.11.11', productName: '책제목2', quantity: '3개', totalPrice: '42,000원', status: '배송중' },
     { id: '009', userId: 'admin9', productDay: '2024.11.11', productName: '책제목2', quantity: '3개', totalPrice: '42,000원', status: '보류중' },
     { id: '010', userId: 'admin10', productDay: '2024.11.11', productName: '책제목2', quantity: '3개', totalPrice: '42,000원', status: '배송중' },
-    { id: '011', userId: 'admin11', productDay: '2024.11.12', productName: '책제목2', quantity: '3개', totalPrice: '42,000원', status: '배송완료' }
+    { id: '011', userId: 'admin11', productDay: '2024.11.12', productName: '책제목2', quantity: '3개', totalPrice: '42,000원', status: '배송중' },
+    { id: '012', userId: 'admin12', productDay: '2024.11.12', productName: '책제목2', quantity: '3개', totalPrice: '42,000원', status: '배송완료' },
   ];
 
-  let filteredOrders = [...orders];
-  const ordersPerPage = 10;
   let currentPage = 1;
+  const itemsPerPage = 6;
 
-  // 주문 목록 렌더링
-  function renderOrders(filteredOrders, currentPage) {
+  function updateStatusCounts() {
+    const counts = {
+      '전체': orders.length,
+      '상품준비중': orders.filter(order => order.status === '상품준비중').length,
+      '배송중': orders.filter(order => order.status === '배송중').length,
+      '배송완료': orders.filter(order => order.status === '배송완료').length,
+      '보류중': orders.filter(order => order.status === '보류중').length,
+    };
+
+    // Update the status count in the filter buttons
+    $('#status-all').text(`전체 (${counts['전체']}건)`);
+    $('#status-preparing').text(`상품준비중 (${counts['상품준비중']}건)`);
+    $('#status-shipping').text(`배송중 (${counts['배송중']}건)`);
+    $('#status-completed').text(`배송완료 (${counts['배송완료']}건)`);
+    $('#status-on-hold').text(`보류중 (${counts['보류중']}건)`);
+  }
+
+  function filterOrders(status) {
+    // Filter the orders based on selected status
+    const filteredOrders = status === '전체' ? orders : orders.filter(order => order.status === status);
+    renderOrders(filteredOrders);
+    updateStatusCounts();
+  }
+
+  function renderOrders(filteredOrders) {
     const tbody = $('#order-list');
     tbody.empty();
 
-    const startIndex = (currentPage - 1) * ordersPerPage;
-    const endIndex = Math.min(startIndex + ordersPerPage, filteredOrders.length);
+    // Pagination
+    const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
     const paginatedOrders = filteredOrders.slice(startIndex, endIndex);
 
     paginatedOrders.forEach(order => {
-      const tr = $('<tr>');
-      tr.append(`<td>${order.id}</td>`);
-      tr.append(`<td>${order.productDay}</td>`);
-      tr.append(`<td>${order.userId}</td>`);
-      tr.append(`<td>${order.productName}</td>`);
-      tr.append(`<td>${order.quantity}</td>`);
-      tr.append(`<td>${order.totalPrice}</td>`);
-      tr.append(`<td>${order.status}</td>`);
-      tr.append(`<td><button class="btn btn-info" onclick="openOrderDetails('${order.id}')">수정</button></td>`);
-      tbody.append(tr);
+      const row = `
+        <tr>
+          <td>${order.id}</td>
+          <td>${order.productDay}</td>
+          <td>${order.userId}</td>
+          <td>${order.productName}</td>
+          <td>${order.quantity}</td>
+          <td>${order.totalPrice}</td>
+          <td>${order.status}</td>
+          <td><button class="btn btn-primary" onclick="openOrderModal('${order.id}')">상세</button></td>
+        </tr>
+      `;
+      tbody.append(row);
     });
 
-    // 페이지네이션 렌더링
+    renderPagination(filteredOrders.length, totalPages);
+  }
+
+  function renderPagination(totalItems, totalPages) {
     const pagination = $('#pagination');
     pagination.empty();
 
-    const totalPages = Math.ceil(filteredOrders.length / ordersPerPage);
     for (let i = 1; i <= totalPages; i++) {
-      const li = $('<li>').addClass('page-item');
-      const a = $('<a>').addClass('page-link').text(i);
-      if (i === currentPage) {
-        li.addClass('active');
-      }
-      a.on('click', () => changePage(i));
-      li.append(a);
-      pagination.append(li);
+      const pageItem = `<li class="page-item ${i === currentPage ? 'active' : ''}">
+        <a class="page-link" href="#" onclick="goToPage(${i})">${i}</a>
+      </li>`;
+      pagination.append(pageItem);
     }
   }
 
-  // 페이지 변경 함수
-  function changePage(page) {
-    currentPage = page;
-    renderOrders(filteredOrders, currentPage);
+  function goToPage(pageNumber) {
+    currentPage = pageNumber;
+    const status = $('#status-all').hasClass('active') ? '전체' :
+                   $('#status-preparing').hasClass('active') ? '상품준비중' :
+                   $('#status-shipping').hasClass('active') ? '배송중' :
+                   $('#status-completed').hasClass('active') ? '배송완료' : '보류중';
+    filterOrders(status);
   }
 
-  // 주문 수정 모달 열기
-  function openOrderDetails(orderId) {
-    const order = orders.find(order => order.id === orderId);
-    if (order) {
-      currentOrderId = orderId;
-      $('#modal-order-number').text(order.id);
-      $('#modal-user-id').text(order.userId);
-      $('#modal-user-day').text(order.productDay);
-      $('#modal-user-name').text('홍길동');  // 임의로 설정
-      $('#modal-product-name').text(order.productName);
-      $('#modal-quantity').text(order.quantity);
-      $('#modal-total-price').text(order.totalPrice);
-      $('#modal-order-status').val(order.status);
-      $('#orderDetailModal').modal('show');
-    }
-  }
-
-  // 배송 상태 변경 저장
-  function saveStatus() {
-    const newStatus = $('#modal-order-status').val();  // 선택된 배송 상태
-    const orderId = $('#modal-order-number').text();   // 주문번호
-
-    const order = orders.find(order => order.id === orderId);
-    if (order) {
-      order.status = newStatus;
-    }
-
-    $('#orderDetailModal').modal('hide');
-    renderOrders(filteredOrders, currentPage);
-  }
-
-  // 상태 필터링
   function filterOrders(status) {
-    filteredOrders = orders.filter(order => status === '전체' || order.status === status);
-    renderOrders(filteredOrders, currentPage);
+  // 모든 버튼의 'active' 클래스 제거
+  $('.filter-option').removeClass('active');
 
-    // 필터 버튼 스타일 변경
-    $('.filter-option').removeClass('active');
-    $(`.filter-option:contains(${status})`).addClass('active');
+  // 클릭한 버튼에 'active' 클래스 추가
+  if (status === '전체') $('#status-all').addClass('active');
+  else if (status === '상품준비중') $('#status-preparing').addClass('active');
+  else if (status === '배송중') $('#status-shipping').addClass('active');
+  else if (status === '배송완료') $('#status-completed').addClass('active');
+  else if (status === '보류중') $('#status-on-hold').addClass('active');
+
+  // 주문 목록 필터링 및 렌더링
+  const filteredOrders = status === '전체' ? orders : orders.filter(order => order.status === status);
+  renderOrders(filteredOrders);
+  updateStatusCounts();
+}
+
+
+  function openOrderModal(orderId) {
+    currentOrderId = orderId;
+    const order = orders.find(o => o.id === orderId);
+    $('#modal-order-number').text(order.id);
+    $('#modal-user-id').text(order.userId);
+    $('#modal-user-day').text(order.productDay);
+    $('#modal-user-name').text(order.userId);
+    $('#modal-product-name').text(order.productName);
+    $('#modal-quantity').text(order.quantity);
+    $('#modal-total-price').text(order.totalPrice);
+    $('#modal-order-status').val(order.status);
+
+    $('#orderDetailModal').modal('show');
   }
 
-  // 검색 기능
+  function saveStatus() {
+    const newStatus = $('#modal-order-status').val();
+    const orderIndex = orders.findIndex(order => order.id === currentOrderId);
+    orders[orderIndex].status = newStatus;
+
+    // Close modal and refresh orders
+    $('#orderDetailModal').modal('hide');
+    filterOrders($('#status-all').hasClass('active') ? '전체' : $('#status-preparing').hasClass('active') ? '상품준비중' : $('#status-shipping').hasClass('active') ? '배송중' : $('#status-completed').hasClass('active') ? '배송완료' : '보류중');
+  }
+
   function searchOrders() {
     const searchType = $('#search-type').val();
     const searchInput = $('#search-input').val().toLowerCase();
 
-    filteredOrders = orders.filter(order =>
+    const filteredOrders = orders.filter(order =>
       order[searchType].toLowerCase().includes(searchInput)
     );
-    renderOrders(filteredOrders, currentPage);
+    
+    renderOrders(filteredOrders);
+    updateStatusCounts();
   }
 
-  // 초기화 및 기본 렌더링
   $(document).ready(function () {
-    renderOrders(filteredOrders, currentPage);
+    updateStatusCounts();
+    filterOrders('전체'); // 기본적으로 전체 주문 표시
   });
 </script>
 
