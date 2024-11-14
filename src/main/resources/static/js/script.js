@@ -124,7 +124,7 @@ $(document).ready(function () {
 
             totalItems += quantity;
             totalPrice += itemTotal;
-            totalDiscount += itemDiscount;
+            totalDiscount += Math.floor(itemDiscount);
         });
 
         // 배송비 계산
@@ -217,8 +217,8 @@ $(document).ready(function () {
 
             // 개별 상품의 총 가격 및 할인 적용 가격 계산
             const itemTotalPrice = price * quantity;
-            const itemDiscount = itemTotalPrice * (discount / 100);
-            const itemDiscountedPrice = itemTotalPrice - itemDiscount;
+            const itemDiscount = Math.floor(itemTotalPrice * (discount / 100));
+            const itemDiscountedPrice = Math.floor(itemTotalPrice - itemDiscount);
 
             // 총합 계산
             totalItems += quantity;
@@ -277,6 +277,31 @@ $(document).ready(function () {
     }
 
 //     bookSerach
+
+    $(".paymentModal-Data").each(function () {
+        const $this = $(this);
+
+        // 각 항목의 원래 가격과 할인율 요소 가져오기
+        const priceElement = $this.find(".price");
+        const discountElement = $this.find(".discount");
+        const discountPriceElement = $this.find(".discountPrice");
+
+        // 가격과 할인율을 숫자로 변환
+        const price = parseInt(priceElement.text(), 10);
+        const discount = parseInt(discountElement.text(), 10);
+
+        // 천 단위 콤마 추가 함수
+        function formatPrice(value) {
+            return value.toLocaleString("ko-KR") + "원";
+        }
+
+        // 원래 가격에 천 단위 콤마 추가
+        priceElement.text(formatPrice(price));
+
+        // 할인된 가격 계산 및 표시
+        const discountedPrice = price * (1 - discount / 100);
+        discountPriceElement.text(formatPrice(Math.round(discountedPrice)));
+    });
 
     $('#sortOptions').change(function () {
         // 선택된 <option> 요소의 data 속성 값을 가져옴
@@ -358,4 +383,147 @@ $(document).ready(function () {
         return params;
     }
 
+//     findIdPw
+    // 첫 번째 버튼: 아이디 찾기에서 이메일 인증
+    $('#sendVerificationCodeForId').on('click', function (event) {
+        event.preventDefault(); // 기본 동작 방지
+        const email = $('#emailForId').val(); // 이메일 입력 필드 값 가져오기
+
+        if (!email) {
+            alert('이메일을 입력하세요.');
+            return;
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: '/emailAuthentication',
+            data: {email: email},
+            success: function (response) {
+                if (response.isEmail) {
+                    alert('인증 코드가 이메일로 발송되었습니다.');
+                    $('#verificationCodeGroupForId').show(); // 인증번호 입력 필드 보이기
+                } else {
+                    alert('이메일이 일치하지 않습니다.');
+                }
+            },
+            error: function () {
+                alert('이메일 인증 요청 중 오류가 발생했습니다.');
+            }
+        });
+    });
+
+    // 두 번째 버튼: 비밀번호 재설정에서 이메일 인증
+    $('#sendVerificationCodeForPw').on('click', function (event) {
+        event.preventDefault(); // 기본 동작 방지
+        const email = $('#emailForPw').val(); // 이메일 입력 필드 값 가져오기
+
+        if (!email) {
+            alert('이메일을 입력하세요.');
+            return;
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: '/emailAuthentication',
+            data: {email: email},
+            success: function (response) {
+                if (response.isEmail) {
+                    alert('인증 코드가 이메일로 발송되었습니다.');
+                    $('#verificationCodeGroupForPw').show(); // 인증번호 입력 필드 보이기
+                } else {
+                    alert('이메일이 일치하지 않습니다.');
+                }
+            },
+            error: function () {
+                alert('이메일 인증 요청 중 오류가 발생했습니다.');
+            }
+        });
+    });
+
+    $('#findIdBtn').on('click', function (event) {
+        event.preventDefault(); // 폼 제출 기본 동작 방지
+        const name = $("#nameForId").val(); // 이름 입력
+        const email = $("#emailForId").val(); // 이메일 입력
+        const verificationCode = $("#verificationCodeForId").val(); // 인증 코드 입력
+        console.log(name, email, verificationCode);
+        $.ajax({
+            type: 'POST',
+            url: '/findId',
+            data: {
+                name: name,
+                email: email,
+                verificationCode: verificationCode
+            },
+            success: function (response) {
+                if (response.success) {
+                    $('#idResult').html(`당신의 아이디는 ${response.findUserName} 입니다.`).show();
+                } else {
+                    alert('이름, 이메일 또는 인증번호가 일치하지 않습니다.');
+                }
+            },
+            error: function () {
+                alert('이메일 인증 요청 중 오류가 발생했습니다.');
+            }
+        });
+    });
+
+    // 비밀번호 재설정 요청
+    $('#newPassword').on('click', function (event) {
+        event.preventDefault(); // 폼 제출 기본 동작 방지
+        const name = $("#idForPw").val(); // 이름 입력
+        const email = $("#emailForPw").val(); // 이메일 입력
+        const verificationCode = $("#verificationCodeForPw").val(); // 인증 코드 입력
+
+        $.ajax({
+            type: 'POST',
+            url: '/newPassword',
+            data: {name: name, email: email, verificationCode: verificationCode},
+            success: function (response) {
+                if (response.success) {
+                    // 카드 헤더 변경
+                    $('#cardHeader h3').text('비밀번호 재설정');
+                    $("#hiddenName").val(name);
+                    // 카드 바디 내용 변경
+                    $('#beforeFind').hide();
+                    $('#afterFind').show();
+                } else {
+                    alert('아이디, 이메일 또는 인증번호가 일치하지 않습니다.');
+                }
+            },
+            error: function () {
+                alert('비밀번호 재설정 중 오류가 발생했습니다.');
+            }
+        });
+    });
+
+    // 비밀번호 업데이트 요청
+    $('#updateBtn').on('click', function (event) {
+        event.preventDefault(); // 폼 제출 기본 동작 방지
+
+        const name = $("#hiddenName").val(); // 아이디 입력
+        const newPw = $("#newPw").val(); // 이메일 입력
+        const confirmPassword = $('#confirmPassword').val();
+
+        if (newPw !== confirmPassword) {
+            $('#pwResultSuccess').html('비밀번호가 일치하지 않습니다.').show();
+            return;
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: '/updateUserPw',
+            data: {uid: uid, newPw: newPw},
+            success: function (response) {
+                if (response.success) {
+                    alert("비밀번호가 변경되었습니다. 로그인창으로 이동합니다.");
+                    location.replace("/login");
+                } else {
+                    alert('비밀번호 재설정 중 오류가 발생했습니다.');
+                }
+            },
+            error: function () {
+                alert('비밀번호 재설정 중 오류가 발생했습니다.');
+            }
+        });
+    });
 });

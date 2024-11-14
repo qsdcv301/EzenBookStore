@@ -33,6 +33,7 @@ public class BookApiController {
 
         String userEmail = userService.getUserEmail();
         User user = userService.findByEmail(userEmail);
+        model.addAttribute("user", user);
 
         // 페이지 설정
         int size = 5;
@@ -42,7 +43,6 @@ public class BookApiController {
         // 아무런 검색 조건이 없는 경우 모든 책을 조회
         if (keyword.isEmpty() && val.isEmpty()) {
             Page<Book> bookPage = bookService.findAll(pageable);
-            model.addAttribute("user", user);
             model.addAttribute("keyword", keyword);
             model.addAttribute("val", val);
             model.addAttribute("sort", sort);
@@ -98,7 +98,6 @@ public class BookApiController {
         int end = Math.min((start + pageable.getPageSize()), filteredBooks.size());
         Page<Book> bookPage = new PageImpl<>(filteredBooks.subList(start, end), pageable, filteredBooks.size());
 
-        model.addAttribute("user", user);
         model.addAttribute("keyword", keyword);
         model.addAttribute("val", val);
         model.addAttribute("sort", sort);

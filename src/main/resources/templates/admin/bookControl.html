@@ -31,12 +31,52 @@
                         data-target="#productModal">
                     수정
                 </button>
-                <button class="btn btn-danger btn-sm">삭제</button>
+                <button class="btn btn-danger btn-sm delete-button" th:data-book-id="${book.id}">
+                    삭제
+                </button>
             </td>
         </tr>
         </tbody>
     </table>
 </div>
+
+<!--페이징-->
+<div class="pagination">
+    <ul class="pagination">
+        <!-- 처음 페이지로 이동 버튼 -->
+        <li th:classappend="${bookList.first} ? 'disabled' : ''">
+            <a th:if="${!bookList.first}" th:href="@{/admin/book(page=0, size=${bookList.size})}">처음</a>
+            <a th:if="${bookList.first}" class="disabled">처음</a>
+        </li>
+
+        <!-- 이전 페이지로 이동 버튼 -->
+        <li th:classappend="${bookList.hasPrevious()} ? '' : 'disabled'">
+            <a th:if="${bookList.hasPrevious()}" th:href="@{/admin/book(page=${bookList.number - 1}, size=${bookList.size})}">이전</a>
+            <a th:if="${!bookList.hasPrevious()}" class="disabled">이전</a>
+        </li>
+
+        <!-- 페이지 번호 버튼 -->
+        <li th:each="i : ${#numbers.sequence(0, bookList.totalPages - 1)}"
+            th:classappend="${i == bookList.number} ? 'active'">
+            <a th:href="@{/admin/book(page=${i}, size=${bookList.size})}"
+               th:text="${i + 1}">1</a>
+        </li>
+
+        <!-- 다음 페이지로 이동 버튼 -->
+        <li th:classappend="${bookList.hasNext()} ? '' : 'disabled'">
+            <a th:if="${bookList.hasNext()}" th:href="@{/admin/book(page=${bookList.number + 1}, size=${bookList.size})}">다음</a>
+            <a th:if="${!bookList.hasNext()}" class="disabled">다음</a>
+        </li>
+
+        <!-- 마지막 페이지로 이동 버튼 -->
+        <li th:classappend="${bookList.last} ? 'disabled' : ''">
+            <a th:if="${!bookList.last}" th:href="@{/admin/book(page=${bookList.totalPages - 1}, size=${bookList.size})}">마지막</a>
+            <a th:if="${bookList.last}" class="disabled">마지막</a>
+        </li>
+    </ul>
+</div>
+
+
 
 <!-- 상품 추가 버튼 -->
 <div class="col-md-12 text-right mb-3">
@@ -546,6 +586,25 @@
                 console.error('상품 추가 실패:', error);
             }
         });
+    });
+
+    // 삭제 버튼 클릭 이벤트
+    $('.delete-button').on('click', function () {
+        const bookId = $(this).data('book-id');
+        if (confirm("이 책을 정말 삭제하시겠습니까?")) {
+            $.ajax({
+                url: `/admin/book/delete/${bookId}`,
+                method: 'DELETE',
+                success: function () {
+                    alert("삭제가 완료되었습니다.");
+                    location.reload(); // 페이지 새로고침으로 목록 업데이트
+                },
+                error: function (xhr, status, error) {
+                    console.error('삭제 실패:', error);
+                    alert("삭제에 실패했습니다.");
+                }
+            });
+        }
     });
 </script>
 

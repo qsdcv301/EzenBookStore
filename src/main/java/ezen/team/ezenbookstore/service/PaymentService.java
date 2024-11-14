@@ -37,7 +37,12 @@ public class PaymentService {
         return paymentRepository.save(newPayment);
     }
 
-    public void delete(Long id) {
+    public void deleteById(Long id) {
         paymentRepository.deleteById(id);
     }
+
+    public List<Payment> findAllByUserId(Long userId) {
+        return paymentRepository.findAllByUserId(userId);
+    }
+
 }

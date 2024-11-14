@@ -93,7 +93,25 @@ public class UserService {
         return userRepository.save(newUser);
     }
 
-    public void delete(Long id) {
+    public User updatePass(User user) {
+        User newUser = User.builder()
+                .id(user.getId())
+                .provider(user.getProvider())
+                .password(user.getPassword())
+                .email(user.getEmail())
+                .name(user.getName())
+                .tel(user.getTel())
+                .addr(user.getAddr())
+                .addrextra(user.getAddrextra())
+                .createdAt(user.getCreatedAt())
+                .birthday(user.getBirthday())
+                .grade(user.getGrade())
+                .point(user.getPoint())
+                .build();
+        return userRepository.save(newUser);
+    }
+
+    public void deleteById(Long id) {
         userRepository.deleteById(id);
     }
 

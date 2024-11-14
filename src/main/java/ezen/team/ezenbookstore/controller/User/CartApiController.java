@@ -97,7 +97,7 @@ public class CartApiController {
                         .quantity(quantityValue)
                         .build();
                 // Cart 저장 처리
-                cartService.update(cartIdValue, newCart);
+                cartService.update(newCart);
             }
             response.put("success", true);
             return ResponseEntity.ok(response); // 성공 시 200 OK와 함께 반환

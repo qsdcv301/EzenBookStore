@@ -61,10 +61,11 @@
                                 <div class="col-md-4">
                                     <h5 class="card-title title" th:text="'제목 : '+${cart.book.title}">제목 : </h5>
                                     <p class="card-text mb-0" th:text="'저자 : '+${cart.book.author}">저자 : </p>
-                                    <p class="card-text mb-0 price" th:text="'가격 : '+${cart.book.price}+'원'">가격:
-                                        18,000원</p>
-                                    <p class="card-text mb-0"><span class="text-danger fw-bold discount"
-                                                                    th:text="${cart.book.discount}+'%'">할인 퍼센트</span>
+                                    <p class="card-text mb-0">가격 : <span class="price" th:text="${cart.book.price}"></span></p>
+                                    <p class="card-text mb-0">할인가 : <span class="text-danger fw-bold discountPrice"></span>
+                                    </p>
+                                    <p class="card-text mb-0">할인율 : <span class="text-danger fw-bold discount"
+                                                                    th:text="${cart.book.discount}"></span>%
                                     </p>
                                 </div>
                                 <div class="col-md-5">

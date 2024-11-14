@@ -9,7 +9,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet">
     <link href="/css/bootstrap.min.css" rel="stylesheet"/>
     <link href="/css/style.css" rel="stylesheet"/>
-    <script src="/js/jquery-1.12.4.min.js"></script>
+    <script src="/js/jquery-3.7.1.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
     <script src="/js/popper.min.js"></script>
     <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
@@ -144,36 +144,32 @@
                                                     <div class="card-body">
                                                         <!-- 책 제목 및 장르 -->
                                                         <h6 class="text-muted"
-                                                            th:text="${book.category.name}+'/'+${book.subcategory.name}">
-                                                            소설/판타지</h6>
-                                                        <h5 class="card-title title" th:text="${book.title}">인간시대의 끝이
-                                                            도래했다</h5>
+                                                            th:text="${book.category.name}+'/'+${book.subcategory.name}"></h6>
+                                                        <h5 class="card-title title" th:text="${book.title}"></h5>
 
                                                         <!-- 저자명 / 출판사 / 출간일 -->
                                                         <p class="card-text"
-                                                           th:text="${book.author}+' 지음 / '+${book.publisher}+' / '+${#dates.format(book.publishDate, 'yyyy년 MM월')}">
-                                                            블츠 지음 / 라이엇 / 2024년 11월</p>
+                                                           th:text="${book.author}+' 지음 / '+${book.publisher}+' / '+${#dates.format(book.publishDate, 'yyyy년 MM월')}"></p>
 
                                                         <!-- ISBN -->
-                                                        <p class="card-text" th:text="'ISBN: '+${book.isbn}">ISBN:
-                                                            9791198987600</p>
+                                                        <p class="card-text" th:text="'ISBN: '+${book.isbn}"></p>
 
                                                         <!-- 가격 및 할인 정보 -->
                                                         <p class="card-text">
                                                             <!-- 원래 가격 -->
                                                             <del style="font-size: 1.2rem;"
-                                                                 class="me-2 price" th:text="${book.price}">20,000원
+                                                                 class="me-2 price" th:text="${book.price}">
                                                             </del>
                                                             <!-- 할인된 가격 -->
                                                             <span style="font-size: 1.5rem;"
-                                                                  class="text-danger fw-bold">18,000원</span>
+                                                                  class="text-danger fw-bold discountPrice"></span>
                                                             <small>[<span class="discount"
                                                                           th:text="${book.discount}"></span>%할인]</small>
                                                         </p>
 
                                                         <!-- 책 소개 -->
                                                         <p class="card-text"
-                                                           th:text="${book.bookdescription.description}">책설명</p>
+                                                           th:text="${book.bookdescription.description}"></p>
                                                     </div>
                                                 </div>
 

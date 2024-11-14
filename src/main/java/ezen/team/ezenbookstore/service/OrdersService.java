@@ -39,7 +39,12 @@ public class OrdersService {
         return orderRepository.save(newOrder);
     }
 
-    public void delete(Long id) {
+    public void deleteById(Long id) {
         orderRepository.deleteById(id);
     }
+
+    public List<Orders> findAllByUserId(Long userId) {
+        return orderRepository.findAllByUserId(userId);
+    }
+
 }

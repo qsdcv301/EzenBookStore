@@ -38,7 +38,12 @@ public class ReviewService {
         return reviewRepository.save(newReview);
     }
 
-    public void delete(Long id) {
+    public void deleteById(Long id) {
         reviewRepository.deleteById(id);
     }
+
+    public List<Review> findAllByUserId(Long userId) {
+        return reviewRepository.findAllByUserId(userId);
+    }
+
 }
