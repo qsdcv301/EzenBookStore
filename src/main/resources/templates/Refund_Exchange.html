@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>취소/반품/교환 관리</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+  <style>
+    .filter-option {
+      cursor: pointer;
+      padding: 10px 20px;
+      margin-right: 10px;
+      border-radius: 5px;
+      background-color: #f8f9fa;
+      color: #495057;
+      transition: background-color 0.3s;
+    }
+
+    .filter-option:hover {
+      background-color: #6c757d;
+      color: white;
+    }
+
+    .filter-option.active {
+      background-color: #007bff;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container mt-5">
+  <h3 class="font-weight-bold mb-4">취소/반품/교환 관리</h3>
+
+  <!-- 요청 상태 필터 바 -->
+  <div class="d-flex justify-content-start mb-3">
+    <span class="filter-option active" id="filter-all" onclick="filterRequests('전체')">전체 (<span id="status-all-count">0</span> 건)</span>
+    <span class="filter-option" id="filter-cancel" onclick="filterRequests('취소요청')">취소요청 (<span id="status-cancel-count">0</span> 건)</span>
+    <span class="filter-option" id="filter-return" onclick="filterRequests('반품요청')">반품요청 (<span id="status-return-count">0</span> 건)</span>
+    <span class="filter-option" id="filter-exchange" onclick="filterRequests('교환요청')">교환요청 (<span id="status-exchange-count">0</span> 건)</span>
+    <span class="filter-option" id="filter-pending" onclick="filterRequests('보류중')">보류중 (<span id="status-pending-count">0</span> 건)</span>
+    <span class="filter-option" id="filter-completed" onclick="filterRequests('처리완료')">처리완료 (<span id="status-completed-count">0</span> 건)</span>
+  </div>
+  <hr> <!-- 구분선 추가 -->
+
+  <!-- 검색 섹션 -->
+  <div class="search-section mb-4 d-flex align-items-center">
+    <select class="form-control mr-2" style="width: 150px;" id="search-type">
+      <option value="userId">아이디</option>
+      <option value="id">주문번호</option>
+    </select>
+    <input type="text" class="form-control mr-2" placeholder="검색어를 입력하세요" style="width: 300px;" id="search-input">
+    <button class="btn btn-secondary" onclick="searchRequests()">조회</button>
+  </div>
+
+  <!-- 요청 목록 테이블 -->
+  <table class="table table-bordered text-center">
+    <thead class="thead-light">
+      <tr>
+        <th>주문번호</th>
+        <th>신청일</th>
+        <th>아이디</th>
+        <th>상품명</th>
+        <th>수량</th>
+        <th>취소금액</th>
+        <th>결제수단</th>
+        <th>요청상태</th>
+        <th>수정</th>
+      </tr>
+    </thead>
+    <tbody id="request-list">
+      <!-- 요청 목록 (동적으로 추가됨) -->
+    </tbody>
+  </table>
+
+  <!-- 페이지네이션 -->
+  <nav aria-label="Page navigation" class="mt-4">
+    <ul class="pagination justify-content-center" id="pagination">
+      <!-- 페이지 번호가 여기에 동적으로 추가됩니다. -->
+    </ul>
+  </nav>
+</div>
+
+<!-- 모달 창 -->
+<div class="modal fade" id="requestDetailModal" tabindex="-1" role="dialog" aria-labelledby="requestDetailModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="requestDetailModalLabel">요청 상세 정보</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p><strong>주문번호 :</strong> <span id="modal-request-number"></span></p>
+        <p><strong>신청일 :</strong> <span id="modal-request-date"></span></p>
+        <p><strong>아이디 :</strong> <span id="modal-user-id"></span></p>
+        <p><strong>회원명 :</strong> <span id="modal-user-name"></span></p>
+        <p><strong>전화번호 :</strong> 010-1234-5678</p>
+        <p><strong>주소 :</strong> 경기도 김포시 장기동</p>
+        <p><strong>상품명 :</strong> <span id="modal-product-name"></span></p>
+        <p><strong>수량 :</strong> <span id="modal-quantity"></span></p>
+        <p><strong>취소 금액 :</strong> <span id="modal-total-price"></span></p>
+        <p><strong>결제수단 :</strong> <span id="modal-payment-method"></span></p>
+        <p><strong>요청 상태 :</strong>
+          <select class="form-control d-inline-block" id="modal-request-status" style="width: 150px;">
+            <option>취소요청</option>
+            <option>반품요청</option>
+            <option>교환요청</option>
+            <option>보류중</option>
+            <option>처리완료</option>
+          </select>
+        </p>
+        <div class="d-flex mt-3">
+          <button class="btn btn-secondary mr-2" data-dismiss="modal">취소</button>
+          <button class="btn btn-primary" onclick="saveRequestStatus()">수정하기</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+
+<script>
+  let currentRequestId;
+  const itemsPerPage = 6;
+  let currentPage = 1;
+
+  const requests = [
+    { id: '001', userId: 'admin2', requestDate: '2024.11.08', productName: '책제목2', quantity: '3개', cancelAmount: '42,000원', paymentMethod: '카드결제', status: '취소요청' },
+    { id: '002', userId: 'admin3', requestDate: '2024.11.08', productName: '책제목3', quantity: '1개', cancelAmount: '14,000원', paymentMethod: '카드결제', status: '교환요청' },
+    { id: '003', userId: 'admin4', requestDate: '2024.11.08', productName: '책제목4', quantity: '1개', cancelAmount: '14,000원', paymentMethod: '카드결제', status: '반품요청' },
+    { id: '004', userId: 'admin0', requestDate: '2024.11.08', productName: '책제목0', quantity: '1개', cancelAmount: '14,000원', paymentMethod: '카드결제', status: '보류중' },
+    { id: '005', userId: 'admin2', requestDate: '2024.11.08', productName: '책제목2', quantity: '3개', cancelAmount: '42,000원', paymentMethod: '카드결제', status: '취소요청' },
+    { id: '006', userId: 'admin3', requestDate: '2024.11.08', productName: '책제목3', quantity: '1개', cancelAmount: '14,000원', paymentMethod: '카드결제', status: '처리완료' },
+    { id: '007', userId: 'admin4', requestDate: '2024.11.08', productName: '책제목4', quantity: '1개', cancelAmount: '14,000원', paymentMethod: '카드결제', status: '보류중' },
+    { id: '008', userId: 'admin0', requestDate: '2024.11.08', productName: '책제목0', quantity: '1개', cancelAmount: '14,000원', paymentMethod: '카드결제', status: '취소요청' },
+  ];
+
+  const updateCounts = () => {
+    const statusCounts = {
+      '전체': requests.length,
+      '취소요청': requests.filter(req => req.status === '취소요청').length,
+      '반품요청': requests.filter(req => req.status === '반품요청').length,
+      '교환요청': requests.filter(req => req.status === '교환요청').length,
+      '보류중': requests.filter(req => req.status === '보류중').length,
+      '처리완료': requests.filter(req => req.status === '처리완료').length,
+    };
+
+    document.getElementById('status-all-count').textContent = statusCounts['전체'];
+    document.getElementById('status-cancel-count').textContent = statusCounts['취소요청'];
+    document.getElementById('status-return-count').textContent = statusCounts['반품요청'];
+    document.getElementById('status-exchange-count').textContent = statusCounts['교환요청'];
+    document.getElementById('status-pending-count').textContent = statusCounts['보류중'];
+    document.getElementById('status-completed-count').textContent = statusCounts['처리완료'];
+  };
+
+  const filterRequests = (status) => {
+    const filteredRequests = status === '전체' ? requests : requests.filter(req => req.status === status);
+    renderRequests(filteredRequests);
+    updateCounts();
+    highlightActiveFilter(status);
+  };
+
+  const searchRequests = () => {
+    const searchType = document.getElementById('search-type').value;
+    const searchInput = document.getElementById('search-input').value.toLowerCase();
+
+    const filteredRequests = requests.filter(req => req[searchType].toLowerCase().includes(searchInput));
+    renderRequests(filteredRequests);
+    updateCounts();
+  };
+
+  const highlightActiveFilter = (status) => {
+    const filters = document.querySelectorAll('.filter-option');
+    filters.forEach(filter => {
+      if (filter.id === `filter-${status.toLowerCase()}`) {
+        filter.classList.add('active');
+      } else {
+        filter.classList.remove('active');
+      }
+    });
+  };
+
+  const renderRequests = (requestsToRender) => {
+    const start = (currentPage - 1) * itemsPerPage;
+    const end = start + itemsPerPage;
+    const paginatedRequests = requestsToRender.slice(start, end);
+
+    const requestList = document.getElementById('request-list');
+    requestList.innerHTML = ''; // 이전 내용을 초기화
+
+    paginatedRequests.forEach(request => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${request.id}</td>
+        <td>${request.requestDate}</td>
+        <td>${request.userId}</td>
+        <td>${request.productName}</td>
+        <td>${request.quantity}</td>
+        <td>${request.cancelAmount}</td>
+        <td>${request.paymentMethod}</td>
+        <td>${request.status}</td>
+        <td><button class="btn btn-primary" onclick="showRequestDetail('${request.id}')">상세</button></td>
+      `;
+      requestList.appendChild(row);
+    });
+
+    setupPagination(requestsToRender.length);
+  };
+
+  const setupPagination = (totalItems) => {
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    const pagination = document.getElementById('pagination');
+    pagination.innerHTML = ''; // 이전 페이지네이션 초기화
+
+    for (let i = 1; i <= totalPages; i++) {
+      const pageItem = document.createElement('li');
+      pageItem.classList.add('page-item');
+      pageItem.innerHTML = `<a class="page-link" href="#" onclick="changePage(${i})">${i}</a>`;
+      pagination.appendChild(pageItem);
+    }
+  };
+
+  const changePage = (pageNumber) => {
+    currentPage = pageNumber;
+    const status = document.querySelector('.filter-option.active').textContent.split(' ')[0];
+    filterRequests(status === '전체' ? '전체' : status);
+  };
+
+  const showRequestDetail = (requestId) => {
+    currentRequestId = requestId;
+    const request = requests.find(req => req.id === currentRequestId);
+
+    document.getElementById('modal-request-number').textContent = request.id;
+    document.getElementById('modal-request-date').textContent = request.requestDate;
+    document.getElementById('modal-user-id').textContent = request.userId;
+    document.getElementById('modal-product-name').textContent = request.productName;
+    document.getElementById('modal-quantity').textContent = request.quantity;
+    document.getElementById('modal-total-price').textContent = request.cancelAmount;
+    document.getElementById('modal-payment-method').textContent = request.paymentMethod;
+    document.getElementById('modal-request-status').value = request.status;
+
+    $('#requestDetailModal').modal('show');
+  };
+
+  const saveRequestStatus = () => {
+    const newStatus = document.getElementById('modal-request-status').value;
+    const request = requests.find(req => req.id === currentRequestId);
+    request.status = newStatus;
+    filterRequests('전체'); // 변경 후 전체 목록 다시 렌더링
+    $('#requestDetailModal').modal('hide');
+  };
+
+  // 초기 렌더링
+  renderRequests(requests);
+  updateCounts();
+</script>
+
+</body>
+</html>
