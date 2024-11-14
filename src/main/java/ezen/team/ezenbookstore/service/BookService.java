@@ -84,9 +84,20 @@ public class BookService {
         return bookRepository.findAll(pageable);
     }
 
-
     public List<Book> findAll() {
         return bookRepository.findAll();
+    }
+
+    public List<Book> findAllByIfkr(Byte ifkr) {
+        return bookRepository.findAllByIfkr(ifkr);
+    }
+
+    public List<Book> findAllByCategoryId(Long categoryId){
+        return bookRepository.findAllByCategoryId(categoryId);
+    }
+
+    public List<Book> findAllBySubcategoryId(Long subcategoryId){
+        return bookRepository.findAllBySubcategoryId(subcategoryId);
     }
 
 }

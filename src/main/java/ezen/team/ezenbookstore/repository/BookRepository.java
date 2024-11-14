@@ -21,4 +21,11 @@ public interface BookRepository extends JpaRepository<Book, Long> {
 
     Page<Book> findAll(Pageable pageable);
 
+    // 국내/국외 구분 필터링 메서드
+    List<Book> findAllByIfkr(Byte ifkr);
+
+    List<Book> findAllByCategoryId(Long categoryId);
+
+    List<Book> findAllBySubcategoryId(Long subCategoryId);
+
 }

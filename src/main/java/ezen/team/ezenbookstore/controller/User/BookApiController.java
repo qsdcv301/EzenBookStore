@@ -1,8 +1,12 @@
 package ezen.team.ezenbookstore.controller.User;
 
 import ezen.team.ezenbookstore.entity.Book;
+import ezen.team.ezenbookstore.entity.Category;
+import ezen.team.ezenbookstore.entity.SubCategory;
 import ezen.team.ezenbookstore.entity.User;
 import ezen.team.ezenbookstore.service.BookService;
+import ezen.team.ezenbookstore.service.CategoryService;
+import ezen.team.ezenbookstore.service.SubCategoryService;
 import ezen.team.ezenbookstore.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
@@ -22,6 +26,8 @@ public class BookApiController {
 
     private final BookService bookService;
     private final UserService userService;
+    private final CategoryService categoryService;
+    private final SubCategoryService subCategoryService;
 
     @GetMapping("/search")
     public String book(@RequestParam(name = "keyword", defaultValue = "", required = false) String keyword,
@@ -29,6 +35,9 @@ public class BookApiController {
                        @RequestParam(name = "page", defaultValue = "0", required = false) int page,
                        @RequestParam(name = "sort", defaultValue = "count", required = false) String sort,
                        @RequestParam(name = "direction", defaultValue = "asc", required = false) String direction,
+                       @RequestParam(name = "ifkr", defaultValue = "", required = false) String ifkr,
+                       @RequestParam(name = "category", defaultValue = "", required = false) String category,
+                       @RequestParam(name = "subcategory", defaultValue = "", required = false) String subcategory,
                        Model model) {
 
         String userEmail = userService.getUserEmail();
@@ -41,7 +50,7 @@ public class BookApiController {
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, sort));
 
         // 아무런 검색 조건이 없는 경우 모든 책을 조회
-        if (keyword.isEmpty() && val.isEmpty()) {
+        if (keyword.isEmpty() && val.isEmpty() && category.isEmpty() && subcategory.isEmpty() && ifkr.isEmpty()) {
             Page<Book> bookPage = bookService.findAll(pageable);
             model.addAttribute("keyword", keyword);
             model.addAttribute("val", val);
@@ -49,15 +58,52 @@ public class BookApiController {
             model.addAttribute("direction", direction);
             model.addAttribute("bookList", bookPage.getContent());
             model.addAttribute("page", bookPage);
-
+            model.addAttribute("ifkr", ifkr);
+            model.addAttribute("category", category);
+            model.addAttribute("subcategory", subcategory);
             return "bookSearch";
+        }
+
+        List<Book> filteredBooks = new ArrayList<>();
+
+        // 국내/국외 필터링 (교집합)
+        if (!ifkr.isEmpty()) {
+            byte ifkrValue = (byte) (ifkr.equals("1") ? 1 : 0);
+            List<Book> booksByIfkr = bookService.findAllByIfkr(ifkrValue);
+            if (filteredBooks.isEmpty()) {
+                filteredBooks.addAll(booksByIfkr);
+            } else {
+                filteredBooks.retainAll(booksByIfkr);
+            }
+        }
+
+        // 카테고리 필터링 (교집합)
+        if (!category.isEmpty()) {
+            Category categories = categoryService.findByName(category);
+            List<Book> booksByCategory = new ArrayList<>();
+            booksByCategory.addAll(bookService.findAllByCategoryId(categories.getId()));
+            if (filteredBooks.isEmpty()) {
+                filteredBooks.addAll(booksByCategory);
+            } else {
+                filteredBooks.retainAll(booksByCategory);
+            }
+        }
+
+        // 서브카테고리 필터링 (교집합)
+        if (!subcategory.isEmpty()) {
+            SubCategory subCategories = subCategoryService.findByName(subcategory);
+            List<Book> booksBySubCategory = new ArrayList<>();
+            booksBySubCategory.addAll(bookService.findAllBySubcategoryId((subCategories.getId())));
+            if (filteredBooks.isEmpty()) {
+                filteredBooks.addAll(booksBySubCategory);
+            } else {
+                filteredBooks.retainAll(booksBySubCategory);
+            }
         }
 
         // 키워드와 값을 쉼표로 나누기
         String[] keywordGroups = keyword.split("\\],\\[");
         String[] valueGroups = val != null ? val.split(",") : new String[0];
-
-        List<Book> filteredBooks = new ArrayList<>();
 
         // 각 그룹을 순회하며 검색 수행
         for (int groupIndex = 0; groupIndex < keywordGroups.length; groupIndex++) {
@@ -93,10 +139,11 @@ public class BookApiController {
             }
         }
 
-        // 필터링된 결과에 페이징 적용
+        // 페이징 적용
         int start = Math.min((int) pageable.getOffset(), filteredBooks.size());
         int end = Math.min((start + pageable.getPageSize()), filteredBooks.size());
-        Page<Book> bookPage = new PageImpl<>(filteredBooks.subList(start, end), pageable, filteredBooks.size());
+        List<Book> pagedBooks = filteredBooks.subList(start, end);
+        Page<Book> bookPage = new PageImpl<>(pagedBooks, pageable, filteredBooks.size());
 
         model.addAttribute("keyword", keyword);
         model.addAttribute("val", val);
@@ -104,6 +151,9 @@ public class BookApiController {
         model.addAttribute("direction", direction);
         model.addAttribute("bookList", bookPage.getContent());
         model.addAttribute("page", bookPage);
+        model.addAttribute("ifkr", ifkr);
+        model.addAttribute("category", category);
+        model.addAttribute("subcategory", subcategory);
 
         return "bookSearch";
     }
