@@ -40,6 +40,44 @@
     </table>
 </div>
 
+<!--페이징-->
+<div class="pagination">
+    <ul class="pagination">
+        <!-- 처음 페이지로 이동 버튼 -->
+        <li th:classappend="${bookList.first} ? 'disabled' : ''">
+            <a th:if="${!bookList.first}" th:href="@{/admin/book(page=0, size=${bookList.size})}">처음</a>
+            <a th:if="${bookList.first}" class="disabled">처음</a>
+        </li>
+
+        <!-- 이전 페이지로 이동 버튼 -->
+        <li th:classappend="${bookList.hasPrevious()} ? '' : 'disabled'">
+            <a th:if="${bookList.hasPrevious()}" th:href="@{/admin/book(page=${bookList.number - 1}, size=${bookList.size})}">이전</a>
+            <a th:if="${!bookList.hasPrevious()}" class="disabled">이전</a>
+        </li>
+
+        <!-- 페이지 번호 버튼 -->
+        <li th:each="i : ${#numbers.sequence(0, bookList.totalPages - 1)}"
+            th:classappend="${i == bookList.number} ? 'active'">
+            <a th:href="@{/admin/book(page=${i}, size=${bookList.size})}"
+               th:text="${i + 1}">1</a>
+        </li>
+
+        <!-- 다음 페이지로 이동 버튼 -->
+        <li th:classappend="${bookList.hasNext()} ? '' : 'disabled'">
+            <a th:if="${bookList.hasNext()}" th:href="@{/admin/book(page=${bookList.number + 1}, size=${bookList.size})}">다음</a>
+            <a th:if="${!bookList.hasNext()}" class="disabled">다음</a>
+        </li>
+
+        <!-- 마지막 페이지로 이동 버튼 -->
+        <li th:classappend="${bookList.last} ? 'disabled' : ''">
+            <a th:if="${!bookList.last}" th:href="@{/admin/book(page=${bookList.totalPages - 1}, size=${bookList.size})}">마지막</a>
+            <a th:if="${bookList.last}" class="disabled">마지막</a>
+        </li>
+    </ul>
+</div>
+
+
+
 <!-- 상품 추가 버튼 -->
 <div class="col-md-12 text-right mb-3">
     <button class="btn btn-primary" data-toggle="modal" data-target="#addProductModal">상품 추가</button>

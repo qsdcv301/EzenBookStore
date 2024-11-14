@@ -49,6 +49,7 @@ public class AdminBookApiController {
         return ResponseEntity.ok("Book added successfully");
     }
 
+    //책 수정 메서드
     @PutMapping("/update")
     @ResponseBody
     public ResponseEntity<Book> updateBook(@RequestBody Book book) {
@@ -63,14 +64,6 @@ public class AdminBookApiController {
         return ResponseEntity.ok("Book deleted successfully");
     }
 
-
-    // 책 상세 조회 << 모달이나 접힘 방식이면 필요 없을 예정
-//    @PostMapping("/detail")
-//    public ResponseEntity<Book> getBookDetail(@RequestParam Long bookId) {
-//        // 책 상세 조회 로직
-//        Book book = new Book(); // 예시 데이터
-//        return ResponseEntity.ok(book);
-//    }
 
 
 }
