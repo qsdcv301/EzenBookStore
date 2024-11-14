@@ -31,7 +31,9 @@
                         data-target="#productModal">
                     수정
                 </button>
-                <button class="btn btn-danger btn-sm">삭제</button>
+                <button class="btn btn-danger btn-sm delete-button" th:data-book-id="${book.id}">
+                    삭제
+                </button>
             </td>
         </tr>
         </tbody>
@@ -546,6 +548,25 @@
                 console.error('상품 추가 실패:', error);
             }
         });
+    });
+
+    // 삭제 버튼 클릭 이벤트
+    $('.delete-button').on('click', function () {
+        const bookId = $(this).data('book-id');
+        if (confirm("이 책을 정말 삭제하시겠습니까?")) {
+            $.ajax({
+                url: `/admin/book/delete/${bookId}`,
+                method: 'DELETE',
+                success: function () {
+                    alert("삭제가 완료되었습니다.");
+                    location.reload(); // 페이지 새로고침으로 목록 업데이트
+                },
+                error: function (xhr, status, error) {
+                    console.error('삭제 실패:', error);
+                    alert("삭제에 실패했습니다.");
+                }
+            });
+        }
     });
 </script>
 
