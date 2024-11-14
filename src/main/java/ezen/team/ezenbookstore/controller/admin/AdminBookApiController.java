@@ -42,12 +42,11 @@ public class AdminBookApiController {
         return book != null ? ResponseEntity.ok(book) : ResponseEntity.notFound().build();
     }
 
-
-    // 책 추가
+    // 새 책 추가 메서드
     @PostMapping("/add")
-    public ResponseEntity<Book> addBook(@RequestBody Book book) {
-        Book newBook = bookService.create(book);
-        return ResponseEntity.ok(newBook);
+    public ResponseEntity<String> addBook(@RequestBody Book book) {
+        bookService.addBook(book);
+        return ResponseEntity.ok("Book added successfully");
     }
 
     @PutMapping("/update")
@@ -57,11 +56,11 @@ public class AdminBookApiController {
         return ResponseEntity.ok(updatedBook);
     }
 
-    // 책 삭제
-    @PostMapping("/delete")
-    public String deleteBook(@RequestParam Long bookId) {
-        // 책 삭제 로직 수행
-        return "redirect:/admin/book";
+    // 책 삭제 메서드
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> deleteBook(@PathVariable Long id) {
+        bookService.delete(id);
+        return ResponseEntity.ok("Book deleted successfully");
     }
 
 

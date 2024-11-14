@@ -1,27 +1,41 @@
 package ezen.team.ezenbookstore.service;
 
 import ezen.team.ezenbookstore.entity.Book;
+import ezen.team.ezenbookstore.entity.BookDescription;
+import ezen.team.ezenbookstore.repository.BookDescriptionRepository;
 import ezen.team.ezenbookstore.repository.BookRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class BookService {
 
     private final BookRepository bookRepository;
+    private final BookDescriptionRepository bookDescriptionRepository;
 
     public Book findById(Long id) {
         return bookRepository.findById(id).orElse(null);
     }
 
-    public Page<Book> findAll(Pageable pageable) {
-        return bookRepository.findAll(pageable);
+    public Book create(Book book) {
+        return bookRepository.save(book);
     }
 
-    public Book create(Book book) {
+    // 새 책 추가 메서드
+    public Book addBook(Book book) {
+        // 책 설명이 포함된 경우 처리
+        if (book.getBookdescription() != null) {
+            BookDescription description = book.getBookdescription();
+            bookDescriptionRepository.save(description);
+            book.setBookdescription(description); // 저장된 설명을 책에 설정
+        }
+
+        // 카테고리와 서브카테고리, 설명이 포함된 상태로 책 저장
         return bookRepository.save(book);
     }
 
@@ -50,40 +64,29 @@ public class BookService {
         bookRepository.deleteById(id);
     }
 
-    public Page<Book> findByTitleContaining(String title, Pageable pageable) {
-        return bookRepository.findByTitleContaining(title, pageable);
+    public List<Book> findByTitleContaining(String title) {
+        return bookRepository.findByTitleContaining(title);
     }
 
-    public Page<Book> findByAuthorContaining(String author, Pageable pageable) {
-        return bookRepository.findByAuthorContaining(author, pageable);
+    public List<Book> findByAuthorContaining(String author) {
+        return bookRepository.findByAuthorContaining(author);
     }
 
-    public Page<Book> findByPublisherContaining(String publisher, Pageable pageable) {
-        return bookRepository.findByPublisherContaining(publisher, pageable);
+    public List<Book> findByPublisherContaining(String publisher) {
+        return bookRepository.findByPublisherContaining(publisher);
     }
 
-    public Page<Book> findByIsbnContaining(String isbn, Pageable pageable) {
-        return bookRepository.findByIsbnContaining(isbn, pageable);
+    public List<Book> findByIsbnContaining(String isbn) {
+        return bookRepository.findByIsbnContaining(isbn);
     }
 
-    public Page<Book> findByTitleContainingAndCategoryIdAndSubcategoryIdAndIfkr(
-            String title, Integer categoryId, Integer subcategoryId, Byte ifkr, Pageable pageable) {
-        return bookRepository.findByTitleContainingAndCategoryIdAndSubcategoryIdAndIfkr(title, categoryId, subcategoryId, ifkr, pageable);
+    public Page<Book> findAll(Pageable pageable) {
+        return bookRepository.findAll(pageable);
     }
 
-    public Page<Book> findByAuthorContainingAndCategoryIdAndSubcategoryIdAndIfkr(
-            String author, Integer categoryId, Integer subcategoryId, Byte ifkr, Pageable pageable) {
-        return bookRepository.findByAuthorContainingAndCategoryIdAndSubcategoryIdAndIfkr(author, categoryId, subcategoryId, ifkr, pageable);
-    }
 
-    public Page<Book> findByPublisherContainingAndCategoryIdAndSubcategoryIdAndIfkr(
-            String publisher, Integer categoryId, Integer subcategoryId, Byte ifkr, Pageable pageable) {
-        return bookRepository.findByPublisherContainingAndCategoryIdAndSubcategoryIdAndIfkr(publisher, categoryId, subcategoryId, ifkr, pageable);
-    }
-
-    public Page<Book> findByIsbnContainingAndCategoryIdAndSubcategoryIdAndIfkr(
-            String isbn, Integer categoryId, Integer subcategoryId, Byte ifkr, Pageable pageable) {
-        return bookRepository.findByIsbnContainingAndCategoryIdAndSubcategoryIdAndIfkr(isbn, categoryId, subcategoryId, ifkr, pageable);
+    public List<Book> findAll() {
+        return bookRepository.findAll();
     }
 
 }
