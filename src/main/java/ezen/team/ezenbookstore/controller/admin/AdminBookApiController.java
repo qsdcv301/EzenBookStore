@@ -42,12 +42,11 @@ public class AdminBookApiController {
         return book != null ? ResponseEntity.ok(book) : ResponseEntity.notFound().build();
     }
 
-
-    // 책 추가
+    // 새 책 추가 메서드
     @PostMapping("/add")
-    public ResponseEntity<Book> addBook(@RequestBody Book book) {
-        Book newBook = bookService.create(book);
-        return ResponseEntity.ok(newBook);
+    public ResponseEntity<String> addBook(@RequestBody Book book) {
+        bookService.addBook(book);
+        return ResponseEntity.ok("Book added successfully");
     }
 
     @PutMapping("/update")

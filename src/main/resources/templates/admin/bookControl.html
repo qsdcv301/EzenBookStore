@@ -38,6 +38,11 @@
     </table>
 </div>
 
+<!-- 상품 추가 버튼 -->
+<div class="col-md-12 text-right mb-3">
+    <button class="btn btn-primary" data-toggle="modal" data-target="#addProductModal">상품 추가</button>
+</div>
+
 <!-- 추가 및 수정 모달 -->
 <div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -133,6 +138,95 @@
     </div>
 </div>
 
+
+<!-- 추가 모달 (수정 모달과 동일한 구조) -->
+<div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="addProductForm">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addProductModalLabel">상품 추가</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- 기존 수정 모달과 동일한 입력 폼 -->
+                    <div class="form-group">
+                        <label for="addTitle">제목</label>
+                        <input type="text" class="form-control" id="addTitle" name="title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="addAuthor">저자</label>
+                        <input type="text" class="form-control" id="addAuthor" name="author" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="addPublisher">출판사</label>
+                        <input type="text" class="form-control" id="addPublisher" name="publisher" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="addPublishDate">출판 날짜</label>
+                        <input type="date" class="form-control" id="addPublishDate" name="publishDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="addISBN">ISBN</label>
+                        <input type="number" class="form-control" id="addISBN" name="isbn" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="addStock">재고</label>
+                        <input type="number" class="form-control" id="addStock" name="stock" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="addIfkr">국내/국외</label>
+                        <input type="text" class="form-control" id="addIfkr" name="ifkr" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="addPrice">가격</label>
+                        <input type="number" class="form-control" id="addPrice" name="price" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="addCategory">카테고리</label>
+                        <select id="addCategory" name="category" class="form-control">
+                            <option value="">카테고리를 선택하세요</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="addSubcategory">세부 카테고리</label>
+                        <select id="addSubcategory" name="subcategory" class="form-control">
+                            <option value="">세부 카테고리를 선택하세요</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="addDiscount">할인율</label>
+                        <input type="number" class="form-control" id="addDiscount" name="discount" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="addBookDescriptionId">책 설명 ID</label>
+                        <input type="text" class="form-control" id="addBookDescriptionId" name="bookdescription" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="addDescription">설명</label>
+                        <input type="text" class="form-control" id="addDescription" name="description">
+                    </div>
+                    <div class="form-group">
+                        <label for="addWriter">작가 설명</label>
+                        <input type="text" class="form-control" id="addWriter" name="writer">
+                    </div>
+                    <div class="form-group">
+                        <label for="addContents">목차</label>
+                        <input type="text" class="form-control" id="addContents" name="contents">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">취소</button>
+                    <button type="submit" class="btn btn-primary">저장</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
 <!-- JavaScript 코드 -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
@@ -192,7 +286,6 @@
         return d.toISOString(); // ISO 형식으로 반환
     }
 
-    // 수정 버튼을 눌러 모달이 열릴 때 실행
     $('#productModal').on('show.bs.modal', function (event) {
         var button = $(event.relatedTarget);
         var bookId = button.data('book-id');
@@ -221,9 +314,30 @@
                 // 날짜를 yyyy-MM-dd 형식으로 설정 (ISO 형식에서 날짜 부분만 추출)
                 $('#publishDate').val(data.publishDate ? data.publishDate.split('T')[0] : '');
 
-                // 카테고리 및 세부 카테고리 선택 설정
+                // 카테고리 선택
                 $('#category').val(data.category ? data.category.id : '');
-                $('#subcategory').val(data.subcategory ? data.subcategory.id : '');
+
+                // 선택된 카테고리 기반으로 서브카테고리 로드
+                if (data.category) {
+                    $.ajax({
+                        url: `/admin/subcategories/${data.category.id}`,
+                        method: 'GET',
+                        success: function(subcategories) {
+                            $('#subcategory').empty();
+                            $('#subcategory').append(new Option("세부 카테고리를 선택하세요", ""));
+                            subcategories.forEach(function(subcategory) {
+                                var option = new Option(`${subcategory.id}: ${subcategory.name}`, subcategory.id);
+                                if (subcategory.id === data.subcategory.id) {
+                                    option.selected = true;
+                                }
+                                $('#subcategory').append(option);
+                            });
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('서브카테고리 로드 실패:', error);
+                        }
+                    });
+                }
 
                 // 책 설명 정보 설정
                 $('#bookdescriptionId').val(data.bookdescription ? data.bookdescription.id : '');
@@ -237,6 +351,7 @@
             }
         });
     });
+
 
     // 책 설명 ID 변경 시 새로운 데이터 로드
     $('#bookdescriptionId').on('change', function() {
@@ -324,6 +439,111 @@
             },
             error: function(xhr, status, error) {
                 console.error('Book 수정 실패:', error);
+            }
+        });
+    });
+
+    //상품 추가 모달
+
+    // 상품 추가 모달 열릴 때 카테고리 및 서브카테고리 로드
+    $('#addProductModal').on('show.bs.modal', function () {
+        // 카테고리 목록 로드
+        $.ajax({
+            url: '/admin/categories',
+            method: 'GET',
+            success: function (categories) {
+                $('#addCategory').empty().append(new Option("카테고리를 선택하세요", ""));
+                categories.forEach(function (category) {
+                    $('#addCategory').append(new Option(`${category.id}: ${category.name}`, category.id));
+                });
+            },
+            error: function (xhr, status, error) {
+                console.error('카테고리 로드 실패:', error);
+            }
+        });
+    });
+
+    // 카테고리 변경 시 서브카테고리 로드
+    $('#addCategory').on('change', function () {
+        const selectedCategoryId = $(this).val();
+        if (selectedCategoryId) {
+            $.ajax({
+                url: `/admin/subcategories/${selectedCategoryId}`,
+                method: 'GET',
+                success: function (subcategories) {
+                    $('#addSubcategory').empty().append(new Option("세부 카테고리를 선택하세요", ""));
+                    subcategories.forEach(function (subcategory) {
+                        $('#addSubcategory').append(new Option(`${subcategory.id}: ${subcategory.name}`, subcategory.id));
+                    });
+                },
+                error: function (xhr, status, error) {
+                    console.error('서브카테고리 로드 실패:', error);
+                }
+            });
+        } else {
+            $('#addSubcategory').empty().append(new Option("세부 카테고리를 선택하세요", ""));
+        }
+    });
+
+    // 책 설명 ID 변경 시 새로운 데이터 로드 (추가 모달)
+    $('#addBookDescriptionId').on('change', function() {
+        const descriptionId = $(this).val();
+        if (descriptionId) {
+            $.ajax({
+                url: `/admin/bookdescription/${descriptionId}`,  // 해당 ID로 요청
+                method: 'GET',
+                success: function(data) {
+                    // 받은 데이터로 필드 업데이트
+                    $('#addDescription').val(data.description || '');
+                    $('#addWriter').val(data.writer || '');
+                    $('#addContents').val(data.contents || '');
+                },
+                error: function(xhr, status, error) {
+                    console.error('책 설명 정보 로드 실패:', error);
+                }
+            });
+        } else {
+            // ID가 없는 경우 입력 필드 초기화
+            $('#addDescription').val('');
+            $('#addWriter').val('');
+            $('#addContents').val('');
+        }
+    });
+
+    // 상품 추가 폼 제출 시 새로운 상품 추가 요청
+    $('#addProductForm').on('submit', function (event) {
+        event.preventDefault();
+        const newProductData = {
+            title: $('#addTitle').val(),
+            author: $('#addAuthor').val(),
+            publisher: $('#addPublisher').val(),
+            isbn: $('#addISBN').val(),
+            stock: $('#addStock').val(),
+            ifkr: $('#addIfkr').val(),
+            price: $('#addPrice').val(),
+            discount: $('#addDiscount').val(),
+            publishDate: $('#addPublishDate').val(),
+            category: { id: $('#addCategory').val() },
+            subcategory: { id: $('#addSubcategory').val() },
+            bookdescription: {
+                id: $('#addBookDescriptionId').val(),
+                description: $('#addDescription').val(),
+                writer: $('#addWriter').val(),
+                contents: $('#addContents').val()
+            }
+        };
+
+        $.ajax({
+            url: '/admin/book/add',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(newProductData),
+            success: function () {
+                $('#addProductModal').modal('hide');
+                location.reload(); // 페이지 새로고침으로 목록 업데이트
+            },
+            error: function (xhr, status, error) {
+                console.error('상품 추가 실패:', error);
             }
         });
     });

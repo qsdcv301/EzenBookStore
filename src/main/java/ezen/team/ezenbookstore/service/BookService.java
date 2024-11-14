@@ -1,6 +1,8 @@
 package ezen.team.ezenbookstore.service;
 
 import ezen.team.ezenbookstore.entity.Book;
+import ezen.team.ezenbookstore.entity.BookDescription;
+import ezen.team.ezenbookstore.repository.BookDescriptionRepository;
 import ezen.team.ezenbookstore.repository.BookRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -14,12 +16,26 @@ import java.util.List;
 public class BookService {
 
     private final BookRepository bookRepository;
+    private final BookDescriptionRepository bookDescriptionRepository;
 
     public Book findById(Long id) {
         return bookRepository.findById(id).orElse(null);
     }
 
     public Book create(Book book) {
+        return bookRepository.save(book);
+    }
+
+    // 새 책 추가 메서드
+    public Book addBook(Book book) {
+        // 책 설명이 포함된 경우 처리
+        if (book.getBookdescription() != null) {
+            BookDescription description = book.getBookdescription();
+            bookDescriptionRepository.save(description);
+            book.setBookdescription(description); // 저장된 설명을 책에 설정
+        }
+
+        // 카테고리와 서브카테고리, 설명이 포함된 상태로 책 저장
         return bookRepository.save(book);
     }
 
