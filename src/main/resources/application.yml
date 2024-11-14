@@ -49,14 +49,14 @@ spring:
     username: root
     password: 1234
     driver-class-name: com.mysql.cj.jdbc.Driver
-#  mail:
-#    host: smtp.naver.com
-#    port: 465
-#    username: qsdcv301@naver.com
-#    password:
-#    properties:
-#      mail.smtp.auth: true
-#      mail.smtp.ssl.enable: true
+  mail:
+    host: smtp.naver.com
+    port: 465
+    username: qsdcv301@naver.com
+    password:
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.ssl.enable: true
 
 #jwt:
 #  issuer:

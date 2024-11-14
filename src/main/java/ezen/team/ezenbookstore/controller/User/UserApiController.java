@@ -4,6 +4,7 @@ import ezen.team.ezenbookstore.entity.*;
 import ezen.team.ezenbookstore.service.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,10 +21,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 @RequiredArgsConstructor
 @Controller
 public class UserApiController {
+
+    private static final String VERIFICATION_CODE_SESSION_KEY = "verificationCode";
 
     private final UserService userService;
     private final ReviewService reviewService;
@@ -31,6 +35,7 @@ public class UserApiController {
     private final PaymentService paymentService;
     private final QnAService qnAService;
     private final OrdersService ordersService;
+    private final EmailService emailService;
 
     @GetMapping("/login")
     public String login() {
@@ -182,6 +187,27 @@ public class UserApiController {
             response.put("success", false);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response); // 예외 발생 시 500 오류 반환
         }
+    }
+
+    @PostMapping("/emailAuthentication")
+    public ResponseEntity<Map<String, Boolean>> emailAuthentication(@RequestParam("email") String email, HttpSession session) {
+        // 무작위 6자리 번호 생성
+        String verificationCode = generateVerificationCode();
+        session.setAttribute(VERIFICATION_CODE_SESSION_KEY, verificationCode);
+        // 이메일 발송
+        emailService.sendEmail(email, "EzBookStore 이메일 인증", "귀하의 인증 번호는: " + verificationCode);
+
+        Map<String, Boolean> response = new HashMap<>();
+        boolean isEmail = true;
+        response.put("isEmail", isEmail);
+        return ResponseEntity.ok(response);
+    }
+
+    // 무작위 6자리 인증 번호 생성
+    private String generateVerificationCode() {
+        Random random = new Random();
+        int code = random.nextInt(999999); // 0부터 999999까지 무작위 숫자 생성
+        return String.format("%06d", code); // 6자리로 포맷
     }
 
 }
