@@ -321,15 +321,20 @@ $(document).ready(function () {
         const existingKeyword = urlParams['keyword'] || "";
         const existingVal = urlParams['val'] || "";
         const page = urlParams['page'] || "0";
+        const ifkr = urlParams['ifkr'] || "";
+        const category = urlParams['category'] || "";
+        const subcategory = urlParams['subcategory'] || "";
 
         // URL 인코딩 적용
         const encodedKeyword = encodeURIComponent(existingKeyword);
         const encodedVal = encodeURIComponent(existingVal);
         const encodedSort = encodeURIComponent(selectedOption);
         const encodedDirection = encodeURIComponent(direction);
+        const encodedCategory = encodeURIComponent(category);
+        const encodedSubcategory = encodeURIComponent(subcategory);
 
         // 페이지 리로드 및 쿼리 파라미터에 sort 추가
-        window.location.href = `/book/search?keyword=${encodedKeyword}&page=${page}&val=${encodedVal}&sort=${encodedSort}&direction=${encodedDirection}`;
+        window.location.href = `/book/search?keyword=${encodedKeyword}&page=${page}&val=${encodedVal}&sort=${encodedSort}&direction=${encodedDirection}&ifkr=${ifkr}&category=${encodedCategory}&subcategory=${encodedSubcategory}`;
     });
 
     $('.research-btn').click(function () {
@@ -356,6 +361,9 @@ $(document).ready(function () {
         const page = urlParams['page'] || "0";
         const sort = urlParams['sort'] || "";
         const direction = urlParams['direction'] || "";
+        const ifkr = urlParams['ifkr'] || "";
+        const category = urlParams['category'] || "";
+        const subcategory = urlParams['subcategory'] || "";
 
         // 기존 그룹과 새로운 그룹을 결합하여 저장
         let newKeyword = existingKeyword ? `${existingKeyword},${keywordGroups.join(",")}` : keywordGroups.join(",");
@@ -366,9 +374,11 @@ $(document).ready(function () {
         const encodedVal = encodeURIComponent(newVal);
         const encodedSort = encodeURIComponent(sort);
         const encodedDirection = encodeURIComponent(direction);
+        const encodedCategory = encodeURIComponent(category);
+        const encodedSubcategory = encodeURIComponent(subcategory);
 
         // 검색 페이지로 리다이렉트
-        window.location.href = `/book/search?keyword=${encodedKeyword}&val=${encodedVal}&page=${page}&sort=${encodedSort}&direction=${encodedDirection}`;
+        window.location.href = `/book/search?keyword=${encodedKeyword}&val=${encodedVal}&page=${page}&sort=${encodedSort}&direction=${encodedDirection}&ifkr=${ifkr}&category=${encodedCategory}&subcategory=${encodedSubcategory}`;
     });
 
 // URL 파라미터를 객체 형태로 가져오는 함수
