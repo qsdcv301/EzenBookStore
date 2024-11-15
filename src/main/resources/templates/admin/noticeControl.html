@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.min.js"></script>
+    <style>
+        .hidden{
+            display: none;
+        }
+        .noticeTitle{
+            padding-right: 10px;
+            padding-left: 10px;
+        }
+        .noticeTitle::after{
+            content: "";
+            width: 2px;
+            color: #000;
+            height: 25px;
+            position: relative;
+        }
+    </style>
+</head>
+<body>
+<div class="col-6">
+    <h2>공지사항 관리</h2>
+    <form id="addNoticeForm">
+        <input type="text" id="title" placeholder="제목" required>
+        <textarea id="content" placeholder="내용" required></textarea>
+        <button type="button" id="addNotice">추가</button>
+        <br>
+        <input type="text" id="findtitle" placeholder="제목 검색">
+        <button type="button" id="btn-findtitle"> 검색</button>
+    </form>
+    <table>
+        <tr>
+            <td>체크박스</td>
+            <td>notice번호</td>
+            <td class="noticeTitle">공지사항 제목</td>
+            <td>공지사항 내용</td>
+        </tr>
+        <tr th:each="noticelist : ${noticeLists}">
+            <td class="notice-check">
+                <input type="checkbox" id="noticeChecked" name="checkBox" />
+                <label for="noticeChecked"></label>
+            </td>
+            <td class="noticeId" th:text="${noticelist.id}"></td>
+            <td class="noticeTitle" th:text="${noticelist.title}"></td>
+            <td class="noticeContent" th:text="${noticelist.content}"></td>
+            <td><button id='updateNotice'>수정</button></td>
+        </tr>
+    </table>
+    <button id='deleteNotice'>일괄삭제</button>
+</div>
+<div class="col-6 hidden" id="editForm">
+    <p>제목</p>
+    <input type="text" id="editTitle">
+    <p>내용</p>
+    <textarea id="editContent"></textarea>
+    <button type="button" id="saveUpdate">수정</button>
+</div>
+<!-- 스크립트 부분 -->
+<script>
+    // 공지사항 등록 처리 ajax
+    $("#addNotice").click(function () {
+        const title = $('#title').val();
+        const content = $('#content').val();
+
+        if (title && content) {
+            $.ajax({
+                url: '/admin/notice/add',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ title: title, content: content }),
+                success: function (res) {
+                    alert('공지사항이 추가되었습니다.');
+                    location.reload(); // 성공 시 페이지 새로고침
+                },
+                error: function (xhr, status, error) {
+                    console.error('에러',xhr,status,error);
+                    alert('공지사항 등록 실패');
+                }
+            });
+        } else {
+            alert('제목과 내용을 입력해주세요.');
+        }
+    });
+
+    // '수정' 버튼 클릭 시 하단 입력 폼에 데이터 전송
+    $(document).on('click', '#updateNotice', function () {
+        const row = $(this).closest('tr');
+        const noticeId = row.find('.noticeId').text();
+        const noticeTitle = row.find('.noticeTitle').text();
+        const noticeContent = row.find('.noticeContent').text();
+
+        // 하단 입력 폼에 데이터 채우기
+        $('#editTitle').val(noticeTitle);
+        $('#editContent').val(noticeContent);
+        $('#editForm').removeClass('hidden').data('id', noticeId);
+    });
+
+    // 수정된 공지사항을 서버로 전송하는 ajax 요청
+    $('#saveUpdate').click(function () {
+        const noticeId = $('#editForm').data('id');
+        const updatedTitle = $('#editTitle').val();
+        const updatedContent = $('#editContent').val();
+
+        if (updatedTitle && updatedContent) {
+            $.ajax({
+                url: '/admin/notice/update',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    id: noticeId,
+                    title: updatedTitle,
+                    content: updatedContent
+                }),
+                success: function (res) {
+                    alert('공지사항이 수정되었습니다.');
+                    location.reload(); // 수정 후 페이지 새로고침
+                },
+                error: function (xhr, status, error) {
+                    console.error("에러", error);
+                    alert("공지사항 수정 실패");
+                }
+            });
+        } else {
+            alert('수정할 제목과 내용을 입력해주세요.');
+        }
+    });
+
+    // 선택된 공지사항 일괄 삭제
+    $('#deleteNotice').click(function () {
+        const selectedIds = [];
+        $('input[name="checkBox"]:checked').each(function () {
+            const noticeId = $(this).closest('tr').find('.noticeId').text();
+            selectedIds.push(noticeId);
+        });
+
+        if (selectedIds.length > 0) {
+            $.ajax({
+                url: '/admin/notice/delete',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ ids: selectedIds }),
+                success: function (res) {
+                    alert('선택된 공지사항이 삭제되었습니다.');
+                    location.reload();
+                },
+                error: function (xhr, status, error) {
+                    console.error('삭제 오류', error);
+                    alert('공지사항 삭제 실패');
+                }
+            });
+        } else {
+            alert('삭제할 공지사항을 선택해주세요.');
+        }
+    });
+</script>
+    <div id="result"></div>
+</body>
+</html>

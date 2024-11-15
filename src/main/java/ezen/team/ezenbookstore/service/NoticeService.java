@@ -21,6 +21,8 @@ public class NoticeService {
         return noticeRepository.findAll();
     }
 
+    public List<Notice> findAllByOrderByIdDesc(){return noticeRepository.findAllByOrderByIdDesc();}
+
     public Notice create(Notice notice) {
         return noticeRepository.save(notice);
     }
@@ -30,7 +32,7 @@ public class NoticeService {
                 .id(notice.getId())
                 .title(notice.getTitle())
                 .content(notice.getContent())
-                .createAt(notice.getCreateAt())
+                .createAt(findById(notice.getId()).getCreateAt())
                 .build();
         return noticeRepository.save(updateNotice);
     }

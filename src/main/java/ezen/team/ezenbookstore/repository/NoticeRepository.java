@@ -11,4 +11,5 @@ import java.util.Optional;
 public interface NoticeRepository extends JpaRepository<Notice, Long> {
     Optional<Notice> findByTitle(String title);
     List<Notice> findByContentContaining(String content);
+    List<Notice> findAllByOrderByIdDesc();
 }
