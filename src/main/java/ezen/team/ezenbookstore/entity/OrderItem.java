@@ -12,7 +12,7 @@ import org.hibernate.annotations.DynamicUpdate;
 @DynamicInsert
 @DynamicUpdate
 @Builder
-@Table(name = "orderItem")
+@Table(name = "orderitem")
 public class OrderItem {
 
     @Id
@@ -22,6 +22,10 @@ public class OrderItem {
     @OneToOne
     @JoinColumn(name = "book_id", referencedColumnName = "id")
     private Book book;
+
+    @ManyToOne
+    @JoinColumn(name = "orders_id", referencedColumnName = "id")
+    private Orders orders;
 
     @Column(name = "quantity")
     private Integer quantity;

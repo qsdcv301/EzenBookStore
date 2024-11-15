@@ -1,5 +1,6 @@
 package ezen.team.ezenbookstore.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -27,10 +28,6 @@ public class Orders {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
-    @OneToMany
-    @JoinColumn(name = "orderitem_id", referencedColumnName = "id")
-    private List<OrderItem> orderItems;
-
     @OneToOne
     @JoinColumn(name = "delivery_id", referencedColumnName = "id")
     private Delivery delivery;
@@ -49,6 +46,7 @@ public class Orders {
     @Column(name = "status")
     private Byte status;
 
-
+    @OneToMany(mappedBy = "orders")
+    private List<OrderItem> orderItems;
 
 }

@@ -1,6 +1,7 @@
 <!doctype html>
 <html xmlns:th="http://www.thymeleaf.org" lang="ko">
-<div th:fragment="paymentModal" class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
+<div th:fragment="paymentModal" class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel"
+     aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -16,40 +17,44 @@
                         <div class="modal-items"></div>
                     </div>
                     <form class="col-6">
-                        <h5 data-toggle="collapse" href="#collapseExam">주문자 정보</h5>
-                        <div id="collapseExam" class="collapse">
-                            <div class="mb-3">
-                                <label class="form-label">이름</label>
-                                <input th:value="${user.name}" type="text" class="form-control payment-name" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">연락처</label>
-                                <input th:value="${user.tel}" type="text" class="form-control payment-tel" required>
-                            </div>
-                        </div>
-                        <hr>
                         <h5>배송지 정보</h5>
+                        <div class="mb-3">
+                            <label class="form-label">이름</label>
+                            <input th:value="${user.name}" type="text" class="form-control payment-name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">연락처</label>
+                            <input th:value="${user.tel}" type="text" class="form-control payment-tel" required>
+                        </div>
                         <div class="mb-3">
                             <label class="form-label">배송 주소</label>
                             <input th:value="${user.addr}" type="text" class="form-control payment-addr" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">상세 주소</label>
-                            <input th:value="${user.addrextra}" type="text" class="form-control payment-addrextra" required>
+                            <input th:value="${user.addrextra}" type="text" class="form-control payment-addrextra"
+                                   required>
                         </div>
                         <hr>
                         <h5>결제 정보</h5>
-                        <div class="mb-5">
-                            <p>사용 가능한 적립금: <span id="available-points" th:text="${user.point}">999,999</span>원</p>
+                        <div>
+                            <p class="mb-0">사용 가능한 적립금: <span id="available-points" th:text="${user.point}">999,999</span>원</p>
+                            <p><small class="text-black-50">*최소 100원부터 사용 가능합니다.</small></p>
                             <label class="form-label">사용할 적립금</label>
-                            <input type="number" class="form-control payment-point" id="used-points" value="0" th:min="0" step="100" th:max="${user.point}">
-                            <p>결제 수단</p>
+                            <div class="d-flex">
+                                <input type="number" class="form-control payment-point w-50" id="used-points" value="0"
+                                       th:min="0" step="100" th:max="${user.point}">
+                                <button class="btn btn-primary ml-3 w-25 point-all">전액 사용</button>
+                            </div>
+                            <p class="mt-3">결제 수단</p>
                             <div class="col">
-                                <div class="col-md-5 btn btn-primary btn-lg me-2">무통장 입금</div>
-                                <div class="col-md-5 btn btn-success btn-lg">신용 카드</div>
+                                <button id="bank-transfer" class="col-md-5 btn btn-primary btn-lg me-2">무통장 입금</button>
+                                <button id="credit-card" class="col-md-5 btn btn-success btn-lg">신용 카드</button>
                             </div>
                         </div>
-                        <hr class="mt-5">
+                        <hr>
+                        <p>출고 예정일 : <span id="expected-shipping-date" class="text-danger">xx년 xx월 xx일 (x)요일</span></p>
+                        <hr>
                         <h4>주문 확인</h4>
                         <div class="mt-3">
                             <p>총 상품 금액: <span id="order-original-price"></span></p>
