@@ -1,7 +1,9 @@
 package ezen.team.ezenbookstore.controller.admin;
 
 import ezen.team.ezenbookstore.entity.Book;
+import ezen.team.ezenbookstore.entity.OrderItem;
 import ezen.team.ezenbookstore.entity.Orders;
+import ezen.team.ezenbookstore.service.OrderItemService;
 import ezen.team.ezenbookstore.service.OrdersService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -16,13 +18,12 @@ import java.util.List;
 public class AdminOrderApiController {
 
     private final OrdersService ordersService;
+    private final OrderItemService orderItemService;
 
     @GetMapping("")
     public String ordersControl(Model model) {
         List<Orders> ordersList = ordersService.findAll();
-
         model.addAttribute("ordersList", ordersList);
-
         return "/admin/orderControl";
     }
 

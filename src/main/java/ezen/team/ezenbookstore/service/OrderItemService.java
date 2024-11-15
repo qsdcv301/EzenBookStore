@@ -29,6 +29,7 @@ public class OrderItemService {
         OrderItem newOrderItem = OrderItem.builder()
                 .id(id)
                 .book(orderItem.getBook())
+                .orders(orderItem.getOrders())
                 .quantity(orderItem.getQuantity())
                 .build();
         return orderItemRepository.save(newOrderItem);

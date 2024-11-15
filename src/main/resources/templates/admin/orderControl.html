@@ -83,9 +83,9 @@
             <td th:text="${order.id}">주문번호</td>
             <td th:text="${#dates.format(order.orderDate, 'yyyy.MM.dd')}">주문일</td>
             <td th:text="${order.user.email}">이메일</td>
-            <td th:text="${order.orderItems[0].productName}">상품명</td> <!-- 예시로 첫번째 상품 표시 -->
+            <td th:text="${order.orderItems.get(0).book.title}">상품명</td> <!-- 예시로 첫번째 상품 표시 -->
             <td th:text="${order.orderItems.size()}">수량</td>
-            <td th:text="${#numbers.formatInteger(order.totalPrice)}">총 결제 금액</td>
+            <td th:text="${order.totalPrice}">총 결제 금액</td>
             <td th:text="${order.status}">배송상태</td>
             <td><button class="btn btn-primary" onclick="openModal('[[${order.id}]]')">상세</button></td>
         </tr>

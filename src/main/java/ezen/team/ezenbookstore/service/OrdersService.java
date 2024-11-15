@@ -29,7 +29,6 @@ public class OrdersService {
         Orders newOrder = Orders.builder()
                 .id(id)
                 .user(order.getUser())
-                .orderItems(order.getOrderItems())
                 .delivery(order.getDelivery())
                 .payment(order.getPayment())
                 .orderDate(order.getOrderDate())
