@@ -230,6 +230,9 @@ $(document).ready(function () {
             const modalItem = `
             <div class="card col">
                 <div class="row g-0">
+                    <div class="col-md-4 pt-3">
+                        <img src="https://via.placeholder.com/100" alt="임시 이미지">
+                    </div>
                     <div class="col-md-8">
                         <div class="card-body">
                             <p>상품명: <span class="modalBookTitle">${title}</span></p>
@@ -259,7 +262,7 @@ $(document).ready(function () {
         });
     });
 
-// 주문 요약 업데이트 함수
+    // 주문 요약 업데이트 함수
     function updateOrderSummary(totalOriginalPrice, totalDiscount, shippingFee, totalDiscountedPrice, usedPoints) {
         const finalTotal = totalDiscountedPrice + shippingFee - usedPoints;
 
@@ -276,7 +279,63 @@ $(document).ready(function () {
         $("#order-deduction-summary").html(deductionSummary);
     }
 
-//     bookSerach
+    $(".point-all").click(function (e) {
+        // 사용 가능한 적립금 텍스트에서 숫자 부분만 추출
+        e.preventDefault();
+        let point = $("#available-points").text().replace(/[^0-9]/g, ""); // '999,999원'에서 숫자만 추출
+        point = parseInt(point, 10); // 문자열을 정수로 변환
+
+        // 100 단위의 최대 사용 가능 포인트 계산
+        let maxPoints = Math.floor(point / 100) * 100; // 100단위 내림 처리
+
+        // 계산된 값을 input 창에 설정
+        $("#used-points").val(maxPoints);
+    });
+
+    $("#bank-transfer").click(function (e) {
+        e.preventDefault();
+        $(this).addClass("selected"); // 클릭된 버튼에 selected 클래스 추가
+        $("#credit-card").removeClass("selected"); // 다른 버튼에서 selected 클래스 제거
+        // 무통장 입금 버튼 클릭 시 신용 카드 버튼 흐리게 처리
+        $("#credit-card").css("opacity", "0.5");
+        $("#bank-transfer").css("opacity", "1"); // 클릭된 버튼은 원래대로 유지
+    });
+
+    $("#credit-card").click(function (e) {
+        e.preventDefault();
+        $(this).addClass("selected"); // 클릭된 버튼에 selected 클래스 추가
+        $("#bank-transfer").removeClass("selected"); // 다른 버튼에서 selected 클래스 제거
+        // 신용 카드 버튼 클릭 시 무통장 입금 버튼 흐리게 처리
+        $("#bank-transfer").css("opacity", "0.5");
+        $("#credit-card").css("opacity", "1"); // 클릭된 버튼은 원래대로 유지
+    });
+
+    // 오늘 날짜 가져오기
+    let today = new Date();
+
+    // 내일 날짜 계산
+    let nextDay = new Date(today);
+    nextDay.setDate(today.getDate() + 1);
+
+    // 만약 내일이 토요일(6) 또는 일요일(0)이라면 월요일로 설정
+    if (nextDay.getDay() === 6) {
+        nextDay.setDate(nextDay.getDate() + 2); // 토요일인 경우 -> 월요일
+    } else if (nextDay.getDay() === 0) {
+        nextDay.setDate(nextDay.getDate() + 1); // 일요일인 경우 -> 월요일
+    }
+
+    // 날짜 형식 구성
+    const year = nextDay.getFullYear();
+    const month = nextDay.getMonth() + 1; // 월은 0부터 시작하므로 +1
+    const date = nextDay.getDate();
+    const dayNames = ["일", "월", "화", "수", "목", "금", "토"];
+    const day = dayNames[nextDay.getDay()]; // 요일 이름 가져오기
+
+    // 출고 예정일 업데이트
+    const formattedDate = `${year}년 ${month}월 ${date}일 (${day})`;
+    $("#expected-shipping-date").text(formattedDate);
+
+    //     bookSerach
 
     $(".paymentModal-Data").each(function () {
         const $this = $(this);

@@ -158,7 +158,7 @@ public class BookApiController {
 
         filteredBooks.sort(comparator);
 
-// 검색된 결과에 해당하는 카테고리 및 서브카테고리 목록 생성
+        // 검색된 결과에 해당하는 카테고리 및 서브카테고리 목록 생성
         Map<Category, Set<SubCategory>> domesticCategoryMap = new HashMap<>();
         Map<Category, Set<SubCategory>> foreignCategoryMap = new HashMap<>();
 
