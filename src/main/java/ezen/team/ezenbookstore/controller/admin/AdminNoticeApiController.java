@@ -48,41 +48,17 @@ public class AdminNoticeApiController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("공지사항 수정 실패");
         }
     }
-
-    // 공지사항 일괄 수정 - AJAX 요청 처리
-    @PostMapping("/batchUpdate")
-    public ResponseEntity<String> updateNotices(@RequestBody List<Notice> notices) {
-        try {
-            for (Notice notice : notices) {
-                noticeService.update(notice);
-            }
-            return ResponseEntity.ok("공지사항이 일괄 수정되었습니다.");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("공지사항 일괄 수정 실패");
-        }
-    }
-
-    // 공지사항 삭제 - AJAX 요청 처리
+    //공지사항 삭제
     @PostMapping("/delete")
-    public ResponseEntity<String> deleteNotice(@RequestBody Long noticeId) {
+    public ResponseEntity<String> deleteNotices(@RequestBody List<Long> ids) {
         try {
-            noticeService.delete(noticeId);
-            return ResponseEntity.ok("공지사항이 삭제되었습니다.");
+            for (Long id : ids) {
+                noticeService.delete(id);
+            }
+            return ResponseEntity.ok("선택된 공지사항이 삭제되었습니다.");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("공지사항 삭제 실패");
         }
     }
 
-    // 공지사항 일괄 삭제 - AJAX 요청 처리
-    @PostMapping("/batchDelete")
-    public ResponseEntity<String> deleteNotices(@RequestBody List<Long> noticeIds) {
-        try {
-            for (Long id : noticeIds) {
-                noticeService.delete(id);
-            }
-            return ResponseEntity.ok("선택된 공지사항이 삭제되었습니다.");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("공지사항 일괄 삭제 실패");
-        }
-    }
 }
