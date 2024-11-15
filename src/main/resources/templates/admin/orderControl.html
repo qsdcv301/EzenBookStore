@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head xmlns:th="http://www.thymeleaf.org">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>주문 조회 및 상태 관리</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <style>
+        .filter-option {
+            cursor: pointer;
+            padding: 10px 20px;
+            margin-right: 10px;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+            color: #495057;
+            transition: background-color 0.3s;
+        }
+
+        .filter-option:hover {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .filter-option.active {
+            background-color: #007bff;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container mt-5">
+    <h3 class="font-weight-bold mb-3">주문 조회 및 상태 관리</h3>
+    <p class="mb-4">전체 주문건을 확인하고 주문 상태를 관리할 수 있는 페이지입니다.</p>
+
+    <!-- 배송 상태별 건수 -->
+    <div class="d-flex justify-content-start mb-3">
+        <span id="status-all" class="filter-option active" onclick="filterOrders('전체')">전체 (0건)</span>
+        <span id="status-preparing" class="filter-option" onclick="filterOrders('상품준비중')">상품준비중 (0건)</span>
+        <span id="status-shipping" class="filter-option" onclick="filterOrders('배송중')">배송중 (0건)</span>
+        <span id="status-completed" class="filter-option" onclick="filterOrders('배송완료')">배송완료 (0건)</span>
+        <span id="status-on-hold" class="filter-option" onclick="filterOrders('보류중')">보류중 (0건)</span>
+    </div>
+    <hr>
+
+    <!-- 수정/삭제 버튼 및 검색 섹션 -->
+    <div class="d-flex justify-content-between mb-3">
+        <div>
+            <button class="btn btn-primary" onclick="editSelected()">수정</button>
+            <button class="btn btn-danger ml-2" onclick="deleteSelected()">삭제</button>
+        </div>
+        <div class="search-section d-flex align-items-center">
+            <select class="form-control mr-2" style="width: 150px;" id="search-type">
+                <option value="userId">이메일</option>
+                <option value="id">주문번호</option>
+            </select>
+            <input type="text" class="form-control mr-2" placeholder="검색어를 입력하세요" style="width: 300px;" id="search-input">
+            <button class="btn btn-secondary" onclick="searchOrders()">조회</button>
+        </div>
+    </div>
+
+    <!-- 주문 목록 테이블 -->
+    <table class="table table-bordered text-center">
+        <thead class="thead-light">
+        <tr>
+            <th><input type="checkbox" id="select-all-checkbox" onclick="toggleSelectAll()"></th>
+            <th>주문번호</th>
+            <th>주문일</th>
+            <th>이메일</th>
+            <th>상품명</th>
+            <th>수량</th>
+            <th>총 결제 금액</th>
+            <th>배송상태</th>
+            <th>상세보기</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- Thymeleaf로 주문 목록 렌더링 -->
+        <tr th:each="order : ${ordersList}">
+            <td><input type="checkbox" class="order-checkbox" th:data-id="${order.id}"></td>
+            <td th:text="${order.id}">주문번호</td>
+            <td th:text="${#dates.format(order.orderDate, 'yyyy.MM.dd')}">주문일</td>
+            <td th:text="${order.user.email}">이메일</td>
+            <td th:text="${order.orderItems[0].productName}">상품명</td> <!-- 예시로 첫번째 상품 표시 -->
+            <td th:text="${order.orderItems.size()}">수량</td>
+            <td th:text="${#numbers.formatInteger(order.totalPrice)}">총 결제 금액</td>
+            <td th:text="${order.status}">배송상태</td>
+            <td><button class="btn btn-primary" onclick="openModal('[[${order.id}]]')">상세</button></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- 페이지네이션 -->
+    <nav aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center" id="pagination">
+            <!-- 페이지 번호가 여기에 동적으로 추가됩니다. -->
+        </ul>
+    </nav>
+</div>
+
+<!-- 모달 창 -->
+<div class="modal fade" id="orderDetailModal" tabindex="-1" role="dialog" aria-labelledby="orderDetailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="orderDetailModalLabel">주문 상태 관리</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p><strong>주문번호 :</strong> <span id="modal-order-number"></span></p>
+                <p><strong>주문일 :</strong> <span id="modal-user-day"></span></p>
+                <p><strong>이메일 :</strong> <span id="modal-user-id"></span></p>
+                <p><strong>회원명 :</strong> <span id="modal-user-name"></span></p>
+                <p><strong>상품명 :</strong> <span id="modal-product-name"></span></p>
+                <p><strong>수량 :</strong> <span id="modal-quantity"></span></p>
+                <p><strong>총 결제금액 :</strong> <span id="modal-total-price"></span></p>
+                <p><strong>배송상태 :</strong>
+                    <select class="form-control d-inline-block" id="modal-order-status" style="width: 150px;">
+                        <option value="상품준비중">상품준비중</option>
+                        <option value="배송중">배송중</option>
+                        <option value="배송완료">배송완료</option>
+                        <option value="보류중">보류중</option>
+                    </select>
+                </p>
+                <div class="d-flex mt-3">
+                    <button class="btn btn-secondary mr-2" data-dismiss="modal">취소</button>
+                    <button class="btn btn-primary" onclick="saveStatus()">수정하기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // Thymeleaf를 사용한 데이터 렌더링 이후 JavaScript 기능 업데이트
+    function filterOrders(status) {
+        location.href = `/admin/order?status=${status}`;
+    }
+
+    function searchOrders() {
+        const searchType = $('#search-type').val();
+        const searchInput = $('#search-input').val();
+        location.href = `/admin/order/search?searchType=${searchType}&keyword=${searchInput}`;
+    }
+
+    function openModal(orderId) {
+        // 선택된 주문의 상세 정보를 모달에 표시하도록 설정
+        const order = ordersList.find(o => o.id === orderId); // 임시로 ordersList에서 id 검색
+        if (order) {
+            $('#modal-order-number').text(order.id);
+            $('#modal-user-day').text(order.productDay);
+            $('#modal-user-id').text(order.user.email);
+            $('#modal-user-name').text(order.user.name);
+            $('#modal-product-name').text(order.orderItems[0].productName); // 예시로 첫 번째 상품
+            $('#modal-quantity').text(order.orderItems.length);
+            $('#modal-total-price').text(order.totalPrice);
+            $('#modal-order-status').val(order.status);
+            $('#orderDetailModal').modal('show');
+        }
+    }
+</script>
+
+</body>
+</html>
