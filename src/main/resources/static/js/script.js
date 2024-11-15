@@ -257,9 +257,50 @@ $(document).ready(function () {
 
         // 적립금 입력값 변경 시 총 결제 금액을 다시 계산
         $("#used-points").on("input", function () {
-            const updatedUsedPoints = parseInt($(this).val()) || 0;
+            // 입력된 값 가져오기
+            let updatedUsedPoints = parseInt($(this).val()) || 0;
+
+            // 최고값을 입력 필드의 max 속성에서 가져옴
+            const maxPoints = parseInt($(this).attr("max"));
+
+            // 최대값 이상 입력되지 않도록 제한 (즉시 적용)
+            if (updatedUsedPoints > maxPoints) {
+                updatedUsedPoints = maxPoints;
+                $(this).val(updatedUsedPoints);
+            }
+        });
+
+        // 적립금 입력 필드에서 포커스를 벗어났을 때
+        $("#used-points").on("blur", function () {
+            let updatedUsedPoints = parseInt($(this).val()) || 0;
+
+            // 최고값을 입력 필드의 max 속성에서 가져옴
+            const maxPoints = parseInt($(this).attr("max"));
+
+            // 100 단위로만 입력될 수 있게끔 처리
+            if (updatedUsedPoints % 100 !== 0) {
+                updatedUsedPoints = Math.floor(updatedUsedPoints / 100) * 100;
+            }
+
+            // 최대값 이상 입력되지 않도록 제한
+            if (updatedUsedPoints > maxPoints) {
+                updatedUsedPoints = maxPoints;
+            }
+
+            // 수정된 값으로 input 값을 재설정
+            $(this).val(updatedUsedPoints);
+
+            // 총 결제 금액 업데이트
             updateOrderSummary(totalOriginalPrice, totalDiscount, shippingFee, totalDiscountedPrice, updatedUsedPoints);
         });
+
+        // Enter 키 입력 시 폼 제출 방지
+        $("#used-points").on("keydown", function (e) {
+            if (e.key === "Enter") {
+                e.preventDefault(); // Enter 키로 인한 폼 제출 방지
+            }
+        });
+
     });
 
     // 주문 요약 업데이트 함수
@@ -289,7 +330,7 @@ $(document).ready(function () {
         let maxPoints = Math.floor(point / 100) * 100; // 100단위 내림 처리
 
         // 계산된 값을 input 창에 설정
-        $("#used-points").val(maxPoints);
+        $("#used-points").val(maxPoints).trigger("blur");
     });
 
     $("#bank-transfer").click(function (e) {
