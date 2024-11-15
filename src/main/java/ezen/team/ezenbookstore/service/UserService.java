@@ -120,7 +120,15 @@ public class UserService {
     }
 
     public User findByEmailAndProvider(String email, String provider) {
-        return userRepository.findByEmailAndProvider(email, provider);
+        return userRepository.findByEmailAndProvider(email, provider).orElse(null);
+    }
+
+    public User findByNameAndTel(String name, String tel) {
+        return userRepository.findByNameAndTel(name, tel).orElse(null);
+    }
+
+    public User findByEmailAndTel(String email, String tel) {
+        return userRepository.findByEmailAndTel(email, tel).orElse(null);
     }
 
 }
