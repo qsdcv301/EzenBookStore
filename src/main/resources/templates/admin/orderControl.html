@@ -93,16 +93,16 @@
             <td th:text="${order.orderItems.size()}">수량</td>
             <td th:text="${order.totalPrice}">총 결제 금액</td>
             <td>
-                <span th:switch="${order.status}">
-                    <span th:case="0">상품준비중</span>
-                    <span th:case="1">배송중</span>
-                    <span th:case="2">배송지 도착 및 배달 준비 중</span>
-                    <span th:case="3">배송완료</span>
-                    <span th:case="4">반송됨</span>
-                    <span th:case="5">배송 취소</span>
-                    <span th:case="*">알 수 없음</span>
-                </span>
+                <select class="form-control" name="status" th:value="${order.status}">
+                    <option value="0" th:selected="${order.status == 0}">상품준비중</option>
+                    <option value="1" th:selected="${order.status == 1}">배송중</option>
+                    <option value="2" th:selected="${order.status == 2}">배송지 도착 및 배달 준비 중</option>
+                    <option value="3" th:selected="${order.status == 3}">배송완료</option>
+                    <option value="4" th:selected="${order.status == 4}">반송됨</option>
+                    <option value="5" th:selected="${order.status == 5}">배송 취소</option>
+                </select>
             </td>
+
 
             <td>
                 <button class="btn btn-primary" th:data-target="'#orderDetailModal-' + ${order.id}" data-toggle="modal">상세</button>
@@ -171,7 +171,13 @@
 </div>
 
 
-
+<!--추가할 기능들
+    체크박스
+    배송상태 수정, 일괄수정
+    배송상태별 조회
+    이메일, 주문번호로 검색
+    주문 정렬
+ -->
 
 
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
@@ -188,21 +194,7 @@
         location.href = `/admin/order/search?searchType=${searchType}&keyword=${searchInput}`;
     }
 
-    function openModal(orderId) {
-        // 선택된 주문의 상세 정보를 모달에 표시하도록 설정
-        const order = ordersList.find(o => o.id === orderId); // 임시로 ordersList에서 id 검색
-        if (order) {
-            $('#modal-order-number').text(order.id);
-            $('#modal-user-day').text(order.productDay);
-            $('#modal-user-id').text(order.user.email);
-            $('#modal-user-name').text(order.user.name);
-            $('#modal-product-name').text(order.orderItems[0].productName); // 예시로 첫 번째 상품
-            $('#modal-quantity').text(order.orderItems.length);
-            $('#modal-total-price').text(order.totalPrice);
-            $('#modal-order-status').val(order.status);
-            $('#orderDetailModal').modal('show');
-        }
-    }
+
 </script>
 
 </body>
