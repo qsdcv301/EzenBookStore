@@ -13,10 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -25,6 +22,7 @@ import java.util.Random;
 
 @RequiredArgsConstructor
 @Controller
+@RequestMapping("/user")
 public class UserApiController {
 
     private static final String VERIFICATION_CODE_SESSION_KEY = "verificationCode";
@@ -37,25 +35,9 @@ public class UserApiController {
     private final OrdersService ordersService;
     private final EmailService emailService;
 
-    @GetMapping("/login")
-    public String login() {
-        return "login";
-    }
-
-    @GetMapping("/signup")
-    public String signupPage() {
-        return "signup";
-    }
-
     @PostMapping("/signup")
     public String signup(@ModelAttribute User user) {
         userService.create(user);
-        return "redirect:/login";
-    }
-
-    @GetMapping("/logout")
-    public String logout(HttpServletRequest request, HttpServletResponse response) {
-        new SecurityContextLogoutHandler().logout(request, response, SecurityContextHolder.getContext().getAuthentication());
         return "redirect:/login";
     }
 
@@ -82,7 +64,85 @@ public class UserApiController {
         return "redirect:/book/search";
     }
 
-    @PostMapping("/user/delete")
+    @PostMapping("/findId")
+    public ResponseEntity<Map<String, String>> findIdUser(@ModelAttribute User user) {
+        Map<String, String> response = new HashMap<>();
+        if (user == null) {
+            response.put("success", "false");
+            return ResponseEntity.ok(response); // 검색 실패 반환
+        }
+        try {
+            User findUser = userService.findByNameAndTel(user.getName(), user.getTel());
+            String email = findUser.getEmail();
+            String provider = findUser.getProvider();
+            response.put("success", "true");
+            response.put("email", email);
+            response.put("provider", provider);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", "false");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response); // 예외 발생 시 500 오류 반환
+        }
+    }
+
+    @PostMapping("/findPw")
+    public ResponseEntity<Map<String, String>> findPwUser(@ModelAttribute User user,
+                                                          @RequestParam String verificationCode,
+                                                          HttpSession session) {
+        Map<String, String> response = new HashMap<>();
+        String storedCode = (String) session.getAttribute(VERIFICATION_CODE_SESSION_KEY);
+
+        if (storedCode != null && storedCode.equals(verificationCode) && user != null) {
+            try {
+                User findUser = userService.findByEmailAndTel(user.getEmail(), user.getTel());
+                if (!findUser.getProvider().equals("ezen")) {
+                    response.put("success", "false");
+                    response.put("error", "간편 로그인 회원입니다.");
+                    return ResponseEntity.ok(response);
+                } else {
+                    response.put("success", "true");
+                    return ResponseEntity.ok(response);
+                }
+            } catch (Exception e) {
+                response.put("success", "false");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response); // 예외 발생 시 500 오류 반환
+            }
+        } else {
+            response.put("error", "이메일, 전화번호 혹은 인증번호가 정확하지 않습니다.");
+            return ResponseEntity.ok(response);
+        }
+    }
+
+    @PostMapping("/newPw")
+    public ResponseEntity<Map<String, Boolean>> newPwUser(@ModelAttribute User user) {
+        Map<String, Boolean> response = new HashMap<>();
+
+        try {
+            User findUser = userService.findByEmail(user.getEmail());
+            User newUser = User.builder()
+                    .id(findUser.getId())
+                    .provider(findUser.getProvider())
+                    .email(findUser.getEmail())
+                    .name(user.getName())
+                    .password(user.getPassword())
+                    .tel(findUser.getTel())
+                    .addr(findUser.getAddr())
+                    .addrextra(findUser.getAddrextra())
+                    .createdAt(findUser.getCreatedAt())
+                    .birthday(findUser.getBirthday())
+                    .grade(findUser.getGrade())
+                    .point(findUser.getPoint())
+                    .build();
+            userService.updatePass(newUser);
+            response.put("success", true);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response); // 예외 발생 시 500 오류 반환
+        }
+    }
+
+    @PostMapping("/delete")
     public ResponseEntity<Map<String, Boolean>> deleteUser(@RequestParam List<String> userId) {
         Map<String, Boolean> response = new HashMap<>();
 
@@ -124,7 +184,7 @@ public class UserApiController {
         }
     }
 
-    @PostMapping("/user/update")
+    @PostMapping("/update")
     public ResponseEntity<Map<String, Boolean>> updateUser(@RequestParam List<String> userId,
                                                            @RequestParam List<String> password,
                                                            @RequestParam List<String> tel,

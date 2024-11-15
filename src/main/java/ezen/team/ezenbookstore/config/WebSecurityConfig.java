@@ -33,7 +33,7 @@ public class WebSecurityConfig {
         http
                 // 인증 인가 설정
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/login", "/signup", "/user", "/payment", "/oauth2/**").permitAll() // OAuth2 로그인 경로 허용
+                        .requestMatchers("/js/**","/fonts/**","/css/**","/images/**","/login", "/signup","/user/**", "/book", "/oauth2/**","/book/detail" ,"/book/search", "/findIdPassword").permitAll() // OAuth2 로그인 경로 허용
                         .anyRequest().authenticated()
                 )
                 // 폼 기반 로그인 설정
@@ -45,7 +45,7 @@ public class WebSecurityConfig {
                 // OAuth2 로그인 설정
                 .oauth2Login(oauth2 -> oauth2
                         .loginPage("/login") // OAuth2 로그인 페이지
-                        .defaultSuccessUrl("/loginSuccess", true) // 로그인 성공 후 이동할 URL
+                        .defaultSuccessUrl("/user/loginSuccess", true) // 로그인 성공 후 이동할 URL
                 )
                 .logout(logout -> logout
                         .logoutSuccessUrl("/")
