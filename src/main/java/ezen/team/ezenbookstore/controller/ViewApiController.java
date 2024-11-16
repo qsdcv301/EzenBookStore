@@ -40,7 +40,8 @@ public class ViewApiController {
                 model.addAttribute("user", user);
                 model.addAttribute("userData", true);
             } else if (userData instanceof CustomOAuth2User customOAuth2User) {
-                model.addAttribute("user", customOAuth2User);
+                User customUser = userService.findByEmail(customOAuth2User.getEmail());
+                model.addAttribute("user", customUser);
                 model.addAttribute("userData", true);
             } else {
                 model.addAttribute("userData", false);

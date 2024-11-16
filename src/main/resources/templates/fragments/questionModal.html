@@ -1,4 +1,4 @@
-<div th:fragment="questionModal" class="modal fade" id="inquiryModal" tabindex="-1" role="dialog"
+<div th:fragment="questionModal" class="modal fade questionModal" id="inquiryModal" tabindex="-1" role="dialog"
      aria-labelledby="inquiryModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
@@ -14,13 +14,13 @@
             <div class="form-group row col-md-6">
               <label for="inquiryType" class="col-sm-4 col-form-label">문의 유형</label>
               <div class="col-sm-8">
-                <select class="form-control form-control-sm" id="inquiryType" required>
-                  <option value="">유형을 선택해주세요</option>
-                  <option value="order">주문/결제</option>
-                  <option value="delivery">배송</option>
-                  <option value="return">반품/교환</option>
-                  <option value="product">상품문의</option>
-                  <option value="other">기타</option>
+                <select class="form-control form-control-sm" id="inquiryType" required name="category">
+                  <option value="0">유형을 선택해주세요</option>
+                  <option value="1">주문/결제</option>
+                  <option value="2">배송</option>
+                  <option value="3">반품/교환</option>
+                  <option value="4">상품문의</option>
+                  <option value="5">기타</option>
                 </select>
               </div>
             </div>
@@ -28,34 +28,34 @@
             <div class="form-group row col-md-6">
               <label for="memberName" class="col-sm-4 col-form-label">회원명</label>
               <div class="col-sm-8">
-                <input type="text" value="${user.name}" class="form-control form-control-sm" id="memberName"
-                       required>
+                <input type="text" th:value="${user.name}" class="form-control form-control-sm" id="memberName" name="name"
+                       required readonly>
               </div>
             </div>
             <!--user.email-->
             <div class="form-group row col-md-6">
               <label for="memberEmail" class="col-sm-4 col-form-label">이메일</label>
               <div class="col-sm-8">
-                <input type="email" value="${user.email}" class="form-control form-control-sm"
-                       id="memberEmail" required>
+                <input type="email" th:value="${user.email}" class="form-control form-control-sm" name="email"
+                       id="memberEmail" required readonly>
               </div>
             </div>
             <!--user.tel-->
             <div class="form-group row col-md-6">
               <label for="phoneNumber" class="col-sm-4 col-form-label">전화번호</label>
               <div class="col-sm-8">
-                <input type="tel" value="${user.tel}" class="form-control form-control-sm" id="phoneNumber"
-                       required>
+                <input type="tel" th:value="${user.tel}" class="form-control form-control-sm" id="phoneNumber" name="tel"
+                       required readonly>
               </div>
             </div>
             <div class="form-group col-md-12">
               <label for="inquiryTitle">제목</label>
-              <input type="text" class="form-control form-control-sm" id="inquiryTitle"
+              <input type="text" class="form-control form-control-sm" id="inquiryTitle" name="title"
                      required>
             </div>
             <div class="form-group col-md-12">
               <label for="inquiryContent">문의내용</label>
-              <textarea class="form-control form-control-sm" id="inquiryContent" rows="5"
+              <textarea class="form-control form-control-sm" id="inquiryContent" rows="5" name="question"
                         required></textarea>
               <div class="custom-file mt-2">
                 <input type="file" class="custom-file-input" id="customFile">
@@ -67,7 +67,7 @@
       </div>
       <!-- 문의제출 버튼 클릭시 qna데이터베이스에 데이터 저장// 닫기 버튼 누를시 모달창 닫기-->
       <div class="modal-footer">
-        <button type="submit" class="btn btn-primary">문의 제출</button>
+        <button class="btn btn-primary questionModalBtn">문의 제출</button>
         <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
       </div>
     </div>

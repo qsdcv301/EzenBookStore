@@ -18,6 +18,36 @@ $(document).ready(function () {
         window.location.href = `/customerService?qnaPage=${qnaPage}&sort=${sort}`;
     });
 
+    //    questionModal
+    $('.questionModalBtn').click(function (e) {
+        e.preventDefault();
+        const email = $(this).closest('.questionModal').find('#memberEmail').val();
+        const category = $(this).closest('.questionModal').find('#inquiryType').val();
+        const title = $(this).closest('.questionModal').find('#inquiryTitle').val();
+        const question = $(this).closest('.questionModal').find('#inquiryContent').val();
+        $.ajax({
+            url: '/qna/add',
+            type: 'POST',
+            data: {
+                email: email,
+                category: category,
+                title: title,
+                question: question
+            },
+            success: function (response) {
+                if (response.success) {
+                    alert("문의를 작성 했습니다.");
+                    location.reload();
+                } else {
+                    alert("문의 작성에 실패했습니다.");
+                }
+            },
+            error: function () {
+                alert("서버 오류가 발생했습니다.");
+            }
+        });
+    })
+
     //     cart
     const shippingFeeThreshold = 15000; // 배송비가 무료가 되는 기준 금액
     const baseShippingFee = 3000; // 기본 배송비
