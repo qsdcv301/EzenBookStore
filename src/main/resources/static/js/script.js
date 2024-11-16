@@ -6,6 +6,17 @@ $(document).ready(function () {
         }
     });
 
+    $('.price').each(function() {
+        // 현재 요소의 텍스트 값을 숫자로 변환
+        let price = parseInt($(this).text().replace(/[^0-9]/g, ''), 10);
+
+        // 숫자를 천 단위로 구분하고 "원"을 붙임
+        let formattedPrice = price.toLocaleString("ko-KR") + "원";
+
+        // 요소의 텍스트를 포맷된 값으로 업데이트
+        $(this).text(formattedPrice);
+    });
+
     //    customerService
     $('#userQnASelect').change(function () {
         const sort = $('#userQnASelect option:selected').val();
@@ -436,6 +447,37 @@ $(document).ready(function () {
     // 출고 예정일 업데이트
     const formattedDate = `${year}년 ${month}월 ${date}일 (${day})`;
     $("#expected-shipping-date").text(formattedDate);
+
+    //     book
+    $('#bookSortOptions').change(function () {
+        // 선택된 <option> 요소의 data 속성 값을 가져옴
+        const selectedOption = $('#bookSortOptions option:selected').attr("data-option");
+        const selectedDirection = $('#bookSortOptions option:selected').attr("data-direction");
+
+        // 방향 설정
+        let direction;
+        if (selectedDirection === "low" || selectedDirection === "new") {
+            direction = "asc";
+        } else if (selectedDirection === "high") {
+            direction = "desc";
+        }
+
+        let urlParams = getUrlParams();
+        // undefined 값을 빈 문자열로 대체
+        const page = urlParams['page'] || "0";
+        const ifkr = urlParams['ifkr'] || "";
+        const category = urlParams['category'] || "";
+        const subcategory = urlParams['subcategory'] || "";
+
+        // URL 인코딩 적용
+        const encodedSort = encodeURIComponent(selectedOption);
+        const encodedDirection = encodeURIComponent(direction);
+        const encodedCategory = encodeURIComponent(category);
+        const encodedSubcategory = encodeURIComponent(subcategory);
+
+        // 페이지 리로드 및 쿼리 파라미터에 sort 추가
+        window.location.href = `/book?page=${page}&sort=${encodedSort}&direction=${encodedDirection}&ifkr=${ifkr}&category=${encodedCategory}&subcategory=${encodedSubcategory}`;
+    });
 
     //     bookSerach
 

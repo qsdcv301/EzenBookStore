@@ -100,4 +100,16 @@ public class BookService {
         return bookRepository.findAllBySubcategoryId(subcategoryId);
     }
 
+    public Page<Book> findAllByIfkrAndCategoryNameAndSubcategoryName(byte ifkr, String categoryName, String subcategoryName, Pageable pageable) {
+        return bookRepository.findAllByIfkrAndCategoryNameAndSubcategoryName(ifkr, categoryName, subcategoryName, pageable);
+    }
+
+    public Page<Book> findAllByIfkrAndCategoryName(byte ifkr, String categoryName, Pageable pageable) {
+        return bookRepository.findAllByIfkrAndCategoryName(ifkr, categoryName, pageable);
+    }
+
+    public Page<Book> findAllByIfkr(byte ifkr, Pageable pageable) {
+        return bookRepository.findAllByIfkr(ifkr, pageable);
+    }
+
 }

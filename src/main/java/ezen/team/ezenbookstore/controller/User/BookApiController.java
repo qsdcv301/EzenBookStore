@@ -41,7 +41,7 @@ public class BookApiController {
                 User customUser = userService.findByEmail(customOAuth2User.getEmail());
                 model.addAttribute("user", customUser);
                 model.addAttribute("userData", true);
-            }else{
+            } else {
                 model.addAttribute("userData", false);
             }
         } catch (Exception e) {
@@ -49,24 +49,62 @@ public class BookApiController {
         }
     }
 
-    @GetMapping("/search")
-    public String book(@RequestParam(name = "keyword", defaultValue = "", required = false) String keyword,
-                       @RequestParam(name = "val", defaultValue = "", required = false) String val,
-                       @RequestParam(name = "page", defaultValue = "0", required = false) int page,
-                       @RequestParam(name = "sort", defaultValue = "count", required = false) String sort,
+    @GetMapping
+    public String book(@RequestParam(name = "page", defaultValue = "0", required = false) int page,
+                       @RequestParam(name = "sort", defaultValue = "id", required = false) String sort,
                        @RequestParam(name = "direction", defaultValue = "asc", required = false) String direction,
                        @RequestParam(name = "ifkr", defaultValue = "", required = false) String ifkr,
                        @RequestParam(name = "category", defaultValue = "", required = false) String category,
                        @RequestParam(name = "subcategory", defaultValue = "", required = false) String subcategory,
                        Model model) {
+        // 페이지 설정
+        int size = 20;
+        Sort.Direction sortDirection = direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, sort));
+        Page<Book> bookList = null;
+        if (category.isEmpty() && subcategory.isEmpty() && ifkr.isEmpty()) {
+            bookList = bookService.findAll(pageable);  // 전체 데이터를 한 번 가져옴
+        } else {
+            byte ifkrValue = (byte) (ifkr.equals("1") ? 1 : 0);
+            if (!ifkr.isEmpty() && category.isEmpty() && subcategory.isEmpty()) {
+                bookList = bookService.findAllByIfkr(ifkrValue, pageable);
+            } else if (!ifkr.isEmpty() && !category.isEmpty() && subcategory.isEmpty()) {
+                bookList = bookService.findAllByIfkrAndCategoryName(ifkrValue, category, pageable);
+            } else if (!ifkr.isEmpty() && !category.isEmpty() && !subcategory.isEmpty()) {
+                bookList = bookService.findAllByIfkrAndCategoryNameAndSubcategoryName(ifkrValue, category,
+                        subcategory, pageable);
+            }
+        }
+        List<Category> categoryList = categoryService.findAll();
+        List<SubCategory> subCategoryList = subCategoryService.findAll();
+        model.addAttribute("sort", sort);
+        model.addAttribute("direction", direction);
+        model.addAttribute("bookList", bookList.getContent());
+        model.addAttribute("page", bookList);
+        model.addAttribute("categoryList", categoryList);
+        model.addAttribute("subCategoryList", subCategoryList);
+        model.addAttribute("ifkr", ifkr);
+        model.addAttribute("category", category);
+        model.addAttribute("subcategory", subcategory);
+        return "bookMain";
+    }
+
+    @GetMapping("/search")
+    public String bookSearch(@RequestParam(name = "keyword", defaultValue = "", required = false) String keyword,
+                             @RequestParam(name = "val", defaultValue = "", required = false) String val,
+                             @RequestParam(name = "page", defaultValue = "0", required = false) int page,
+                             @RequestParam(name = "sort", defaultValue = "count", required = false) String sort,
+                             @RequestParam(name = "direction", defaultValue = "asc", required = false) String direction,
+                             @RequestParam(name = "ifkr", defaultValue = "", required = false) String ifkr,
+                             @RequestParam(name = "category", defaultValue = "", required = false) String category,
+                             @RequestParam(name = "subcategory", defaultValue = "", required = false) String subcategory,
+                             Model model) {
 
         // 페이지 설정
         int size = 5;
         Sort.Direction sortDirection = direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, sort));
-
         List<Book> filteredBooks = new ArrayList<>();
-
         // 아무런 검색 조건이 없는 경우 모든 책을 조회
         if (keyword.isEmpty() && val.isEmpty() && category.isEmpty() && subcategory.isEmpty() && ifkr.isEmpty()) {
             List<Book> allBooks = bookService.findAll();  // 전체 데이터를 한 번 가져옴
@@ -213,7 +251,6 @@ public class BookApiController {
         model.addAttribute("ifkr", ifkr);
         model.addAttribute("category", category);
         model.addAttribute("subcategory", subcategory);
-
         return "bookSearch";
     }
 

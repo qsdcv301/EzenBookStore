@@ -28,4 +28,10 @@ public interface BookRepository extends JpaRepository<Book, Long> {
 
     List<Book> findAllBySubcategoryId(Long subCategoryId);
 
+    Page<Book> findAllByIfkrAndCategoryNameAndSubcategoryName(Byte ifkr, String categoryName, String subCategoryName, Pageable pageable);
+
+    Page<Book> findAllByIfkrAndCategoryName(Byte ifkr, String categoryName, Pageable pageable);
+
+    Page<Book> findAllByIfkr(Byte ifkr, Pageable pageable);
+
 }

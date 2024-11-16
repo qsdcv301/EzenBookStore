@@ -5,6 +5,8 @@ import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
+import java.util.List;
+
 @Data
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -21,5 +23,8 @@ public class Category {
 
     @Column(name = "name")
     private String name;
+
+    @OneToMany(mappedBy = "category")
+    List<SubCategory> subCategory;
 
 }
