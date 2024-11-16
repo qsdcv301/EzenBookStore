@@ -1,0 +1,204 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>고객 센터</title>
+    <link rel="canonical" href="https://getbootstrap.kr/docs/5.1/examples/blog/">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet">
+    <link href="/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="/css/style.css" rel="stylesheet"/>
+    <script src="/js/jquery-1.12.4.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/popper.min.js"></script>
+    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/script.js"></script>
+<body>
+<header th:replace="~{fragments/header :: header}"></header>
+<div class="container mt-5">
+    <h1 class="text-center mb-4">고객센터</h1>
+    <ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" data-toggle="tab" href="#notice" role="tab">공지사항</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#faq" role="tab">FAQ</a>
+        </li>
+        <li th:if="${userData}" class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#inquiry" role="tab">문의하기</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#terms" role="tab">이용약관</a>
+        </li>
+    </ul>
+    <!--공지사항탭 데이터베이스 연결필요 // 공지사항 목록들의 제목을 누르면 링크로 공지사항페이지로 이동할수 있도록 // notice테이블에 작성자 컬럼이 있으면 어떨지-->
+    <div class="tab-content mt-3">
+        <div class="tab-pane fade show active" id="notice" role="tabpanel">
+            <h3>공지사항</h3>
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>번호</th>
+                    <th>제목</th>
+                    <th>날짜</th>
+                    <th>항목</th>
+                </tr>
+                </thead>
+                <!--공지사항 임시데이터-->
+                <tbody>
+                <tr th:each="notice : ${notices}">
+                    <td th:text="${notice.id}"></td>
+                    <td><a href="#" th:text="${notice.title}"></a></td>
+                    <td th:text="${#dates.format(notice.createAt, 'yyyy-MM-dd')}"></td>
+                    <td>관리자</td>
+                </tr>
+                </tbody>
+                <!--공지사항 임시데이터-->
+            </table>
+            <!-- 페이징 -->
+            <!-- 페이징 -->
+            <nav aria-label="Page navigation" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    <!-- 첫 페이지 버튼 -->
+                    <li class="page-item" th:classappend="${noticePage.first} ? 'disabled' : ''">
+                        <a class="page-link"
+                           th:href="@{customerService(noticePage=0)}"
+                           aria-label="First">
+                            << 처음
+                        </a>
+                    </li>
+
+                    <!-- 이전 페이지 버튼 -->
+                    <li class="page-item"
+                        th:classappend="${noticePage.hasPrevious} ? '' : 'disabled'">
+                        <a class="page-link"
+                           th:href="@{/customerService(noticePage=${noticePage.number - 1})}"
+                           aria-label="Previous">
+                            이전
+                        </a>
+                    </li>
+
+                    <!-- 페이지 번호 버튼 (최대 5개까지 보이도록 설정) -->
+                    <li class="page-item"
+                        th:each="i : ${#numbers.sequence(
+                                                noticePage.totalPages <= 5 ? 0 : (noticePage.number <= 2 ? 0 : (noticePage.number >= noticePage.totalPages - 3 ? noticePage.totalPages - 5 : noticePage.number - 2)),
+                                                noticePage.totalPages <= 5 ? noticePage.totalPages - 1 : (noticePage.number <= 2 ? 4 : (noticePage.number >= noticePage.totalPages - 3 ? noticePage.totalPages - 1 : noticePage.number + 2))
+                                                )}"
+                        th:classappend="${noticePage.number == i} ? 'active' : ''">
+                        <a class="page-link"
+                           th:href="@{/customerService(noticePage=${i})}"
+                           th:text="${i + 1}"></a>
+                    </li>
+
+                    <!-- 다음 페이지 버튼 -->
+                    <li class="page-item" th:classappend="${noticePage.hasNext} ? '' : 'disabled'">
+                        <a class="page-link"
+                           th:href="@{/customerService(noticePage=${noticePage.number + 1})}"
+                           aria-label="Next">
+                            다음
+                        </a>
+                    </li>
+
+                    <!-- 맨 뒤 페이지 버튼 -->
+                    <li class="page-item" th:classappend="${noticePage.last} ? 'disabled' : ''">
+                        <a class="page-link"
+                           th:href="@{/customerService(noticePage=${noticePage.totalPages - 1})}"
+                           aria-label="Last">
+                            끝 >>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        <!--공지사항탭 끝-->
+
+        <!--faq 페이지안에 직접 내용 삽입할것임-->
+        <div th:replace="~{fragments/FAQ :: FAQ}"></div>
+        <!--faq탭 끝-->
+
+        <!--문의하기탭 데이터베이스 연결필요-->
+        <div th:if="${userData}" class="tab-pane fade" id="inquiry" role="tabpanel">
+            <h3>문의하기</h3>
+
+            <div class="card mb-4">
+                <div class="card-header text-left">
+                        <span style="font-size: 20px;">나의 문의 내역<small class="text-muted"
+                                                                      style="font-size: 15px; margin-left: 20px;">자세한 문의 내용을 보려면 상세보기를 눌러주세요.</small></span>
+                    <div class="float-right">
+                        <select class="custom-select mr-2" style="width: 150px;">
+                            <option selected>문의 유형</option>
+                            <option value="1">전체보기</option>
+                            <option value="2">주문/결제</option>
+                            <option value="3">배송</option>
+                            <option value="4">반품/교환</option>
+                            <option value="5">상품문의</option>
+                            <option value="6">기타</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <table class="dataframe table table-striped">
+                        <thead>
+                        <tr>
+                            <th>번호</th>
+                            <th>유형</th>
+                            <th>제목</th>
+                            <th>날짜</th>
+                            <th>답변상태</th>
+                            <th>상세보기</th>
+                        </tr>
+                        </thead>
+                        <!-- 나의 문의하기 임시 데이터 // qna테이블에 답변상태도 저장할수있어야 할것 같음 -->
+                        <tbody>
+                        <tr>
+                            <td>1 th:text=${qna.id}</td>
+                            <td>주문/결제 th:text=${qna.category}</td>
+                            <td>주문 결제 오류 문의 th:text=${qna.title}</td>
+                            <td>2024-10-17 th:text=${qna.create_at}</td>
+                            <td>답변완료 th:text=${qna.answer_status}</td>
+                            <td><a href="#" class="btn btn-primary">상세보기</a></td>
+                        </tr>
+                        </tbody>
+                        <!-- 나의 문의하기 임시 데이터 -->
+                    </table>
+                </div>
+                <div class="card-footer">
+                    <!-- 페이징 -->
+                    <nav aria-label="Page navigation" class="mt-3">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#" tabindex="-1" aria-disabled="true">이전</a>
+                            </li>
+                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                            <li class="page-item"><a class="page-link" href="#">2</a></li>
+                            <li class="page-item"><a class="page-link" href="#">3</a></li>
+                            <li class="page-item">
+                                <a class="page-link" href="#">다음</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+            <div class="d-flex justify-content-center mb-4">
+                <button type="button" class="btn btn-lg btn-primary" style="width: 300px;" data-toggle="modal"
+                        data-target="#inquiryModal">
+                    문의하기
+                </button>
+            </div>
+
+            <!--문의하기 모달 데이터베이스 연결필요-->
+            <div th:replace="~{fragments/questionModal :: questionModal}"></div>
+            <!--문의하기 모달 끝-->
+        </div>
+        <!--문의하기탭 끝-->
+
+        <!--이용약관탭-->
+        <div th:replace="~{fragments/termsOfService :: termsOfService}"></div>
+        <!--이용약관탭 끝-->
+    </div>
+</div>
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

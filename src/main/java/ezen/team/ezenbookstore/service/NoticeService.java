@@ -3,6 +3,8 @@ package ezen.team.ezenbookstore.service;
 import ezen.team.ezenbookstore.entity.Notice;
 import ezen.team.ezenbookstore.repository.NoticeRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -39,6 +41,10 @@ public class NoticeService {
 
     public void delete(Long id) {
         noticeRepository.deleteById(id);
+    }
+
+    public Page<Notice> findAll(Pageable pageable) {
+        return noticeRepository.findAll(pageable);
     }
 
 }

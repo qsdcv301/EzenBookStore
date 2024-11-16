@@ -300,7 +300,9 @@
 </div>
 <a href="#pageTop" class="btn btn-primary btn-lg position-fixed bottom-0 end-0 m-5" role="button"
    aria-label="맨 위로 이동">top</a>
-<div th:replace="~{fragments/paymentModal :: paymentModal}"></div>
+<th:block th:if="${userData}">
+    <div th:replace="~{fragments/paymentModal :: paymentModal}"></div>
+</th:block>
 <footer th:replace="~{fragments/footer :: footer}"></footer>
 </body>
 </html>

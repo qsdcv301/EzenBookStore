@@ -55,11 +55,20 @@
                 <label class="form-label">수량:</label>
                 <input type="number" class="form-control quantity" value="1" min="1" style="width: 100px;">
             </div>
-            <button class="btn btn-primary me-2 cartAdd" th:data-book-id="${book.id}"
+            <button th:if="${userData}" class="btn btn-primary me-2 cartAdd" th:data-book-id="${book.id}"
                     th:data-type="selected">
                 <i class="bi bi-cart-plus"></i> 장바구니 담기
             </button>
-            <button class="btn btn-success me-2 paymentModalBtn" th:data-type="selected"
+            <button th:if="${userData}" class="btn btn-success me-2 paymentModalBtn" th:data-type="selected"
+                    data-toggle="modal"
+                    data-target="#paymentModal">
+                <i class="bi bi-credit-card"></i> 바로 구매하기
+            </button>
+            <button th:unless="${userData}" class="btn btn-primary me-2 loginCheck" th:data-book-id="${book.id}"
+                    th:data-type="selected">
+                <i class="bi bi-cart-plus"></i> 장바구니 담기
+            </button>
+            <button th:unless="${userData}" class="btn btn-success me-2 loginCheck" th:data-type="selected"
                     data-toggle="modal"
                     data-target="#paymentModal">
                 <i class="bi bi-credit-card"></i> 바로 구매하기
@@ -128,7 +137,9 @@
         </div>
     </div>
 </div>
-<div th:replace="~{fragments/paymentModal :: paymentModal}"></div>
+<th:block th:if="${userData}">
+    <div th:replace="~{fragments/paymentModal :: paymentModal}"></div>
+</th:block>
 <footer th:replace="~{fragments/footer :: footer}"></footer>
 </body>
 </html>

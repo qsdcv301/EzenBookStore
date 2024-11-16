@@ -1,5 +1,12 @@
 $(document).ready(function () {
-//     cart
+    $('.loginCheck').click(function (e) {
+        e.preventDefault();
+        if(confirm("로그인이 필요합니다. 로그인 페이지로 이동할까요?")){
+            location.replace("/login");
+        }
+    });
+
+    //     cart
     const shippingFeeThreshold = 15000; // 배송비가 무료가 되는 기준 금액
     const baseShippingFee = 3000; // 기본 배송비
 

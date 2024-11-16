@@ -33,8 +33,8 @@ public class WebSecurityConfig {
         http
                 // 인증 인가 설정
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/js/**","/fonts/**","/css/**","/images/**","/login", "/signup","/user/**", "/book", "/oauth2/**","/book/detail" ,"/book/search", "/findIdPassword").permitAll() // OAuth2 로그인 경로 허용
-                        .anyRequest().authenticated()
+                        .requestMatchers("/admin/payment/").authenticated() // OAuth2 로그인 경로 허용
+                        .anyRequest().permitAll()
                 )
                 // 폼 기반 로그인 설정
                 .formLogin(form -> form

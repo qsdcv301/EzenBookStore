@@ -1,18 +1,18 @@
 package ezen.team.ezenbookstore.controller.User;
 
-import ezen.team.ezenbookstore.entity.Book;
-import ezen.team.ezenbookstore.entity.Category;
-import ezen.team.ezenbookstore.entity.SubCategory;
-import ezen.team.ezenbookstore.entity.User;
+import ezen.team.ezenbookstore.entity.*;
 import ezen.team.ezenbookstore.service.BookService;
 import ezen.team.ezenbookstore.service.CategoryService;
 import ezen.team.ezenbookstore.service.SubCategoryService;
 import ezen.team.ezenbookstore.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -25,9 +25,27 @@ import java.util.stream.Collectors;
 public class BookApiController {
 
     private final BookService bookService;
-    private final UserService userService;
     private final CategoryService categoryService;
     private final SubCategoryService subCategoryService;
+
+    @ModelAttribute
+    public void findUser(Model model) {
+        try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            Object userData = auth.getPrincipal();
+            if (userData instanceof User user) {
+                model.addAttribute("user", user);
+                model.addAttribute("userData", true);
+            } else if (userData instanceof CustomOAuth2User customOAuth2User) {
+                model.addAttribute("user", customOAuth2User);
+                model.addAttribute("userData", true);
+            }else{
+                model.addAttribute("userData", false);
+            }
+        } catch (Exception e) {
+            model.addAttribute("userData", false);
+        }
+    }
 
     @GetMapping("/search")
     public String book(@RequestParam(name = "keyword", defaultValue = "", required = false) String keyword,
@@ -39,10 +57,6 @@ public class BookApiController {
                        @RequestParam(name = "category", defaultValue = "", required = false) String category,
                        @RequestParam(name = "subcategory", defaultValue = "", required = false) String subcategory,
                        Model model) {
-
-        String userEmail = userService.getUserEmail();
-        User user = userService.findByEmail(userEmail);
-        model.addAttribute("user", user);
 
         // 페이지 설정
         int size = 5;
@@ -204,8 +218,6 @@ public class BookApiController {
 
     @GetMapping("/detail")
     public String bookDetail(@RequestParam(name = "bookId") Long bookId, Model model) {
-        String userEmail = userService.getUserEmail();
-        User user = userService.findByEmail(userEmail);
         Book book = bookService.findById(bookId);
         Book newBook = Book.builder()
                 .id(book.getId())
@@ -225,7 +237,6 @@ public class BookApiController {
                 .review(book.getReview())
                 .build();
         bookService.update(bookId, newBook);
-        model.addAttribute("user", user);
         model.addAttribute("book", book);
         return "bookDetail";
     }
