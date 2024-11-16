@@ -3,6 +3,8 @@ package ezen.team.ezenbookstore.service;
 import ezen.team.ezenbookstore.entity.QnA;
 import ezen.team.ezenbookstore.repository.QnARepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -45,5 +47,17 @@ public class QnAService {
     public List<QnA> findAllByUserId(Long userId) {
         return qnARepository.findAllByUserId(userId);
     }
-    
+
+    public Page<QnA> findAll(Pageable pageable) {
+        return qnARepository.findAll(pageable);
+    }
+
+    public Page<QnA> findAllByUserId(Long userId, Pageable pageable) {
+        return qnARepository.findAllByUserId(userId, pageable);
+    }
+
+    public Page<QnA> findAllByUserIdAndCategory(Long userId, Byte category, Pageable pageable) {
+        return qnARepository.findAllByUserIdAndCategory(userId, category, pageable);
+    }
+
 }

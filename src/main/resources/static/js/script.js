@@ -6,6 +6,18 @@ $(document).ready(function () {
         }
     });
 
+    //    customerService
+    $('#userQnASelect').change(function () {
+        const sort = $('#userQnASelect option:selected').val();
+
+        // 현재 URL에서 qnaPage 값을 추출
+        const urlParams = new URLSearchParams(window.location.search);
+        const qnaPage = urlParams.has('qnaPage') ? urlParams.get('qnaPage') : 0;
+
+        // 새로운 URL로 리디렉션
+        window.location.href = `/customerService?qnaPage=${qnaPage}&sort=${sort}`;
+    });
+
     //     cart
     const shippingFeeThreshold = 15000; // 배송비가 무료가 되는 기준 금액
     const baseShippingFee = 3000; // 기본 배송비

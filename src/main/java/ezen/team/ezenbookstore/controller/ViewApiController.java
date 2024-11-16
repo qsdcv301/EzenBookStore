@@ -2,8 +2,11 @@ package ezen.team.ezenbookstore.controller;
 
 import ezen.team.ezenbookstore.entity.CustomOAuth2User;
 import ezen.team.ezenbookstore.entity.Notice;
+import ezen.team.ezenbookstore.entity.QnA;
 import ezen.team.ezenbookstore.entity.User;
 import ezen.team.ezenbookstore.service.NoticeService;
+import ezen.team.ezenbookstore.service.QnAService;
+import ezen.team.ezenbookstore.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +28,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class ViewApiController {
 
     private final NoticeService noticeService;
+    private final QnAService qnAService;
+    private final UserService userService;
 
     @ModelAttribute
     public void findUser(Model model) {
@@ -37,7 +42,7 @@ public class ViewApiController {
             } else if (userData instanceof CustomOAuth2User customOAuth2User) {
                 model.addAttribute("user", customOAuth2User);
                 model.addAttribute("userData", true);
-            }else{
+            } else {
                 model.addAttribute("userData", false);
             }
         } catch (Exception e) {
@@ -52,7 +57,8 @@ public class ViewApiController {
 
     @GetMapping("/logout")
     public String logout(HttpServletRequest request, HttpServletResponse response) {
-        new SecurityContextLogoutHandler().logout(request, response, SecurityContextHolder.getContext().getAuthentication());
+        new SecurityContextLogoutHandler().logout(request, response,
+                SecurityContextHolder.getContext().getAuthentication());
         return "redirect:/login";
     }
 
@@ -69,14 +75,38 @@ public class ViewApiController {
     @GetMapping("/customerService")
     public String customerService(@RequestParam(name = "noticePage", defaultValue = "0", required = false) int noticePage,
                                   @RequestParam(name = "qPage", defaultValue = "0", required = false) int qPage,
+                                  @RequestParam(name = "sort", defaultValue = "0", required = false) byte sort,
                                   Model model) {
+        String userEmail = null;
         int size = 10;
         Sort.Direction sortDirection = Sort.Direction.DESC;
+        try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            Object userData = auth.getPrincipal();
+            if (userData instanceof User user) {
+                userEmail = user.getEmail();
+            } else if (userData instanceof CustomOAuth2User customOAuth2User) {
+                User customUser = userService.findByEmail(customOAuth2User.getEmail());
+                userEmail = customUser.getEmail();
+            }
+            Long userId = userService.findByEmail(userEmail).getId();
+            Pageable qPageable = PageRequest.of(qPage, size, Sort.by(sortDirection, "id"));
+            Page<QnA> qPaging;
+            if (sort == 0) {
+                qPaging = qnAService.findAllByUserId(userId, qPageable);
+            } else {
+                qPaging = qnAService.findAllByUserIdAndCategory(userId, sort, qPageable);
+            }
+            model.addAttribute("questionList", qPaging.getContent());
+            model.addAttribute("qnaPage", qPaging);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         Pageable noticePageable = PageRequest.of(noticePage, size, Sort.by(sortDirection, "id"));
         Page<Notice> noticePaging = noticeService.findAll(noticePageable);
-
         model.addAttribute("notices", noticePaging.getContent());
         model.addAttribute("noticePage", noticePaging);
+        model.addAttribute("sort",sort);
         return "customerService";
     }
 
