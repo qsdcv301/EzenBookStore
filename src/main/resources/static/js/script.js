@@ -1,7 +1,7 @@
 $(document).ready(function () {
     $('.loginCheck').click(function (e) {
         e.preventDefault();
-        if(confirm("로그인이 필요합니다. 로그인 페이지로 이동할까요?")){
+        if (confirm("로그인이 필요합니다. 로그인 페이지로 이동할까요?")) {
             location.replace("/login");
         }
     });
@@ -25,6 +25,18 @@ $(document).ready(function () {
         const category = $(this).closest('.questionModal').find('#inquiryType').val();
         const title = $(this).closest('.questionModal').find('#inquiryTitle').val();
         const question = $(this).closest('.questionModal').find('#inquiryContent').val();
+        if (category === "0") {
+            alert("문의 유형을 선택해주세요.");
+            return;
+        }
+        if (title.trim() === "") {
+            alert("제목을 작성 해주세요.");
+            return;
+        }
+        if (question.trim() === "") {
+            alert("문의 내용을 작성 해주세요.");
+            return;
+        }
         $.ajax({
             url: '/qna/add',
             type: 'POST',
@@ -595,7 +607,7 @@ $(document).ready(function () {
                 tel: tel
             },
             success: function (response) {
-                if (response.success==="true") {
+                if (response.success === "true") {
                     $('#idResult').html(`당신의 아이디는 ${response.email} 입니다.`).show();
                     $('#providerResult').html(`당신의 가입경로는 ${response.provider} 입니다.`).show();
                 } else {
@@ -620,7 +632,7 @@ $(document).ready(function () {
             url: '/user/findPw',
             data: {tel: tel, email: email, verificationCode: verificationCode},
             success: function (response) {
-                if (response.success==="true") {
+                if (response.success === "true") {
                     $("#initialForm").hide();
                     $("#afterFind").show();
                     $("#hiddenEmail").val(response.email);
@@ -652,7 +664,7 @@ $(document).ready(function () {
             url: '/user/newPw',
             data: {email: email, password: password},
             success: function (response) {
-                if (response.success==="true") {
+                if (response.success === "true") {
                     $('#pwResultSuccess').html('비밀번호 변경 되었습니다.').show();
                     if (confirm("비밀번호가 변경 되었습니다. 로그인 화면으로 이동할까요?")) {
                         location.replace("/login");

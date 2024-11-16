@@ -166,7 +166,7 @@
                                 <span th:case="5">기타</span>
                             </td>
                             <td class="align-middle" th:text="${qna.title}"></td>
-                            <td class="align-middle" th:text="${qna.createAt}"></td>
+                            <td class="align-middle" th:text="${#dates.format(qna.createAt, 'yyyy-MM-dd')}"></td>
                             <td class="text-danger align-middle" th:if="${qna.answer==''}">답변 대기</td>
                             <td class="text-success align-middle" th:unless="${qna.answer==''}">답변 완료</td>
                             <td class="d-flex align-items-center align-middle"><a href="#" class="btn btn-primary">상세보기</a></td>
