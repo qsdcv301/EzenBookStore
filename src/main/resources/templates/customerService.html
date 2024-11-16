@@ -146,7 +146,7 @@
                     <table class="dataframe table table-striped">
                         <thead>
                         <tr>
-                            <th th:text="*{sort}">번호</th>
+                            <th>번호</th>
                             <th>유형</th>
                             <th>제목</th>
                             <th>날짜</th>
@@ -157,19 +157,19 @@
                         <!-- 나의 문의하기 임시 데이터 // qna테이블에 답변상태도 저장할수있어야 할것 같음 -->
                         <tbody>
                         <tr th:each="qna : ${questionList}">
-                            <td th:text="${qna.id}"></td>
-                            <td th:switch="${qna.category}">
+                            <td class="align-middle" th:text="${qna.id}"></td>
+                            <td class="align-middle" th:switch="${qna.category}">
                                 <span th:case="1">주문/결제</span>
                                 <span th:case="2">배송</span>
                                 <span th:case="3">반품/교환</span>
                                 <span th:case="4">상품문의</span>
                                 <span th:case="5">기타</span>
                             </td>
-                            <td th:text="${qna.title}"></td>
-                            <td th:text="${qna.createAt}"></td>
-                            <td class="text-danger" th:if="${qna.answer==''}">답변 대기</td>
-                            <td class="text-success" th:unless="${qna.answer==''}">답변 완료</td>
-                            <td><a href="#" class="btn btn-primary">상세보기</a></td>
+                            <td class="align-middle" th:text="${qna.title}"></td>
+                            <td class="align-middle" th:text="${qna.createAt}"></td>
+                            <td class="text-danger align-middle" th:if="${qna.answer==''}">답변 대기</td>
+                            <td class="text-success align-middle" th:unless="${qna.answer==''}">답변 완료</td>
+                            <td class="d-flex align-items-center align-middle"><a href="#" class="btn btn-primary">상세보기</a></td>
                         </tr>
                         </tbody>
                         <!-- 나의 문의하기 임시 데이터 -->
