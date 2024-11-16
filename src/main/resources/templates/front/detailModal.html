@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>고객센터</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">고객센터</h1>
+        <ul class="nav nav-tabs" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" data-toggle="tab" href="#notice" role="tab">공지사항</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#faq" role="tab">FAQ</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#inquiry" role="tab">문의하기</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#terms" role="tab">이용약관</a>
+            </li>
+        </ul>
+
+
+
+            <!--문의하기탭 데이터베이스 연결필요-->
+            <div class="tab-pane fade" id="inquiry" role="tabpanel">
+                <h3>문의하기</h3>
+
+                <div class="card mb-4">
+                    <div class="card-header text-left">
+                        <span style="font-size: 20px;">나의 문의 내역<small class="text-muted"
+                                style="font-size: 15px; margin-left: 20px;">자세한 문의 내용을 보려면 상세보기를 눌러주세요.</small></span>
+                        <div class="float-right">
+                            <select class="custom-select mr-2" style="width: 150px;">
+                                <option selected>문의 유형</option>
+                                <option value="1">전체보기</option>
+                                <option value="2">주문/결제</option>
+                                <option value="3">배송</option>
+                                <option value="4">반품/교환</option>
+                                <option value="5">상품문의</option>
+                                <option value="6">기타</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <table class="dataframe table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>번호</th>
+                                    <th>유형</th>
+                                    <th>제목</th>
+                                    <th>날짜</th>
+                                    <th>답변상태</th>
+                                    <th>상세보기</th>
+                                </tr>
+                            </thead>
+                            <!-- 나의 문의하기 임시 데이터 // qna테이블에 답변상태도 저장할수있어야 할것 같음 -->
+                            <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td>주문/결제</td>
+                                    <td>주문 결제 오류 문의</td>
+                                    <td>2024-10-17</td>
+                                    <td>답변완료</td>
+                                    <td class="d-flex align-items-center align-middle">
+                                        <a href="#" class="btn btn-primary" data-toggle="modal"
+                                            data-target="#inquiryDetailModal">상세보기</a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td>배송</td>
+                                    <td>배송 지연 문의</td>
+                                    <td>2024-10-18</td>
+                                    <td>답변대기</td>
+                                    <td class="d-flex align-items-center align-middle">
+                                        <a href="#" class="btn btn-primary" data-toggle="modal"
+                                            data-target="#inquiryDetailModalWaiting">상세보기</a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <!-- 나의 문의하기 임시 데이터 -->
+                        </table>
+
+                        <!-- 상세보기 모달 (답변완료) -->
+                        <div class="modal fade" id="inquiryDetailModal" tabindex="-1" role="dialog"
+                            aria-labelledby="inquiryDetailModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-lg" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h4 class="modal-title" id="inquiryDetailModalLabel">문의 상세 내용</h4>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form>
+                                            <div class="row">
+                                                <div class="form-group row col-md-6">
+                                                    <label for="inquiryTypeDetail" class="col-sm-4 col-form-label">문의
+                                                        유형</label>
+                                                    <div class="col-sm-8">
+                                                        <input type="text" class="form-control" id="inquiryTypeDetail"
+                                                            value="주문/결제" disabled>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row col-md-6">
+                                                    <label for="memberNameDetail"
+                                                        class="col-sm-4 col-form-label">회원명</label>
+                                                    <div class="col-sm-8">
+                                                        <input type="text" class="form-control" id="memberNameDetail"
+                                                            value="페이커" disabled>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row col-md-6">
+                                                    <label for="memberEmailDetail"
+                                                        class="col-sm-4 col-form-label">이메일</label>
+                                                    <div class="col-sm-8">
+                                                        <input type="email" class="form-control" id="memberEmailDetail"
+                                                            value="faker@sktt1.com" disabled>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row col-md-6">
+                                                    <label for="phoneNumberDetail"
+                                                        class="col-sm-4 col-form-label">전화번호</label>
+                                                    <div class="col-sm-8">
+                                                        <input type="tel" class="form-control" id="phoneNumberDetail"
+                                                            value="010-1234-5678" disabled>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group col-md-12">
+                                                    <label for="inquiryTitleDetail">제목</label>
+                                                    <input type="text" class="form-control" id="inquiryTitleDetail"
+                                                        value="주문 결제 오류 문의" disabled>
+                                                </div>
+                                                <div class="form-group col-md-12">
+                                                    <label for="inquiryContentDetail">문의내용</label>
+                                                    <textarea class="form-control" id="inquiryContentDetail" rows="5"
+                                                        disabled>결제 중에 오류가 발생했습니다 확인 부탁드립니다.</textarea>
+                                                </div>
+                                            </div>
+                                        </form>
+
+                                        <!-- 관리자 답변 영역 -->
+                                        <div id="adminReplyArea" class="mt-4">
+                                            <h5>관리자 답변</h5>
+                                            <div class="card">
+                                                <div class="card-body">
+                                                    <p id="adminReplyContent">안녕하세요. 문의 주셔서 감사합니다. 해당 오류는 현재 확인 중이며, 빠른
+                                                        시일 내에 해결하도록 하겠습니다.</p>
+                                                    <small class="text-muted" id="adminReplyDate">답변 일시: 2024-10-18
+                                                        14:30</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 상세보기 모달 (답변완료) 끝-->
+
+                        <!-- 상세보기 모달 (답변대기) -->
+                        <div class="modal fade" id="inquiryDetailModalWaiting" tabindex="-1" role="dialog"
+                            aria-labelledby="inquiryDetailModalWaitingLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-lg" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h4 class="modal-title" id="inquiryDetailModalWaitingLabel">문의 상세 내용</h4>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form>
+                                            <div class="row">
+                                                <div class="form-group row col-md-6">
+                                                    <label for="inquiryTypeDetailWaiting"
+                                                        class="col-sm-4 col-form-label">문의 유형</label>
+                                                    <div class="col-sm-8">
+                                                        <input type="text" class="form-control"
+                                                            id="inquiryTypeDetailWaiting" value="배송" disabled>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row col-md-6">
+                                                    <label for="memberNameDetailWaiting"
+                                                        class="col-sm-4 col-form-label">회원명</label>
+                                                    <div class="col-sm-8">
+                                                        <input type="text" class="form-control"
+                                                            id="memberNameDetailWaiting" value="임창정" disabled>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row col-md-6">
+                                                    <label for="memberEmailDetailWaiting"
+                                                        class="col-sm-4 col-form-label">이메일</label>
+                                                    <div class="col-sm-8">
+                                                        <input type="email" class="form-control"
+                                                            id="memberEmailDetailWaiting" value="im@changjeong.com"
+                                                            disabled>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row col-md-6">
+                                                    <label for="phoneNumberDetailWaiting"
+                                                        class="col-sm-4 col-form-label">전화번호</label>
+                                                    <div class="col-sm-8">
+                                                        <input type="tel" class="form-control"
+                                                            id="phoneNumberDetailWaiting" value="010-9876-5432"
+                                                            disabled>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group col-md-12">
+                                                    <label for="inquiryTitleDetailWaiting">제목</label>
+                                                    <input type="text" class="form-control"
+                                                        id="inquiryTitleDetailWaiting" value="배송 지연 문의" disabled>
+                                                </div>
+                                                <div class="form-group col-md-12">
+                                                    <label for="inquiryContentDetailWaiting">문의내용</label>
+                                                    <textarea class="form-control" id="inquiryContentDetailWaiting"
+                                                        rows="5" disabled>상품이 아직 도착하지 않았는데 확인부탁드립니다.</textarea>
+                                                </div>
+                                            </div>
+                                        </form>
+
+                                        <!-- 관리자 답변 대기 영역 -->
+                                        <div id="adminReplyAreaWaiting" class="mt-4">
+                                            <h5>관리자 답변</h5>
+                                            <div class="alert alert-info" role="alert">
+                                                관리자 답변을 기다리고 있습니다. 빠른 시일 내에 답변 드리겠습니다.
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--상세보기 모달 (답변대기) 끝-->
+
+                    </div>
+                    <div class="card-footer">
+                        <!-- 페이징 -->
+                        <nav aria-label="Page navigation" class="mt-3">
+                            <ul class="pagination justify-content-center">
+                                <li class="page-item disabled">
+                                    <a class="page-link" href="#" tabindex="-1" aria-disabled="true">이전</a>
+                                </li>
+                                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                <li class="page-item">
+                                    <a class="page-link" href="#">다음</a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-center mb-4">
+                    <button type="button" class="btn btn-lg btn-primary" style="width: 300px;" data-toggle="modal"
+                        data-target="#inquiryModal">
+                        문의하기
+                    </button>
+                </div>
+
+                <!--문의하기 모달 데이터베이스 연결필요-->
+                <div class="modal fade" id="inquiryModal" tabindex="-1" role="dialog"
+                    aria-labelledby="inquiryModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title" id="inquiryModalLabel">관리자에게 문의하기</h4>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form>
+                                    <div class="row">
+                                        <div class="form-group row col-md-6">
+                                            <label for="inquiryType" class="col-sm-4 col-form-label">문의 유형</label>
+                                            <div class="col-sm-8">
+                                                <select class="form-control form-control-sm" id="inquiryType" required>
+                                                    <option value="">유형을 선택해주세요</option>
+                                                    <option value="order">주문/결제</option>
+                                                    <option value="delivery">배송</option>
+                                                    <option value="return">반품/교환</option>
+                                                    <option value="product">상품문의</option>
+                                                    <option value="other">기타</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <!--user.name-->
+                                        <div class="form-group row col-md-6">
+                                            <label for="memberName" class="col-sm-4 col-form-label">회원명</label>
+                                            <div class="col-sm-8">
+                                                <input type="text" value="${user.name}"
+                                                    class="form-control form-control-sm" id="memberName" required>
+                                            </div>
+                                        </div>
+                                        <!--user.email-->
+                                        <div class="form-group row col-md-6">
+                                            <label for="memberEmail" class="col-sm-4 col-form-label">이메일</label>
+                                            <div class="col-sm-8">
+                                                <input type="email" value="${user.email}"
+                                                    class="form-control form-control-sm" id="memberEmail" required>
+                                            </div>
+                                        </div>
+                                        <!--user.tel-->
+                                        <div class="form-group row col-md-6">
+                                            <label for="phoneNumber" class="col-sm-4 col-form-label">전화번호</label>
+                                            <div class="col-sm-8">
+                                                <input type="tel" value="${user.tel}"
+                                                    class="form-control form-control-sm" id="phoneNumber" required>
+                                            </div>
+                                        </div>
+                                        <div class="form-group col-md-12">
+                                            <label for="inquiryTitle">제목</label>
+                                            <input type="text" class="form-control form-control-sm" id="inquiryTitle"
+                                                required>
+                                        </div>
+                                        <div class="form-group col-md-12">
+                                            <label for="inquiryContent">문의내용</label>
+                                            <textarea class="form-control form-control-sm" id="inquiryContent" rows="5"
+                                                required></textarea>
+                                            <div class="custom-file mt-2">
+                                                <input type="file" class="custom-file-input" id="customFile">
+                                                <label class="custom-file-label" for="customFile">파일을 첨부해주세요.</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <!-- 문의제출 버튼 클릭시 qna데이터베이스에 데이터 저장// 닫기 버튼 누를시 모달창 닫기-->
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-primary">문의 제출</button>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--문의하기 모달 끝-->
+            </div>
+            <!--문의하기탭 끝-->
+
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+
+</html>
