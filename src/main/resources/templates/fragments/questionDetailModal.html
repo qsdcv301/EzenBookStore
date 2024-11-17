@@ -1,0 +1,79 @@
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<div th:fragment="questionDetailModal" class="modal fade" id="inquiryDetailModal" tabindex="-1" role="dialog"
+     aria-labelledby="inquiryDetailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="inquiryDetailModalLabel">문의 상세 내용</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <div class="row">
+                        <div class="form-group row col-md-6">
+                            <label for="inquiryTypeDetail" class="col-sm-4 col-form-label">문의
+                                유형</label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" id="inquiryTypeDetail"
+                                       value="주문/결제" disabled>
+                            </div>
+                        </div>
+                        <div class="form-group row col-md-6">
+                            <label for="memberNameDetail"
+                                   class="col-sm-4 col-form-label">회원명</label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" id="memberNameDetail" disabled>
+                            </div>
+                        </div>
+                        <div class="form-group row col-md-6">
+                            <label for="memberEmailDetail"
+                                   class="col-sm-4 col-form-label">이메일</label>
+                            <div class="col-sm-8">
+                                <input type="email" class="form-control" id="memberEmailDetail" disabled>
+                            </div>
+                        </div>
+                        <div class="form-group row col-md-6">
+                            <label for="phoneNumberDetail"
+                                   class="col-sm-4 col-form-label">전화번호</label>
+                            <div class="col-sm-8">
+                                <input type="tel" class="form-control" id="phoneNumberDetail" disabled>
+                            </div>
+                        </div>
+                        <div class="form-group col-md-12">
+                            <label for="inquiryTitleDetail">제목</label>
+                            <input type="text" class="form-control" id="inquiryTitleDetail"
+                                   value="주문 결제 오류 문의" disabled>
+                        </div>
+                        <div class="form-group col-md-12">
+                            <label for="inquiryContentDetail">문의내용</label>
+                            <textarea class="form-control" id="inquiryContentDetail" rows="5"
+                                      disabled>결제 중에 오류가 발생했습니다 확인 부탁드립니다.</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 관리자 답변 영역 -->
+                <div id="adminReplyArea" class="mt-4">
+                    <h5>관리자 답변</h5>
+                    <div class="card">
+                        <div class="card-body">
+                            <p id="adminReplyContent">답변</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- 관리자 답변대기 영역 -->
+                <div id="adminReplyAreaWaiting" class="mt-4">
+                    <h5>관리자 답변</h5>
+                    <div class="alert alert-info" role="alert">
+                        관리자 답변을 기다리고 있습니다. 빠른 시일 내에 답변 드리겠습니다.
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+            </div>
+        </div>
+    </div>
+</div>

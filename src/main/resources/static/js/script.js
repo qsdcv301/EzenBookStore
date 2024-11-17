@@ -6,7 +6,7 @@ $(document).ready(function () {
         }
     });
 
-    $('.price').each(function() {
+    $('.price').each(function () {
         // 현재 요소의 텍스트 값을 숫자로 변환
         let price = parseInt($(this).text().replace(/[^0-9]/g, ''), 10);
 
@@ -30,6 +30,42 @@ $(document).ready(function () {
     });
 
     //    questionModal
+    $(".questionDetailBtn").click(function () {
+        const questionId = $(this).data("id");
+
+        // AJAX 요청을 통해 상세 데이터 가져오기
+        $.ajax({
+            url: `/qna/${questionId}`,
+            type: 'POST',
+            success: function (response) {
+                if (response.success === "true") {
+                    // 모달에 데이터 채우기
+                    $("#inquiryTypeDetail").val(response.category);
+                    $("#memberNameDetail").val(response.name);
+                    $("#memberEmailDetail").val(response.email);
+                    $("#phoneNumberDetail").val(response.tel);
+                    $("#inquiryTitleDetail").val(response.title);
+                    $("#inquiryContentDetail").text(response.question);
+
+                    // 답변 여부에 따라 표시
+                    if (response.answer && response.answer !== "") {
+                        $("#adminReplyArea").show();
+                        $("#adminReplyContent").text(response.answer);
+                        $("#adminReplyAreaWaiting").hide();
+                    } else {
+                        $("#adminReplyArea").hide();
+                        $("#adminReplyAreaWaiting").show();
+                    }
+                } else {
+                    alert("문의 작성에 실패했습니다.");
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("서버 오류가 발생했습니다.");
+            }
+        });
+    });
+
     $('.questionModalBtn').click(function (e) {
         e.preventDefault();
         const email = $(this).closest('.questionModal').find('#memberEmail').val();

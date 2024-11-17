@@ -154,7 +154,6 @@
                             <th>상세보기</th>
                         </tr>
                         </thead>
-                        <!-- 나의 문의하기 임시 데이터 // qna테이블에 답변상태도 저장할수있어야 할것 같음 -->
                         <tbody>
                         <tr th:each="qna : ${questionList}">
                             <td class="align-middle" th:text="${qna.id}"></td>
@@ -169,10 +168,13 @@
                             <td class="align-middle" th:text="${#dates.format(qna.createAt, 'yyyy-MM-dd')}"></td>
                             <td class="text-danger align-middle" th:if="${qna.answer==''}">답변 대기</td>
                             <td class="text-success align-middle" th:unless="${qna.answer==''}">답변 완료</td>
-                            <td class="d-flex align-items-center align-middle"><a href="#" class="btn btn-primary">상세보기</a></td>
+                            <td class="d-flex align-items-center align-middle">
+                                <button class="btn btn-primary questionDetailBtn" th:data-id="${qna.id}"
+                                        data-toggle="modal" data-target="#inquiryDetailModal">상세보기
+                                </button>
+                            </td>
                         </tr>
                         </tbody>
-                        <!-- 나의 문의하기 임시 데이터 -->
                     </table>
                 </div>
                 <div class="card-footer">
@@ -239,10 +241,10 @@
                     문의하기
                 </button>
             </div>
-
-            <!--문의하기 모달 데이터베이스 연결필요-->
+            <!--문의하기 및 상세보기 모달-->
             <th:block th:if="${userData}">
                 <div th:replace="~{fragments/questionModal :: questionModal}"></div>
+                <div th:replace="~{fragments/questionDetailModal :: questionDetailModal}"></div>
             </th:block>
             <!--문의하기 모달 끝-->
         </div>

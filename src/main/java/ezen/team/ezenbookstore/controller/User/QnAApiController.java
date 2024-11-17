@@ -1,7 +1,9 @@
 package ezen.team.ezenbookstore.controller.User;
 
+import ezen.team.ezenbookstore.entity.Category;
 import ezen.team.ezenbookstore.entity.QnA;
 import ezen.team.ezenbookstore.entity.User;
+import ezen.team.ezenbookstore.service.CategoryService;
 import ezen.team.ezenbookstore.service.QnAService;
 import ezen.team.ezenbookstore.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,44 @@ public class QnAApiController {
 
     private final QnAService qnAService;
     private final UserService userService;
+    private final CategoryService categoryService;
+
+    @PostMapping("/{questionId}")
+    public ResponseEntity<Map<String, String>> findQnA(@PathVariable(required = false) String questionId) {
+        Map<String, String> response = new HashMap<>();
+        try {
+            Long QnAId = Long.parseLong(questionId);
+            QnA QnA = qnAService.findById(QnAId);
+            User user = userService.findById(QnA.getUser().getId());
+            String title = QnA.getTitle();
+            String question = QnA.getQuestion();
+            String answer = QnA.getAnswer();
+            String email = user.getEmail();
+            String name = user.getName();
+            String tel = user.getTel();
+            // 카테고리 숫자를 문자열로 변환
+            String category = switch (QnA.getCategory()) {
+                case 1 -> "주문/결제";
+                case 2 -> "배송";
+                case 3 -> "반품/교환";
+                case 4 -> "상품문의";
+                case 5 -> "기타";
+                default -> "기타";
+            };
+            response.put("success", "true");
+            response.put("question", question);
+            response.put("answer", answer);
+            response.put("email", email);
+            response.put("name", name);
+            response.put("category", category);
+            response.put("title", title);
+            response.put("tel", tel);
+            return ResponseEntity.ok(response); // 성공 시 200 OK와 함께 반환
+        } catch (Exception e) {
+            response.put("success", "false");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response); // 예외 발생 시 500 오류 반환
+        }
+    }
 
     @PostMapping("/add")
     public ResponseEntity<Map<String, Boolean>> addQnA(@ModelAttribute QnA qna, @RequestParam String email) {
