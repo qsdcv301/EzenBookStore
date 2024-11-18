@@ -172,13 +172,14 @@
                     </div>
                     <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-4 g-5">
                         <!-- 상품 카드 -->
-                        <div class="col mb-4 cart-Data" th:each="book : ${bookList}">
+                        <div class="col mb-4 cart-Data" th:each="book, index : ${bookList}">
                             <div class="card h-100">
                                 <div class="form-check position-absolute top-0 m-2">
                                     <input class="form-check-input cart-checkbox" type="checkbox" id="product1">
                                 </div>
                                 <a th:href="@{/book/detail(bookId=${book.id})}" class="d-block text-decoration-none">
-                                    <img src="https://via.placeholder.com/150" class="card-img-top" alt="책 표지">
+                                    <img th:src="${imageList[index.index] != '' ? imageList[index.index] : 'https://via.placeholder.com/100'}"
+                                         th:alt="${book.id}+'번 책표지'" class="card-img-top">
                                     <div class="card-body">
                                         <h5 class="card-title title" th:text="${book.title}"></h5>
                                         <p class="card-text" th:text="${book.author}"></p>

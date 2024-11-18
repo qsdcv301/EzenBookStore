@@ -13,6 +13,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 
 @RequiredArgsConstructor
 @Controller
@@ -43,10 +45,19 @@ public class AdminBookApiController {
 
     // 새 책 추가 메서드
     @PostMapping("/add")
-    public ResponseEntity<String> addBook(@RequestBody Book book, @RequestParam(name = "file") MultipartFile file) {
-        Book newbook = bookService.addBook(book);
-        boolean test = fileUploadService.uploadFile(file, newbook.getId().toString(), "book");
-        return ResponseEntity.ok("Book added successfully");
+    public ResponseEntity<String> addBook(@ModelAttribute Book book,
+                                          @RequestParam(name = "files", required = false) List<MultipartFile> files) {
+        try {
+            Book newbook = bookService.addBook(book);
+            if (files != null && !files.isEmpty()) {
+                for (MultipartFile file : files) {
+                    fileUploadService.uploadFile(file, newbook.getId().toString(), "book");
+                }
+            }
+            return ResponseEntity.ok("Book added successfully");
+        } catch (Exception e) {
+            return ResponseEntity.ok("Book added fail");
+        }
     }
 
     //책 수정 메서드
