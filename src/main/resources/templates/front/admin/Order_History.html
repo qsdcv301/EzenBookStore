@@ -1,78 +1,77 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head xmlns:th="http://www.thymeleaf.org">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>주문 조회 및 상태 관리</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>주문 조회 및 상태 관리</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-    <style>
-        .filter-option {
-            cursor: pointer;
-            padding: 10px 20px;
-            margin-right: 10px;
-            border-radius: 5px;
-            background-color: #f8f9fa;
-            color: #495057;
-            transition: background-color 0.3s;
-        }
+  <style>
+    .filter-option {
+      cursor: pointer;
+      padding: 10px 20px;
+      margin-right: 10px;
+      border-radius: 5px;
+      background-color: #f8f9fa;
+      color: #495057;
+      transition: background-color 0.3s;
+    }
 
-        .filter-option:hover {
-            background-color: #6c757d;
-            color: white;
-        }
+    .filter-option:hover {
+      background-color: #6c757d;
+      color: white;
+    }
 
-        .filter-option.active {
-            background-color: #007bff;
-            color: white;
-        }
+    .filter-option.active {
+      background-color: #007bff;
+      color: white;
+    }
     </style>
 </head>
 <body>
 
 <div class="container mt-5">
-    <h3 class="font-weight-bold mb-3">주문 조회 및 상태 관리</h3>
-    <p class="mb-4">전체 주문건을 확인하고 주문 상태를 관리할 수 있는 페이지입니다.</p>
+  <h3 class="font-weight-bold mb-3">주문 조회 및 상태 관리</h3>
+  <p class="mb-4">전체 주문건을 확인하고 주문 상태를 관리할 수 있는 페이지입니다.</p>
 
-    <!-- 배송 상태별 건수 버튼 
-    >> 클릭 시 해당하는 배송상태 확인가능(버튼 색 활성화 필요-active)-->
-    <div class="d-flex justify-content-start mb-3">
-        <span id="status-all" class="filter-option active" onclick="filterOrders('전체')">전체 (0건)</span>
-        <span id="status-preparing" class="filter-option" onclick="filterOrders('상품준비중')">상품준비중 (0건)</span>
-        <span id="status-shipping" class="filter-option" onclick="filterOrders('배송중')">배송중 (0건)</span>
-        <span id="status-completed" class="filter-option" onclick="filterOrders('배송완료')">배송완료 (0건)</span>
-        <span id="status-on-hold" class="filter-option" onclick="filterOrders('보류중')">보류중 (0건)</span>
-        <span id="" class="filter-option" onclick="filterOrders('반송됨')">반송됨 (0건)</span>
-        <span id="" class="filter-option" onclick="filterOrders('배송취소')">배송취소 (0건)</span>
+  <!-- 배송 상태별 필터 버튼 
+  >> 클릭 시 해당하는 배송상태 확인가능(버튼 색 활성화 필요-active)-->
+  <div class="d-flex justify-content-start mb-3">
+      <span id="status-all" class="filter-option active" onclick="filterOrders('전체')">전체 (0건)</span>
+      <span id="status-preparing" class="filter-option" onclick="filterOrders('상품준비중')">상품준비중 (0건)</span>
+      <span id="status-shipping" class="filter-option" onclick="filterOrders('배송중')">배송중 (0건)</span>
+      <span id="status-completed" class="filter-option" onclick="filterOrders('배송완료')">배송완료 (0건)</span>
+      <span id="status-on-hold" class="filter-option" onclick="filterOrders('보류중')">보류중 (0건)</span>
+      <span id="" class="filter-option" onclick="filterOrders('반송됨')">반송됨 (0건)</span>
+      <span id="" class="filter-option" onclick="filterOrders('배송취소')">배송취소 (0건)</span>
+  </div>
+  <hr>
 
+  <div class="d-flex justify-content-between mb-3">
+    <!-- 검색 섹션 -->
+    <div class="search-section d-flex align-items-center mr-4">
+      <select class="form-control mr-2" style="width: 150px;" id="search-type">
+        <option value="userId">이메일</option>
+        <option value="id">주문번호</option>
+      </select>
+        <input type="text" class="form-control mr-2" placeholder="검색어를 입력하세요" style="width: 300px;" id="search-input">
+        <button class="btn btn-secondary" onclick="searchOrders()">조회</button>
     </div>
-    <hr>
-
-    <div class="d-flex justify-content-between mb-3">
-      <!-- 검색 섹션 -->
-      <div class="search-section d-flex align-items-center mr-4">
-          <select class="form-control mr-2" style="width: 150px;" id="search-type">
-              <option value="userId">이메일</option>
-              <option value="id">주문번호</option>
-          </select>
-          <input type="text" class="form-control mr-2" placeholder="검색어를 입력하세요" style="width: 300px;" id="search-input">
-          <button class="btn btn-secondary" onclick="searchOrders()">조회</button>
-      </div>
   
-      <!-- 배송 상태 일괄 변경
-       >> 선택 후 수정 버튼 클릭 시 수정되도록 -->
-      <div class="d-flex align-items-center ml-5">
-          <select class="form-control ml-5" style="width: 300px;" id="bulk-status">
-              <option value="">배송 상태 변경</option>
-              <option value="0">상품준비중</option>
-              <option value="1">배송중</option>
-              <option value="2">배송지 도착 및 배달 준비중</option>
-              <option value="3">배송완료</option>
-              <option value="4">반송됨</option>
-              <option value="5">배송취소</option>
-          </select>
-      </div>
+    <!-- 배송 상태 일괄 변경
+     >> 선택 후 수정 버튼 클릭 시 수정되도록 -->
+    <div class="d-flex align-items-center ml-5">
+      <select class="form-control ml-5" style="width: 300px;" id="bulk-status">
+        <option value="">배송 상태 변경</option>
+        <option value="0">상품준비중</option>
+        <option value="1">배송중</option>
+        <option value="2">배송지 도착 및 배달 준비중</option>
+        <option value="3">배송완료</option>
+        <option value="4">반송됨</option>
+        <option value="5">배송취소</option>
+      </select>
+    </div>
   
       <!-- 수정/삭제 버튼 -->
       <div>

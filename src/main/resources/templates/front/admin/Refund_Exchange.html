@@ -33,8 +33,10 @@
 
 <div class="container mt-5">
   <h3 class="font-weight-bold mb-4">취소/반품/교환 관리</h3>
+  <p class="mb-4">배송완료된 주문건에 대한 취소/반품/교환 요청을 확인하고 관리할 수 있습니다.</p>
 
-  <!-- 요청 상태 필터 바 -->
+  <!-- 요청 상태별 필터 버튼
+   >> 클릭 시 해당하는 요청상태 확인가능(버튼 색 활성화 필요) -->
   <div class="d-flex justify-content-start mb-3">
     <span class="filter-option active" id="filter-all" onclick="filterRequests('전체')">전체 (<span id="status-all-count">0</span> 건)</span>
     <span class="filter-option" id="filter-cancel" onclick="filterRequests('취소요청')">취소요청 (<span id="status-cancel-count">0</span> 건)</span>
@@ -43,45 +45,60 @@
     <span class="filter-option" id="filter-pending" onclick="filterRequests('보류중')">보류중 (<span id="status-pending-count">0</span> 건)</span>
     <span class="filter-option" id="filter-completed" onclick="filterRequests('처리완료')">처리완료 (<span id="status-completed-count">0</span> 건)</span>
   </div>
-  <hr> <!-- 구분선 추가 -->
+  <hr>
 
-  <!-- 검색 섹션 -->
-  <div class="search-section mb-4 d-flex align-items-center">
-    <select class="form-control mr-2" style="width: 150px;" id="search-type">
-      <option value="userId">아이디</option>
-      <option value="id">주문번호</option>
-    </select>
-    <input type="text" class="form-control mr-2" placeholder="검색어를 입력하세요" style="width: 300px;" id="search-input">
-    <button class="btn btn-secondary" onclick="searchRequests()">조회</button>
-  </div>
+  <div class="d-flex justify-content-between mb-3"></div>
+    <!-- 검색 섹션 -->
+    <div class="search-section d-flex align-items-center mb-4">
+      <select class="form-control mr-2" style="width: 150px;" id="search-type">
+        <option value="userId">이메일</option>
+        <option value="id">주문번호</option>
+      </select>
+      <input type="text" class="form-control mr-2" placeholder="검색어를 입력하세요" style="width: 300px;" id="search-input">
+      <button class="btn btn-secondary" onclick="searchRequests()">조회</button>
+    </div>
 
-  <!-- 요청 목록 테이블 -->
-  <table class="table table-bordered text-center">
-    <thead class="thead-light">
-      <tr>
-        <th>주문번호</th>
-        <th>신청일</th>
-        <th>아이디</th>
-        <th>상품명</th>
-        <th>수량</th>
-        <th>취소금액</th>
-        <th>결제수단</th>
-        <th>요청상태</th>
-        <th>수정</th>
-      </tr>
-    </thead>
-    <tbody id="request-list">
-      <!-- 요청 목록 (동적으로 추가됨) -->
-    </tbody>
-  </table>
+      <!-- 요청 상태 일괄 변경
+       >> 선택 후 수정 버튼 클릭 시 수정되도록 -->
+      <div class="d-flex align-items-center ml-5">
+        <select class="form-control ml-5" style="width: 300px;" id="bulk-status">
+            <option value="">요청 상태 변경</option>
+            <option value="0">취소요청</option>
+            <option value="1">반품요청</option>
+            <option value="2">교환요청</option>
+            <option value="3">보류중</option>
+            <option value="4">처리완료</option>
+        </select>
+      </div>
 
-  <!-- 페이지네이션 -->
-  <nav aria-label="Page navigation" class="mt-4">
-    <ul class="pagination justify-content-center" id="pagination">
-      <!-- 페이지 번호가 여기에 동적으로 추가됩니다. -->
-    </ul>
-  </nav>
-</div>
+      <!-- 수정/삭제 버튼 -->
+      <div>
+          <button class="btn btn-primary" onclick="updateBulkStatus()">수정</button>
+          <button class="btn btn-danger ml-1" onclick="deleteSelected()">삭제</button>
+      </div>
+    </div>
+
+     <!-- 요청 목록 테이블 -->
+     <table class="table table-bordered text-center">
+      <thead class="thead-light">
+        <tr>
+          <th>주문번호</th>
+          <th>신청일</th>
+          <th>아이디</th>
+          <th>상품명</th>
+          <th>수량</th>
+          <th>취소금액</th>
+          <th>결제수단</th>
+          <th>요청상태</th>
+          <th>수정</th>
+        </tr>
+      </thead>
+      <tbody id="request-list">
+        <!-- 요청 목록 (동적으로 추가됨) -->
+      </tbody>
+    </table>
+
+
 
 <!-- 모달 창 -->
 <div class="modal fade" id="requestDetailModal" tabindex="-1" role="dialog" aria-labelledby="requestDetailModalLabel" aria-hidden="true">
