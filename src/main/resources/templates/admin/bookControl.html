@@ -435,7 +435,8 @@
         $.ajax({
             url: bookId ? '/admin/book/update' : '/admin/book/add',
             method: bookId ? 'PUT' : 'POST',
-            contentType: 'application/json',
+            processData: false,
+            contentType: false,
             data: JSON.stringify({
                 id: bookId,
                 title: $('#title').val(),
