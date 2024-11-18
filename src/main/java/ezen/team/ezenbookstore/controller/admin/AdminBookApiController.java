@@ -2,6 +2,7 @@ package ezen.team.ezenbookstore.controller.admin;
 
 import ezen.team.ezenbookstore.entity.Book;
 import ezen.team.ezenbookstore.service.BookService;
+import ezen.team.ezenbookstore.service.FileUploadService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -10,18 +11,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 
-
+@RequiredArgsConstructor
 @Controller
 @RequestMapping("/admin/book") //책 관리 컨트롤러
 public class AdminBookApiController {
 
     private final BookService bookService;
-
-    public AdminBookApiController(BookService bookService) {
-        this.bookService = bookService;
-    }
+    private final FileUploadService fileUploadService;
 
     @GetMapping("")
     public String bookControl(Model model,
@@ -44,8 +43,9 @@ public class AdminBookApiController {
 
     // 새 책 추가 메서드
     @PostMapping("/add")
-    public ResponseEntity<String> addBook(@RequestBody Book book) {
-        bookService.addBook(book);
+    public ResponseEntity<String> addBook(@RequestBody Book book, @RequestParam(name = "file") MultipartFile file) {
+        Book newbook = bookService.addBook(book);
+        boolean test = fileUploadService.uploadFile(file, newbook.getId().toString(), "book");
         return ResponseEntity.ok("Book added successfully");
     }
 
@@ -63,7 +63,6 @@ public class AdminBookApiController {
         bookService.delete(id);
         return ResponseEntity.ok("Book deleted successfully");
     }
-
 
 
 }

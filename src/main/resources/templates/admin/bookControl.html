@@ -153,7 +153,7 @@
 
                     <!-- 책 설명 -->
                     <div class="form-group">
-                        <label for="bookdescription">책 설명 ID</label>
+                        <label for="bookdescriptionId">책 설명 ID</label>
                         <input type="text" class="form-control" id="bookdescriptionId" name="bookdescription" required>
                     </div>
                     <div class="form-group">
@@ -255,6 +255,10 @@
                     <div class="form-group">
                         <label for="addContents">목차</label>
                         <input type="text" class="form-control" id="addContents" name="contents">
+                    </div>
+                    <div class="form-group">
+                        <label for="file">책 이미지</label>
+                        <input type="file" name="file" id="file">
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -423,6 +427,7 @@
         event.preventDefault();
         const bookId = $('#bookId').val();
         const publishDateISO = formatDateToISOString($('#publishDate').val());
+        const file = $("#file").val();
 
         console.log("BookDescription ID:", $('#bookdescriptionId').val());
 
@@ -447,7 +452,8 @@
                 publishDate: publishDateISO,
                 bookdescription: {
                     id: $('#bookdescriptionId').val()
-                }
+                },
+                file : file
             }),
             success: function(response) {
                 // Book 업데이트 성공 시 BookDescription 업데이트 요청
