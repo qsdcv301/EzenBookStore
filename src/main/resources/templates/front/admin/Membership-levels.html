@@ -106,7 +106,7 @@
       <tr>
         <th><input type="checkbox" id="select-all" onclick="toggleAllCheckboxes(this)"></th>
         <th>가입순서</th>
-        <th>아이디(이메일형식)</th>
+        <th>아이디</th>
         <th>이름</th>
         <th>전화번호</th>
         <th>주소</th>
@@ -219,7 +219,15 @@
       <td>${user.name}</td>
       <td>${user.phone}</td>
       <td>${user.address}</td>
-      <td>${user.level}</td>
+      <td>
+        <select class="form-control user-level-select" data-signup-order="${user.signupOrder}" onchange="updateUserLevel(${user.signupOrder}, this.value)">
+          <option value="일반회원" ${user.level === '일반회원' ? 'selected' : ''}>일반회원</option>
+          <option value="실버회원" ${user.level === '실버회원' ? 'selected' : ''}>실버회원</option>
+          <option value="골드회원" ${user.level === '골드회원' ? 'selected' : ''}>골드회원</option>
+          <option value="VIP회원" ${user.level === 'VIP회원' ? 'selected' : ''}>VIP회원</option>
+          <option value="관리자" ${user.level === '관리자' ? 'selected' : ''}>관리자</option>
+        </select>
+      </td>
       <td><button class="btn btn-primary" onclick="openEditModal(${user.signupOrder})">상세</button></td>
     `;
     userListElement.appendChild(tr);
@@ -233,26 +241,15 @@
   if (activeButton) activeButton.classList.add('active');
 }
 
-function toggleAllCheckboxes(checkbox) {
-  const checkboxes = document.querySelectorAll('.user-checkbox');
-  checkboxes.forEach(cb => cb.checked = checkbox.checked);
-}
-
-function deleteSelected() {
-  const selectedCheckboxes = Array.from(document.querySelectorAll('.user-checkbox:checked'));
-  const selectedOrders = selectedCheckboxes.map(cb => parseInt(cb.getAttribute('data-signup-order')));
-
-  // 사용자 목록에서 선택된 항목 제거
-  for (let i = users.length - 1; i >= 0; i--) {
-    if (selectedOrders.includes(users[i].signupOrder)) {
-      users.splice(i, 1);
-    }
+function updateUserLevel(signupOrder, newLevel) {
+  // 사용자 데이터 업데이트
+  const user = users.find(user => user.signupOrder === signupOrder);
+  if (user) {
+    user.level = newLevel;
   }
-
-  // 필터 재적용
+  // 등급 상태 변경 후 테이블 필터 재적용
   filterUsers(document.querySelector('.filter-option.active').textContent);
 }
-
 
   function updateFilterCounts(level) {
     const totalCount = users.length;
