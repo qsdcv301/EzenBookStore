@@ -73,7 +73,9 @@
           <li><strong>상품 관리</strong>
             <ul>
               <li>상품 조회 및 관리</li>
-              <li>상품 카테고리 관리</li>
+              <li><a href="javascript:void(0)" onclick="loadProductCategory()" style="text-decoration: none; color: inherit; position: relative;">상품별 카테고리 관리
+                <div class="underline"></div>
+              </a></li>
             </ul>
           </li>
 
@@ -100,7 +102,7 @@
             <ul>
               <li>공지사항 관리</li>
               <li>이벤트 관리</li>
-              <li>문의하기</li>
+              <li>문의하기 관리</li>
               <li>리뷰 평점 관리</li>
             </ul>
           </li>
@@ -120,6 +122,13 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
+    // 상품 카테고리별 관리 페이지 로드
+    function loadProductCategory() {
+      var iframe = document.getElementById('content-frame');
+      iframe.src = 'Product_Category.html';  // Product_Category.html 파일 경로 설정
+      iframe.style.display = 'block';
+    }    
+
     // 주문 조회 및 상태 페이지 로드
     function loadOrderHistory() {
       var iframe = document.getElementById('content-frame');
