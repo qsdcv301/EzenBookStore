@@ -105,11 +105,13 @@
     <thead class="thead-light">
       <tr>
         <th><input type="checkbox" id="select-all" onclick="toggleAllCheckboxes(this)"></th>
-        <th>가입순서</th>
+        <th>순서</th>
+        <th>가입일</th>
         <th>아이디</th>
         <th>이름</th>
         <th>전화번호</th>
         <th>주소</th>
+        <th>상세주소</th>
         <th>회원등급</th>
         <th>상세보기</th>
       </tr>
@@ -130,20 +132,14 @@
         </button>
       </div>
       <div class="modal-body">
-        <p><strong>가입순서 :</strong> <span id="modal-request-signup"></span></p>
+        <p><strong>순서 :</strong> <span id="modal-request-signup"></span></p>
+        <p><strong>가입일 :</strong> <span id="modal-signup-date"></span></p>
         <p><strong>아이디 :</strong> <span id="modal-user-id"></span></p>
         <p><strong>이름 :</strong> <span id="modal-user-name"></span></p>
         <p><strong>전화번호 :</strong> <span id="modal-phone"></span></p>
         <p><strong>주소 :</strong> <span id="modal-address"></span></p>
-        <p><strong>회원 등급 :</strong>
-          <select class="form-control d-inline-block" id="modal-user-level" style="width: 150px;">
-            <option>일반회원</option>
-            <option>실버회원</option>
-            <option>골드회원</option>
-            <option>VIP회원</option>
-            <option>관리자</option>
-          </select>
-        </p>
+        <p><strong>상세주소 :</strong> <span id="modal-detailed-address"></span></p>
+        <p><strong>회원 등급 :</strong> <span id="modal-user-level"></span></p>
         <div class="d-flex mt-3">
           <button class="btn btn-secondary mr-2" data-dismiss="modal">닫기</button>
         </div>
@@ -157,15 +153,15 @@
 <script>
   let currentUserId;
   const users = [
-    { email: 'user1@example.com', name: '홍길동1', level: '일반회원', signupOrder: 1, phone: '010-1111-2222', address: '서울시 강남구' },
-    { email: 'user2@example.com', name: '홍길동2', level: '실버회원', signupOrder: 2, phone: '010-3333-4444', address: '서울시 종로구' },
-    { email: 'user3@example.com', name: '홍길동3', level: 'VIP회원', signupOrder: 3, phone: '010-5555-6666', address: '서울시 중구' },
-    { email: 'user4@example.com', name: '홍길동4', level: '일반회원', signupOrder: 4, phone: '010-7777-8888', address: '서울시 송파구' },
-    { email: 'user5@example.com', name: '홍길동5', level: '골드회원', signupOrder: 5, phone: '010-9999-0000', address: '서울시 구로구' },
-    { email: 'user6@example.com', name: '홍길동6', level: '일반회원', signupOrder: 6, phone: '010-1234-5678', address: '서울시 양천구' },
-    { email: 'admin1@example.com', name: '관리자1', level: '관리자', signupOrder: 7, phone: '010-2345-6789', address: '서울시 성동구' },
-    { email: 'admin2@example.com', name: '관리자2', level: '관리자', signupOrder: 8, phone: '010-3456-7890', address: '서울시 강동구' },
-    { email: 'user9@example.com', name: '홍길동9', level: '일반회원', signupOrder: 9, phone: '010-4567-8901', address: '서울시 서초구' }
+    { signupDate: '2024-01-01', email: 'user1@example.com', name: '홍길동1', level: '일반회원', signupOrder: 1, phone: '010-1111-2222', address: '서울시 강남구', detailedAddress: '청담동 1번지'  },
+    { signupDate: '2024-02-01', email: 'user2@example.com', name: '홍길동2', level: '실버회원', signupOrder: 2, phone: '010-3333-4444', address: '서울시 종로구', detailedAddress: '세종대로 10번길' },
+    { signupDate: '2024-03-01', email: 'user3@example.com', name: '홍길동3', level: 'VIP회원', signupOrder: 3, phone: '010-5555-6666', address: '서울시 중구', detailedAddress: '청담동 1번지'  },
+    { signupDate: '2024-04-01', email: 'user4@example.com', name: '홍길동4', level: '일반회원', signupOrder: 4, phone: '010-7777-8888', address: '서울시 송파구', detailedAddress: '청담동 1번지'  },
+    { signupDate: '2024-05-01', email: 'user5@example.com', name: '홍길동5', level: '골드회원', signupOrder: 5, phone: '010-9999-0000', address: '서울시 구로구', detailedAddress: '청담동 1번지'  },
+    { signupDate: '2024-06-01', email: 'user6@example.com', name: '홍길동6', level: '일반회원', signupOrder: 6, phone: '010-1234-5678', address: '서울시 양천구', detailedAddress: '청담동 1번지'  },
+    { signupDate: '2024-07-01', email: 'admin1@example.com', name: '관리자1', level: '관리자', signupOrder: 7, phone: '010-2345-6789', address: '서울시 성동구', detailedAddress: '청담동 1번지'  },
+    { signupDate: '2024-08-01', email: 'admin2@example.com', name: '관리자2', level: '관리자', signupOrder: 8, phone: '010-3456-7890', address: '서울시 강동구', detailedAddress: '청담동 1번지'  },
+    { signupDate: '2024-09-01', email: 'user9@example.com', name: '홍길동9', level: '일반회원', signupOrder: 9, phone: '010-4567-8901', address: '서울시 서초구', detailedAddress: '청담동 1번지'  }
   ];
 
   function filterUsers(level) {
@@ -180,10 +176,12 @@
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td>${user.signupOrder}</td>
+        <td>${user.signupDate}</td>
         <td>${user.email}</td>
         <td>${user.name}</td>
         <td>${user.phone}</td>
         <td>${user.address}</td>
+        <td>${user.detailedAddress}</td>
         <td>${user.level}</td>
         <td><button class="btn btn-primary" onclick="openEditModal(${user.signupOrder})">상세</button></td>
       `;
@@ -215,10 +213,12 @@
     tr.innerHTML = `
       <td><input type="checkbox" class="user-checkbox" data-signup-order="${user.signupOrder}"></td>
       <td>${user.signupOrder}</td>
+      <td>${user.signupDate}</td>
       <td>${user.email}</td>
       <td>${user.name}</td>
       <td>${user.phone}</td>
       <td>${user.address}</td>
+      <td>${user.detailedAddress}</td>
       <td>
         <select class="form-control user-level-select" data-signup-order="${user.signupOrder}" onchange="updateUserLevel(${user.signupOrder}, this.value)">
           <option value="일반회원" ${user.level === '일반회원' ? 'selected' : ''}>일반회원</option>
@@ -268,20 +268,22 @@ function updateUserLevel(signupOrder, newLevel) {
   }
 
   function openEditModal(signupOrder) {
-    currentUserId = signupOrder;
-    const user = users.find(user => user.signupOrder === signupOrder);
+  currentUserId = signupOrder;
+  const user = users.find(user => user.signupOrder === signupOrder);
 
-    // 모달에 사용자 정보 표시
-    document.getElementById('modal-request-signup').textContent = user.signupOrder;
-    document.getElementById('modal-user-id').textContent = user.email;
-    document.getElementById('modal-user-name').textContent = user.name;
-    document.getElementById('modal-phone').textContent = user.phone;
-    document.getElementById('modal-address').textContent = user.address;
-    document.getElementById('modal-user-level').value = user.level;
+  // 모달에 사용자 정보 표시
+  document.getElementById('modal-request-signup').textContent = user.signupOrder;
+  document.getElementById('modal-signup-date').textContent = user.signupDate;
+  document.getElementById('modal-user-id').textContent = user.email;
+  document.getElementById('modal-user-name').textContent = user.name;
+  document.getElementById('modal-phone').textContent = user.phone;
+  document.getElementById('modal-address').textContent = user.address;
+  document.getElementById('modal-detailed-address').textContent = user.detailedAddress;
+  document.getElementById('modal-user-level').textContent = user.level; // 회원등급을 텍스트로 설정
 
-    // 모달 열기
-    $('#userDetailModal').modal('show');
-  }
+  // 모달 열기
+  $('#userDetailModal').modal('show');
+}
 
   function saveLevel() {
     const user = users.find(user => user.signupOrder === currentUserId);
@@ -308,10 +310,12 @@ function updateUserLevel(signupOrder, newLevel) {
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td>${user.signupOrder}</td>
+        <td>${user.signupDate}</td>
         <td>${user.email}</td>
         <td>${user.name}</td>
         <td>${user.phone}</td>
         <td>${user.address}</td>
+        <td>${user.detailedAddress}</td>
         <td>${user.level}</td>
         <td><button class="btn btn-primary" onclick="openEditModal(${user.signupOrder})">수정</button></td>
       `;
