@@ -51,8 +51,8 @@
     <!-- 검색 섹션 -->
     <div class="search-section d-flex align-items-center mr-4">
       <select class="form-control mr-2" style="width: 150px;" id="search-type">
-        <option value="userId">이메일</option>
         <option value="id">주문번호</option>
+        <option value="userId">이메일</option>
       </select>
       <input type="text" class="form-control mr-2" placeholder="검색어를 입력하세요" style="width: 300px;" id="search-input">
       <button class="btn btn-secondary" onclick="searchRequests()">조회</button>
@@ -82,8 +82,9 @@
      <table class="table table-bordered text-center">
       <thead class="thead-light">
         <tr>
+          <th><input type="checkbox" id="select-all" onclick="selectAllCheckboxes(this)"></th>
           <th>주문번호</th>
-          <th>신청일</th>
+          <th>요청일</th>
           <th>이메일</th>
           <th>상품명</th>
           <th>수량</th>
@@ -112,7 +113,7 @@
       </div>
       <div class="modal-body">
         <p><strong>주문번호 :</strong> <span id="modal-request-number"></span></p>
-        <p><strong>신청일 :</strong> <span id="modal-request-date"></span></p>
+        <p><strong>요청일 :</strong> <span id="modal-request-date"></span></p>
         <p><strong>이메일 :</strong> :</strong> <span id="modal-user-id"></span></p>
         <p><strong>회원명 :</strong> <span id="modal-user-name"></span></p>
         <p><strong>전화번호 :</strong> 010-1234-5678</p>
@@ -205,6 +206,7 @@
     paginatedRequests.forEach(request => {
       const row = document.createElement('tr');
       row.innerHTML = `
+        <td><input type="checkbox" class="request-checkbox" value="${request.id}" onclick="toggleSelectAll()"></td>
         <td>${request.id}</td>
         <td>${request.requestDate}</td>
         <td>${request.userId}</td>
@@ -228,6 +230,30 @@
 
     setupPagination(requestsToRender.length);
   };
+
+  const selectAllCheckboxes = (checkbox) => {
+  const checkboxes = document.querySelectorAll('.request-checkbox');
+  checkboxes.forEach((cb) => {
+    cb.checked = checkbox.checked;
+    });
+  };
+
+  const toggleSelectAll = () => {
+  const checkboxes = document.querySelectorAll('.request-checkbox');
+  const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+  document.getElementById('select-all').checked = allChecked;
+  };
+
+  const deleteSelected = () => {
+  const selectedCheckboxes = document.querySelectorAll('.request-checkbox:checked');
+  const selectedIds = Array.from(selectedCheckboxes).map(cb => cb.value);
+
+  // 선택된 항목 삭제 로직
+  const remainingRequests = requests.filter(request => !selectedIds.includes(request.id));
+  renderRequests(remainingRequests);
+  updateCounts();
+};
+
 
   const setupPagination = (totalItems) => {
     const totalPages = Math.ceil(totalItems / itemsPerPage);
