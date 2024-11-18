@@ -250,7 +250,16 @@ public class BookApiController {
         int end = Math.min((start + pageable.getPageSize()), filteredBooks.size());
         List<Book> pagedBooks = filteredBooks.subList(start, end);
         Page<Book> bookPage = new PageImpl<>(pagedBooks, pageable, filteredBooks.size());
-
+        List<String> ImageList = new ArrayList<>();
+        for (Book book : bookPage.getContent()) {
+            String imagePath = fileUploadService.findImageFilePath(book.getId(), "book");
+            if (imagePath != null) {
+                ImageList.add(imagePath);
+            } else {
+                ImageList.add("");
+            }
+        }
+        model.addAttribute("imageList", ImageList);
         model.addAttribute("keyword", keyword);
         model.addAttribute("val", val);
         model.addAttribute("sort", sort);
