@@ -4,6 +4,8 @@ import ezen.team.ezenbookstore.entity.CustomOAuth2User;
 import ezen.team.ezenbookstore.entity.User;
 import ezen.team.ezenbookstore.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -63,8 +65,8 @@ public class UserService {
         return userRepository.findById(id).orElse(null);
     }
 
-    public List<User> findAll() {
-        return userRepository.findAll();
+    public Page<User> findAll(Pageable pageable) {
+        return userRepository.findAll(pageable);
     }
 
     public User create(User user) {
@@ -131,4 +133,11 @@ public class UserService {
         return userRepository.findByEmailAndTel(email, tel).orElse(null);
     }
 
+    public List<User> findAllUsers() {
+        return userRepository.findAll();
+    }
+
+    public Page<User> findByGrade(Integer grade, Pageable pageable) {
+        return userRepository.findByGrade(grade, pageable);
+    }
 }

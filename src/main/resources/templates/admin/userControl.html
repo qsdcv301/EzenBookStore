@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
+<head xmlns:th="http://www.thymeleaf.org">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>회원 정보 관리</title>
@@ -59,13 +59,20 @@
 
     <!-- 등급 필터 바 -->
     <div class="d-flex justify-content-start mb-3">
-        <span class="filter-option active" onclick="filterUsers('전체')">전체 <span id="total-count">0</span></span>
-        <span class="filter-option" onclick="filterUsers('일반회원')">일반회원 <span id="general-count">0</span></span>
-        <span class="filter-option" onclick="filterUsers('실버회원')">실버회원 <span id="silver-count">0</span></span>
-        <span class="filter-option" onclick="filterUsers('골드회원')">골드회원 <span id="gold-count">0</span></span>
-        <span class="filter-option" onclick="filterUsers('VIP회원')">VIP회원 <span id="vip-count">0</span></span>
-        <span class="filter-option" onclick="filterUsers('관리자')">관리자 <span id="admin-count">0</span></span>
+    <span class="filter-option" th:classappend="${grade == null ? 'active' : ''}"
+          th:onclick="'location.href=\'/admin/user/filter\''">전체</span>
+        <span class="filter-option" th:classappend="${grade == 0 ? 'active' : ''}"
+              th:onclick="'location.href=\'/admin/user/filter?grade=0\''">일반회원 <span th:text="${generalCount}"></span></span>
+        <span class="filter-option" th:classappend="${grade == 1 ? 'active' : ''}"
+              th:onclick="'location.href=\'/admin/user/filter?grade=1\''">실버회원 <span th:text="${silverCount}"></span></span>
+        <span class="filter-option" th:classappend="${grade == 2 ? 'active' : ''}"
+              th:onclick="'location.href=\'/admin/user/filter?grade=2\''">골드회원 <span th:text="${goldCount}"></span></span>
+        <span class="filter-option" th:classappend="${grade == 3 ? 'active' : ''}"
+              th:onclick="'location.href=\'/admin/user/filter?grade=3\''">VIP회원 <span th:text="${vipCount}"></span></span>
+        <span class="filter-option" th:classappend="${grade == 4 ? 'active' : ''}"
+              th:onclick="'location.href=\'/admin/user/filter?grade=4\''">관리자 <span th:text="${adminCount}"></span></span>
     </div>
+
     <hr> <!-- 구분선 추가 -->
 
     <!-- 검색 섹션 -->
@@ -91,18 +98,42 @@
             <th>상세보기</th>
         </tr>
         </thead>
-        <tbody id="user-list">
-        <!-- 회원 목록 (동적으로 추가됨) -->
+        <tbody>
+        <!-- Thymeleaf를 사용하여 사용자 목록 렌더링 -->
+        <tr th:each="user : ${userList}">
+            <td th:text="${user.id}">1</td>
+            <td th:text="${user.email}">user@example.com</td>
+            <td th:text="${user.name}">홍길동</td>
+            <td th:text="${user.tel}">010-1234-5678</td>
+            <td>
+                <span th:text="${user.addr}">서울시 강남구</span>
+                <span th:if="${user.addrextra != null}" th:text="' ' + ${user.addrextra}"></span>
+            </td>
+            <td th:switch="${user.grade}">
+                <span th:case="0">일반회원</span>
+                <span th:case="1">실버회원</span>
+                <span th:case="2">골드회원</span>
+                <span th:case="3">VIP회원</span>
+                <span th:case="4">관리자</span>
+            </td>
+            <td>
+                <button class="btn btn-primary" data-toggle="modal" th:onclick="'openEditModal(' + ${user.id} + ')'">상세</button>
+            </td>
+        </tr>
         </tbody>
     </table>
 
     <!-- 페이지네이션 -->
     <nav aria-label="Page navigation" class="mt-4">
-        <ul class="pagination justify-content-center" id="pagination">
-            <!-- 페이지 번호가 여기에 동적으로 추가됩니다. -->
+        <ul class="pagination justify-content-center">
+            <li class="page-item" th:each="i : ${#numbers.sequence(1, totalPages)}"
+                th:classappend="${i == currentPage ? 'active' : ''}">
+                <a class="page-link" th:href="@{/admin/user(page=${i})}" th:text="${i}"></a>
+            </li>
         </ul>
     </nav>
 </div>
+
 
 <!-- 모달 창 -->
 <div class="modal fade" id="userDetailModal" tabindex="-1" role="dialog" aria-labelledby="userDetailModalLabel" aria-hidden="true">
