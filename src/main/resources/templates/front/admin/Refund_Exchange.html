@@ -33,26 +33,26 @@
 
 <div class="container mt-5">
   <h3 class="font-weight-bold mb-4">취소/반품/교환 관리</h3>
-  <p class="mb-4">배송완료된 주문건에 대한 취소/반품/교환 요청을 확인하고 관리할 수 있습니다.</p>
+  <p>배송완료된 주문건에 대한 취소/반품/교환 요청을 확인하고 관리할 수 있습니다.</p>
 
   <!-- 요청 상태별 필터 버튼
    >> 클릭 시 해당하는 요청상태 확인가능(버튼 색 활성화 필요) -->
   <div class="d-flex justify-content-start mb-3">
-    <span class="filter-option active" id="filter-all" onclick="filterRequests('전체')">전체 (<span id="status-all-count">0</span> 건)</span>
-    <span class="filter-option" id="filter-cancel" onclick="filterRequests('취소요청')">취소요청 (<span id="status-cancel-count">0</span> 건)</span>
-    <span class="filter-option" id="filter-return" onclick="filterRequests('반품요청')">반품요청 (<span id="status-return-count">0</span> 건)</span>
-    <span class="filter-option" id="filter-exchange" onclick="filterRequests('교환요청')">교환요청 (<span id="status-exchange-count">0</span> 건)</span>
-    <span class="filter-option" id="filter-pending" onclick="filterRequests('보류중')">보류중 (<span id="status-pending-count">0</span> 건)</span>
-    <span class="filter-option" id="filter-completed" onclick="filterRequests('처리완료')">처리완료 (<span id="status-completed-count">0</span> 건)</span>
+    <span class="filter-option active" id="filter-all" onclick="filterRequests('전체')">전체 (<span id="status-all-count">0</span>건)</span>
+    <span class="filter-option" id="filter-cancel" onclick="filterRequests('취소요청')">취소요청 (<span id="status-cancel-count">0</span>건)</span>
+    <span class="filter-option" id="filter-return" onclick="filterRequests('반품요청')">반품요청 (<span id="status-return-count">0</span>건)</span>
+    <span class="filter-option" id="filter-exchange" onclick="filterRequests('교환요청')">교환요청 (<span id="status-exchange-count">0</span>건)</span>
+    <span class="filter-option" id="filter-pending" onclick="filterRequests('보류중')">보류중 (<span id="status-pending-count">0</span>건)</span>
+    <span class="filter-option" id="filter-completed" onclick="filterRequests('처리완료')">처리완료 (<span id="status-completed-count">0</span>건)</span>
   </div>
   <hr>
 
-  <div class="d-flex justify-content-between mb-3"></div>
+  <div class="d-flex justify-content-between mb-3">
     <!-- 검색 섹션 -->
-    <div class="search-section d-flex align-items-center mb-4">
+    <div class="search-section d-flex align-items-center mr-4">
       <select class="form-control mr-2" style="width: 150px;" id="search-type">
-        <option value="userId">이메일</option>
         <option value="id">주문번호</option>
+        <option value="userId">이메일</option>
       </select>
       <input type="text" class="form-control mr-2" placeholder="검색어를 입력하세요" style="width: 300px;" id="search-input">
       <button class="btn btn-secondary" onclick="searchRequests()">조회</button>
@@ -82,15 +82,16 @@
      <table class="table table-bordered text-center">
       <thead class="thead-light">
         <tr>
+          <th><input type="checkbox" id="select-all" onclick="selectAllCheckboxes(this)"></th>
           <th>주문번호</th>
-          <th>신청일</th>
-          <th>아이디</th>
+          <th>요청일</th>
+          <th>이메일</th>
           <th>상품명</th>
           <th>수량</th>
           <th>취소금액</th>
           <th>결제수단</th>
           <th>요청상태</th>
-          <th>수정</th>
+          <th>상세보기</th>
         </tr>
       </thead>
       <tbody id="request-list">
@@ -112,8 +113,8 @@
       </div>
       <div class="modal-body">
         <p><strong>주문번호 :</strong> <span id="modal-request-number"></span></p>
-        <p><strong>신청일 :</strong> <span id="modal-request-date"></span></p>
-        <p><strong>아이디 :</strong> <span id="modal-user-id"></span></p>
+        <p><strong>요청일 :</strong> <span id="modal-request-date"></span></p>
+        <p><strong>이메일 :</strong> :</strong> <span id="modal-user-id"></span></p>
         <p><strong>회원명 :</strong> <span id="modal-user-name"></span></p>
         <p><strong>전화번호 :</strong> 010-1234-5678</p>
         <p><strong>주소 :</strong> 경기도 김포시 장기동</p>
@@ -121,18 +122,10 @@
         <p><strong>수량 :</strong> <span id="modal-quantity"></span></p>
         <p><strong>취소 금액 :</strong> <span id="modal-total-price"></span></p>
         <p><strong>결제수단 :</strong> <span id="modal-payment-method"></span></p>
-        <p><strong>요청 상태 :</strong>
-          <select class="form-control d-inline-block" id="modal-request-status" style="width: 150px;">
-            <option>취소요청</option>
-            <option>반품요청</option>
-            <option>교환요청</option>
-            <option>보류중</option>
-            <option>처리완료</option>
-          </select>
-        </p>
+        <p><strong>요청 상태 :</strong> <span id="modal-request-status"></span></p>
+
         <div class="d-flex mt-3">
-          <button class="btn btn-secondary mr-2" data-dismiss="modal">취소</button>
-          <button class="btn btn-primary" onclick="saveRequestStatus()">수정하기</button>
+          <button class="btn btn-secondary mr-2" data-dismiss="modal">닫기</button>
         </div>
       </div>
     </div>
@@ -147,14 +140,14 @@
   let currentPage = 1;
 
   const requests = [
-    { id: '001', userId: 'admin2', requestDate: '2024.11.08', productName: '책제목2', quantity: '3개', cancelAmount: '42,000원', paymentMethod: '카드결제', status: '취소요청' },
-    { id: '002', userId: 'admin3', requestDate: '2024.11.08', productName: '책제목3', quantity: '1개', cancelAmount: '14,000원', paymentMethod: '카드결제', status: '교환요청' },
-    { id: '003', userId: 'admin4', requestDate: '2024.11.08', productName: '책제목4', quantity: '1개', cancelAmount: '14,000원', paymentMethod: '카드결제', status: '반품요청' },
-    { id: '004', userId: 'admin0', requestDate: '2024.11.08', productName: '책제목0', quantity: '1개', cancelAmount: '14,000원', paymentMethod: '카드결제', status: '보류중' },
-    { id: '005', userId: 'admin2', requestDate: '2024.11.08', productName: '책제목2', quantity: '3개', cancelAmount: '42,000원', paymentMethod: '카드결제', status: '취소요청' },
-    { id: '006', userId: 'admin3', requestDate: '2024.11.08', productName: '책제목3', quantity: '1개', cancelAmount: '14,000원', paymentMethod: '카드결제', status: '처리완료' },
-    { id: '007', userId: 'admin4', requestDate: '2024.11.08', productName: '책제목4', quantity: '1개', cancelAmount: '14,000원', paymentMethod: '카드결제', status: '보류중' },
-    { id: '008', userId: 'admin0', requestDate: '2024.11.08', productName: '책제목0', quantity: '1개', cancelAmount: '14,000원', paymentMethod: '카드결제', status: '취소요청' },
+    { id: '001', userId: 'admin1@email.com', requestDate: '2024.11.08', productName: '책제목2', quantity: '3개', cancelAmount: '40,000원', paymentMethod: '카드결제', status: '취소요청' },
+    { id: '002', userId: 'admin2@email.com', requestDate: '2024.11.08', productName: '책제목3', quantity: '1개', cancelAmount: '18,200원', paymentMethod: '카드결제', status: '교환요청' },
+    { id: '003', userId: 'admin3@email.com', requestDate: '2024.11.08', productName: '책제목4', quantity: '1개', cancelAmount: '12,100원', paymentMethod: '무통장입금', status: '반품요청' },
+    { id: '004', userId: 'admin4@email.com', requestDate: '2024.11.08', productName: '책제목0', quantity: '1개', cancelAmount: '14,800원', paymentMethod: '카드결제', status: '보류중' },
+    { id: '005', userId: 'admin5@email.com', requestDate: '2024.11.08', productName: '책제목2', quantity: '3개', cancelAmount: '30,000원', paymentMethod: '무통장입금', status: '취소요청' },
+    { id: '006', userId: 'admin6@email.com', requestDate: '2024.11.08', productName: '책제목3', quantity: '1개', cancelAmount: '15,000원', paymentMethod: '카드결제', status: '처리완료' },
+    { id: '007', userId: 'admin7@email.com', requestDate: '2024.11.08', productName: '책제목4', quantity: '1개', cancelAmount: '14,000원', paymentMethod: '카드결제', status: '보류중' },
+    { id: '008', userId: 'admin8@email.com', requestDate: '2024.11.08', productName: '책제목0', quantity: '2개', cancelAmount: '29,000원', paymentMethod: '카드결제', status: '취소요청' },
   ];
 
   const updateCounts = () => {
@@ -213,6 +206,7 @@
     paginatedRequests.forEach(request => {
       const row = document.createElement('tr');
       row.innerHTML = `
+        <td><input type="checkbox" class="request-checkbox" value="${request.id}" onclick="toggleSelectAll()"></td>
         <td>${request.id}</td>
         <td>${request.requestDate}</td>
         <td>${request.userId}</td>
@@ -220,7 +214,15 @@
         <td>${request.quantity}</td>
         <td>${request.cancelAmount}</td>
         <td>${request.paymentMethod}</td>
-        <td>${request.status}</td>
+        <td>
+        <select class="form-control d-inline-block" style="width: 150px;" onchange="updateRequestStatus('${request.id}', this.value)">
+          <option ${request.status === '취소요청' ? 'selected' : ''}>취소요청</option>
+          <option ${request.status === '반품요청' ? 'selected' : ''}>반품요청</option>
+          <option ${request.status === '교환요청' ? 'selected' : ''}>교환요청</option>
+          <option ${request.status === '보류중' ? 'selected' : ''}>보류중</option>
+          <option ${request.status === '처리완료' ? 'selected' : ''}>처리완료</option>
+        </select>
+      </td>
         <td><button class="btn btn-primary" onclick="showRequestDetail('${request.id}')">상세</button></td>
       `;
       requestList.appendChild(row);
@@ -228,6 +230,30 @@
 
     setupPagination(requestsToRender.length);
   };
+
+  const selectAllCheckboxes = (checkbox) => {
+  const checkboxes = document.querySelectorAll('.request-checkbox');
+  checkboxes.forEach((cb) => {
+    cb.checked = checkbox.checked;
+    });
+  };
+
+  const toggleSelectAll = () => {
+  const checkboxes = document.querySelectorAll('.request-checkbox');
+  const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+  document.getElementById('select-all').checked = allChecked;
+  };
+
+  const deleteSelected = () => {
+  const selectedCheckboxes = document.querySelectorAll('.request-checkbox:checked');
+  const selectedIds = Array.from(selectedCheckboxes).map(cb => cb.value);
+
+  // 선택된 항목 삭제 로직
+  const remainingRequests = requests.filter(request => !selectedIds.includes(request.id));
+  renderRequests(remainingRequests);
+  updateCounts();
+};
+
 
   const setupPagination = (totalItems) => {
     const totalPages = Math.ceil(totalItems / itemsPerPage);
@@ -259,10 +285,18 @@
     document.getElementById('modal-quantity').textContent = request.quantity;
     document.getElementById('modal-total-price').textContent = request.cancelAmount;
     document.getElementById('modal-payment-method').textContent = request.paymentMethod;
-    document.getElementById('modal-request-status').value = request.status;
+    document.getElementById('modal-request-status').textContent = request.status;
 
     $('#requestDetailModal').modal('show');
   };
+
+  const updateRequestStatus = (requestId, newStatus) => {
+  const request = requests.find(req => req.id === requestId);
+  if (request) {
+    request.status = newStatus;
+    updateCounts();  // 상태 변경 후 카운트 업데이트
+  }
+};
 
   const saveRequestStatus = () => {
     const newStatus = document.getElementById('modal-request-status').value;
