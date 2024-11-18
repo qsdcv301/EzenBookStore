@@ -99,14 +99,13 @@
         </tr>
         </thead>
         <tbody>
-        <!-- Thymeleaf를 사용하여 사용자 목록 렌더링 -->
         <tr th:each="user : ${userList}">
-            <td th:text="${user.id}">1</td>
-            <td th:text="${user.email}">user@example.com</td>
-            <td th:text="${user.name}">홍길동</td>
-            <td th:text="${user.tel}">010-1234-5678</td>
+            <td th:text="${user.id}"></td>
+            <td th:text="${user.email}"></td>
+            <td th:text="${user.name}"></td>
+            <td th:text="${user.tel}"></td>
             <td>
-                <span th:text="${user.addr}">서울시 강남구</span>
+                <span th:text="${user.addr}"></span>
                 <span th:if="${user.addrextra != null}" th:text="' ' + ${user.addrextra}"></span>
             </td>
             <td th:switch="${user.grade}">
@@ -117,10 +116,12 @@
                 <span th:case="4">관리자</span>
             </td>
             <td>
-                <button class="btn btn-primary" data-toggle="modal" th:onclick="'openEditModal(' + ${user.id} + ')'">상세</button>
+                <button class="btn btn-primary" data-toggle="modal" th:data-target="'#userDetailModal-' + ${user.id}">상세</button>
             </td>
         </tr>
         </tbody>
+
+
     </table>
 
     <!-- 페이지네이션 -->
@@ -135,55 +136,53 @@
 </div>
 
 
-<!-- 모달 창 -->
-<div class="modal fade" id="userDetailModal" tabindex="-1" role="dialog" aria-labelledby="userDetailModalLabel" aria-hidden="true">
+<!-- 모달 템플릿 -->
+<div th:each="user : ${userList}" class="modal fade" th:id="'userDetailModal-' + ${user.id}" tabindex="-1" role="dialog" aria-labelledby="userDetailModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="userDetailModalLabel">회원 정보 관리</h5>
+                <h5 class="modal-title" th:text="'회원 상세 정보 - ' + ${user.name}"></h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <p><strong>가입순서 :</strong> <span id="modal-request-signup"></span></p>
-                <p><strong>아이디 :</strong> <span id="modal-user-id"></span></p>
-                <p><strong>이름 :</strong> <span id="modal-user-name"></span></p>
-                <p><strong>전화번호 :</strong> <span id="modal-phone"></span></p>
-                <p><strong>주소 :</strong> <span id="modal-address"></span></p>
-                <p><strong>회원 등급 :</strong>
-                    <select class="form-control d-inline-block" id="modal-user-level" style="width: 150px;">
-                        <option>일반회원</option>
-                        <option>실버회원</option>
-                        <option>골드회원</option>
-                        <option>VIP회원</option>
-                        <option>관리자</option>
-                    </select>
+                <p><strong>회원 ID:</strong> <span th:text="${user.id}"></span></p>
+                <p><strong>가입경로:</strong> <span th:text="${user.provider}"></span></p>
+                <p><strong>아이디(이메일):</strong> <span th:text="${user.email}"></span></p>
+                <p><strong>이름:</strong> <span th:text="${user.name}"></span></p>
+                <p><strong>전화번호:</strong> <span th:text="${user.tel}"></span></p>
+                <p><strong>주소:</strong>
+                    <span th:text="${user.addr}"></span>
+                    <span th:if="${user.addrextra != null}" th:text="' ' + ${user.addrextra}"></span>
                 </p>
+                <p><strong>생년월일:</strong> <span th:text="${user.birthday}"></span></p>
+                <p><strong>회원 등급:</strong>
+                    <span th:switch="${user.grade}">
+                        <span th:case="0">일반회원</span>
+                        <span th:case="1">실버회원</span>
+                        <span th:case="2">골드회원</span>
+                        <span th:case="3">VIP회원</span>
+                        <span th:case="4">관리자</span>
+                    </span>
+                </p>
+                <p><strong>포인트:</strong> <span th:text="${user.point}"></span></p>
+                <p><strong>가입일:</strong> <span th:text="${#dates.format(user.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></span></p>
                 <div class="d-flex mt-3">
-                    <button class="btn btn-secondary mr-2" data-dismiss="modal">취소</button>
-                    <button class="btn btn-primary" onclick="saveLevel()">수정하기</button>
+                    <button class="btn btn-secondary mr-2" data-dismiss="modal">닫기</button>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
+
+
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
 
 <script>
-    let currentUserId;
-    const users = [
-        { email: 'user1@example.com', name: '홍길동1', level: '일반회원', signupOrder: 1, phone: '010-1111-2222', address: '서울시 강남구' },
-        { email: 'user2@example.com', name: '홍길동2', level: '실버회원', signupOrder: 2, phone: '010-3333-4444', address: '서울시 종로구' },
-        { email: 'user3@example.com', name: '홍길동3', level: 'VIP회원', signupOrder: 3, phone: '010-5555-6666', address: '서울시 중구' },
-        { email: 'user4@example.com', name: '홍길동4', level: '일반회원', signupOrder: 4, phone: '010-7777-8888', address: '서울시 송파구' },
-        { email: 'user5@example.com', name: '홍길동5', level: '골드회원', signupOrder: 5, phone: '010-9999-0000', address: '서울시 구로구' },
-        { email: 'user6@example.com', name: '홍길동6', level: '일반회원', signupOrder: 6, phone: '010-1234-5678', address: '서울시 양천구' },
-        { email: 'admin1@example.com', name: '관리자1', level: '관리자', signupOrder: 7, phone: '010-2345-6789', address: '서울시 성동구' },
-        { email: 'admin2@example.com', name: '관리자2', level: '관리자', signupOrder: 8, phone: '010-3456-7890', address: '서울시 강동구' },
-        { email: 'user9@example.com', name: '홍길동9', level: '일반회원', signupOrder: 9, phone: '010-4567-8901', address: '서울시 서초구' }
-    ];
+
+
 
     function filterUsers(level) {
         // 필터된 사용자 리스트
@@ -238,30 +237,7 @@
         document.getElementById('admin-count').textContent = `(${adminCount}명)`;
     }
 
-    function openEditModal(signupOrder) {
-        currentUserId = signupOrder;
-        const user = users.find(user => user.signupOrder === signupOrder);
 
-        // 모달에 사용자 정보 표시
-        document.getElementById('modal-request-signup').textContent = user.signupOrder;
-        document.getElementById('modal-user-id').textContent = user.email;
-        document.getElementById('modal-user-name').textContent = user.name;
-        document.getElementById('modal-phone').textContent = user.phone;
-        document.getElementById('modal-address').textContent = user.address;
-        document.getElementById('modal-user-level').value = user.level;
-
-        // 모달 열기
-        $('#userDetailModal').modal('show');
-    }
-
-    function saveLevel() {
-        const user = users.find(user => user.signupOrder === currentUserId);
-        const newLevel = document.getElementById('modal-user-level').value;
-
-        user.level = newLevel;
-        filterUsers(document.querySelector('.filter-option.active').textContent);
-        $('#userDetailModal').modal('hide');
-    }
 
     function searchUsers() {
         const searchType = document.getElementById('search-type').value;
