@@ -46,7 +46,7 @@
             <p><strong>출간일:</strong> <span th:text="${#dates.format(book.publishDate, 'yyyy-MM-dd')}"></span></p>
             <p>
                 <strong>가격:</strong>
-                <span class="text-decoration-line-through price" th:text="${book.price}+' 원'">가격</span>
+                <span class="text-decoration-line-through price" th:text="${book.price}">가격</span>
                 <span class="text-danger fw-bold discount" th:text="${book.discount}+'%'">할인 퍼센트</span>
             </p>
             <p><strong>배송 정보:</strong> 배송비 3,000원</p>
