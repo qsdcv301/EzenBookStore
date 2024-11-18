@@ -6,15 +6,12 @@ $(document).ready(function () {
         }
     });
 
-    $('.price').each(function () {
-        // 현재 요소의 텍스트 값을 숫자로 변환
-        let price = parseInt($(this).text().replace(/[^0-9]/g, ''), 10);
-
-        // 숫자를 천 단위로 구분하고 "원"을 붙임
-        let formattedPrice = price.toLocaleString("ko-KR") + "원";
-
-        // 요소의 텍스트를 포맷된 값으로 업데이트
-        $(this).text(formattedPrice);
+    $(window).on('load', function () {
+        $('.price').each(function () {
+            let price = parseInt($(this).text().replace(/[^0-9]/g, "")) || 0;
+            let formattedPrice = price.toLocaleString("ko-KR") + "원";
+            $(this).text(formattedPrice);
+        });
     });
 
     //    customerService

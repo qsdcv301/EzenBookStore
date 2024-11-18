@@ -183,6 +183,11 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
 
 <script>
+    function toggleSelectAll() {
+        const isChecked = $('#select-all-checkbox').is(':checked'); // 상단 체크박스 상태 확인
+        $('.order-checkbox').prop('checked', isChecked); // 하위 체크박스 상태 변경
+    }
+
     // Thymeleaf를 사용한 데이터 렌더링 이후 JavaScript 기능 업데이트
     function filterOrders(status) {
         location.href = `/admin/order?status=${status}`;
@@ -191,8 +196,16 @@
     function searchOrders() {
         const searchType = $('#search-type').val();
         const searchInput = $('#search-input').val();
+
+        if (!searchInput.trim()) {
+            alert("검색어를 입력하세요.");
+            return;
+        }
+
         location.href = `/admin/order/search?searchType=${searchType}&keyword=${searchInput}`;
     }
+
+
 
 
 </script>

@@ -5,6 +5,7 @@ import ezen.team.ezenbookstore.repository.OrdersRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -44,6 +45,14 @@ public class OrdersService {
 
     public List<Orders> findAllByUserId(Long userId) {
         return orderRepository.findAllByUserId(userId);
+    }
+
+    public List<Orders> findByUserEmail(String email) {
+        return orderRepository.findByUserEmail(email);
+    }
+
+    public List<Orders> findByOrderId(Long id) {
+        return orderRepository.findById(id).map(List::of).orElse(Collections.emptyList());
     }
 
 }

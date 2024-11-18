@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -68,4 +69,31 @@ public class AdminOrderApiController {
         // 요청 상태 업데이트 로직
         return "redirect:/admin/order"; // 상태 업데이트 후 목록 페이지로 리다이렉트
     }
+
+
+    @GetMapping("/search")
+    public String searchOrders(
+            @RequestParam("searchType") String searchType,
+            @RequestParam("keyword") String keyword,
+            Model model) {
+
+        List<Orders> orders;
+
+        if ("userId".equals(searchType)) {
+            orders = ordersService.findByUserEmail(keyword);
+        } else if ("id".equals(searchType)) {
+            try {
+                Long id = Long.parseLong(keyword);
+                orders = ordersService.findByOrderId(id);
+            } catch (NumberFormatException e) {
+                orders = new ArrayList<>();
+            }
+        } else {
+            orders = new ArrayList<>();
+        }
+
+        model.addAttribute("ordersList", orders);
+        return "admin/orderControl";
+    }
+
 }
