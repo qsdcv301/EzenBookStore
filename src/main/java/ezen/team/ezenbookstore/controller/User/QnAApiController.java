@@ -1,9 +1,9 @@
 package ezen.team.ezenbookstore.controller.User;
 
-import ezen.team.ezenbookstore.entity.Category;
 import ezen.team.ezenbookstore.entity.QnA;
 import ezen.team.ezenbookstore.entity.User;
 import ezen.team.ezenbookstore.service.CategoryService;
+import ezen.team.ezenbookstore.service.FileUploadService;
 import ezen.team.ezenbookstore.service.QnAService;
 import ezen.team.ezenbookstore.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -11,8 +11,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RequiredArgsConstructor
@@ -23,6 +26,7 @@ public class QnAApiController {
     private final QnAService qnAService;
     private final UserService userService;
     private final CategoryService categoryService;
+    private final FileUploadService fileUploadService;
 
     @PostMapping("/{questionId}")
     public ResponseEntity<Map<String, String>> findQnA(@PathVariable(required = false) String questionId) {
@@ -54,6 +58,11 @@ public class QnAApiController {
             response.put("category", category);
             response.put("title", title);
             response.put("tel", tel);
+            // 이미지 파일 경로 찾기
+            String imagePath = fileUploadService.findImageFilePath(QnAId,"qna");
+            if (imagePath != null) {
+                response.put("imagePath", imagePath);
+            }
             return ResponseEntity.ok(response); // 성공 시 200 OK와 함께 반환
         } catch (Exception e) {
             response.put("success", "false");
@@ -62,7 +71,9 @@ public class QnAApiController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<Map<String, Boolean>> addQnA(@ModelAttribute QnA qna, @RequestParam String email) {
+    public ResponseEntity<Map<String, Boolean>> addQnA(@ModelAttribute QnA qna,
+                                                       @RequestParam String email,
+                                                       @RequestParam(name = "files", required = false) List<MultipartFile> files) {
         Map<String, Boolean> response = new HashMap<>();
         try {
             User user = userService.findByEmail(email);
@@ -72,7 +83,12 @@ public class QnAApiController {
                     .title(qna.getTitle())
                     .question(qna.getQuestion())
                     .build();
-            qnAService.create(newQnA);
+            QnA addQnA = qnAService.create(newQnA);
+            if (files != null && !files.isEmpty()) {
+                for (MultipartFile file : files) {
+                    fileUploadService.uploadFile(file, addQnA.getId().toString(), "qna");
+                }
+            }
             response.put("success", true);
             return ResponseEntity.ok(response); // 성공 시 200 OK와 함께 반환
         } catch (Exception e) {
