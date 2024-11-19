@@ -4,6 +4,10 @@ import ezen.team.ezenbookstore.entity.*;
 import ezen.team.ezenbookstore.service.*;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -42,10 +46,12 @@ public class UserApiController {
             if (userData instanceof User user) {
                 model.addAttribute("user", user);
                 model.addAttribute("userData", true);
+                model.addAttribute("mypage", true);
             } else if (userData instanceof CustomOAuth2User customOAuth2User) {
                 User customUser = userService.findByEmail(customOAuth2User.getEmail());
                 model.addAttribute("user", customUser);
                 model.addAttribute("userData", true);
+                model.addAttribute("mypage", true);
             } else {
                 model.addAttribute("userData", false);
             }
@@ -297,8 +303,22 @@ public class UserApiController {
     }
 
     @GetMapping("/info")
-    public String infoUser(Model model) {
+    public String infoUser(@RequestParam(name = "qPage", defaultValue = "0", required = false) int qPage,
+                           @RequestParam(name = "sort", defaultValue = "0", required = false) byte sort,
+                           Model model) {
         User user = (User) model.getAttribute("user");
+        int size = 10;
+        Sort.Direction sortDirection = Sort.Direction.DESC;
+        Pageable qPageable = PageRequest.of(qPage, size, Sort.by(sortDirection, "id"));
+        Page<QnA> qPaging;
+        if (sort == 0) {
+            qPaging = qnAService.findAllByUserId(user.getId(), qPageable);
+        } else {
+            qPaging = qnAService.findAllByUserIdAndCategory(user.getId(), sort, qPageable);
+        }
+        model.addAttribute("questionList", qPaging.getContent());
+        model.addAttribute("qnaPage", qPaging);
+        model.addAttribute("sort", sort);
         return "info";
     }
 

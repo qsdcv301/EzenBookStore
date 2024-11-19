@@ -14,7 +14,7 @@ $(document).ready(function () {
         });
     });
 
-    //    customerService
+    // customerService
     $('#userQnASelect').change(function () {
         const sort = $('#userQnASelect option:selected').val();
 
@@ -22,8 +22,12 @@ $(document).ready(function () {
         const urlParams = new URLSearchParams(window.location.search);
         const qnaPage = urlParams.has('qnaPage') ? urlParams.get('qnaPage') : 0;
 
+        // 현재 URL 경로 확인
+        const currentPath = window.location.pathname;
+        const basePath = currentPath.includes('/user/info') ? '/user/info' : '/customerService';
+
         // 새로운 URL로 리디렉션
-        window.location.href = `/customerService?qnaPage=${qnaPage}&sort=${sort}`;
+        window.location.href = `${basePath}?qnaPage=${qnaPage}&sort=${sort}`;
     });
 
     //    questionModal
