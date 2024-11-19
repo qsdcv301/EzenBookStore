@@ -19,11 +19,11 @@ public class NoticeService {
         return noticeRepository.findById(id).orElse(null);
     }
 
-    public List<Notice> findAll() {
-        return noticeRepository.findAll();
+    public Page<Notice> findAll(Pageable pageable) {
+        return noticeRepository.findAll(pageable);
     }
 
-    public List<Notice> findAllByOrderByIdDesc(){return noticeRepository.findAllByOrderByIdDesc();}
+    public Page<Notice> findAllByOrderByIdDesc(Pageable pageable){return noticeRepository.findAllByOrderByIdDesc(pageable);}
 
     public Notice create(Notice notice) {
         return noticeRepository.save(notice);
@@ -42,9 +42,12 @@ public class NoticeService {
     public void delete(Long id) {
         noticeRepository.deleteById(id);
     }
+    public Page<Notice> searchByTitle(String keyword,Pageable pageable) {
+        return noticeRepository.findByTitleContaining(keyword,pageable);
+    }
 
-    public Page<Notice> findAll(Pageable pageable) {
-        return noticeRepository.findAll(pageable);
+    public Page<Notice> searchByContent(String keyword,Pageable pageable) {
+        return noticeRepository.findByContentContaining(keyword,pageable);
     }
 
 }
