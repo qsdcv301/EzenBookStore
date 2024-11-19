@@ -42,14 +42,17 @@ public class AdminUserApiController {
         Pageable pageable = PageRequest.of(page - 1, size);
         Page<User> userPage;
 
-        if (type != null && !type.isEmpty() && keyword != null && !keyword.isEmpty()) {
-            // 검색 조건이 있을 경우 검색 결과 반환
+        if (grade != null && (type != null && !type.isEmpty()) && (keyword != null && !keyword.isEmpty())) {
+            // grade, type, keyword 모두 존재하는 경우
+            userPage = userService.findByGradeAndSearch(type, keyword, grade, pageable);
+        } else if (type != null && !type.isEmpty() && keyword != null && !keyword.isEmpty()) {
+            // type과 keyword만 존재하는 경우
             userPage = userService.searchUsers(type, keyword, pageable);
         } else if (grade != null) {
-            // 등급별 필터링
+            // grade만 존재하는 경우
             userPage = userService.findByGrade(grade, pageable);
         } else {
-            // 기본 리스트 반환
+            // 기본 리스트 반환 (전체 항목)
             userPage = userService.findAll(pageable);
         }
 
@@ -79,6 +82,7 @@ public class AdminUserApiController {
 
         return "admin/userControl";
     }
+
 
 
 
