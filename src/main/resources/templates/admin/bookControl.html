@@ -333,6 +333,7 @@
         return d.toISOString(); // ISO 형식으로 반환
     }
 
+    //책 수정 모달 스크립트
     $('#productModal').on('show.bs.modal', function (event) {
         var button = $(event.relatedTarget);
         var bookId = button.data('book-id');
@@ -587,7 +588,7 @@
         const title = $('#addTitle').val();
         const author = $('#addAuthor').val();
         const publisher = $('#addPublisher').val();
-        // const publishDate = $('#addPublishDate').val();
+        const publishDate = $('#addPublishDate').val();
         const isbn = $('#addISBN').val();
         const stock = $('#addStock').val();
         const ifkr = $('#addIfkr').val();
@@ -607,7 +608,7 @@
         formData.append('title', title);
         formData.append('author', author);
         formData.append('publisher', publisher);
-        // formData.append('publishDate', publishDate);
+        formData.append('publish_Date', publishDate);
         formData.append('isbn', isbn);
         formData.append('stock', stock);
         formData.append('ifkr', ifkr);

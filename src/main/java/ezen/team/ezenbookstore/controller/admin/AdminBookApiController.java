@@ -10,9 +10,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 
@@ -23,6 +25,12 @@ public class AdminBookApiController {
 
     private final BookService bookService;
     private final FileUploadService fileUploadService;
+    @InitBinder
+    public void initBinder(WebDataBinder binder) {
+        // publishDate 바인딩 제외
+        binder.setDisallowedFields("publishDate");
+    }
+
 
     @GetMapping("")
     public String bookControl(Model model,
@@ -45,20 +53,37 @@ public class AdminBookApiController {
 
     // 새 책 추가 메서드
     @PostMapping("/add")
-    public ResponseEntity<String> addBook(@ModelAttribute Book book,
-                                          @RequestParam(name = "files", required = false) List<MultipartFile> files) {
+    public ResponseEntity<String> addBook(
+            @ModelAttribute Book book,
+            @RequestParam(name = "publish_Date", required = false) String publishDate,
+            @RequestParam(name = "files", required = false) List<MultipartFile> files) {
         try {
-            Book newbook = bookService.addBook(book);
+            // publishDate를 수동 변환
+            if (publishDate != null && !publishDate.isEmpty()) {
+                System.out.println("Received publishDate: " + publishDate); // 디버깅용 로그
+                String fullDateTime = publishDate + " 00:00:00";
+                Timestamp convertedTimestamp = Timestamp.valueOf(fullDateTime);
+                book.setPublishDate(convertedTimestamp); // 수동으로 변환된 값 설정
+                System.out.println("Converted publishDate to Timestamp: " + book.getPublishDate());
+            }
+
+            // 데이터베이스에 저장
+            Book newBook = bookService.addBook(book);
+
+            // 파일 업로드 처리
             if (files != null && !files.isEmpty()) {
                 for (MultipartFile file : files) {
-                    fileUploadService.uploadFile(file, newbook.getId().toString(), "book");
+                    fileUploadService.uploadFile(file, newBook.getId().toString(), "book");
                 }
             }
             return ResponseEntity.ok("Book added successfully");
         } catch (Exception e) {
-            return ResponseEntity.ok("Book added fail");
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body("Book addition failed: " + e.getMessage());
         }
     }
+
+
 
     //책 수정 메서드
     @PutMapping("/update")
