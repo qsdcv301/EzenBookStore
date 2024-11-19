@@ -49,14 +49,16 @@
                 </div>
                 <div class="card-body overflow-auto" style="max-height: 700px;">
                     <!-- 상품 1 -->
-                    <div class="cart-item paymentModal-Data card" th:each="cart : ${cartList}">
+                    <div class="cart-item paymentModal-Data card" th:each="cart, index : ${cartList}">
                         <div class="card-body">
                             <div class="row align-items-center">
-                                <div class="col-md-1">
+                                <div class="col-md-1 text-right">
                                     <input class="form-check-input cart-checkbox" type="checkbox" checked>
                                 </div>
-                                <div class="col-md-2">
-<!--                                    <img src="" alt="">-->
+                                <div class="col-md-2 pl-0">
+                                    <img th:src="${imageList[index.index] != '' ? imageList[index.index] : 'https://via.placeholder.com/100'}"
+                                         th:alt="${cart.book.id}+'번 책표지'" style="width: 100px;height: 150px;object-fit: cover" class="bookImage img-thumbnail">
+                                    <a th:href="@{/book/detail(bookId=${cart.book.id})}" class="stretched-link text-decoration-none"></a>
                                 </div>
                                 <div class="col-md-4">
                                     <h5 class="card-title title" th:text="'제목 : '+${cart.book.title}">제목 : </h5>

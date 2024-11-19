@@ -1,9 +1,11 @@
 package ezen.team.ezenbookstore.controller.User;
 
+import ezen.team.ezenbookstore.entity.Book;
 import ezen.team.ezenbookstore.entity.Cart;
 import ezen.team.ezenbookstore.entity.User;
 import ezen.team.ezenbookstore.service.BookService;
 import ezen.team.ezenbookstore.service.CartService;
+import ezen.team.ezenbookstore.service.FileUploadService;
 import ezen.team.ezenbookstore.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,12 +27,23 @@ public class CartApiController {
     private final CartService cartService;
     private final UserService userService;
     private final BookService bookService;
+    private final FileUploadService fileUploadService;
 
     @GetMapping
     public String cart(Model model) {
         String userEmail = userService.getUserEmail();
         User user = userService.findByEmail(userEmail);
         List<Cart> cartList = cartService.findAllByUserId(user.getId());
+        List<String> ImageList = new ArrayList<>();
+        for (Cart cart : cartList) {
+            String imagePath = fileUploadService.findImageFilePath(cart.getBook().getId(), "book");
+            if (imagePath != null) {
+                ImageList.add(imagePath);
+            } else {
+                ImageList.add("");
+            }
+        }
+        model.addAttribute("imageList", ImageList);
         model.addAttribute("user", user);
         model.addAttribute("cartList", cartList);
         return "cart";
