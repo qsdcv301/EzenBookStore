@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>마이페이지 - 나의 정보</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <style>
+        #ratingStars i {
+            cursor: pointer;
+            color: #ccc;
+            font-size: 24px;
+        }
+
+        #ratingStars i:hover,
+        #ratingStars i:hover~i {
+            color: #ffc107;
+        }
+
+        #ratingStars i.bi-star-fill {
+            color: #ffc107;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container mt-5">
+        <h1 class="mb-4">마이페이지</h1>
+        <div class="row">
+            <div class="col-md-3">
+                <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                    <a class="nav-link active" id="v-pills-info-tab" data-toggle="pill" href="#v-pills-info"
+                        role="tab">나의 정보</a>
+                    <a class="nav-link" id="v-pills-orders-tab" data-toggle="pill" href="#v-pills-orders"
+                        role="tab">주문내역</a>
+                    <a class="nav-link" id="v-pills-inquiries-tab" data-toggle="pill" href="#v-pills-inquiries"
+                        role="tab">문의내역</a>
+                </div>
+            </div>
+            <div class="col-md-9">
+                <div class="tab-content" id="v-pills-tabContent">
+                    <div class="tab-pane fade" id="v-pills-orders" role="tabpanel">
+                        <h2>주문내역</h2>
+
+                        <!-- 필터 및 검색 개선 -->
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" placeholder="주문번호 또는 상품명으로 검색">
+                                            <div class="input-group-append">
+                                                <button class="btn btn-outline-secondary" type="button">
+                                                    <i class="bi bi-search"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <button class="btn btn-outline-primary" type="button" data-toggle="collapse"
+                                            data-target="#advancedSearch">
+                                            고급 검색 <i class="bi bi-chevron-down"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="collapse mt-3" id="advancedSearch">
+                                    <div class="row">
+                                        <div class="col-md-4 mb-3">
+                                            <label for="dateRange">기간 선택</label>
+                                            <select class="form-control" id="dateRange">
+                                                <option value="">전체</option>
+                                                <option value="1">최근 1개월</option>
+                                                <option value="3">최근 3개월</option>
+                                                <option value="6">최근 6개월</option>
+                                                <option value="custom">직접 입력</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label for="deliveryStatus">배송 상태</label>
+                                            <select class="form-control" id="deliveryStatus">
+                                                <option value="">전체</option>
+                                                <option value="preparing">배송 준비중</option>
+                                                <option value="shipping">배송중</option>
+                                                <option value="delivered">배송 완료</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label for="orderStatus">주문 상태</label>
+                                            <select class="form-control" id="orderStatus">
+                                                <option value="">전체</option>
+                                                <option value="cancelled">주문 취소</option>
+                                                <option value="exchange">교환/반품 신청</option>
+                                                <option value="completed">결제 완료</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div id="customDateRange" class="row mt-3" style="display: none;">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="startDate">시작일</label>
+                                            <input type="date" class="form-control" id="startDate">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="endDate">종료일</label>
+                                            <input type="date" class="form-control" id="endDate">
+                                        </div>
+                                    </div>
+                                    <div class="row mt-3">
+                                        <div class="col-12">
+                                            <button class="btn btn-primary" type="button" id="applyFilters">필터
+                                                적용</button>
+                                            <button class="btn btn-secondary" type="button"
+                                                id="resetFilters">초기화</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 적용된 필터 태그 -->
+                        <div id="appliedFilters" class="mb-3">
+                            <!-- 여기에 적용된 필터 태그가 동적으로 추가됩니다 -->
+                        </div>
+
+                        <!-- 주문 목록 테이블 -->
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>주문번호</th>
+                                    <th>주문일자</th>
+                                    <th>상품정보</th>
+                                    <th>주문금액</th>
+                                    <th>배송상태</th>
+                                    <th>주문상태</th>
+                                    <th>상세보기</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>20231118-001</td>
+                                    <td>2023-11-18</td>
+                                    <td class="text-truncate" style="max-width: 220px;"
+                                        title="해리포터와 마법사의 돌과 비밀의 방과 아즈카반의 죄수">
+                                        해리포터와 마법사의 돌과 비밀의 방과 아즈카반의 죄수
+                                    </td>
+                                    <td>35,000원</td>
+                                    <td>배송 완료</td>
+                                    <td>결제 완료</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-info" data-toggle="modal"
+                                            data-target="#orderDetailModal">
+                                            상세보기
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- 페이지네이션 -->
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination justify-content-center">
+                                <li class="page-item"><a class="page-link" href="#">이전</a></li>
+                                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                <li class="page-item"><a class="page-link" href="#">다음</a></li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 주문 상세 정보 모달 -->
+    <div class="modal fade" id="orderDetailModal" tabindex="-1" role="dialog" aria-labelledby="orderDetailModalTitle">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="orderDetailModalTitle">주문 상세 정보</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body row">
+                    <div class="col-md-9">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">상품 정보</h3>
+                            </div>
+                            <div class="card-body" aria-labelledby="productInfoTitle">
+                                <div class="table-responsive overflow-auto" style="max-height: 600px;">
+                                    <table class="table table-bordered table-striped">
+                                        <thead>
+                                            <tr class="text-center align-middle">
+                                                <th>표지</th>
+                                                <th>상품정보</th>
+                                                <th>수량</th>
+                                                <th>가격</th>
+                                                <th>관리</th>
+                                                <th>구매확정</th>
+                                                <th>리뷰관리</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr class="text-center">
+                                                <td class="align-middle">
+                                                    <img src="../faker1.jpg" alt="책 표지" width="60" class="">
+                                                </td>
+                                                <td class="align-middle text-left">
+                                                    <p class="mb-1">
+                                                        <strong class="d-inline-block">제목:</strong>
+                                                        <span class="text-truncate d-inline-block"
+                                                            style="max-width: 120px; vertical-align: top;"
+                                                            title="해리포터와 마법사의 돌">해리포터와 마법사의 돌
+                                                            가나다라마바사아자차카타파하</span>
+                                                    </p>
+                                                    <p class="mb-1">
+                                                        <strong class="d-inline-block">저자:</strong>
+                                                        <span class="text-truncate d-inline-block"
+                                                            style="max-width: 120px; vertical-align: top;">J.K.
+                                                            롤링</span>
+                                                    </p>
+                                                    <p class="mb-0">
+                                                        <strong class="d-inline-block">출판사:</strong>
+                                                        <span class="text-truncate d-inline-block"
+                                                            style="max-width: 120px; vertical-align: top;">문학수첩</span>
+                                                    </p>
+                                                </td>
+                                                <td class="align-middle">1</td>
+                                                <td class="align-middle">15,000원</td>
+                                                <td class="align-middle">
+                                                    <button class="btn btn-sm btn-warning text-white"
+                                                        data-toggle="modal"
+                                                        data-target="#exchangeNreturn">교환/반품</button>
+                                                </td>
+                                                <td class="align-middle">
+                                                    <button class="btn btn-sm btn-success" data-toggle="modal"
+                                                        data-target="#orderConfirmation">구매확정</button>
+                                                </td>
+                                                <td class="align-middle">
+                                                    <button class="btn btn-sm btn-primary" data-toggle="modal"
+                                                        data-target="#reviewModal" disabled>리뷰작성</button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="card">
+                            <div class="card-body border-bottom">
+                                <h5>주문 정보</h5>
+                                <p>주문번호: 20231118-001</p>
+                                <p>주문일시: 2023-11-18 14:30</p>
+                                <p>주문상태: 배송 완료</p>
+                            </div>
+
+                            <div class="card-body border-bottom">
+                                <h5>배송 정보</h5>
+                                <p>배송지: 서울시 강남구 테헤란로 123</p>
+                                <p>배송방법: 택배</p>
+                                <p>운송장번호: 1234567890</p>
+                            </div>
+
+                            <div class="card-body">
+                                <h5>결제 정보</h5>
+                                <p>총 상품금액: 45,000원</p>
+                                <p>배송비: 3,000원</p>
+                                <p>할인금액: 13,000원 (10% 할인쿠폰 적용)</p>
+                                <p>최종 결제금액: 35,000원</p>
+                                <p>결제방법: 신용카드</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger">주문 취소</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--주문상세모달 끝-->
+
+    <!-- 교환/반품 모달 -->
+    <div class="modal fade" id="exchangeNreturn" tabindex="-1" role="dialog" aria-labelledby="exchangeNreturnLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exchangeNreturnLabel">교환/반품</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="exchangeReturnForm" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label for="exchangeReturnReason">교환/반품 사유:</label>
+                            <textarea class="form-control" id="exchangeReturnReason" name="reason" rows="3"
+                                required></textarea>
+                            <small class="text-muted">사유에는 교환 또는 반품 여부가 꼭 기재되어 있어야 합니다.</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="attachmentFile">첨부 파일:</label>
+                            <div class="custom-file">
+                                <input type="file" class="custom-file-input" id="imageFile" name="attachment">
+                                <label class="custom-file-label" for="attachmentFile">파일 선택</label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="submitExchangeReturn">신청하기</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--교환/반품 모달 끝-->
+
+    <!-- 구매확정 모달-->
+    <div class="modal fade" id="orderConfirmation" tabindex="-1" role="dialog" aria-labelledby="orderConfirmationLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="orderConfirmationLabel">구매확정</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- 상품 정보 섹션 추가 -->
+                    <div class="product-info mb-4">
+                        <div class="product-info mb-4">
+                            <h6>상품 정보</h6>
+                            <div class="card mb-3">
+                                <div class="row no-gutters">
+                                    <div class="col-md-4">
+                                        <img src="../faker1.jpg" class="card-img" alt="책 표지">
+                                    </div>
+                                    <div class="col-md-8">
+                                        <div class="card-body">
+                                            <h5 class="card-title" id="confirmProductTitle"></h5>
+                                            <p class="card-text"><strong>저자:</strong> <span
+                                                    id="confirmProductAuthor"></span></p>
+                                            <p class="card-text"><strong>출판사:</strong> <span
+                                                    id="confirmProductPublisher"></span></p>
+                                            <p class="card-text"><strong>가격:</strong> <span
+                                                    id="confirmProductPrice"></span></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <h6><strong>구매확정 안내</strong></h6>
+                    <div class="alert alert-info">
+                        <strong>포인트 적립 혜택:</strong>
+                        <ul>
+                            <li>구매확정 시 <strong>750포인트</strong> 적립 (구매금액의 5%)</li>
+                            <li>리뷰 작성 시 추가 <strong>250포인트</strong> 적립</li>
+                        </ul>
+                    </div>
+                    <ul>
+                        <li>구매확정은 상품을 정상적으로 수령하고 만족하셨음을 의미합니다.</li>
+                        <li>구매확정 후에는 교환/반품이 어려울 수 있습니다.</li>
+                    </ul>
+                    <p class="text-danger"><strong>주의:</strong> 구매확정 후에는 취소할 수 없습니다.</p>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="confirmCheck" required>
+                        <label class="form-check-label" for="confirmCheck">
+                            위 내용을 모두 확인하였으며, 구매확정에 동의합니다.
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" id="confirmPurchaseBtn" disabled>구매확정하기</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--구매확정모달 끝-->
+
+    <!-- 리뷰 작성 모달 -->
+    <div class="modal fade" id="reviewModal" tabindex="-1" role="dialog" aria-labelledby="reviewModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="reviewModalLabel">리뷰 작성</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- 상품 정보 섹션 추가 -->
+                    <div class="product-info mb-4">
+                        <h6>상품 정보</h6>
+                        <div class="card mb-3">
+                            <div class="row no-gutters">
+                                <div class="col-md-3">
+                                    <img src="../faker1.jpg" class="card-img" alt="책 표지">
+                                </div>
+                                <div class="col-md-9">
+                                    <div class="card-body">
+                                        <h6 class="card-title mb-5" id="reviewProductTitle"></h6>
+                                        <p class="card-text mb-3"><strong>저자:</strong> <span
+                                                id="reviewProductAuthor"></span></p>
+                                        <p class="card-text mb-3"><strong>출판사:</strong> <span
+                                                id="reviewProductPublisher"></span></p>
+                                        <p class="card-text mb-0"><strong>가격:</strong> <span
+                                                id="reviewProductPrice"></span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <form id="reviewForm">
+                        <div class="form-group">
+                            <label for="rating">별점:</label>
+                            <div id="ratingStars">
+                                <i class="bi bi-star" data-rating="1"></i>
+                                <i class="bi bi-star" data-rating="2"></i>
+                                <i class="bi bi-star" data-rating="3"></i>
+                                <i class="bi bi-star" data-rating="4"></i>
+                                <i class="bi bi-star" data-rating="5"></i>
+                            </div>
+                            <input type="hidden" id="ratingValue" name="rating" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="reviewText">리뷰 내용:</label>
+                            <textarea class="form-control" id="reviewText" name="reviewText" rows="5"
+                                required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="reviewFile">첨부 파일:</label>
+                            <div class="custom-file">
+                                <input type="file" class="custom-file-input" id="reviewFile" name="reviewFile">
+                                <label class="custom-file-label" for="reviewFile">파일 선택</label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">취소</button>
+                    <button type="button" class="btn btn-primary" id="submitReview">리뷰 제출</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 리뷰 작성 모달 끝-->
+
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // 날짜 범위 선택 변경 시 이벤트
+            $('#dateRange').change(function () {
+                $('#customDateRange').toggle($(this).val() === 'custom');
+            });
+
+            // 필터 적용 버튼 클릭 시 이벤트
+            $('#applyFilters').click(applyFilters);
+
+            // 필터 초기화 버튼 클릭 시 이벤트
+            $('#resetFilters').click(resetFilters);
+
+            // 필터 태그 제거 기능
+            $('#appliedFilters').on('click', '.badge', removeFilter);
+
+            function applyFilters() {
+                var appliedFilters = [];
+                var dateRange = $('#dateRange').val();
+                var deliveryStatus = $('#deliveryStatus').val();
+                var orderStatus = $('#orderStatus').val();
+
+                if (dateRange) {
+                    if (dateRange === 'custom') {
+                        var startDate = $('#startDate').val();
+                        var endDate = $('#endDate').val();
+                        if (startDate && endDate) {
+                            appliedFilters.push(`기간: ${startDate} ~ ${endDate}`);
+                        }
+                    } else {
+                        appliedFilters.push(`기간: 최근 ${dateRange}개월`);
+                    }
+                }
+
+                if (deliveryStatus && deliveryStatus !== 'all') {
+                    appliedFilters.push(`배송 상태: ${$('#deliveryStatus option:selected').text()}`);
+                }
+
+                if (orderStatus && orderStatus !== 'all') {
+                    appliedFilters.push(`주문 상태: ${$('#orderStatus option:selected').text()}`);
+                }
+
+                updateFilterTags(appliedFilters);
+                loadFilteredData();
+            }
+
+            function resetFilters() {
+                $('#dateRange, #deliveryStatus, #orderStatus').val('');
+                $('#startDate, #endDate').val('');
+                $('#customDateRange').hide();
+                $('#appliedFilters').empty();
+                loadFilteredData();
+            }
+
+            function removeFilter() {
+                var filterText = $(this).parent().text().trim();
+                var filterType = filterText.split(':')[0].trim();
+
+                // 필터 유형에 따라 해당 입력 필드 초기화
+                switch (filterType) {
+                    case '기간':
+                        $('#dateRange').val('');
+                        $('#startDate, #endDate').val('');
+                        $('#customDateRange').hide();
+                        break;
+                    case '배송 상태':
+                        $('#deliveryStatus').val('');
+                        break;
+                    case '주문 상태':
+                        $('#orderStatus').val('');
+                        break;
+                }
+
+                // 필터 태그 제거
+                $(this).parent().remove();
+
+                // 필터링된 데이터 다시 로드
+                loadFilteredData();
+            }
+
+            function updateFilterTags(filters) {
+                var filterHtml = filters.map(filter =>
+                    `<span class="badge badge-primary mr-2">${filter} <i class="bi bi-x-circle"></i></span>`
+                ).join('');
+                $('#appliedFilters').html(filterHtml);
+            }
+
+            function loadFilteredData() {
+                // AJAX 요청을 사용하여 필터링된 데이터 로드
+                $.ajax({
+                    url: '/api/filtered-orders',
+                    method: 'GET',
+                    data: {
+                        dateRange: $('#dateRange').val(),
+                        startDate: $('#startDate').val(),
+                        endDate: $('#endDate').val(),
+                        deliveryStatus: $('#deliveryStatus').val(),
+                        orderStatus: $('#orderStatus').val()
+                    },
+                    success: function (response) {
+                        // 받은 데이터로 테이블 업데이트
+                        updateOrderTable(response);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("데이터 로드 중 오류 발생:", error);
+                    }
+                });
+            }
+
+            function updateOrderTable(data) {
+                // 테이블 내용 업데이트 로직
+                var tableBody = $('#orderTable tbody');
+                tableBody.empty();
+
+                data.forEach(function (order) {
+                    var row = `<tr>
+                <td>${order.orderNumber}</td>
+                <td>${order.orderDate}</td>
+                <td class="text-truncate" style="max-width: 220px;" title="${order.productInfo}">
+                    ${order.productInfo}
+                </td>
+                <td>${order.orderAmount}</td>
+                <td>${order.deliveryStatus}</td>
+                <td>${order.orderStatus}</td>
+                <td>
+                    <button class="btn btn-sm btn-info" data-toggle="modal" data-target="#orderDetailModal" data-order-id="${order.id}">
+                        상세보기
+                    </button>
+                </td>
+            </tr>`;
+                    tableBody.append(row);
+                });
+            }
+
+            // 모달 z-index 관리
+            $('.modal').on('show.bs.modal', function (event) {
+                var zIndex = 1040 + (10 * $('.modal:visible').length);
+                $(this).css('z-index', zIndex);
+                setTimeout(function () {
+                    $('.modal-backdrop').not('.modal-stack').css('z-index', zIndex - 1).addClass('modal-stack');
+                }, 0);
+            });
+
+            // 파일 유효성 검사 및 파일명 표시 (교환/반품 모달)
+            $('#imageFile').on('change', function () {
+                var file = this.files[0];
+                var fileType = file.type;
+                var validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+                if (!validTypes.includes(fileType)) {
+                    alert('JPG, PNG, GIF 형식의 이미지만 업로드 가능합니다.');
+                    $(this).val('');
+                } else {
+                    $(this).next('.custom-file-label').html(file.name);
+                }
+            });
+
+            // 교환/반품 신청 제출
+            $('#submitExchangeReturn').on('click', function () {
+                var reason = $('#exchangeReturnReason').val();
+                if (!reason) {
+                    alert('교환/반품 사유를 입력해주세요.');
+                    return;
+                }
+                // 여기서 실제 제출 로직 대신 성공 메시지만 표시
+                alert('교환/반품 신청이 완료되었습니다.');
+                $('#exchangeNreturn').modal('hide');
+                // 구매확정 버튼 비활성화 및 텍스트 변경
+                var $row = $('#exchangeNreturn').data('row');
+                if ($row) {
+                    $row.find('.btn-success[data-target="#orderConfirmation"]').prop('disabled', true).text('교환/반품 진행 중');
+                    $row.find('.btn-primary').prop('disabled', true); // 리뷰 작성 버튼도 비활성화
+                }
+            });
+
+            // 교환/반품 모달 열릴 때 현재 행 정보 저장
+            $('#exchangeNreturn').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget);
+                var row = button.closest('tr');
+                $(this).data('row', row);
+            });
+
+            $(document).ready(function () {
+                // 구매확정 버튼 클릭 이벤트
+                $('.btn-success[data-target="#orderConfirmation"]').on('click', function () {
+                    if (!$(this).prop('disabled')) {
+                        var $row = $(this).closest('tr');
+                        updateConfirmationModal($row);
+                        $('#orderConfirmation').modal('show');
+                    }
+                });
+
+                // 구매확정 모달의 확인 버튼 클릭 이벤트
+                $('#confirmPurchaseBtn').on('click', function () {
+                    if (!$(this).prop('disabled')) {
+                        var $row = $('#orderConfirmation').data('currentRow');
+                        confirmPurchase($row);
+                        $('#orderConfirmation').modal('hide');
+                    }
+                });
+
+                // 구매확정 체크박스 이벤트
+                $('#confirmCheck').on('change', function () {
+                    $('#confirmPurchaseBtn').prop('disabled', !this.checked);
+                });
+            });
+
+            function updateConfirmationModal($row) {
+                var title = $row.find('td:eq(1) p:eq(0) span').text();
+                var author = $row.find('td:eq(1) p:eq(1) span').text();
+                var publisher = $row.find('td:eq(1) p:eq(2) span').text();
+                var price = $row.find('td:eq(3)').text();
+
+                $('#confirmProductTitle').text(title);
+                $('#confirmProductAuthor').text(author);
+                $('#confirmProductPublisher').text(publisher);
+                $('#confirmProductPrice').text(price);
+
+                $('#orderConfirmation').data('currentRow', $row);
+            }
+
+            function confirmPurchase($row) {
+                $row.find('.btn-success[data-target="#orderConfirmation"]').prop('disabled', true).text('구매확정 완료');
+                $row.find('.btn-primary').prop('disabled', false); // 리뷰 작성 버튼 활성화
+                $row.find('.btn-warning[data-toggle="modal"][data-target="#exchangeNreturn"]').prop('disabled', true);
+
+                alert('구매가 확정되었습니다.');
+                // 여기에 구매확정 관련 추가 로직 구현 (예: 서버에 구매확정 정보 전송)
+            }
+
+            // 리뷰 작성 버튼 클릭 이벤트
+            $('.btn-primary[data-target="#reviewModal"]').on('click', function () {
+                var $row = $(this).closest('tr');
+                var title = $row.find('td:eq(1) p:eq(0) span').text();
+                var author = $row.find('td:eq(1) p:eq(1) span').text();
+                var publisher = $row.find('td:eq(1) p:eq(2) span').text();
+                var price = $row.find('td:eq(3)').text();
+
+                $('#reviewProductTitle').text(title);
+                $('#reviewProductAuthor').text(author);
+                $('#reviewProductPublisher').text(publisher);
+                $('#reviewProductPrice').text(price);
+
+                $('#reviewModal').modal('show');
+            });
+
+            // 별점 시스템
+            $('#ratingStars i').on('click', function () {
+                var rating = $(this).data('rating');
+                $('#ratingValue').val(rating);
+                $('#ratingStars i').removeClass('bi-star-fill').addClass('bi-star');
+                $(this).prevAll().addBack().removeClass('bi-star').addClass('bi-star-fill');
+            });
+
+            // 리뷰 파일 유효성 검사 및 파일명 표시
+            $('#reviewFile').on('change', function () {
+                var file = this.files[0];
+                var fileType = file.type;
+                var validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+                if (!validTypes.includes(fileType)) {
+                    alert('JPG, PNG, GIF 형식의 이미지만 업로드 가능합니다.');
+                    $(this).val('');
+                } else {
+                    $(this).next('.custom-file-label').html(file.name);
+                }
+            });
+
+            // 리뷰 제출
+            $('#submitReview').on('click', function () {
+                var rating = $('#ratingValue').val();
+                var reviewText = $('#reviewText').val();
+                var file = $('#reviewFile')[0].files[0];
+
+                if (!rating) {
+                    alert('별점을 선택해주세요.');
+                    return;
+                }
+                if (!reviewText) {
+                    alert('리뷰 내용을 입력해주세요.');
+                    return;
+                }
+
+                // 파일 유효성 검사 (선택적)
+                if (file) {
+                    var fileType = file.type;
+                    var validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+                    if (!validTypes.includes(fileType)) {
+                        alert('JPG, PNG, GIF 형식의 이미지만 업로드 가능합니다.');
+                        return;
+                    }
+                }
+
+                // 여기에 실제 리뷰 제출 로직을 구현합니다.
+                // 예: AJAX를 사용하여 서버에 데이터 전송
+
+                alert('리뷰가 성공적으로 제출되었습니다.');
+                $('#reviewModal').modal('hide');
+
+                // 리뷰 작성 버튼 비활성화 및 텍스트 변경
+                $('.btn-primary[data-target="#reviewModal"]').prop('disabled', true).text('리뷰 작성 완료');
+            });
+
+            // 리뷰 모달이 닫힐 때 폼 초기화
+            $('#reviewModal').on('hidden.bs.modal', function () {
+                $('#reviewForm')[0].reset();
+                $('#ratingStars i').removeClass('text-warning');
+                $('#ratingValue').val('');
+            });
+        });
+    </script>
+</body>
+
+</html>
