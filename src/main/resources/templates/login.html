@@ -11,6 +11,10 @@
             background: -webkit-linear-gradient(to right, rgba(106, 17, 203, 1), rgba(37, 117, 252, 1));
             background: linear-gradient(to right, rgba(106, 17, 203, 1), rgba(37, 117, 252, 1))
         }
+        .loginBtn{
+            width: 150px;
+            height: 35px;
+        }
     </style>
 </head>
 <body class="gradient-custom">
@@ -21,15 +25,15 @@
                 <h2 class="text-white">LOGIN</h2>
                 <p class="text-white-50 mt-2 mb-5">서비스 사용을 위해 로그인을 해주세요!</p>
 
-                <div class = "mb-2">
-                    <a href="/oauth2/authorization/google">
-                        <span>구글로그인</span>
+                <div class = "mb-2 d-flex flex-column">
+                    <a href="/oauth2/authorization/google" class="my-1">
+                        <img src="/image/google_login.png" alt="구글 로그인" class="loginBtn">
                     </a>
-                    <a href="/oauth2/authorization/naver">
-                        <span>네이버로그인</span>
+                    <a href="/oauth2/authorization/naver" class="my-1">
+                        <img src="/image/naver_login.png" alt="네이버 로그인" class="loginBtn">
                     </a>
-                    <a href="/oauth2/authorization/kakao">
-                        <span>카카오로그인</span>
+                    <a href="/oauth2/authorization/kakao" class="my-1">
+                        <img src="/image/kakao_login.png" alt="카카오 로그인" class="loginBtn">
                     </a>
                 </div>
             </div>

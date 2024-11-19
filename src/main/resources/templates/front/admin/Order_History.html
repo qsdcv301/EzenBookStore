@@ -33,7 +33,7 @@
 
 <div class="container mt-5">
   <h3 class="font-weight-bold mb-3">주문 조회 및 상태 관리</h3>
-  <p class="mb-4">전체 주문건을 확인하고 주문 상태를 관리할 수 있는 페이지입니다.</p>
+  <p>전체 주문건을 확인하고 주문 상태를 관리할 수 있습니다.</p>
 
   <!-- 배송 상태별 필터 버튼 
   >> 클릭 시 해당하는 배송상태 확인가능(버튼 색 활성화 필요-active)-->
@@ -121,8 +121,6 @@
                     <option value="5" th:selected="${order.status == 5}">배송취소</option>
                 </select>
             </td>
-
-
             <td>
                 <button class="btn btn-primary" th:data-target="'#orderDetailModal-' + ${order.id}" data-toggle="modal">상세</button>
             </td>
