@@ -5,6 +5,7 @@ import ezen.team.ezenbookstore.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -31,19 +32,30 @@ public class AdminUserApiController {
     @GetMapping("")
     public String getUserList(
             @RequestParam(value = "grade", required = false) Integer grade,
+            @RequestParam(value = "type", required = false) String type,
+            @RequestParam(value = "keyword", required = false) String keyword,
             @RequestParam(value = "page", defaultValue = "1") int page, // 기본값 1
             @RequestParam(value = "size", defaultValue = "10") int size,
             Model model) {
+
         // 1-based 페이지를 0-based로 변환
-        Page<User> userPage = userService.findAll(PageRequest.of(page - 1, size));
+        Pageable pageable = PageRequest.of(page - 1, size);
+        Page<User> userPage;
+
+        if (type != null && !type.isEmpty() && keyword != null && !keyword.isEmpty()) {
+            // 검색 조건이 있을 경우 검색 결과 반환
+            userPage = userService.searchUsers(type, keyword, pageable);
+        } else if (grade != null) {
+            // 등급별 필터링
+            userPage = userService.findByGrade(grade, pageable);
+        } else {
+            // 기본 리스트 반환
+            userPage = userService.findAll(pageable);
+        }
 
         List<User> allUsers = userService.findAllUsers();
 
-        if (grade == null) { // 전체 보기
-            userPage = userService.findAll(PageRequest.of(page - 1, size));
-        } else { // 등급별 필터링
-            userPage = userService.findByGrade(grade, PageRequest.of(page - 1, size));
-        }
+        // 사용자 등급별 카운트
         long totalCount = allUsers.size();
         long generalCount = allUsers.stream().filter(u -> u.getGrade() == 0).count();
         long silverCount = allUsers.stream().filter(u -> u.getGrade() == 1).count();
@@ -51,6 +63,7 @@ public class AdminUserApiController {
         long vipCount = allUsers.stream().filter(u -> u.getGrade() == 3).count();
         long adminCount = allUsers.stream().filter(u -> u.getGrade() == 4).count();
 
+        // 모델에 데이터 추가
         model.addAttribute("userList", userPage.getContent());
         model.addAttribute("totalPages", userPage.getTotalPages());
         model.addAttribute("currentPage", page); // 1-based 페이지 번호 유지
@@ -61,17 +74,12 @@ public class AdminUserApiController {
         model.addAttribute("vipCount", vipCount);
         model.addAttribute("adminCount", adminCount);
         model.addAttribute("grade", grade);
+        model.addAttribute("type", type);
+        model.addAttribute("keyword", keyword);
 
         return "admin/userControl";
     }
 
-
-    // 회원 검색
-    @PostMapping("/search")
-    public String searchUser(@RequestParam String keyword) {
-        // 검색어를 기준으로 회원을 검색하는 로직
-        return "redirect:/admin/user"; // 검색 결과 페이지로 리다이렉트
-    }
 
 
     // 회원 정보 삭제

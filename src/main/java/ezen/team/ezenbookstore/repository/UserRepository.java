@@ -19,4 +19,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmailAndTel(String email, String tel);
 
     Page<User> findByGrade(Integer grade, Pageable pageable);
+    Page<User> findByEmailContaining(String email, Pageable pageable);
+    Page<User> findByNameContaining(String name, Pageable pageable);
+
 }
