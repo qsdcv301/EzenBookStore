@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>마이페이지 - 나의 정보</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+
+<body>
+
+    <div class="container mt-5">
+        <h1 class="mb-4">마이페이지</h1>
+        <div class="row">
+            <div class="col-md-3">
+                <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                    <a class="nav-link active" id="v-pills-info-tab" data-toggle="pill" href="#v-pills-info"
+                        role="tab">나의 정보</a>
+                    <a class="nav-link" id="v-pills-orders-tab" data-toggle="pill" href="#v-pills-orders"
+                        role="tab">주문내역</a>
+                    <a class="nav-link" id="v-pills-inquiries-tab" data-toggle="pill" href="#v-pills-inquiries"
+                        role="tab">문의내역</a>
+                </div>
+            </div>
+            <div class="col-md-9">
+                <div class="tab-content" id="v-pills-tabContent">
+                    <div class="tab-pane fade show active" id="v-pills-info" role="tabpanel">
+                        <h2>나의 정보</h2>
+                        <form>
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4 class="card-title">기본 정보</h4>
+                                </div>
+                                <div class="card-body">
+                                    <div class="form-row">
+                                        <div class="form-group col-md-6">
+                                            <label for="userid">아이디</label>
+                                            <input type="text" class="form-control" id="userid" value="guest1" readonly>
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                            <label for="name">이름</label>
+                                            <input type="text" class="form-control" id="name" value="홍길동" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group col-md-6">
+                                            <label for="birthdate">생년월일</label>
+                                            <input type="date" class="form-control" id="birthdate">
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                            <label for="phone">연락처</label>
+                                            <input type="tel" class="form-control" id="phone"
+                                                placeholder="010-1234-5678">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="address">배송지 주소</label>
+                                        <div>
+                                            <div class="input-group">
+                                                <input type="text" class="form-control" id="address"
+                                                    placeholder="주소를 입력하세요">
+                                                <div class="input-group-append">
+                                                    <button class="btn btn-outline-secondary" type="button">검색</button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="address">상세주소</label>
+                                        <input type="text" class="form-control" id="address" placeholder="상세주소를 입력하세요">
+                                    </div>
+                                    <div class="d-flex justify-content-center mt-5">
+                                        <p class="btn btn-dark w-25" data-toggle="modal"
+                                            data-target="#changePasswordModal">비밀번호변경</p>
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    <div class="form-group d-flex justify-content-end">
+                                        <button type="submit" class="btn btn-primary">정보 수정</button>
+                                        <button type="button" class="btn btn-danger ml-2" data-toggle="modal"
+                                            data-target="#deleteAccountModal">회원 탈퇴</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card mt-4 mb-5">
+                                <div class="card-header">
+                                    <h4 class="card-title">계정 정보</h4>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-4 border-right">
+                                            <h5>회원가입 정보</h5>
+                                            <div class="form-group">
+                                                <label>회원 가입일</label>
+                                                <input type="text" class="form-control" value="2023-01-01" readonly>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>가입경로</label>
+                                                <input type="text" class="form-control" value="네이버" readonly>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 border-right">
+                                            <h5>회원 등급 정보</h5>
+                                            <div class="form-group">
+                                                <label>현재 등급</label>
+                                                <input type="text" class="form-control" value="골드" readonly>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>다음 등급까지</label>
+                                                <input type="text" class="form-control" value="구매확정 15회" readonly>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <h5>적립금 정보</h5>
+                                            <div class="form-group">
+                                                <label>현재 보유 적립금</label>
+                                                <input type="text" class="form-control" value="3,500 원" readonly>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                        <!-- 회원 탈퇴 모달 -->
+                        <div class="modal fade" id="deleteAccountModal" tabindex="-1" role="dialog">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">회원 탈퇴 확인</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>정말로 탈퇴하시겠습니까?</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">취소</button>
+                                        <button type="button" class="btn btn-danger">탈퇴하기</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 비밀번호 변경 모달 -->
+                        <div class="modal fade" id="changePasswordModal" tabindex="-1" role="dialog">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">비밀번호 변경</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form id="changePasswordForm">
+                                            <div class="form-group">
+                                                <label for="currentPassword">현재 비밀번호</label>
+                                                <input type="password" class="form-control" id="currentPassword"
+                                                    required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="confirmCurrentPassword">현재 비밀번호 확인</label>
+                                                <input type="password" class="form-control" id="confirmCurrentPassword"
+                                                    required>
+                                            </div>
+                                            <div id="newPasswordFields" style="display: none;">
+                                                <div class="form-group">
+                                                    <label for="newPassword">새 비밀번호</label>
+                                                    <input type="password" class="form-control" id="newPassword"
+                                                        required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="confirmNewPassword">새 비밀번호 확인</label>
+                                                    <input type="password" class="form-control" id="confirmNewPassword"
+                                                        required>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">취소</button>
+                                        <button type="button" class="btn btn-primary"
+                                            id="verifyCurrentPassword">확인</button>
+                                        <button type="button" class="btn btn-primary" id="changePassword"
+                                            style="display: none;">변경하기</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="v-pills-orders" role="tabpanel">
+                        <h2>주문내역</h2>
+
+                        <!-- 필터 및 검색 -->
+                        <div class="row mb-3 justify-content-end">
+                            <div class="col-md-3 col-lg-3 mb-2 mb-md-0">
+                                <select class="form-control" id="dateFilter">
+                                    <option>최근 1개월</option>
+                                    <option>최근 3개월</option>
+                                    <option>최근 6개월</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 col-lg-3 mb-2 mb-md-0">
+                                <select class="form-control" id="statusFilter">
+                                    <option>전체 주문</option>
+                                    <option>배송 준비중</option>
+                                    <option>배송중</option>
+                                    <option>배송 완료</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 col-lg-5">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="주문번호 또는 상품명 검색">
+                                    <div class="input-group-append">
+                                        <button type="button" class="btn btn-outline-secondary">검색</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 주문 목록 테이블 -->
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>주문번호</th>
+                                    <th>주문일자</th>
+                                    <th>상품정보</th>
+                                    <th>주문금액</th>
+                                    <th>주문상태</th>
+                                    <th>상세보기</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>20231118-001</td>
+                                    <td>2023-11-18</td>
+                                    <td>책 제목 1 외 2종</td>
+                                    <td>35,000원</td>
+                                    <td>배송 완료</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-info" data-toggle="modal"
+                                            data-target="#orderDetailModal">
+                                            상세보기
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- 페이지네이션 -->
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination justify-content-center">
+                                <li class="page-item"><a class="page-link" href="#">이전</a></li>
+                                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                <li class="page-item"><a class="page-link" href="#">다음</a></li>
+                            </ul>
+                        </nav>
+                    </div>
+
+                    <!-- 주문 상세 정보 모달 -->
+                    <div class="modal fade" id="orderDetailModal" tabindex="-1" role="dialog">
+                        <div class="modal-dialog modal-xl" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">주문 상세 정보</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body row">
+                                    <div class="col-md-9">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <h3 class="card-title">상품 정보</h3>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="table-responsive overflow-auto" style="max-height: 600px;">
+                                                    <table class="table table-bordered table-striped">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>상품명</th>
+                                                                <th>수량</th>
+                                                                <th>가격</th>
+                                                                <th>상태</th>
+                                                                <th>관리</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr>
+                                                                <td class="align-middle">
+                                                                    <img src="../front/faker1.jpg" alt="책 표지" width="60"
+                                                                        class="mr-2 img-thumbnail">
+                                                                    책 제목 1
+                                                                </td>
+                                                                <td class="align-middle">1</td>
+                                                                <td class="align-middle">15,000원</td>
+                                                                <td class="align-middle">배송완료</td>
+                                                                <td class="align-middle text-center">
+                                                                    <button
+                                                                        class="btn btn-sm btn-warning">교환/반품</button>
+                                                                    <button class="btn btn-sm btn-danger">주문취소</button>
+                                                                    <button class="btn btn-sm btn-primary">리뷰작성</button>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="align-middle">
+                                                                    <img src="../front/faker1.jpg" alt="책 표지" width="60"
+                                                                        class="mr-2 img-thumbnail">
+                                                                    책 제목 1
+                                                                </td>
+                                                                <td class="align-middle">1</td>
+                                                                <td class="align-middle">15,000원</td>
+                                                                <td class="align-middle">배송완료</td>
+                                                                <td class="align-middle text-center">
+                                                                    <button
+                                                                        class="btn btn-sm btn-warning">교환/반품</button>
+                                                                    <button class="btn btn-sm btn-danger">주문취소</button>
+                                                                    <button class="btn btn-sm btn-primary">리뷰작성</button>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="align-middle">
+                                                                    <img src="../front/faker1.jpg" alt="책 표지" width="60"
+                                                                        class="mr-2 img-thumbnail">
+                                                                    책 제목 1
+                                                                </td>
+                                                                <td class="align-middle">1</td>
+                                                                <td class="align-middle">15,000원</td>
+                                                                <td class="align-middle">배송완료</td>
+                                                                <td class="align-middle text-center">
+                                                                    <button
+                                                                        class="btn btn-sm btn-warning">교환/반품</button>
+                                                                    <button class="btn btn-sm btn-danger">주문취소</button>
+                                                                    <button class="btn btn-sm btn-primary">리뷰작성</button>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="align-middle">
+                                                                    <img src="../front/faker1.jpg" alt="책 표지" width="60"
+                                                                        class="mr-2 img-thumbnail">
+                                                                    책 제목 1
+                                                                </td>
+                                                                <td class="align-middle">1</td>
+                                                                <td class="align-middle">15,000원</td>
+                                                                <td class="align-middle">배송완료</td>
+                                                                <td class="align-middle text-center">
+                                                                    <button
+                                                                        class="btn btn-sm btn-warning">교환/반품</button>
+                                                                    <button class="btn btn-sm btn-danger">주문취소</button>
+                                                                    <button class="btn btn-sm btn-primary">리뷰작성</button>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="align-middle">
+                                                                    <img src="../front/faker1.jpg" alt="책 표지" width="60"
+                                                                        class="mr-2 img-thumbnail">
+                                                                    책 제목 1
+                                                                </td>
+                                                                <td class="align-middle">1</td>
+                                                                <td class="align-middle">15,000원</td>
+                                                                <td class="align-middle">배송완료</td>
+                                                                <td class="align-middle text-center">
+                                                                    <button
+                                                                        class="btn btn-sm btn-warning">교환/반품</button>
+                                                                    <button class="btn btn-sm btn-danger">주문취소</button>
+                                                                    <button class="btn btn-sm btn-primary">리뷰작성</button>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="align-middle">
+                                                                    <img src="../front/faker1.jpg" alt="책 표지" width="60"
+                                                                        class="mr-2 img-thumbnail">
+                                                                    책 제목 1
+                                                                </td>
+                                                                <td class="align-middle">1</td>
+                                                                <td class="align-middle">15,000원</td>
+                                                                <td class="align-middle">배송완료</td>
+                                                                <td class="align-middle text-center">
+                                                                    <button
+                                                                        class="btn btn-sm btn-warning">교환/반품</button>
+                                                                    <button class="btn btn-sm btn-danger">주문취소</button>
+                                                                    <button class="btn btn-sm btn-primary">리뷰작성</button>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <div class="card">
+                                            <div class="card-body border-bottom">
+                                                <h5>주문 정보</h5>
+                                                <p>주문번호: 20231118-001</p>
+                                                <p>주문일시: 2023-11-18 14:30</p>
+                                                <p>주문상태: 배송 완료</p>
+                                            </div>
+
+                                            <div class="card-body border-bottom">
+                                                <h5>배송 정보</h5>
+                                                <p>배송지: 서울시 강남구 테헤란로 123</p>
+                                                <p>배송방법: 택배</p>
+                                                <p>운송장번호: 1234567890</p>
+                                            </div>
+
+                                            <div class="card-body">
+                                                <h5>결제 정보</h5>
+                                                <p>총 상품금액: 45,000원</p>
+                                                <p>배송비: 3,000원</p>
+                                                <p>할인금액: 13,000원 (10% 할인쿠폰 적용)</p>
+                                                <p>최종 결제금액: 35,000원</p>
+                                                <p>결제방법: 신용카드</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+                                    <button type="button" class="btn btn-danger">전체 주문 취소</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--문의하기탭 데이터베이스 연결필요-->
+                    <div th:if="${userData}" class="tab-pane fade" id="v-pills-inquiries" role="tabpanel"
+                        th:classappend="${param.qnaPage != null} ? 'show active'">
+                        <h3>문의하기</h3>
+
+                        <div class="card mb-4">
+                            <div class="card-header text-left">
+                                <span style="font-size: 20px;">나의 문의 내역<small class="text-muted"
+                                        style="font-size: 15px; margin-left: 20px;">자세한 문의 내용을 보려면 상세보기를
+                                        눌러주세요.</small></span>
+                                <div class="float-right">
+                                    <select id="userQnASelect" class="custom-select mr-2" style="width: 150px;">
+                                        <option value="0" th:selected="${sort == 0}">전체 문의</option>
+                                        <option value="1" th:selected="${sort == 1}">주문/결제</option>
+                                        <option value="2" th:selected="${sort == 2}">배송</option>
+                                        <option value="3" th:selected="${sort == 3}">반품/교환</option>
+                                        <option value="4" th:selected="${sort == 4}">상품문의</option>
+                                        <option value="5" th:selected="${sort == 5}">기타</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <table class="dataframe table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>번호</th>
+                                            <th>유형</th>
+                                            <th>제목</th>
+                                            <th>날짜</th>
+                                            <th>답변 상태</th>
+                                            <th>상세보기</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="qna : ${questionList}">
+                                            <td class="align-middle" th:text="${qna.id}"></td>
+                                            <td class="align-middle" th:switch="${qna.category}">
+                                                <span th:case="1">주문/결제</span>
+                                                <span th:case="2">배송</span>
+                                                <span th:case="3">반품/교환</span>
+                                                <span th:case="4">상품문의</span>
+                                                <span th:case="5">기타</span>
+                                            </td>
+                                            <td class="align-middle" th:text="${qna.title}"></td>
+                                            <td class="align-middle"
+                                                th:text="${#dates.format(qna.createAt, 'yyyy-MM-dd')}"></td>
+                                            <td class="text-danger align-middle" th:if="${qna.answer==''}">답변 대기</td>
+                                            <td class="text-success align-middle" th:unless="${qna.answer==''}">답변 완료
+                                            </td>
+                                            <td class="d-flex align-items-center align-middle">
+                                                <button class="btn btn-primary questionDetailBtn" th:data-id="${qna.id}"
+                                                    data-toggle="modal" data-target="#inquiryDetailModal">상세보기
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="card-footer">
+                                <th:block th:if="${qnaPage != null and qnaPage.totalElements > 0}">
+                                    <!-- 페이징 -->
+                                    <nav aria-label="Page navigation" class="mt-4">
+                                        <ul class="pagination justify-content-center">
+                                            <!-- 첫 페이지 버튼 -->
+                                            <li class="page-item" th:classappend="${qnaPage.first} ? 'disabled' : ''">
+                                                <a class="page-link" th:href="@{customerService(qnaPage=0)}"
+                                                    aria-label="First">
+                                                    << 처음 </a>
+                                            </li>
+
+                                            <!-- 이전 페이지 버튼 -->
+                                            <li class="page-item"
+                                                th:classappend="${qnaPage.hasPrevious} ? '' : 'disabled'">
+                                                <a class="page-link"
+                                                    th:href="@{/customerService(qnaPage=${qnaPage.number - 1})}"
+                                                    aria-label="Previous">
+                                                    이전
+                                                </a>
+                                            </li>
+
+                                            <!-- 페이지 번호 버튼 (최대 5개까지 보이도록 설정) -->
+                                            <li class="page-item" th:each="i : ${#numbers.sequence(
+                                               qnaPage.totalPages <= 5 ? 0 : (qnaPage.number <= 2 ? 0 : (qnaPage.number >= qnaPage.totalPages - 3 ? qnaPage.totalPages - 5 : qnaPage.number - 2)),
+                                               qnaPage.totalPages <= 5 ? qnaPage.totalPages - 1 : (qnaPage.number <= 2 ? 4 : (qnaPage.number >= qnaPage.totalPages - 3 ? qnaPage.totalPages - 1 : qnaPage.number + 2))
+                                               )}" th:classappend="${qnaPage.number == i} ? 'active' : ''">
+                                                <a class="page-link" th:href="@{/customerService(qnaPage=${i})}"
+                                                    th:text="${i + 1}"></a>
+                                            </li>
+
+                                            <!-- 다음 페이지 버튼 -->
+                                            <li class="page-item" th:classappend="${qnaPage.hasNext} ? '' : 'disabled'">
+                                                <a class="page-link"
+                                                    th:href="@{/customerService(qnaPage=${qnaPage.number + 1})}"
+                                                    aria-label="Next">
+                                                    다음
+                                                </a>
+                                            </li>
+
+                                            <!-- 맨 뒤 페이지 버튼 -->
+                                            <li class="page-item" th:classappend="${qnaPage.last} ? 'disabled' : ''">
+                                                <a class="page-link"
+                                                    th:href="@{/customerService(qnaPage=${qnaPage.totalPages - 1})}"
+                                                    aria-label="Last">
+                                                    끝 >>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </nav>
+                                </th:block>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-center mb-4">
+                            <button type="button" class="btn btn-lg btn-primary" style="width: 300px;"
+                                data-toggle="modal" data-target="#inquiryModal">
+                                문의하기
+                            </button>
+                        </div>
+                        <!--문의하기 및 상세보기 모달-->
+                        <th:block th:if="${userData}">
+                            <div th:replace="~{fragments/questionModal :: questionModal}"></div>
+                            <div th:replace="~{fragments/questionDetailModal :: questionDetailModal}"></div>
+                        </th:block>
+                        <!--문의하기 모달 끝-->
+                    </div>
+                    <!--문의하기탭 끝-->
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#verifyCurrentPassword').click(function () {
+                var currentPassword = $('#currentPassword').val();
+                var confirmCurrentPassword = $('#confirmCurrentPassword').val();
+
+                if (currentPassword && currentPassword === confirmCurrentPassword) {
+                    // 여기에 현재 비밀번호 확인 로직을 구현합니다.
+                    // 실제 구현 시에는 서버와 통신하여 비밀번호를 확인해야 합니다.
+                    $('#newPasswordFields').show();
+                    $(this).hide();
+                    $('#changePassword').show();
+                } else {
+                    alert('현재 비밀번호가 일치하지 않습니다.');
+                }
+            });
+
+            $('#changePassword').click(function () {
+                var newPassword = $('#newPassword').val();
+                var confirmNewPassword = $('#confirmNewPassword').val();
+                if (newPassword && newPassword === confirmNewPassword) {
+                    // 여기에 새 비밀번호 변경 로직을 구현합니다.
+                    alert('비밀번호가 변경되었습니다.');
+                    $('#changePasswordModal').modal('hide');
+                } else {
+                    alert('새 비밀번호와 확인 비밀번호가 일치하지 않습니다.');
+                }
+            });
+
+            $('#changePasswordModal').on('hidden.bs.modal', function () {
+                $('#changePasswordForm')[0].reset();
+                $('#newPasswordFields').hide();
+                $('#verifyCurrentPassword').show();
+                $('#changePassword').hide();
+            });
+        });
+    </script>
+
+
+</body>
+
+</html>
