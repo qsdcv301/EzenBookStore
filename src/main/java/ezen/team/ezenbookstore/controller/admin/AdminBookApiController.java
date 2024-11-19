@@ -25,12 +25,6 @@ public class AdminBookApiController {
 
     private final BookService bookService;
     private final FileUploadService fileUploadService;
-    @InitBinder
-    public void initBinder(WebDataBinder binder) {
-        // publishDate 바인딩 제외
-        binder.setDisallowedFields("publishDate");
-    }
-
 
     @GetMapping("")
     public String bookControl(Model model,
