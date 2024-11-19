@@ -1,8 +1,11 @@
 package ezen.team.ezenbookstore.service;
 
 import ezen.team.ezenbookstore.entity.Event;
+import ezen.team.ezenbookstore.entity.Notice;
 import ezen.team.ezenbookstore.repository.EventRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,8 +20,8 @@ public class EventService{
         return eventRepository.findById(id).orElse(null);
     }
 
-    public List<Event> findAll(){
-        return eventRepository.findAll();
+    public Page<Event> findAll(Pageable pageable){
+        return eventRepository.findAll(pageable);
     }
 
     public Event create(Event event){
@@ -39,5 +42,11 @@ public class EventService{
     public void delete(Long id){
         eventRepository.deleteById(id);
     }
+    public Page<Event> searchByTitle(String keyword, Pageable pageable) {
+        return eventRepository.findByTitleContaining(keyword,pageable);
+    }
 
+    public Page<Event> searchByContent(String keyword,Pageable pageable) {
+        return eventRepository.findByContentContaining(keyword,pageable);
+    }
 }

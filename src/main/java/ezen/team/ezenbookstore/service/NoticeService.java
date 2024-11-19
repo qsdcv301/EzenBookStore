@@ -23,8 +23,6 @@ public class NoticeService {
         return noticeRepository.findAll(pageable);
     }
 
-    public Page<Notice> findAllByOrderByIdDesc(Pageable pageable){return noticeRepository.findAllByOrderByIdDesc(pageable);}
-
     public Notice create(Notice notice) {
         return noticeRepository.save(notice);
     }

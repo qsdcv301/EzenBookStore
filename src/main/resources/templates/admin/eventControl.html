@@ -1,10 +1,294 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>event Controll</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+    <script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.min.js"></script>
+    <style>
+        .container{
+            display: flex;
+        }
+        .col-6{
+            width: 50%;
+        }
+        .hidden{
+            display: none;
+        }
+        .asdf{
+            background: #888;
+        }
+        .innerAsdf{
+            display: inline-block;
+            background: #eee;
+            border-radius: 3px;
+            border: 1px solid #000000;
+            padding: 20px;
+        }
+        .eventTitle{
+            padding-right: 10px;
+            padding-left: 10px;
+        }
+        .eventTitle::after{
+            content: "";
+            width: 2px;
+            color: #000;
+            height: 25px;
+            position: relative;
+        }
+    </style>
 </head>
 <body>
+<div class="container">
+    <div class="col-6">
+        <h2>이벤트 관리</h2>
+        <form id="addEventForm">
+            <input type="text" id="title" placeholder="제목" required>
+            <textarea id="content" placeholder="내용" required></textarea>
+            <input type="text" id="addDateRange" placeholder="기간 선택">
+            <input type="hidden" id="startDate">
+            <input type="hidden" id="endDate">
+            <button type="button" id="addEvent">추가</button>
+            <br>
+            <select id="searchType">
+                <option value="title">제목</option>
+                <option value="content">내용</option>
+            </select>
+            <input type="text" id="keyword" placeholder="검색어를 입력하세요">
+            <button type="button" id="btnSearch">검색</button>
+        </form>
+        <table>
+            <tr>
+                <td>체크박스</td>
+                <td>event번호</td>
+                <td class="eventTitle">이벤트 제목</td>
+                <td>이벤트 내용</td>
+                <td>이벤트 시작일</td>
+                <td>이벤트 종료일</td>
+            </tr>
+            <tr th:each="eventPage : ${eventPage}">
+                <td class="event-check">
+                    <input type="checkbox" id="eventChecked" name="checkBox" />
+                    <label for="eventChecked"></label>
+                </td>
+                <td class="eventId" th:text="${eventPage.id}"></td>
+                <td class="eventTitle" th:text="${eventPage.title}"></td>
+                <td class="eventContent" th:text="${eventPage.content}"></td>
+                <td class="eventStartDate" th:text="${eventPage.startDate}"></td>
+                <td class="eventEndDate" th:text="${eventPage.endDate}"></td>
+                <td><button id='updateEvent'>수정</button></td>
+            </tr>
+        </table>
+        <button id='selectAllEvent'>일괄선택</button>
+        <button id='deleteEvent'>일괄삭제</button>
+        <!-- 페이징 -->
+        <div>
+            <!-- 이전 페이지 그룹 -->
+            <a th:if="${startPage > 0}"
+               th:href="@{/admin/event(page=${startPage - 1}, size=${eventPage.size}, keyword=${keyword}, searchType=${searchType})}">
+                이전
+            </a>
 
+            <!-- 페이지 번호 그룹 -->
+            <span th:each="i : ${#numbers.sequence(startPage, endPage - 1)}">
+        <a th:href="@{/admin/event(page=${i}, size=${eventPage.size}, keyword=${keyword}, searchType=${searchType})}"
+           th:text="${i + 1}"
+           th:classappend="${eventPage.number == i ? 'active' : ''}"></a>
+    </span>
+
+            <!-- 다음 페이지 그룹 -->
+            <a th:if="${endPage < eventPage.totalPages}"
+               th:href="@{/admin/event(page=${endPage}, size=${eventPage.size}, keyword=${keyword}, searchType=${searchType})}">
+                다음
+            </a>
+        </div>
+
+    </div>
+
+    <div class="col-6 hidden asdf" id="editForm">
+        <div class="innerAsdf">
+            <p>제목</p>
+            <input type="text" id="editTitle">
+            <p>내용</p>
+            <textarea id="editContent"></textarea>
+            <p>기간</p>
+            <input type="text" id="editDateRange" placeholder="기간 선택">
+            <input type="hidden" id="editStartDate">
+            <input type="hidden" id="editEndDate">
+            <br>
+            <button type="button" id="saveUpdate">수정</button>
+        </div>
+    </div>
+
+</div>
+<!-- 스크립트 부분 -->
+<script>
+    // 이벤트 등록 처리 ajax
+    $("#addEvent").click(function () {
+        const title = $('#title').val();
+        const content = $('#content').val();
+        const startDate = $('#startDate').val();
+        const endDate = $('#endDate').val();
+
+        if (title && content && startDate && endDate) {
+            $.ajax({
+                url: '/admin/event/add',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    title: title,
+                    content: content,
+                    startDate: startDate,
+                    endDate: endDate }),
+                success: function (res) {
+                    alert('이벤트가 추가되었습니다.');
+                    location.reload(); // 성공 시 페이지 새로고침
+                },
+                error: function (xhr, status, error) {
+                    console.error('에러',xhr,status,error);
+                    alert('이벤트 등록 실패');
+                }
+            });
+        } else {
+            alert('제목과 내용을 입력해주세요.');
+        }
+    });
+
+    // '수정' 버튼 클릭 시 하단 입력 폼에 데이터 전송
+    $(document).on('click', '#updateEvent', function () {
+        const row = $(this).closest('tr');
+        const eventId = row.find('.eventId').text();
+        const eventTitle = row.find('.eventTitle').text();
+        const eventContent = row.find('.eventContent').text();
+
+        // 하단 입력 폼에 데이터 채우기
+        $('#editTitle').val(eventTitle);
+        $('#editContent').val(eventContent);
+        $('#editForm').removeClass('hidden').data('id', eventId);
+    });
+
+    // 수정된 이벤트을 서버로 전송하는 ajax 요청
+    $('#saveUpdate').click(function () {
+        const eventId = $('#editForm').data('id');
+        const updatedTitle = $('#editTitle').val().trim();
+        const updatedContent = $('#editContent').val().trim();
+        const updatedStartDate = $('#editStartDate').val();
+        const updatedEndDate = $('#editEndDate').val();
+
+        if (!eventId) {
+            alert('수정할 이벤트 ID가 없습니다.');
+            return;
+        }
+
+        if (!updatedTitle || !updatedContent) {
+            alert('수정할 제목과 내용을 입력해주세요.');
+            return;
+        }
+
+        $.ajax({
+            url: '/admin/event/update',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                id: eventId,
+                title: updatedTitle,
+                content: updatedContent,
+                startDate: updatedStartDate,
+                endDate: updatedEndDate
+            }),
+            success: function (res) {
+                alert('이벤트가 수정되었습니다.');
+                location.reload();
+            },
+            error: function (xhr, status, error) {
+                console.error('수정 오류:', error);
+                alert('이벤트 수정 실패');
+            }
+        });
+    });
+    // 이벤트 체크박스를 일괄 선택하기
+    $('#selectAllEvent').click(function() {
+        const allChecked = $('input[name="checkBox"]:checked').length === $('input[name="checkBox"]').length;
+
+        // 모든 체크박스가 선택되어 있으면 해제, 그렇지 않으면 선택
+        $('input[name="checkBox"]').prop('checked', !allChecked);
+
+        // 버튼 텍스트 변경
+        $(this).text(allChecked ? '일괄선택' : '선택해제');
+    });
+
+
+    // 선택된 이벤트 일괄 삭제
+    $('#deleteEvent').click(function () {
+        const selectedIds = [];
+        $('input[name="checkBox"]:checked').each(function () {
+            const eventId = $(this).closest('tr').find('.eventId').text();
+            selectedIds.push(eventId);
+        });
+
+        if (selectedIds.length > 0) {
+            $.ajax({
+                url: '/admin/event/delete',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(selectedIds),
+                success: function (res) {
+                    alert('선택된 이벤트가 삭제되었습니다.');
+                    location.reload();
+                },
+                error: function (xhr, status, error) {
+                    console.error('삭제 오류', error);
+                    alert('이벤트 삭제 실패');
+                }
+            });
+        } else {
+            alert('삭제할 이벤트을 선택해주세요.');
+        }
+    });
+    $("#btnSearch").click(function () {
+        const searchType = $('#searchType').val(); // 검색 유형 (title/content)
+        const keyword = $('#keyword').val(); // 검색어
+
+        if (keyword.trim() === '') {
+            alert('검색어를 입력해주세요.');
+            return;
+        }
+
+        // 검색 요청 URL 생성 및 이동
+        const url = `/admin/event?searchType=${searchType}&keyword=${keyword}&page=0`;
+        location.href = url;
+    });
+    // Date Range Picker
+    // DateRangePicker 설정 - 추가 폼
+    $('#addDateRange').daterangepicker({
+        locale: {
+            format: 'YYYY-MM-DD',
+            separator: ' ~ ',
+            applyLabel: "적용",
+            cancelLabel: "취소"
+        }
+    }, function(start, end) {
+        $('#startDate').val(start.format('YYYY-MM-DD'));
+        $('#endDate').val(end.format('YYYY-MM-DD'));
+    });
+
+    // DateRangePicker 설정 - 수정 폼
+    $('#editDateRange').daterangepicker({
+        locale: {
+            format: 'YYYY-MM-DD',
+            separator: ' ~ ',
+            applyLabel: "적용",
+            cancelLabel: "취소"
+        }
+    }, function(start, end) {
+        $('#editStartDate').val(start.format('YYYY-MM-DD'));
+        $('#editEndDate').val(end.format('YYYY-MM-DD'));
+    });
+
+</script>
 </body>
 </html>
