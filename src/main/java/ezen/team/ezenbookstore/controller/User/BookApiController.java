@@ -1,10 +1,7 @@
 package ezen.team.ezenbookstore.controller.User;
 
 import ezen.team.ezenbookstore.entity.*;
-import ezen.team.ezenbookstore.service.BookService;
-import ezen.team.ezenbookstore.service.CategoryService;
-import ezen.team.ezenbookstore.service.SubCategoryService;
-import ezen.team.ezenbookstore.service.UserService;
+import ezen.team.ezenbookstore.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.security.core.Authentication;
@@ -17,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -28,6 +26,7 @@ public class BookApiController {
     private final CategoryService categoryService;
     private final SubCategoryService subCategoryService;
     private final UserService userService;
+    private final FileUploadService fileUploadService;
 
     @ModelAttribute
     public void findUser(Model model) {
@@ -77,6 +76,16 @@ public class BookApiController {
         }
         List<Category> categoryList = categoryService.findAll();
         List<SubCategory> subCategoryList = subCategoryService.findAll();
+        List<String> ImageList = new ArrayList<>();
+        for (Book book : bookList.getContent()) {
+            String imagePath = fileUploadService.findImageFilePath(book.getId(), "book");
+            if (imagePath != null) {
+                ImageList.add(imagePath);
+            } else {
+                ImageList.add("");
+            }
+        }
+        model.addAttribute("imageList", ImageList);
         model.addAttribute("sort", sort);
         model.addAttribute("direction", direction);
         model.addAttribute("bookList", bookList.getContent());
@@ -241,7 +250,16 @@ public class BookApiController {
         int end = Math.min((start + pageable.getPageSize()), filteredBooks.size());
         List<Book> pagedBooks = filteredBooks.subList(start, end);
         Page<Book> bookPage = new PageImpl<>(pagedBooks, pageable, filteredBooks.size());
-
+        List<String> ImageList = new ArrayList<>();
+        for (Book book : bookPage.getContent()) {
+            String imagePath = fileUploadService.findImageFilePath(book.getId(), "book");
+            if (imagePath != null) {
+                ImageList.add(imagePath);
+            } else {
+                ImageList.add("");
+            }
+        }
+        model.addAttribute("imageList", ImageList);
         model.addAttribute("keyword", keyword);
         model.addAttribute("val", val);
         model.addAttribute("sort", sort);
@@ -276,6 +294,13 @@ public class BookApiController {
                 .review(book.getReview())
                 .build();
         bookService.update(bookId, newBook);
+        // 이미지 파일 경로 찾기
+        String imagePath = fileUploadService.findImageFilePath(bookId, "book");
+        if (imagePath != null) {
+            model.addAttribute("imagePath", imagePath);
+        }else{
+            model.addAttribute("imagePath", "");
+        }
         model.addAttribute("book", book);
         return "bookDetail";
     }

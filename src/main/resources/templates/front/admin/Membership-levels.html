@@ -57,7 +57,8 @@
   <h3 class="font-weight-bold mb-4">회원 정보 관리</h3>
   <P>가입된 회원 정보를 확인하거나 수정할 수 있는 페이지입니다.</P>
 
-  <!-- 등급 필터 바 -->
+  <!-- 등급 상태별 필터 버튼 
+  >> 클릭 시 해당하는 배송상태 확인가능(버튼 색 활성화 필요-active)-->
   <div class="d-flex justify-content-start mb-3">
     <span class="filter-option active" onclick="filterUsers('전체')">전체 <span id="total-count">0</span></span>
     <span class="filter-option" onclick="filterUsers('일반회원')">일반회원 <span id="general-count">0</span></span>
@@ -68,41 +69,57 @@
   </div>
   <hr> <!-- 구분선 추가 -->
 
-  <!-- 검색 섹션 -->
-  <div class="search-section mb-4 d-flex align-items-center">
-    <select class="form-control mr-2" style="width: 150px;" id="search-type">
-      <option value="email">아이디</option>
-      <option value="name">이름</option>
-    </select>
-    <input type="text" class="form-control mr-2" placeholder="검색어를 입력하세요" style="width: 300px;" id="search-input">
-    <button class="btn btn-secondary" onclick="searchUsers()">조회</button>
-  </div>
+  <div class="d-flex justify-content-between mb-3">
+    <!-- 검색 섹션 -->
+    <div class="search-section d-flex align-items-center">
+      <select class="form-control mr-2" style="width: 150px;" id="search-type">
+        <option value="email">이메일</option>
+        <option value="name">이름</option>
+      </select>
+      <input type="text" class="form-control mr-2" placeholder="검색어를 입력하세요" style="width: 300px;" id="search-input">
+      <button class="btn btn-secondary" onclick="searchUsers()">조회</button>
+    </div>
+
+     <!-- 등급 상태 일괄 변경
+     >> 선택 후 수정 버튼 클릭 시 수정되도록 -->
+     <div class="d-flex align-items-center ml-5">
+      <select class="form-control ml-5" style="width: 300px;" id="bulk-status">
+        <option value="">등급 상태 변경</option>
+        <option value="0">일반회원</option>
+        <option value="1">실버회원</option>
+        <option value="2">골드회원</option>
+        <option value="3">VIP회원</option>
+        <option value="4">관리자</option>
+      </select>
+    </div>
+
+      <!-- 수정/삭제 버튼 -->
+      <div>
+          <button class="btn btn-primary" onclick="updateBulkStatus()">수정</button>
+          <button class="btn btn-danger ml-1" onclick="deleteSelected()">삭제</button>
+      </div>
+    </div>
 
   <!-- 회원 목록 테이블 -->
   <table class="table table-bordered text-center">
     <thead class="thead-light">
       <tr>
-        <th>가입순서</th>
-        <th>아이디(이메일형식)</th>
+        <th><input type="checkbox" id="select-all" onclick="toggleAllCheckboxes(this)"></th>
+        <th>순서</th>
+        <th>가입일</th>
+        <th>아이디</th>
         <th>이름</th>
         <th>전화번호</th>
         <th>주소</th>
-        <th>회원 등급</th>
-        <th>수정</th>
+        <th>상세주소</th>
+        <th>회원등급</th>
+        <th>상세보기</th>
       </tr>
     </thead>
     <tbody id="user-list">
       <!-- 회원 목록 (동적으로 추가됨) -->
     </tbody>
   </table>
-
-  <!-- 페이지네이션 -->
-  <nav aria-label="Page navigation" class="mt-4">
-    <ul class="pagination justify-content-center" id="pagination">
-      <!-- 페이지 번호가 여기에 동적으로 추가됩니다. -->
-    </ul>
-  </nav>
-</div>
 
 <!-- 모달 창 -->
 <div class="modal fade" id="userDetailModal" tabindex="-1" role="dialog" aria-labelledby="userDetailModalLabel" aria-hidden="true">
@@ -115,27 +132,21 @@
         </button>
       </div>
       <div class="modal-body">
-        <p><strong>가입순서 :</strong> <span id="modal-request-signup"></span></p>
+        <p><strong>순서 :</strong> <span id="modal-request-signup"></span></p>
+        <p><strong>가입일 :</strong> <span id="modal-signup-date"></span></p>
         <p><strong>아이디 :</strong> <span id="modal-user-id"></span></p>
         <p><strong>이름 :</strong> <span id="modal-user-name"></span></p>
         <p><strong>전화번호 :</strong> <span id="modal-phone"></span></p>
         <p><strong>주소 :</strong> <span id="modal-address"></span></p>
-        <p><strong>회원 등급 :</strong>
-          <select class="form-control d-inline-block" id="modal-user-level" style="width: 150px;">
-            <option>일반회원</option>
-            <option>실버회원</option>
-            <option>골드회원</option>
-            <option>VIP회원</option>
-            <option>관리자</option>
-          </select>
-        </p>
+        <p><strong>상세주소 :</strong> <span id="modal-detailed-address"></span></p>
+        <p><strong>회원 등급 :</strong> <span id="modal-user-level"></span></p>
         <div class="d-flex mt-3">
-          <button class="btn btn-secondary mr-2" data-dismiss="modal">취소</button>
-          <button class="btn btn-primary" onclick="saveLevel()">수정하기</button>
+          <button class="btn btn-secondary mr-2" data-dismiss="modal">닫기</button>
         </div>
       </div>
     </div>
   </div>
+</div>
 </div>
 
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
@@ -143,15 +154,15 @@
 <script>
   let currentUserId;
   const users = [
-    { email: 'user1@example.com', name: '홍길동1', level: '일반회원', signupOrder: 1, phone: '010-1111-2222', address: '서울시 강남구' },
-    { email: 'user2@example.com', name: '홍길동2', level: '실버회원', signupOrder: 2, phone: '010-3333-4444', address: '서울시 종로구' },
-    { email: 'user3@example.com', name: '홍길동3', level: 'VIP회원', signupOrder: 3, phone: '010-5555-6666', address: '서울시 중구' },
-    { email: 'user4@example.com', name: '홍길동4', level: '일반회원', signupOrder: 4, phone: '010-7777-8888', address: '서울시 송파구' },
-    { email: 'user5@example.com', name: '홍길동5', level: '골드회원', signupOrder: 5, phone: '010-9999-0000', address: '서울시 구로구' },
-    { email: 'user6@example.com', name: '홍길동6', level: '일반회원', signupOrder: 6, phone: '010-1234-5678', address: '서울시 양천구' },
-    { email: 'admin1@example.com', name: '관리자1', level: '관리자', signupOrder: 7, phone: '010-2345-6789', address: '서울시 성동구' },
-    { email: 'admin2@example.com', name: '관리자2', level: '관리자', signupOrder: 8, phone: '010-3456-7890', address: '서울시 강동구' },
-    { email: 'user9@example.com', name: '홍길동9', level: '일반회원', signupOrder: 9, phone: '010-4567-8901', address: '서울시 서초구' }
+    { signupDate: '2024-01-01', email: 'user1@example.com', name: '홍길동1', level: '일반회원', signupOrder: 1, phone: '010-1111-2222', address: '서울시 강남구', detailedAddress: '청담동 1번지'  },
+    { signupDate: '2024-02-01', email: 'user2@example.com', name: '홍길동2', level: '실버회원', signupOrder: 2, phone: '010-3333-4444', address: '서울시 종로구', detailedAddress: '세종대로 10번길' },
+    { signupDate: '2024-03-01', email: 'user3@example.com', name: '홍길동3', level: 'VIP회원', signupOrder: 3, phone: '010-5555-6666', address: '서울시 중구', detailedAddress: '청담동 1번지'  },
+    { signupDate: '2024-04-01', email: 'user4@example.com', name: '홍길동4', level: '일반회원', signupOrder: 4, phone: '010-7777-8888', address: '서울시 송파구', detailedAddress: '청담동 1번지'  },
+    { signupDate: '2024-05-01', email: 'user5@example.com', name: '홍길동5', level: '골드회원', signupOrder: 5, phone: '010-9999-0000', address: '서울시 구로구', detailedAddress: '청담동 1번지'  },
+    { signupDate: '2024-06-01', email: 'user6@example.com', name: '홍길동6', level: '일반회원', signupOrder: 6, phone: '010-1234-5678', address: '서울시 양천구', detailedAddress: '청담동 1번지'  },
+    { signupDate: '2024-07-01', email: 'admin1@example.com', name: '관리자1', level: '관리자', signupOrder: 7, phone: '010-2345-6789', address: '서울시 성동구', detailedAddress: '청담동 1번지'  },
+    { signupDate: '2024-08-01', email: 'admin2@example.com', name: '관리자2', level: '관리자', signupOrder: 8, phone: '010-3456-7890', address: '서울시 강동구', detailedAddress: '청담동 1번지'  },
+    { signupDate: '2024-09-01', email: 'user9@example.com', name: '홍길동9', level: '일반회원', signupOrder: 9, phone: '010-4567-8901', address: '서울시 서초구', detailedAddress: '청담동 1번지'  }
   ];
 
   function filterUsers(level) {
@@ -166,10 +177,12 @@
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td>${user.signupOrder}</td>
+        <td>${user.signupDate}</td>
         <td>${user.email}</td>
         <td>${user.name}</td>
         <td>${user.phone}</td>
         <td>${user.address}</td>
+        <td>${user.detailedAddress}</td>
         <td>${user.level}</td>
         <td><button class="btn btn-primary" onclick="openEditModal(${user.signupOrder})">상세</button></td>
       `;
@@ -191,6 +204,54 @@
     }
   }
 
+  function filterUsers(level) {
+  const filteredUsers = level === '전체' ? users : users.filter(user => user.level === level);
+  const userListElement = document.getElementById('user-list');
+  userListElement.innerHTML = ''; // 기존 목록 제거
+
+  filteredUsers.forEach(user => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><input type="checkbox" class="user-checkbox" data-signup-order="${user.signupOrder}"></td>
+      <td>${user.signupOrder}</td>
+      <td>${user.signupDate}</td>
+      <td>${user.email}</td>
+      <td>${user.name}</td>
+      <td>${user.phone}</td>
+      <td>${user.address}</td>
+      <td>${user.detailedAddress}</td>
+      <td>
+        <select class="form-control user-level-select" data-signup-order="${user.signupOrder}" onchange="updateUserLevel(${user.signupOrder}, this.value)">
+          <option value="일반회원" ${user.level === '일반회원' ? 'selected' : ''}>일반회원</option>
+          <option value="실버회원" ${user.level === '실버회원' ? 'selected' : ''}>실버회원</option>
+          <option value="골드회원" ${user.level === '골드회원' ? 'selected' : ''}>골드회원</option>
+          <option value="VIP회원" ${user.level === 'VIP회원' ? 'selected' : ''}>VIP회원</option>
+          <option value="관리자" ${user.level === '관리자' ? 'selected' : ''}>관리자</option>
+        </select>
+      </td>
+      <td><button class="btn btn-primary" onclick="openEditModal(${user.signupOrder})">상세</button></td>
+    `;
+    userListElement.appendChild(tr);
+  });
+
+  updateFilterCounts(level);
+
+  const filterButtons = document.querySelectorAll('.filter-option');
+  filterButtons.forEach(button => button.classList.remove('active'));
+  const activeButton = Array.from(filterButtons).find(button => button.textContent.includes(level));
+  if (activeButton) activeButton.classList.add('active');
+}
+
+function updateUserLevel(signupOrder, newLevel) {
+  // 사용자 데이터 업데이트
+  const user = users.find(user => user.signupOrder === signupOrder);
+  if (user) {
+    user.level = newLevel;
+  }
+  // 등급 상태 변경 후 테이블 필터 재적용
+  filterUsers(document.querySelector('.filter-option.active').textContent);
+}
+
   function updateFilterCounts(level) {
     const totalCount = users.length;
     const generalCount = users.filter(user => user.level === '일반회원').length;
@@ -208,20 +269,22 @@
   }
 
   function openEditModal(signupOrder) {
-    currentUserId = signupOrder;
-    const user = users.find(user => user.signupOrder === signupOrder);
+  currentUserId = signupOrder;
+  const user = users.find(user => user.signupOrder === signupOrder);
 
-    // 모달에 사용자 정보 표시
-    document.getElementById('modal-request-signup').textContent = user.signupOrder;
-    document.getElementById('modal-user-id').textContent = user.email;
-    document.getElementById('modal-user-name').textContent = user.name;
-    document.getElementById('modal-phone').textContent = user.phone;
-    document.getElementById('modal-address').textContent = user.address;
-    document.getElementById('modal-user-level').value = user.level;
+  // 모달에 사용자 정보 표시
+  document.getElementById('modal-request-signup').textContent = user.signupOrder;
+  document.getElementById('modal-signup-date').textContent = user.signupDate;
+  document.getElementById('modal-user-id').textContent = user.email;
+  document.getElementById('modal-user-name').textContent = user.name;
+  document.getElementById('modal-phone').textContent = user.phone;
+  document.getElementById('modal-address').textContent = user.address;
+  document.getElementById('modal-detailed-address').textContent = user.detailedAddress;
+  document.getElementById('modal-user-level').textContent = user.level; // 회원등급을 텍스트로 설정
 
-    // 모달 열기
-    $('#userDetailModal').modal('show');
-  }
+  // 모달 열기
+  $('#userDetailModal').modal('show');
+}
 
   function saveLevel() {
     const user = users.find(user => user.signupOrder === currentUserId);
@@ -248,10 +311,12 @@
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td>${user.signupOrder}</td>
+        <td>${user.signupDate}</td>
         <td>${user.email}</td>
         <td>${user.name}</td>
         <td>${user.phone}</td>
         <td>${user.address}</td>
+        <td>${user.detailedAddress}</td>
         <td>${user.level}</td>
         <td><button class="btn btn-primary" onclick="openEditModal(${user.signupOrder})">수정</button></td>
       `;

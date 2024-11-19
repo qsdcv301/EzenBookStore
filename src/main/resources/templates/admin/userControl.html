@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
+<head xmlns:th="http://www.thymeleaf.org">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>회원 정보 관리</title>
@@ -57,103 +57,149 @@
     <h3 class="font-weight-bold mb-4">회원 정보 관리</h3>
     <P>가입된 회원 정보를 확인하거나 수정할 수 있는 페이지입니다.</P>
 
-    <!-- 등급 필터 바 -->
+    <!-- 필터 버튼 -->
     <div class="d-flex justify-content-start mb-3">
-        <span class="filter-option active" onclick="filterUsers('전체')">전체 <span id="total-count">0</span></span>
-        <span class="filter-option" onclick="filterUsers('일반회원')">일반회원 <span id="general-count">0</span></span>
-        <span class="filter-option" onclick="filterUsers('실버회원')">실버회원 <span id="silver-count">0</span></span>
-        <span class="filter-option" onclick="filterUsers('골드회원')">골드회원 <span id="gold-count">0</span></span>
-        <span class="filter-option" onclick="filterUsers('VIP회원')">VIP회원 <span id="vip-count">0</span></span>
-        <span class="filter-option" onclick="filterUsers('관리자')">관리자 <span id="admin-count">0</span></span>
+    <span class="filter-option" th:classappend="${grade == null ? 'active' : ''}"
+          th:onclick="'location.href=\'/admin/user/filter\''">전체 <span th:text="${totalCount}"></span></span>
+        <span class="filter-option" th:classappend="${grade == 0 ? 'active' : ''}"
+              th:onclick="'location.href=\'/admin/user/filter?grade=0\''">일반회원 <span th:text="${generalCount}"></span></span>
+        <span class="filter-option" th:classappend="${grade == 1 ? 'active' : ''}"
+              th:onclick="'location.href=\'/admin/user/filter?grade=1\''">실버회원 <span th:text="${silverCount}"></span></span>
+        <span class="filter-option" th:classappend="${grade == 2 ? 'active' : ''}"
+              th:onclick="'location.href=\'/admin/user/filter?grade=2\''">골드회원 <span th:text="${goldCount}"></span></span>
+        <span class="filter-option" th:classappend="${grade == 3 ? 'active' : ''}"
+              th:onclick="'location.href=\'/admin/user/filter?grade=3\''">VIP 회원 <span th:text="${vipCount}"></span></span>
+        <span class="filter-option" th:classappend="${grade == 4 ? 'active' : ''}"
+              th:onclick="'location.href=\'/admin/user/filter?grade=4\''">관리자 <span th:text="${adminCount}"></span></span>
     </div>
-    <hr> <!-- 구분선 추가 -->
+    <hr>
 
-    <!-- 검색 섹션 -->
-    <div class="search-section mb-4 d-flex align-items-center">
-        <select class="form-control mr-2" style="width: 150px;" id="search-type">
-            <option value="email">아이디</option>
-            <option value="name">이름</option>
-        </select>
-        <input type="text" class="form-control mr-2" placeholder="검색어를 입력하세요" style="width: 300px;" id="search-input">
-        <button class="btn btn-secondary" onclick="searchUsers()">조회</button>
+    <!-- 검색 및 상태 변경 섹션 -->
+    <div class="d-flex justify-content-between mb-3">
+        <!-- 검색 섹션 -->
+        <div class="search-section d-flex align-items-center">
+            <select class="form-control mr-2" style="width: 150px;" id="search-type">
+                <option value="email">이메일</option>
+                <option value="name">이름</option>
+            </select>
+            <input type="text" class="form-control mr-2" placeholder="검색어를 입력하세요" style="width: 300px;" id="search-input">
+            <button class="btn btn-secondary" onclick="searchUsers()">조회</button>
+        </div>
+
+        <!-- 등급 상태 변경 -->
+        <div class="d-flex align-items-center">
+            <select class="form-control mr-3" style="width: 200px;" id="bulk-status">
+                <option value="">등급 상태 변경</option>
+                <option value="0">일반회원</option>
+                <option value="1">실버회원</option>
+                <option value="2">골드회원</option>
+                <option value="3">VIP 회원</option>
+                <option value="4">관리자</option>
+            </select>
+            <button class="btn btn-primary" onclick="updateBulkStatus()">수정</button>
+            <button class="btn btn-danger ml-2" onclick="deleteSelected()">삭제</button>
+        </div>
     </div>
 
     <!-- 회원 목록 테이블 -->
     <table class="table table-bordered text-center">
         <thead class="thead-light">
         <tr>
+            <th><input type="checkbox" id="select-all" onclick="toggleAllCheckboxes(this)"></th>
             <th>가입순서</th>
             <th>아이디(이메일형식)</th>
             <th>이름</th>
             <th>전화번호</th>
             <th>주소</th>
-            <th>회원 등급</th>
+            <th>회원등급</th>
             <th>상세보기</th>
         </tr>
         </thead>
-        <tbody id="user-list">
-        <!-- 회원 목록 (동적으로 추가됨) -->
+        <tbody>
+        <tr th:each="user : ${userList}">
+            <td><input type="checkbox" class="user-checkbox" th:data-id="${user.id}"></td>
+            <td th:text="${user.id}"></td>
+            <td th:text="${user.email}"></td>
+            <td th:text="${user.name}"></td>
+            <td th:text="${user.tel}"></td>
+            <td>
+                <span th:text="${user.addr}"></span>
+                <span th:if="${user.addrextra != null}" th:text="' ' + ${user.addrextra}"></span>
+            </td>
+            <td>
+                <select class="form-control" name="grade" th:value="${user.grade}">
+                    <option value="0" th:selected="${user.grade == 0}">일반회원</option>
+                    <option value="1" th:selected="${user.grade == 1}">실버회원</option>
+                    <option value="2" th:selected="${user.grade == 2}">골드회원</option>
+                    <option value="3" th:selected="${user.grade == 3}">VIP 회원</option>
+                    <option value="4" th:selected="${user.grade == 4}">관리자</option>
+                </select>
+            </td>
+            <td>
+                <button class="btn btn-primary" th:data-target="'#userDetailModal-' + ${user.id}" data-toggle="modal">상세</button>
+            </td>
+        </tr>
         </tbody>
     </table>
 
+
     <!-- 페이지네이션 -->
     <nav aria-label="Page navigation" class="mt-4">
-        <ul class="pagination justify-content-center" id="pagination">
-            <!-- 페이지 번호가 여기에 동적으로 추가됩니다. -->
+        <ul class="pagination justify-content-center">
+            <li class="page-item" th:each="i : ${#numbers.sequence(1, totalPages)}"
+                th:classappend="${i == currentPage ? 'active' : ''}">
+                <a class="page-link" th:href="@{/admin/user(page=${i})}" th:text="${i}"></a>
+            </li>
         </ul>
     </nav>
 </div>
 
-<!-- 모달 창 -->
-<div class="modal fade" id="userDetailModal" tabindex="-1" role="dialog" aria-labelledby="userDetailModalLabel" aria-hidden="true">
+
+<!-- 모달 템플릿 -->
+<div th:each="user : ${userList}" class="modal fade" th:id="'userDetailModal-' + ${user.id}" tabindex="-1" role="dialog" aria-labelledby="userDetailModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="userDetailModalLabel">회원 정보 관리</h5>
+                <h5 class="modal-title" th:text="'회원 상세 정보 - ' + ${user.name}"></h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <p><strong>가입순서 :</strong> <span id="modal-request-signup"></span></p>
-                <p><strong>아이디 :</strong> <span id="modal-user-id"></span></p>
-                <p><strong>이름 :</strong> <span id="modal-user-name"></span></p>
-                <p><strong>전화번호 :</strong> <span id="modal-phone"></span></p>
-                <p><strong>주소 :</strong> <span id="modal-address"></span></p>
-                <p><strong>회원 등급 :</strong>
-                    <select class="form-control d-inline-block" id="modal-user-level" style="width: 150px;">
-                        <option>일반회원</option>
-                        <option>실버회원</option>
-                        <option>골드회원</option>
-                        <option>VIP회원</option>
-                        <option>관리자</option>
-                    </select>
+                <p><strong>회원 ID:</strong> <span th:text="${user.id}"></span></p>
+                <p><strong>가입경로:</strong> <span th:text="${user.provider}"></span></p>
+                <p><strong>아이디(이메일):</strong> <span th:text="${user.email}"></span></p>
+                <p><strong>이름:</strong> <span th:text="${user.name}"></span></p>
+                <p><strong>전화번호:</strong> <span th:text="${user.tel}"></span></p>
+                <p><strong>주소:</strong>
+                    <span th:text="${user.addr}"></span>
+                    <span th:if="${user.addrextra != null}" th:text="' ' + ${user.addrextra}"></span>
                 </p>
+                <p><strong>생년월일:</strong> <span th:text="${user.birthday}"></span></p>
+                <p><strong>회원 등급:</strong>
+                    <span th:switch="${user.grade}">
+                        <span th:case="0">일반회원</span>
+                        <span th:case="1">실버회원</span>
+                        <span th:case="2">골드회원</span>
+                        <span th:case="3">VIP회원</span>
+                        <span th:case="4">관리자</span>
+                    </span>
+                </p>
+                <p><strong>포인트:</strong> <span th:text="${user.point}"></span></p>
+                <p><strong>가입일:</strong> <span th:text="${#dates.format(user.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></span></p>
                 <div class="d-flex mt-3">
-                    <button class="btn btn-secondary mr-2" data-dismiss="modal">취소</button>
-                    <button class="btn btn-primary" onclick="saveLevel()">수정하기</button>
+                    <button class="btn btn-secondary mr-2" data-dismiss="modal">닫기</button>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
+
+
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
 
 <script>
-    let currentUserId;
-    const users = [
-        { email: 'user1@example.com', name: '홍길동1', level: '일반회원', signupOrder: 1, phone: '010-1111-2222', address: '서울시 강남구' },
-        { email: 'user2@example.com', name: '홍길동2', level: '실버회원', signupOrder: 2, phone: '010-3333-4444', address: '서울시 종로구' },
-        { email: 'user3@example.com', name: '홍길동3', level: 'VIP회원', signupOrder: 3, phone: '010-5555-6666', address: '서울시 중구' },
-        { email: 'user4@example.com', name: '홍길동4', level: '일반회원', signupOrder: 4, phone: '010-7777-8888', address: '서울시 송파구' },
-        { email: 'user5@example.com', name: '홍길동5', level: '골드회원', signupOrder: 5, phone: '010-9999-0000', address: '서울시 구로구' },
-        { email: 'user6@example.com', name: '홍길동6', level: '일반회원', signupOrder: 6, phone: '010-1234-5678', address: '서울시 양천구' },
-        { email: 'admin1@example.com', name: '관리자1', level: '관리자', signupOrder: 7, phone: '010-2345-6789', address: '서울시 성동구' },
-        { email: 'admin2@example.com', name: '관리자2', level: '관리자', signupOrder: 8, phone: '010-3456-7890', address: '서울시 강동구' },
-        { email: 'user9@example.com', name: '홍길동9', level: '일반회원', signupOrder: 9, phone: '010-4567-8901', address: '서울시 서초구' }
-    ];
-
     function filterUsers(level) {
         // 필터된 사용자 리스트
         const filteredUsers = level === '전체' ? users : users.filter(user => user.level === level);
@@ -207,30 +253,7 @@
         document.getElementById('admin-count').textContent = `(${adminCount}명)`;
     }
 
-    function openEditModal(signupOrder) {
-        currentUserId = signupOrder;
-        const user = users.find(user => user.signupOrder === signupOrder);
 
-        // 모달에 사용자 정보 표시
-        document.getElementById('modal-request-signup').textContent = user.signupOrder;
-        document.getElementById('modal-user-id').textContent = user.email;
-        document.getElementById('modal-user-name').textContent = user.name;
-        document.getElementById('modal-phone').textContent = user.phone;
-        document.getElementById('modal-address').textContent = user.address;
-        document.getElementById('modal-user-level').value = user.level;
-
-        // 모달 열기
-        $('#userDetailModal').modal('show');
-    }
-
-    function saveLevel() {
-        const user = users.find(user => user.signupOrder === currentUserId);
-        const newLevel = document.getElementById('modal-user-level').value;
-
-        user.level = newLevel;
-        filterUsers(document.querySelector('.filter-option.active').textContent);
-        $('#userDetailModal').modal('hide');
-    }
 
     function searchUsers() {
         const searchType = document.getElementById('search-type').value;
@@ -263,6 +286,50 @@
     window.onload = () => {
         filterUsers('전체');
     };
+
+    //체크박스 일괄체크/해제
+    function toggleAllCheckboxes(checkbox) {
+        const checkboxes = document.querySelectorAll('.user-checkbox');
+        checkboxes.forEach(cb => cb.checked = checkbox.checked);
+    }
+
+    //등급상태 일괄변경
+    function updateBulkStatus() {
+        const selectedCheckboxes = Array.from(document.querySelectorAll('.user-checkbox:checked'));
+        const selectedIds = selectedCheckboxes.map(cb => cb.getAttribute('data-id'));
+        const newStatus = document.getElementById('bulk-status').value;
+
+        if (!newStatus) {
+            alert('변경할 등급을 선택하세요.');
+            return;
+        }
+
+        if (selectedIds.length === 0) {
+            alert('선택된 사용자가 없습니다.');
+            return;
+        }
+
+        // 서버로 상태 변경 요청
+        console.log(`등급 상태 변경: ${selectedIds} -> ${newStatus}`);
+        alert(`선택된 사용자들의 등급 상태가 '${newStatus}'로 변경되었습니다.`);
+    }
+
+    //선택항목 삭제
+    function deleteSelected() {
+        const selectedCheckboxes = Array.from(document.querySelectorAll('.user-checkbox:checked'));
+        const selectedIds = selectedCheckboxes.map(cb => cb.getAttribute('data-id'));
+
+        if (selectedIds.length === 0) {
+            alert('삭제할 사용자를 선택하세요.');
+            return;
+        }
+
+        // 서버로 삭제 요청
+        console.log(`삭제 요청: ${selectedIds}`);
+        alert('선택된 사용자들이 삭제되었습니다.');
+    }
+
+
 </script>
 
 </body>

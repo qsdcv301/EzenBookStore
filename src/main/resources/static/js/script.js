@@ -43,6 +43,16 @@ $(document).ready(function () {
                     $("#phoneNumberDetail").val(response.tel);
                     $("#inquiryTitleDetail").val(response.title);
                     $("#inquiryContentDetail").text(response.question);
+                    // 이미지 경로 설정
+                    if (response.imagePath) {
+                        // 이미지가 존재할 때: src를 설정하고, 요소를 보여줍니다.
+                        $("#inquiryContentImage").attr("src", response.imagePath);
+                        $(".inquiryImage").show();
+                    } else {
+                        // 이미지가 없을 때: src를 비우고, 요소를 숨깁니다.
+                        $("#inquiryContentImage").attr("src", "")
+                        $(".inquiryImage").hide();
+                    }
 
                     // 답변 여부에 따라 표시
                     if (response.answer && response.answer !== "") {
@@ -69,6 +79,7 @@ $(document).ready(function () {
         const category = $(this).closest('.questionModal').find('#inquiryType').val();
         const title = $(this).closest('.questionModal').find('#inquiryTitle').val();
         const question = $(this).closest('.questionModal').find('#inquiryContent').val();
+        const fileInputs = $(this).closest('.questionModal').find('#customFile')[0].files;
         if (category === "0") {
             alert("문의 유형을 선택해주세요.");
             return;
@@ -81,15 +92,24 @@ $(document).ready(function () {
             alert("문의 내용을 작성 해주세요.");
             return;
         }
+
+        // FormData 객체 생성 및 데이터 추가
+        const formData = new FormData();
+        formData.append('email', email);
+        formData.append('category', category);
+        formData.append('title', title);
+        formData.append('question', question);
+        // 파일 배열을 반복하여 추가
+        for (let i = 0; i < fileInputs.length; i++) {
+            formData.append('files', fileInputs[i]);
+        }
+
         $.ajax({
             url: '/qna/add',
             type: 'POST',
-            data: {
-                email: email,
-                category: category,
-                title: title,
-                question: question
-            },
+            processData: false,
+            contentType: false,
+            data: formData,
             success: function (response) {
                 if (response.success) {
                     alert("문의를 작성 했습니다.");
@@ -102,7 +122,13 @@ $(document).ready(function () {
                 alert("서버 오류가 발생했습니다.");
             }
         });
-    })
+    });
+
+    $('#customFile').on('change', function () {
+        // 파일 이름을 레이블에 표시
+        const fileName = $(this).val().split('\\').pop();
+        $(this).next('.custom-file-label').html(fileName);
+    });
 
     //     cart
     const shippingFeeThreshold = 15000; // 배송비가 무료가 되는 기준 금액
@@ -319,6 +345,8 @@ $(document).ready(function () {
             const quantity = parseInt(cardBody.find(".quantity").val()) || 0;
             const price = parseInt(cardBody.find(".price").text().replace(/[^0-9]/g, "")) || 0;
             const discount = parseFloat(cardBody.find(".discount").text().replace(/[^0-9.]/g, "")) || 0;
+            const bookImage = cardBody.find(".bookImage").attr("src");
+            const bookImageAlt = cardBody.find(".bookImage").attr("alt");
 
             // 개별 상품의 총 가격 및 할인 적용 가격 계산
             const itemTotalPrice = price * quantity;
@@ -335,11 +363,11 @@ $(document).ready(function () {
             const modalItem = `
             <div class="card col">
                 <div class="row g-0">
-                    <div class="col-md-4 pt-3">
-                        <img src="https://via.placeholder.com/100" alt="임시 이미지">
+                    <div class="col-md-5 pt-3 d-flex align-items-center justify-content-center">
+                        <img src="${bookImage}" alt="${bookImageAlt}" style="width: 100px;height: 150px;object-fit: cover">
                     </div>
-                    <div class="col-md-8">
-                        <div class="card-body">
+                    <div class="col-md-7">
+                        <div class="card-body pl-0">
                             <p>상품명: <span class="modalBookTitle">${title}</span></p>
                             <p>수량: <span class="modalQuantity">${quantity}</span></p>
                             <p>가격: <span class="modalTotalPrice">${itemTotalPrice.toLocaleString()}</span>원</p>

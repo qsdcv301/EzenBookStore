@@ -68,7 +68,7 @@ public class Book {
     private BookDescription bookdescription;
 
     @OneToMany(mappedBy = "book")
-    @JsonIgnore // 직렬화에서 제외 나중에 수정해야할?
+    @JsonIgnore
     private List<Review> review;
 
 }

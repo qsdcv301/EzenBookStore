@@ -1,4 +1,8 @@
 spring:
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
   security:
     oauth2:
       client:
@@ -57,7 +61,8 @@ spring:
     properties:
       mail.smtp.auth: true
       mail.smtp.ssl.enable: true
-
+file:
+  upload-dir: C:/ezenBookStore/images
 #jwt:
 #  issuer:
 #  secret_key:
