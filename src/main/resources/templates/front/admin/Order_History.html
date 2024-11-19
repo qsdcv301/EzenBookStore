@@ -121,8 +121,6 @@
                     <option value="5" th:selected="${order.status == 5}">배송취소</option>
                 </select>
             </td>
-
-
             <td>
                 <button class="btn btn-primary" th:data-target="'#orderDetailModal-' + ${order.id}" data-toggle="modal">상세</button>
             </td>
