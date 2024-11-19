@@ -2,19 +2,18 @@ package ezen.team.ezenbookstore.controller.User;
 
 import ezen.team.ezenbookstore.entity.*;
 import ezen.team.ezenbookstore.service.*;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +33,26 @@ public class UserApiController {
     private final QnAService qnAService;
     private final OrdersService ordersService;
     private final EmailService emailService;
+
+    @ModelAttribute
+    public void findUser(Model model) {
+        try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            Object userData = auth.getPrincipal();
+            if (userData instanceof User user) {
+                model.addAttribute("user", user);
+                model.addAttribute("userData", true);
+            } else if (userData instanceof CustomOAuth2User customOAuth2User) {
+                User customUser = userService.findByEmail(customOAuth2User.getEmail());
+                model.addAttribute("user", customUser);
+                model.addAttribute("userData", true);
+            } else {
+                model.addAttribute("userData", false);
+            }
+        } catch (Exception e) {
+            model.addAttribute("userData", false);
+        }
+    }
 
     @PostMapping("/signup")
     public String signup(@ModelAttribute User user) {
@@ -55,6 +74,9 @@ public class UserApiController {
             User newUser = User.builder()
                     .provider(provider)
                     .email(email)
+                    .addr("주소 입력 필요")
+                    .addrextra("상세 주소 입력 필요")
+                    .tel("전화 번호 입력 필요")
                     .name(name)
                     .build();
             userService.create(newUser);
@@ -185,14 +207,14 @@ public class UserApiController {
     }
 
     @PostMapping("/update")
-    public ResponseEntity<Map<String, Boolean>> updateUser(@RequestParam List<String> userId,
-                                                           @RequestParam List<String> password,
-                                                           @RequestParam List<String> tel,
-                                                           @RequestParam List<String> addr,
-                                                           @RequestParam List<String> addrextra,
-                                                           @RequestParam List<String> birthday,
-                                                           @RequestParam List<String> point,
-                                                           @RequestParam List<String> grade) {
+    public ResponseEntity<Map<String, Boolean>> updateUser(@RequestParam(name = "userId", required = false) List<String> userId,
+                                                           @RequestParam(name = "password", required = false) List<String> password,
+                                                           @RequestParam(name = "tel", required = false) List<String> tel,
+                                                           @RequestParam(name = "addr", required = false) List<String> addr,
+                                                           @RequestParam(name = "addrextra", required = false) List<String> addrextra,
+                                                           @RequestParam(name = "birthday", required = false) List<String> birthday,
+                                                           @RequestParam(name = "point", required = false) List<String> point,
+                                                           @RequestParam(name = "grade", required = false) List<String> grade) {
         Map<String, Boolean> response = new HashMap<>();
 
         if (userId == null || userId.isEmpty()) {
@@ -202,45 +224,49 @@ public class UserApiController {
 
         try {
             for (int i = 0; i < userId.size(); i++) {
-                Long userIdValue = Long.parseLong(userId.get(i)); // String을 Long으로 변환
-                int birthdayValue = Integer.parseInt(birthday.get(i));
-                int pointValue = Integer.parseInt(point.get(i));
-                int gradeValue = Integer.parseInt(grade.get(i));
-                User user = userService.findById(userIdValue);
+                User user = userService.findById(Long.parseLong(userId.get(i)));
                 User newUser = null;
-                if (password.get(i).isEmpty()) {
+
+                // 생일 문자열이 유효한지 확인
+                Timestamp convertedTimestamp = null;
+                if (birthday != null && birthday.get(i) != null && !birthday.get(i).isEmpty()) {
+                    String birthdayTime = birthday.get(i) + " 00:00:00";
+                    convertedTimestamp = Timestamp.valueOf(birthdayTime);
+                }
+                System.out.println(convertedTimestamp);
+                if (password == null || password.get(i).isEmpty()) {
                     newUser = User.builder()
-                            .id(userIdValue)
+                            .id(Long.parseLong(userId.get(i)))
                             .provider(user.getProvider())
                             .email(user.getEmail())
                             .name(user.getName())
-                            .tel(tel.get(i).isEmpty() ? user.getTel() : tel.get(i))
-                            .addr(addr.get(i).isEmpty() ? user.getAddr() : addr.get(i))
-                            .addrextra(addrextra.get(i).isEmpty() ? user.getAddrextra() : addrextra.get(i))
+                            .password(user.getPassword())
+                            .tel((tel == null || tel.get(i) == null || tel.get(i).isEmpty()) ? user.getTel() : tel.get(i))
+                            .addr((addr == null || addr.get(i) == null || addr.get(i).isEmpty()) ? user.getAddr() : addr.get(i))
+                            .addrextra((addrextra == null || addrextra.get(i) == null || addrextra.get(i).isEmpty()) ? user.getAddrextra() : addrextra.get(i))
                             .createdAt(user.getCreatedAt())
-                            .birthday(birthday.get(i).isEmpty() ? user.getBirthday() : birthdayValue)
-                            .grade(grade.get(i).isEmpty() ? user.getGrade() : gradeValue)
-                            .point(point.get(i).isEmpty() ? user.getPoint() : pointValue)
+                            .birthday(convertedTimestamp == null ? user.getBirthday() : convertedTimestamp)
+                            .grade((grade == null || grade.get(i) == null || grade.get(i).isEmpty()) ? user.getGrade() : Integer.parseInt(grade.get(i)))
+                            .point((point == null || point.get(i) == null || point.get(i).isEmpty()) ? user.getPoint() : Integer.parseInt(point.get(i)))
                             .build();
                 } else {
                     newUser = User.builder()
-                            .id(userIdValue)
+                            .id(Long.parseLong(userId.get(i)))
                             .provider(user.getProvider())
                             .email(user.getEmail())
                             .name(user.getName())
                             .password(password.get(i))
-                            .tel(tel.get(i).isEmpty() ? user.getTel() : tel.get(i))
-                            .addr(addr.get(i).isEmpty() ? user.getAddr() : addr.get(i))
-                            .addrextra(addrextra.get(i).isEmpty() ? user.getAddrextra() : addrextra.get(i))
+                            .tel((tel == null || tel.get(i) == null || tel.get(i).isEmpty()) ? user.getTel() : tel.get(i))
+                            .addr((addr == null || addr.get(i) == null || addr.get(i).isEmpty()) ? user.getAddr() : addr.get(i))
+                            .addrextra((addrextra == null || addrextra.get(i) == null || addrextra.get(i).isEmpty()) ? user.getAddrextra() : addrextra.get(i))
                             .createdAt(user.getCreatedAt())
-                            .birthday(birthday.get(i).isEmpty() ? user.getBirthday() : birthdayValue)
-                            .grade(grade.get(i).isEmpty() ? user.getGrade() : gradeValue)
-                            .point(point.get(i).isEmpty() ? user.getPoint() : pointValue)
+                            .birthday(convertedTimestamp == null ? user.getBirthday() : convertedTimestamp)
+                            .grade((grade == null || grade.get(i) == null || grade.get(i).isEmpty()) ? user.getGrade() : Integer.parseInt(grade.get(i)))
+                            .point((point == null || point.get(i) == null || point.get(i).isEmpty()) ? user.getPoint() : Integer.parseInt(point.get(i)))
                             .build();
                 }
                 userService.update(newUser);
             }
-
             response.put("success", true);
             return ResponseEntity.ok(response); // 성공 시 200 OK와 함께 반환
         } catch (Exception e) {
@@ -268,6 +294,12 @@ public class UserApiController {
         Random random = new Random();
         int code = random.nextInt(999999); // 0부터 999999까지 무작위 숫자 생성
         return String.format("%06d", code); // 6자리로 포맷
+    }
+
+    @GetMapping("/info")
+    public String infoUser(Model model) {
+        User user = (User) model.getAttribute("user");
+        return "info";
     }
 
 }
