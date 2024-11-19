@@ -1,4 +1,22 @@
 $(document).ready(function () {
+
+    $("#searchAddress").click(function () {
+        new daum.Postcode({
+            oncomplete: function (data) {
+                let addr = "";
+
+                if (data.userSelectedType === "R") {
+                    addr = data.roadAddress;
+                } else {
+                    addr = data.jibunAddress;
+                }
+
+                $("#addr").val(addr);
+                $("#addrextra").focus();
+            },
+        }).open();
+    });
+
     $('.loginCheck').click(function (e) {
         e.preventDefault();
         if (confirm("로그인이 필요합니다. 로그인 페이지로 이동할까요?")) {
