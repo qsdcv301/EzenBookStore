@@ -298,6 +298,8 @@ public class BookApiController {
         String imagePath = fileUploadService.findImageFilePath(bookId, "book");
         if (imagePath != null) {
             model.addAttribute("imagePath", imagePath);
+        }else{
+            model.addAttribute("imagePath", "");
         }
         model.addAttribute("book", book);
         return "bookDetail";

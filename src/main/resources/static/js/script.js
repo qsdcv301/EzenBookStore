@@ -345,6 +345,8 @@ $(document).ready(function () {
             const quantity = parseInt(cardBody.find(".quantity").val()) || 0;
             const price = parseInt(cardBody.find(".price").text().replace(/[^0-9]/g, "")) || 0;
             const discount = parseFloat(cardBody.find(".discount").text().replace(/[^0-9.]/g, "")) || 0;
+            const bookImage = cardBody.find(".bookImage").attr("src");
+            const bookImageAlt = cardBody.find(".bookImage").attr("alt");
 
             // 개별 상품의 총 가격 및 할인 적용 가격 계산
             const itemTotalPrice = price * quantity;
@@ -361,11 +363,11 @@ $(document).ready(function () {
             const modalItem = `
             <div class="card col">
                 <div class="row g-0">
-                    <div class="col-md-4 pt-3">
-                        <img src="https://via.placeholder.com/100" alt="임시 이미지">
+                    <div class="col-md-5 pt-3 d-flex align-items-center justify-content-center">
+                        <img src="${bookImage}" alt="${bookImageAlt}" style="width: 100px;height: 150px;object-fit: cover">
                     </div>
-                    <div class="col-md-8">
-                        <div class="card-body">
+                    <div class="col-md-7">
+                        <div class="card-body pl-0">
                             <p>상품명: <span class="modalBookTitle">${title}</span></p>
                             <p>수량: <span class="modalQuantity">${quantity}</span></p>
                             <p>가격: <span class="modalTotalPrice">${itemTotalPrice.toLocaleString()}</span>원</p>

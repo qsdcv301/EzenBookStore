@@ -182,16 +182,16 @@
                                             <input type="hidden" class="quantity" value="1">
                                             <div class="row g-0">
                                                 <!-- 이미지 및 체크박스 -->
-                                                <div class="col-md-3 d-flex align-items-center">
-                                                    <div class="form-check ms-2">
+                                                <div class="col-md-4 d-flex align-items-center justify-content-center">
+                                                    <div class="form-check ms-2 text-center mr-4">
                                                         <input class="form-check-input cart-checkbox" type="checkbox">
                                                     </div>
                                                     <img th:src="${imageList[index.index] != '' ? imageList[index.index] : 'https://via.placeholder.com/100'}"
-                                                         th:alt="${book.id}+'번 책표지'" class="img-thumbnail">
+                                                         th:alt="${book.id}+'번 책표지'" class="img-thumbnail" style="width: 180px;height: 250px;object-fit: cover">
                                                 </div>
                                                 <!-- 책 정보 -->
-                                                <div class="col-md-6">
-                                                    <div class="card-body">
+                                                <div class="col-md-5">
+                                                    <div class="card-body pl-0">
                                                         <!-- 책 제목 및 장르 -->
                                                         <h6 class="text-muted"
                                                             th:text="${book.category.name}+'/'+${book.subcategory.name}"></h6>
