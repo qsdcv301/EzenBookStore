@@ -38,30 +38,31 @@
 
     <!-- 필터 버튼 -->
     <div class="d-flex justify-content-start mb-3">
-    <span class="filter-option" data-grade="" th:classappend="${grade == null ? 'active' : ''}"
-          onclick="moveToGrade(this)">
-        전체 <span th:text="${totalCount}"></span>
-    </span>
-        <span class="filter-option" data-grade="0" th:classappend="${grade == 0 ? 'active' : ''}"
-              onclick="moveToGrade(this)">
-        일반회원 <span th:text="${generalCount}"></span>
-    </span>
-        <span class="filter-option" data-grade="1" th:classappend="${grade == 1 ? 'active' : ''}"
-              onclick="moveToGrade(this)">
-        실버회원 <span th:text="${silverCount}"></span>
-    </span>
-        <span class="filter-option" data-grade="2" th:classappend="${grade == 2 ? 'active' : ''}"
-              onclick="moveToGrade(this)">
-        골드회원 <span th:text="${goldCount}"></span>
-    </span>
-        <span class="filter-option" data-grade="3" th:classappend="${grade == 3 ? 'active' : ''}"
-              onclick="moveToGrade(this)">
-        VIP 회원 <span th:text="${vipCount}"></span>
-    </span>
-        <span class="filter-option" data-grade="4" th:classappend="${grade == 4 ? 'active' : ''}"
-              onclick="moveToGrade(this)">
-        관리자 <span th:text="${adminCount}"></span>
-    </span>
+        <span class="filter-option" data-grade="" th:classappend="${grade == null ? 'active' : ''}"
+                  onclick="moveToGrade(this)">
+            전체 <span th:text="${totalCount}"></span>
+        </span>
+                <span class="filter-option" data-grade="0" th:classappend="${grade == 0 ? 'active' : ''}"
+                      onclick="moveToGrade(this)">
+            일반회원 <span th:text="${generalCount}"></span>
+        </span>
+                <span class="filter-option" data-grade="1" th:classappend="${grade == 1 ? 'active' : ''}"
+                      onclick="moveToGrade(this)">
+            실버회원 <span th:text="${silverCount}"></span>
+        </span>
+                <span class="filter-option" data-grade="2" th:classappend="${grade == 2 ? 'active' : ''}"
+                      onclick="moveToGrade(this)">
+            골드회원 <span th:text="${goldCount}"></span>
+        </span>
+                <span class="filter-option" data-grade="3" th:classappend="${grade == 3 ? 'active' : ''}"
+                      onclick="moveToGrade(this)">
+            VIP 회원 <span th:text="${vipCount}"></span>
+        </span>
+                <span class="filter-option" data-grade="4" th:classappend="${grade == 4 ? 'active' : ''}"
+                      onclick="moveToGrade(this)">
+            관리자 <span th:text="${adminCount}"></span>
+        </span>
+
     </div>
 
     <hr>
