@@ -8,7 +8,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <style>
-         .filter-option {
+    .filter-option {
       cursor: pointer;
       padding: 10px 20px;
       margin-right: 10px;
@@ -17,44 +17,21 @@
       color: #495057;
       transition: background-color 0.3s;
     }
-
     .filter-option:hover {
       background-color: #6c757d;
       color: white;
     }
-
     .filter-option.active {
       background-color: #007bff;
       color: white;
     }
-
-    .user-stats {
-      display: block;
-      text-align: left;
-      margin-bottom: 15px;
-      font-size: 15px;
-    }
-    
-    .user-stats span {
-      display: inline-block;
-      margin-right: 15px;
-    }
-
-    .user-stats span span{
-      margin-left: 10px;
-    }
-
-    .user-stats span:not(:last-child)::after {
-      content: '|';
-      margin-left: 10px;
-      color: #6c757d;
-    }
     </style>
 </head>
+
 <body>
     <div class="container mt-5">
-        <h3 class="font-weight-bold mb-4">상품 카테고리별 관리</h3>
-        <P>등록된 상품을 카테고리별로 구분하고 관리할 수 있는 페이지입니다.</P>
+        <h3 class="font-weight-bold mb-3">상품 카테고리별 관리</h3>
+        <P>등록된 상품을 카테고리별로 구분하고 관리할 수 있습니다.</P>
 
         <!-- 카테고리별 등록된 건수 필터 버튼 
         >> 클릭 시 해당하는 배송상태 확인가능(버튼 색 활성화 필요-active)-->
@@ -70,9 +47,9 @@
         <div class="search-section d-flex align-items-center mr-4">
         <select class="form-control mr-2" style="width: 150px;" id="search-type">
             <option value="category">카테고리명</option>
-            <option value="category">책제목</option>
-            <option value="category">저자</option>
-            <option value="category">출판사</option>
+            <option value="bookName">책제목</option>
+            <option value="bookAuthor">저자</option>
+            <option value="bookPublisher">출판사</option>
         </select>
             <input type="text" class="form-control mr-2" placeholder="검색어를 입력하세요" style="width: 300px;" id="search-input">
             <button class="btn btn-secondary" onclick="searchOrders()">조회</button>
@@ -146,7 +123,7 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
 
 <script>
-    let sortOrder = 'asc'; // 기본적으로 오름차순으로 설정
+let sortOrder = 'asc'; // 기본적으로 오름차순으로 설정
 
 function sortTable() {
     const table = document.querySelector("table tbody");

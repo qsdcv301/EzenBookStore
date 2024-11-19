@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>결제 취소/환불 관리</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <style>
+    .filter-option {
+      cursor: pointer;
+      padding: 10px 20px;
+      margin-right: 10px;
+      border-radius: 5px;
+      background-color: #f8f9fa;
+      color: #495057;
+      transition: background-color 0.3s;
+    }
+    .filter-option:hover {
+      background-color: #6c757d;
+      color: white;
+    }
+    .filter-option.active {
+      background-color: #007bff;
+      color: white;
+    }
+    </style>
+</head>
+
+<body>
+    <div class="container mt-5">
+        <h3 class="font-weight-bold mb-3">결제 취소/환불 요청 관리</h3>
+        <P>결제완료된 주문건에 대하여 취소/환불 요청을 처리할 수 있습니다.</P>
+
+        <!-- 결제관련 요청 건수 필터 버튼 
+        >> 클릭 시 해당하는 배송상태 확인가능(버튼 색 활성화 필요-active)-->
+        <div class="d-flex justify-content-start mb-3">
+            <span id="payment-all" class="filter-option active" onclick="filterOrders('전체')">전체 (0건)</span>
+            <span id="payment-cancelled" class="filter-option" onclick="filterOrders('취소요청')">취소요청 (0건)</span>
+            <span id="payment-refunded" class="filter-option" onclick="filterOrders('환불요청')">환불요청 (0건)</span>
+            <span id="payment-completed" class="filter-option" onclick="filterOrders('처리완료')">처리완료 (0건)</span>
+        </div>
+        <hr>
+
+        <div class="d-flex justify-content-between mb-3">
+        <!-- 검색 섹션 -->
+        <div class="search-section d-flex align-items-center mr-4">
+        <select class="form-control mr-2" style="width: 150px;" id="search-type">
+            <option value="category">이름</option>
+            <option value="category">연락처</option>
+            <option value="category">결제수단</option>
+            <option value="category">요청상태</option>
+        </select>
+            <input type="text" class="form-control mr-2" placeholder="검색어를 입력하세요" style="width: 300px;" id="search-input">
+            <button class="btn btn-secondary" onclick="searchOrders()">조회</button>
+        </div>
+    
+        <!-- 카테고리별 일괄 변경
+        >> 선택 후 수정 버튼 클릭 시 수정되도록 -->
+        <div class="d-flex align-items-center ml-5">
+            <select class="form-control ml-5" style="width: 300px;" id="bulk-status">
+            <option value="">요청상태 변경</option>
+            <option value="0">취소요청</option>
+            <option value="1">환불요청</option>
+            <option value="2">처리완료</option>
+            </select>
+        </div>
+
+        <!-- 수정/삭제 버튼 -->
+        <div>
+            <button class="btn btn-primary" onclick="updateBulkStatus()">수정</button>
+            <button class="btn btn-danger ml-1" onclick="deleteSelected()">삭제</button>
+        </div>
+    </div>
+
+
+    <!-- 상품 목록 테이블 -->
+    <table class="table table-bordered text-center">
+        <thead class="thead-light">
+        <tr>
+            <th><input type="checkbox" id="select-all-checkbox" onclick="toggleSelectAll()"></th> <!-- 체크박스 클릭 시 전제 체크 및 해제 -->
+            <th>요청순서</th>
+            <th>요청일</th>
+            <th>이름</th>
+            <th>연락처</th>
+            <th>결제금액</th>
+            <th>결제수단</th>
+            <th id="category-header" onclick="sortTable()">요청상태 <span id="payment-arrow" style="cursor: pointer;">▲</span></th>
+            <th>상세보기</th>
+            <!-- 추가할 목록 확인해야함 -->
+        </tr>
+        </thead>
+        <tbody>
+        <!-- 예시 상품 목록 -->
+        <tr>
+            <td><input type="checkbox" class="order-checkbox"></td>
+            <td>001</td>
+            <td>2024.11.08</td>
+            <td>홍길동</td>
+            <td>010-1234-5678</td>
+            <td>45,000원</td>
+            <td>카드결제</td>
+            <td>취소요청</td>
+            <td><button class="btn btn-primary">상세</button></td>
+        </tr>
+        <tr>
+            <td><input type="checkbox" class="order-checkbox"></td>
+            <td>002</td>
+            <td>2024.11.08</td>
+            <td>김영희</td>
+            <td>010-1111-2222</td>
+            <td>25,000원</td>
+            <td>무통장입금</td>
+            <td>환불요청</td>
+            <td><button class="btn btn-primary">상세</button></td>
+        </tr>
+        </tbody>
+    </table>
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    let sortOrder = 'asc'; // 기본적으로 오름차순으로 설정
+
+    function sortTable() {
+        const table = document.querySelector("table tbody");
+        const rows = Array.from(table.rows);
+        
+        // 카테고리 열의 인덱스 (0-based)
+        const categoryIndex = 7; 
+        
+        // 정렬 기준에 따라 rows를 정렬합니다.
+        rows.sort((rowA, rowB) => {
+            const categoryA = rowA.cells[categoryIndex].textContent.trim();
+            const categoryB = rowB.cells[categoryIndex].textContent.trim();
+            
+            if (sortOrder === 'asc') {
+                return categoryA.localeCompare(categoryB);
+            } else {
+                return categoryB.localeCompare(categoryA);
+            }
+        });
+        
+        // 정렬된 rows를 테이블에 다시 추가합니다.
+        rows.forEach(row => table.appendChild(row));
+
+        // 정렬 순서를 토글
+        sortOrder = (sortOrder === 'asc') ? 'desc' : 'asc';
+        
+        // 화살표를 변경합니다.
+        const arrow = document.getElementById("payment-arrow");
+        arrow.innerHTML = (sortOrder === 'asc') ? '▲' : '▼';
+    }
+</script>
+    
+</body>
+</html>

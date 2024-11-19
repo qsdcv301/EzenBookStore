@@ -60,17 +60,17 @@
     <!-- 필터 버튼 -->
     <div class="d-flex justify-content-start mb-3">
     <span class="filter-option" th:classappend="${grade == null ? 'active' : ''}"
-          th:onclick="'location.href=\'/admin/user/filter\''">전체 <span th:text="${totalCount}"></span></span>
+          th:onclick="'location.href=\'/admin/user\''">전체 <span th:text="${totalCount}"></span></span>
         <span class="filter-option" th:classappend="${grade == 0 ? 'active' : ''}"
-              th:onclick="'location.href=\'/admin/user/filter?grade=0\''">일반회원 <span th:text="${generalCount}"></span></span>
+              th:onclick="'location.href=\'/admin/user?grade=0\''">일반회원 <span th:text="${generalCount}"></span></span>
         <span class="filter-option" th:classappend="${grade == 1 ? 'active' : ''}"
-              th:onclick="'location.href=\'/admin/user/filter?grade=1\''">실버회원 <span th:text="${silverCount}"></span></span>
+              th:onclick="'location.href=\'/admin/user?grade=1\''">실버회원 <span th:text="${silverCount}"></span></span>
         <span class="filter-option" th:classappend="${grade == 2 ? 'active' : ''}"
-              th:onclick="'location.href=\'/admin/user/filter?grade=2\''">골드회원 <span th:text="${goldCount}"></span></span>
+              th:onclick="'location.href=\'/admin/user?grade=2\''">골드회원 <span th:text="${goldCount}"></span></span>
         <span class="filter-option" th:classappend="${grade == 3 ? 'active' : ''}"
-              th:onclick="'location.href=\'/admin/user/filter?grade=3\''">VIP 회원 <span th:text="${vipCount}"></span></span>
+              th:onclick="'location.href=\'/admin/user?grade=3\''">VIP 회원 <span th:text="${vipCount}"></span></span>
         <span class="filter-option" th:classappend="${grade == 4 ? 'active' : ''}"
-              th:onclick="'location.href=\'/admin/user/filter?grade=4\''">관리자 <span th:text="${adminCount}"></span></span>
+              th:onclick="'location.href=\'/admin/user?grade=4\''">관리자 <span th:text="${adminCount}"></span></span>
     </div>
     <hr>
 
@@ -96,8 +96,8 @@
                 <option value="3">VIP 회원</option>
                 <option value="4">관리자</option>
             </select>
-            <button class="btn btn-primary" onclick="updateBulkStatus()">수정</button>
-            <button class="btn btn-danger ml-2" onclick="deleteSelected()">삭제</button>
+            <button class="btn btn-primary" id="update-selected" onclick="initUpdateAction()">수정</button>
+            <button class="btn btn-danger ml-2" id="delete-selected" onclick="initDeleteAction()">삭제</button>
         </div>
     </div>
 
@@ -127,14 +127,13 @@
                 <span th:if="${user.addrextra != null}" th:text="' ' + ${user.addrextra}"></span>
             </td>
             <td>
-                <select class="form-control" name="grade" th:value="${user.grade}">
-                    <option value="0" th:selected="${user.grade == 0}">일반회원</option>
-                    <option value="1" th:selected="${user.grade == 1}">실버회원</option>
-                    <option value="2" th:selected="${user.grade == 2}">골드회원</option>
-                    <option value="3" th:selected="${user.grade == 3}">VIP 회원</option>
-                    <option value="4" th:selected="${user.grade == 4}">관리자</option>
-                </select>
+                <span th:if="${user.grade == 0}" th:text="'일반회원'"></span>
+                <span th:if="${user.grade == 1}" th:text="'실버회원'"></span>
+                <span th:if="${user.grade == 2}" th:text="'골드회원'"></span>
+                <span th:if="${user.grade == 3}" th:text="'VIP 회원'"></span>
+                <span th:if="${user.grade == 4}" th:text="'관리자'"></span>
             </td>
+
             <td>
                 <button class="btn btn-primary" th:data-target="'#userDetailModal-' + ${user.id}" data-toggle="modal">상세</button>
             </td>
@@ -200,135 +199,185 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
 
 <script>
-    function filterUsers(level) {
-        // 필터된 사용자 리스트
-        const filteredUsers = level === '전체' ? users : users.filter(user => user.level === level);
+    document.addEventListener("DOMContentLoaded", () => {
+        // 초기화
+        initFilterButtons();
+        initBulkActions();
+        initSearch();
+        initSelectAll();
 
-        // 필터링된 사용자 목록 업데이트
-        const userListElement = document.getElementById('user-list');
-        userListElement.innerHTML = ''; // 기존 목록 제거
+        // 전체 필터로 초기화
+        renderUserList("전체");
+    });
 
-        filteredUsers.forEach(user => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-        <td>${user.signupOrder}</td>
-        <td>${user.email}</td>
-        <td>${user.name}</td>
-        <td>${user.phone}</td>
-        <td>${user.address}</td>
-        <td>${user.level}</td>
-        <td><button class="btn btn-primary" onclick="openEditModal(${user.signupOrder})">상세</button></td>
-      `;
-            userListElement.appendChild(tr);
-        });
-
-        updateFilterCounts(level);
-
-        // 필터 버튼의 active 클래스 처리
-        const filterButtons = document.querySelectorAll('.filter-option');
-        filterButtons.forEach(button => {
-            button.classList.remove('active');  // 기존 active 클래스 제거
-        });
-
-        // 클릭한 버튼에 active 클래스 추가
-        const activeButton = Array.from(filterButtons).find(button => button.textContent.includes(level));
-        if (activeButton) {
-            activeButton.classList.add('active');
-        }
-    }
-
-    function updateFilterCounts(level) {
-        const totalCount = users.length;
-        const generalCount = users.filter(user => user.level === '일반회원').length;
-        const silverCount = users.filter(user => user.level === '실버회원').length;
-        const goldCount = users.filter(user => user.level === '골드회원').length;
-        const vipCount = users.filter(user => user.level === 'VIP회원').length;
-        const adminCount = users.filter(user => user.level === '관리자').length;
-
-        document.getElementById('total-count').textContent = `(${totalCount}명)`;
-        document.getElementById('general-count').textContent = `(${generalCount}명)`;
-        document.getElementById('silver-count').textContent = `(${silverCount}명)`;
-        document.getElementById('gold-count').textContent = `(${goldCount}명)`;
-        document.getElementById('vip-count').textContent = `(${vipCount}명)`;
-        document.getElementById('admin-count').textContent = `(${adminCount}명)`;
-    }
-
-
-
-    function searchUsers() {
-        const searchType = document.getElementById('search-type').value;
-        const searchText = document.getElementById('search-input').value.trim().toLowerCase();
-
+    // 사용자 목록 렌더링
+    function renderUserList(filterLevel = "전체", searchType = null, searchText = null) {
         const filteredUsers = users.filter(user => {
-            return user[searchType].toLowerCase().includes(searchText);
+            if (filterLevel !== "전체" && user.level !== filterLevel) return false;
+            if (searchType && searchText) {
+                return user[searchType]?.toLowerCase().includes(searchText);
+            }
+            return true;
         });
 
-        // 필터링된 사용자 목록 업데이트
-        const userListElement = document.getElementById('user-list');
-        userListElement.innerHTML = ''; // 기존 목록 제거
+        const userListElement = document.getElementById("user-list");
+        userListElement.innerHTML = ""; // 기존 목록 초기화
 
         filteredUsers.forEach(user => {
-            const tr = document.createElement('tr');
+            const tr = document.createElement("tr");
             tr.innerHTML = `
-        <td>${user.signupOrder}</td>
-        <td>${user.email}</td>
-        <td>${user.name}</td>
-        <td>${user.phone}</td>
-        <td>${user.address}</td>
-        <td>${user.level}</td>
-        <td><button class="btn btn-primary" onclick="openEditModal(${user.signupOrder})">수정</button></td>
-      `;
+            <td><input type="checkbox" class="user-checkbox" data-id="${user.id}"></td>
+            <td>${user.signupOrder}</td>
+            <td>${user.email}</td>
+            <td>${user.name}</td>
+            <td>${user.phone}</td>
+            <td>${user.address}</td>
+            <td>${user.level}</td>
+            <td><button class="btn btn-primary" onclick="openEditModal(${user.id})">상세</button></td>
+        `;
             userListElement.appendChild(tr);
+        });
+
+        updateFilterButtons(filterLevel);
+    }
+
+    // 필터 버튼 초기화
+    function initFilterButtons() {
+        document.querySelector(".filter-option").addEventListener("click", event => {
+            const level = event.target.getAttribute("data-level");
+            renderUserList(level);
         });
     }
 
-    // 페이지 로드 시, 초기화
-    window.onload = () => {
-        filterUsers('전체');
-    };
+    // 필터 버튼 스타일 업데이트
+    function updateFilterButtons(activeLevel) {
+        document.querySelectorAll(".filter-option").forEach(button => {
+            button.classList.toggle("active", button.getAttribute("data-level") === activeLevel);
+        });
+    }
 
+    // 일괄 변경 초기화
+    function initBulkActions() {
+        initUpdateAction(); // 등급 상태 변경 초기화
+        initDeleteAction(); // 선택 항목 삭제 초기화
+    }
+
+    //등급 이름 매칭
+    function getGradeName(grade) {
+        const gradeMap = {
+            0: "일반회원",
+            1: "실버회원",
+            2: "골드회원",
+            3: "VIP 회원",
+            4: "관리자"
+        };
+        return gradeMap[grade] || "알 수 없음"; // 매칭되지 않으면 기본값 반환
+    }
+
+    // 등급 상태 변경 초기화
+    function initUpdateAction() {
+        document.getElementById("update-selected").addEventListener("click", () => {
+            const newStatus = document.getElementById("bulk-status").value; // 선택된 등급 값
+            const selectedIds = Array.from(document.querySelectorAll(".user-checkbox:checked"))
+                .map(cb => cb.dataset.id); // 선택된 사용자 ID 목록
+
+            if (!newStatus) {
+                alert("변경할 등급을 선택하세요.");
+                return;
+            }
+
+            if (selectedIds.length === 0) {
+                alert("수정할 사용자를 선택하세요.");
+                return;
+            }
+
+            // 서버에 등급 상태 변경 요청
+            fetch('/admin/user/update', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({
+                    userId: [selectedIds],
+                    grade: newStatus
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(`선택된 사용자들의 등급이 '${getGradeName(newStatus)}'로 성공적으로 변경되었습니다.`);
+                        location.reload(); // 페이지 새로고침
+                    } else {
+                        alert("등급 변경에 실패했습니다.");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    alert("서버와 통신 중 오류가 발생했습니다.");
+                });
+        });
+    }
+
+    // 선택 항목 삭제 초기화
+    function initDeleteAction() {
+        document.getElementById("delete-selected").addEventListener("click", () => {
+            const selectedIds = Array.from(document.querySelectorAll(".user-checkbox:checked"))
+                .map(cb => cb.dataset.id); // 선택된 사용자 ID 목록
+
+            if (selectedIds.length === 0) {
+                alert("삭제할 사용자를 선택하세요.");
+                return;
+            }
+
+            // 서버에 삭제 요청
+            fetch('/admin/user/delete', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(selectedIds)// 선택된 사용자 ID 배열
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert("선택된 사용자들이 성공적으로 삭제되었습니다.");
+                        location.reload(); // 페이지 새로고침
+                    } else {
+                        alert("삭제에 실패했습니다.");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    alert("서버와 통신 중 오류가 발생했습니다.");
+                });
+        });
+    }
+
+
+    // 검색 초기화
+    function initSearch() {
+        document.getElementById("search-button").addEventListener("click", () => {
+            const searchType = document.getElementById("search-type").value;
+            const searchText = document.getElementById("search-input").value.trim().toLowerCase();
+
+            renderUserList("전체", searchType, searchText);
+        });
+    }
+
+    // 전체 선택 체크박스 초기화
+    function initSelectAll() {
+        document.getElementById("select-all").addEventListener("change", event => {
+            const isChecked = event.target.checked;
+            document.querySelectorAll(".user-checkbox").forEach(cb => {
+                cb.checked = isChecked;
+            });
+        });
+    }
     //체크박스 일괄체크/해제
     function toggleAllCheckboxes(checkbox) {
         const checkboxes = document.querySelectorAll('.user-checkbox');
         checkboxes.forEach(cb => cb.checked = checkbox.checked);
     }
-
-    //등급상태 일괄변경
-    function updateBulkStatus() {
-        const selectedCheckboxes = Array.from(document.querySelectorAll('.user-checkbox:checked'));
-        const selectedIds = selectedCheckboxes.map(cb => cb.getAttribute('data-id'));
-        const newStatus = document.getElementById('bulk-status').value;
-
-        if (!newStatus) {
-            alert('변경할 등급을 선택하세요.');
-            return;
-        }
-
-        if (selectedIds.length === 0) {
-            alert('선택된 사용자가 없습니다.');
-            return;
-        }
-
-        // 서버로 상태 변경 요청
-        console.log(`등급 상태 변경: ${selectedIds} -> ${newStatus}`);
-        alert(`선택된 사용자들의 등급 상태가 '${newStatus}'로 변경되었습니다.`);
-    }
-
-    //선택항목 삭제
-    function deleteSelected() {
-        const selectedCheckboxes = Array.from(document.querySelectorAll('.user-checkbox:checked'));
-        const selectedIds = selectedCheckboxes.map(cb => cb.getAttribute('data-id'));
-
-        if (selectedIds.length === 0) {
-            alert('삭제할 사용자를 선택하세요.');
-            return;
-        }
-
-        // 서버로 삭제 요청
-        console.log(`삭제 요청: ${selectedIds}`);
-        alert('선택된 사용자들이 삭제되었습니다.');
-    }
-
 
 </script>
 
