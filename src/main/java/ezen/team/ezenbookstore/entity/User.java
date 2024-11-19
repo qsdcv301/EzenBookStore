@@ -52,7 +52,7 @@ public class User implements UserDetails {
     private Timestamp createdAt;
 
     @Column(name = "birthday")
-    private Integer birthday;
+    private Timestamp birthday;
 
     @Column(name = "grade")
     private Integer grade;

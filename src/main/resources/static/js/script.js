@@ -749,6 +749,51 @@ $(document).ready(function () {
         });
     });
 
+    $('#verifyCurrentPassword').on('click', function (event) {
+        event.preventDefault();
+        const currentPassword = $('#currentPassword').val();
+        const confirmCurrentPassword = $('#confirmCurrentPassword').val();
+
+        if (currentPassword === confirmCurrentPassword) {
+            $('#newPasswordFields').show();
+            $(this).hide();
+            $('#changePassword').show();
+        } else {
+            alert("현재 비밀번호와 현재 비밀번호 확인의 값이 일치하지 않습니다.");
+        }
+    });
+
+    $('#changePassword').on('click', function (event) {
+        event.preventDefault();
+        const newPassword = $('#newPassword').val();
+        const confirmNewPassword = $('#confirmNewPassword').val();
+        const confirmCurrentPasswordEmail = $('#confirmCurrentPasswordEmail').val();
+
+        if (newPassword !== confirmNewPassword) {
+            alert("현재 비밀번호와 현재 비밀번호 확인의 값이 일치하지 않습니다.");
+          return;
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: '/user/newPw',
+            data: {email: confirmCurrentPasswordEmail, password: newPassword},
+            success: function (response) {
+                if (response.success === "true") {
+                    $('#pwResultSuccess').html('비밀번호 변경 되었습니다.').show();
+                    if (confirm("비밀번호가 변경 되었습니다. 보안을 위해 로그아웃합니다.")) {
+                        location.replace("/logout");
+                    }
+                } else {
+                    $('#pwConfirmError').html('비밀번호 재설정 중 오류가 발생했습니다.').show();
+                }
+            },
+            error: function () {
+                alert('비밀번호 재설정 중 오류가 발생했습니다.');
+            }
+        });
+    });
+
     // 비밀번호 업데이트 요청
     $('#updateBtn').on('click', function (event) {
         event.preventDefault(); // 폼 제출 기본 동작 방지
@@ -781,4 +826,67 @@ $(document).ready(function () {
             }
         });
     });
+
+//     info
+    $('.userUpdate').on('click', function (event) {
+        event.preventDefault(); // 폼 제출 기본 동작 방지
+        const userId = $(this).attr('data-id');
+        const myInfo = $(this).closest('.myInfo');
+        const tel = myInfo.find('#tel').val();
+        const birthday = myInfo.find('#birthdate').val();
+        const addr = myInfo.find('#addr').val();
+        const addrextra = myInfo.find('#addrextra').val();
+        if (tel.trim() === '' || addr.trim() === '' || addrextra === '' || birthday === '') {
+            alert("수정 정보에 빈값은 허용되지 않습니다.");
+            return;
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: '/user/update',
+            traditional: true,
+            data: {
+                userId: [userId],
+                tel: [tel],
+                birthday: [birthday],
+                addr: [addr],
+                addrextra: [addrextra],
+            },
+            success: function (response) {
+                if (response.success) {
+                    alert("회원 정보가 성공적으로 수정 되었습니다.")
+                    location.reload();
+                } else {
+                    alert("회원 정보 수정중 오류가 발생했습니다.");
+                    location.reload();
+                }
+            },
+            error: function () {
+                alert("서버 오류가 발생했습니다.");
+            }
+        });
+    });
+
+    $('.userDelete').on('click', function (event) {
+        event.preventDefault(); // 폼 제출 기본 동작 방지
+        const userId = $(this).attr('data-id');
+        $.ajax({
+            type: 'POST',
+            url: '/user/delete',
+            data: {userId: [userId]},
+            success: function (response) {
+                if (response.success) {
+                    alert("회원탈퇴 되었습니다. 로그인창으로 이동합니다.")
+                    location.replace("/login");
+                } else {
+                    alert("회원탈퇴 중 오류가 발생했습니다..");
+                    location.reload();
+                }
+            },
+            error: function () {
+                alert("회원탈퇴 중 오류가 발생했습니다..");
+            }
+        });
+    });
+
 });
