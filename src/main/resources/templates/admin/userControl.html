@@ -79,10 +79,10 @@
         <!-- 검색 섹션 -->
         <div class="search-section d-flex align-items-center">
             <select class="form-control mr-2" style="width: 150px;" id="search-type">
-                <option value="email">이메일</option>
-                <option value="name">이름</option>
+                <option value="email" th:selected="${type == 'email'}">이메일</option>
+                <option value="name" th:selected="${type == 'name'}">이름</option>
             </select>
-            <input type="text" class="form-control mr-2" placeholder="검색어를 입력하세요" style="width: 300px;" id="search-input">
+            <input type="text" class="form-control mr-2" placeholder="검색어를 입력하세요" style="width: 300px;" id="search-input" th:value="${keyword}">
             <button class="btn btn-secondary" onclick="searchUsers()">조회</button>
         </div>
 
@@ -147,10 +147,13 @@
         <ul class="pagination justify-content-center">
             <li class="page-item" th:each="i : ${#numbers.sequence(1, totalPages)}"
                 th:classappend="${i == currentPage ? 'active' : ''}">
-                <a class="page-link" th:href="@{/admin/user(page=${i})}" th:text="${i}"></a>
+                <a class="page-link"
+                   th:href="@{/admin/user(grade=${grade}, type=${type}, keyword=${keyword}, page=${i}, size=${10})}"
+                   th:text="${i}"></a>
             </li>
         </ul>
     </nav>
+
 </div>
 
 
@@ -379,6 +382,19 @@
         checkboxes.forEach(cb => cb.checked = checkbox.checked);
     }
 
+    //검색 기능 스크립트
+    function searchUsers(){
+        const type = document.getElementById("search-type").value;
+        const keyword = document.getElementById("search-input").value;
+
+        if(!keyword){
+            alert("검색어를 입력하세요.");
+            return;
+        }
+
+        location.href  = `/admin/user?type=${type}&keyword=${keyword}&page=1`;
+
+    }
 </script>
 
 </body>

@@ -141,4 +141,14 @@ public class UserService {
     public Page<User> findByGrade(Integer grade, Pageable pageable) {
         return userRepository.findByGrade(grade, pageable);
     }
+
+    public Page<User> searchUsers(String type, String keyword, Pageable pageable) {
+        if ("email".equals(type)) {
+            return userRepository.findByEmailContaining(keyword, pageable);
+        } else if ("name".equals(type)) {
+            return userRepository.findByNameContaining(keyword, pageable);
+        } else {
+            return userRepository.findAll(pageable); // 기본값: 모든 회원
+        }
+    }
 }
