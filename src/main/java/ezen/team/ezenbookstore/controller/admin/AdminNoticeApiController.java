@@ -3,6 +3,10 @@ package ezen.team.ezenbookstore.controller.admin;
 import ezen.team.ezenbookstore.entity.Notice;
 import ezen.team.ezenbookstore.service.NoticeService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -20,11 +24,39 @@ public class AdminNoticeApiController {
 
     // 공지사항 페이지 이동 및 목록 조회
     @GetMapping
-    public String noticeControl(Model model) {
-        // 공지사항 목록을 내림차순으로 조회
-        List<Notice> noticeLists = noticeService.findAllByOrderByIdDesc();
-        model.addAttribute("noticeLists", noticeLists);
-        return "/admin/noticeControl";
+    public String noticeControl(@RequestParam(required = false) String searchType,
+                                @RequestParam(required = false) String keyword,
+                                @PageableDefault(size = 15, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
+                                Model model) {
+        Page<Notice> noticePage;
+        // 검색 조건에 따라 데이터를 조회
+        if ("title".equals(searchType)) {
+            noticePage = noticeService.searchByTitle(keyword, pageable);
+        } else if ("content".equals(searchType)) {
+            noticePage = noticeService.searchByContent(keyword, pageable);
+        } else {
+            noticePage = noticeService.findAll(pageable); // 전체 조회
+        }
+
+        int totalPages = noticePage.getTotalPages(); // 총 페이지 수
+        int currentPage = noticePage.getNumber();
+        int pageGroupSize = 10; // 페이지 그룹 크기
+
+        int startPage = Math.max(0, (currentPage / pageGroupSize) * pageGroupSize); // 시작 페이지 번호
+        int endPage = Math.min(startPage + pageGroupSize, totalPages); // 끝 페이지 번호
+//        System.out.println("currentPage: " + currentPage);
+//        System.out.println("startPage: " + startPage);
+//        System.out.println("endPage: " + endPage);
+//        System.out.println("totalPages: " + totalPages);
+
+        // 페이징 결과 및 검색 조건 추가
+        model.addAttribute("noticePage", noticePage);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("searchType", searchType);
+        model.addAttribute("startPage", startPage);
+        model.addAttribute("endPage", endPage);
+
+        return "/admin/noticeControl"; // View 경로
     }
 
     // 공지사항 생성 - AJAX 요청 처리
@@ -48,6 +80,7 @@ public class AdminNoticeApiController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("공지사항 수정 실패");
         }
     }
+
     //공지사항 삭제
     @PostMapping("/delete")
     public ResponseEntity<String> deleteNotices(@RequestBody List<Long> ids) {
@@ -61,4 +94,24 @@ public class AdminNoticeApiController {
         }
     }
 
+    @GetMapping("/searchTitle")
+    public String searchTitle(@RequestParam(required = false) String keyword,
+                              @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
+                              Model model) {
+        // 페이징 처리된 공지사항 리스트 조회
+        Page<Notice> noticePage = noticeService.searchByTitle(keyword, pageable);
+        model.addAttribute("noticePage", noticePage);
+        return "/admin/noticeControl";
+    }
+
+    @GetMapping("/searchContent")
+    public String searchContent(@RequestParam(required = false) String keyword,
+                                @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
+                                Model model) {
+        // 페이징 처리된 공지사항 리스트 조회
+        Page<Notice> noticePage = noticeService.searchByContent(keyword, pageable);
+        model.addAttribute("noticePage", noticePage);
+        return "/admin/noticeControl";
+
+    }
 }
