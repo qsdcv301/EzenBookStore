@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>상품 카테고리별 관리</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <style>
+        .filter-option {
+            cursor: pointer;
+            padding: 10px 20px;
+            margin-right: 10px;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+            color: #495057;
+            transition: background-color 0.3s;
+        }
+        .filter-option:hover {
+            background-color: #6c757d;
+            color: white;
+        }
+        .filter-option.active {
+            background-color: #007bff;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container mt-5">
+    <h3 class="font-weight-bold mb-3">카테고리 및 서브카테고리 관리</h3>
+    <p>카테고리와 서브카테고리를 관리하는 공간입니다.</p>
+    <hr>
+
+    <div class="d-flex justify-content-between mb-3">
+        <!-- 검색 섹션 -->
+        <div class="search-section d-flex align-items-center mr-4">
+            <input type="text" class="form-control mr-2" placeholder="카테고리를 입력하세요" style="width: 300px;" id="search-input">
+            <button class="btn btn-secondary" onclick="searchOrders()">조회</button>
+        </div>
+
+        <!-- 수정/삭제 버튼 -->
+        <div>
+            <button class="btn btn-primary" onclick="updateBulkStatus()">수정</button>
+            <button class="btn btn-danger ml-1" onclick="deleteSelected()">삭제</button>
+        </div>
+    </div>
+
+    <!-- 카테고리 목록 테이블 -->
+    <table class="table table-bordered text-center">
+        <thead class="thead-light">
+        <tr>
+            <th><input type="checkbox" id="select-all-checkbox" onclick="toggleSelectAll()"></th> <!-- 체크박스 클릭 시 전체 체크 및 해제 -->
+            <th>카테고리 번호</th>
+            <th>카테고리 이름</th>
+            <th>서브카테고리 개수</th>
+            <th>서브카테고리 목록</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- Thymeleaf를 이용해 서버에서 카테고리 데이터를 가져와 표시 -->
+        <tr th:each="category : ${categoryList}">
+            <td><input type="checkbox" class="order-checkbox"></td>
+            <td th:text="${category.id}"></td>
+            <td><input th:value="${category.name}"></td>
+            <td th:text="${category.subCategory.size()}"></td>
+            <td>
+                <button class="btn btn-outline-secondary btn-sm"
+                        th:data-target="'categoryDetailModal-' + ${category.id}"
+                        data-toggle="modal">
+                    서브카테고리 관리
+                </button>
+            </td>
+        </tr>
+
+        </tbody>
+    </table>
+
+</div>
+
+<!-- 카테고리에 대한 서브카테고리 목록 조회/수정/추가/삭제 모달 -->
+<div th:each="category : ${categoryList}">
+    <div class="modal fade" th:id="'categoryDetailModal-' + ${category.id}" tabindex="-1" role="dialog" aria-labelledby="categoryDetailModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" th:text="${category.name}+' - 의 서브카데고리 목록'"></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- 서브카테고리 정보 -->
+                    <h5 class="mt-3">상품 정보</h5>
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>서브카테고리 이름</th>
+                            <th>수정 및 삭제</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="subcategory : ${category.subCategory}">
+                            <td th:text="${subcategory.id}">ID</td>
+                            <td th:text="${subcategory.name}">서브카테고리 이름</td>
+                            <td>
+                                <button class="btn btn-primary" onclick="updateBulkStatus()">수정</button>
+                                <button class="btn btn-danger ml-1" onclick="deleteSelected()">삭제</button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 서브카테고리 관리 모달 열기
+        function viewSubcategories(categoryId) {
+            console.log('전달된 categoryId:', categoryId); // categoryId 값 확인
+            $.ajax({
+                url: `/admin/categories/${categoryId}/subcategories`,
+                type: 'GET',
+                success: function (response) {
+                    console.log('응답 데이터:', response);
+                    const subcategory = response.subcategory;
+                    if (subcategory) {
+                        $('#subcategoryId').val(subcategory.id);
+                        $('#subcategoryName').val(subcategory.name);
+                    }
+                    $('#categoryDetailModal-' + categoryId).modal('show');
+                },
+                error: function (error) {
+                    console.error('서브카테고리 데이터를 불러오는 중 오류:', error);
+                    alert('서브카테고리 데이터를 불러오지 못했습니다.');
+                }
+            });
+        }
+
+
+        // 서브카테고리 수정/추가 폼 제출 이벤트 핸들러
+        $('#subcategoryForm').submit(function (event) {
+            event.preventDefault(); // 기본 제출 동작 방지
+
+            const categoryId = $('#categoryId').val();
+            const subcategoryId = $('#subcategoryId').val();
+            const subcategoryName = $('#subcategoryName').val();
+
+            // AJAX를 통해 서브카테고리 수정/추가 요청
+            $.ajax({
+                url: '/admin/categories/' + categoryId + '/subcategories',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    id: subcategoryId,
+                    name: subcategoryName
+                }),
+                success: function () {
+                    alert('서브카테고리가 성공적으로 저장되었습니다.');
+                    $('#subcategoryModal').modal('hide');
+                    // 페이지 새로고침 또는 데이터 갱신 로직
+                    location.reload();
+                },
+                error: function (error) {
+                    console.error('서브카테고리를 저장하는 중 오류가 발생했습니다.', error);
+                    alert('서브카테고리를 저장하지 못했습니다.');
+                }
+            });
+        });
+
+    </script>
+
+</body>
+</html>

@@ -1,6 +1,7 @@
 package ezen.team.ezenbookstore.service;
 
 import ezen.team.ezenbookstore.entity.Category;
+import ezen.team.ezenbookstore.entity.SubCategory;
 import ezen.team.ezenbookstore.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
