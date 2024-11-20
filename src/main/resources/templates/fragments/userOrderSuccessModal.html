@@ -1,0 +1,56 @@
+<div th:fragment="userOrderSuccessModal" class="modal fade" id="orderConfirmation" tabindex="-1" role="dialog" aria-labelledby="orderConfirmationLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="orderConfirmationLabel">구매확정</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- 상품 정보 섹션 추가 -->
+                <div class="product-info mb-4">
+                    <div class="product-info mb-4">
+                        <h6>상품 정보</h6>
+                        <div class="card mb-3">
+                            <div class="row no-gutters">
+                                <div class="col-md-4">
+                                    <img src="" class="card-img orderSuccessImg p-3" alt="" style="width: 145px; height: 200px;">
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="card-body">
+                                        <h5 class="card-title" id="confirmProductTitle"></h5>
+                                        <p class="card-text"><strong>저자:</strong> <span
+                                                id="confirmProductAuthor"></span></p>
+                                        <p class="card-text"><strong>출판사:</strong> <span
+                                                id="confirmProductPublisher"></span></p>
+                                        <p class="card-text"><strong>가격:</strong> <span
+                                                id="confirmProductPrice"></span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <h6><strong>구매확정 안내</strong></h6>
+                <div class="alert alert-info">
+                    <strong>포인트 적립 혜택:</strong>
+                    <ul>
+                        <li>구매확정 시 <strong><span id="savePoint"></span>포인트</strong> 적립 (구매금액의 <span id="userGradePoint"></span>%)</li>
+                        <li>리뷰 작성 시 추가 <strong><span id="reviewPoint"></span>포인트</strong> 적립</li>
+                    </ul>
+                </div>
+                <ul>
+                    <li>구매확정은 상품을 정상적으로 수령하고 만족하셨음을 의미합니다.</li>
+                    <li>구매확정 후에는 교환/반품이 어려울 수 있습니다.</li>
+                </ul>
+                <p class="text-danger"><strong>주의:</strong> 구매확정 후에는 취소할 수 없습니다.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" id="confirmPurchaseBtn" th:data-userId="${user.id}">구매확정하기</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+            </div>
+        </div>
+    </div>
+</div>

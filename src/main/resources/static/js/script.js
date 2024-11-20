@@ -990,7 +990,174 @@ $(document).ready(function () {
         window.location.href = `/user/info?${urlParams.toString()}`;
     });
 
-    //     orderInfoModal
+    // 주문 상세 정보 모달 요청 처리 orderDetailModal
+    $('.orderDetailBtn').click(function () {
+        const ordersId = $(this).attr('data-id');
+        // AJAX 요청을 통해 상세 데이터 가져오기
+        $.ajax({
+            url: `/order/${ordersId}`,
+            type: 'POST',
+            success: function (response) {
+                if (response.success === "true") {
+                    // 상품 정보 설정
+                    const orderDetailTableBody = $('#orderDetailTableBody');
+                    orderDetailTableBody.empty(); // 기존 데이터 제거
 
+                    for (let i = 0; i < response.titleList.length; i++) {
+                        const row = `
+                        <tr class="text-center">
+                            <td class="align-middle">
+                                <img src="${response.imageList[i] || "https://via.placeholder.com/100"}" alt="책 표지" width="60" class="orderImage">
+                            </td>
+                            <td class="align-middle text-left">
+                                <p class="mb-1">
+                                    <strong class="d-inline-block">제목:</strong>
+                                    <span class="text-truncate d-inline-block orderTitle" style="max-width: 120px; vertical-align: top;">${response.titleList[i]}</span>
+                                </p>
+                                <p class="mb-1">
+                                    <strong class="d-inline-block">저자:</strong>
+                                    <span class="text-truncate d-inline-block orderAuthor" style="max-width: 120px; vertical-align: top;">${response.authorList[i]}</span>
+                                </p>
+                                <p class="mb-0">
+                                    <strong class="d-inline-block">출판사:</strong>
+                                    <span class="text-truncate d-inline-block orderPublisher" style="max-width: 120px; vertical-align: top;">${response.publisherList[i]}</span>
+                                </p>
+                            </td>
+                            <td class="align-middle">1</td>
+                            <td class="align-middle">${response.priceList[i]}원</td>
+                            <td class="align-middle">
+                                <button class="btn btn-sm btn-warning text-white" data-toggle="modal" data-target="#exchangeNreturn">교환/반품</button>
+                            </td>
+                            <td class="align-middle">
+                                <button class="btn btn-sm btn-success orderSuccessBtn" data-toggle="modal" data-target="#orderConfirmation" data-id="${response.orderItemList[i]}">구매확정</button>
+                            </td>
+                            <td class="align-middle">
+                                <button class="btn btn-sm btn-primary reviewBtn" data-toggle="modal" data-target="#reviewModal" data-id="${response.orderItemList[i]}" disabled>리뷰작성</button>
+                            </td>
+                        </tr>
+                    `;
+                        orderDetailTableBody.append(row);
+                    }
+
+                    // 주문 정보 설정
+                    $('.orderId').text(ordersId);
+                    $('.orderDate').text(response.orderDate || "");
+                    $('.deliveryStatus').text(response.deliveryStatus || "");
+
+                    // 배송 정보 설정
+                    $('.deliveryAddr').text(response.deliveryAddr || "");
+                    $('.deliveryAddrextra').text(response.deliveryAddrextra || "");
+                    $('.deliveryTracking').text(response.deliveryTracking || "");
+
+                    // 결제 정보 설정
+                    $('.paymentMethod').text(response.paymentMethod || "");
+                    $('.paymentAmount').text(response.paymentAmount || "");
+
+                } else {
+                    alert("상품 상세보기 불러오기를 실패했습니다.");
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("서버 오류가 발생했습니다.");
+                alert("서버 오류가 발생했습니다. 다시 시도해주세요.");
+            }
+        });
+    });
+
+    //
+
+    // 환불/교환 요청 모달
+
+    // 구매 확정 모달
+    $(document).on('click', '.orderSuccessBtn', function () {
+        const orderItemId = $(this).attr('data-id');
+        // AJAX 요청을 통해 상세 데이터 가져오기
+        $.ajax({
+            url: `/order/success/${orderItemId}`,
+            type: 'POST',
+            success: function (response) {
+                if (response.success === "true") {
+                    $("#confirmProductTitle").text(response.orderItemTitle);
+                    $("#confirmProductAuthor").text(response.orderItemAuthor);
+                    $("#confirmProductPublisher").text(response.orderItemPublisher);
+                    $("#confirmProductPrice").text(parseInt(response.orderItemPrice).toLocaleString('ko-KR') + '원');
+                    $("#confirmPurchaseBtn").attr("data-id",response.orderItemId);
+                    const orderItemStock = parseFloat(response.orderItemStock);
+                    const orderItemPrice = parseFloat(response.orderItemPrice);
+                    const userGrade = response.userGrade;
+                    let userGradePoint = 0;
+                    let userGradePercent = 0;
+
+                    switch (userGrade) {
+                        case "1" :
+                            userGradePoint = 0.01;
+                            userGradePercent = 1;
+                            break;
+                        case "2" :
+                            userGradePoint = 0.03;
+                            userGradePercent = 3;
+                            break;
+                        case "3" :
+                            userGradePoint = 0.05;
+                            userGradePercent = 5;
+                            break;
+                        default:
+                            userGradePoint = 0;
+                            userGradePercent = 0;
+                            break;
+                    }
+
+                    const savepoint = (orderItemPrice * orderItemStock) * userGradePoint;
+                    const reviewPoint = (orderItemPrice * orderItemStock) *0.005;
+                    $("#savePoint").text(savepoint);
+                    $("#userGradePoint").text(userGradePercent);
+                    $("#reviewPoint").text(reviewPoint);
+
+                    if (response.imagePath) {
+                        $(".orderSuccessImg").attr("src", response.imagePath);
+                        $(".orderSuccessImg").attr("alt", response.title + '사진');
+                    } else {
+                        $(".orderSuccessImg").attr("src", "https://via.placeholder.com/100");
+                        $(".orderSuccessImg").attr("alt", '임시 데이터 사진');
+                    }
+                } else {
+                    alert("상품 상세보기 불러오기를 실패했습니다.");
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("서버 오류가 발생했습니다.");
+                alert("서버 오류가 발생했습니다. 다시 시도해주세요.");
+            }
+        });
+    });
+
+    $(document).on('click', '#confirmPurchaseBtn', function (event) {
+        event.preventDefault();
+        const orderItemId = $(this).attr('data-id');
+        const userId = $(this).attr('data-userId');
+        const point = $("#savePoint").text();
+
+        $.ajax({
+            type: 'POST',
+            url: '/order/success',
+            data: {
+                orderItemId: orderItemId,
+                userId: userId,
+                point: point,
+            },
+            success: function (response) {
+                if (response.success) {
+                    alert("구매를 확정했습니다.")
+                    location.reload();
+                } else {
+                    alert("구매 확정중 오류가 발생했습니다.");
+                    location.reload();
+                }
+            },
+            error: function () {
+                alert("서버 오류가 발생했습니다.");
+            }
+        });
+    });
 
 });

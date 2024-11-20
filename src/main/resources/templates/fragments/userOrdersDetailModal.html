@@ -1,0 +1,69 @@
+<div th:fragment="userOrdersDetailModal" class="modal fade" id="orderDetailModal" tabindex="-1" role="dialog" aria-labelledby="orderDetailModalTitle">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="orderDetailModalTitle">주문 상세 정보</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body row">
+                <div class="col-md-9">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">상품 정보</h3>
+                        </div>
+                        <div class="card-body" aria-labelledby="productInfoTitle">
+                            <div class="table-responsive overflow-auto" style="max-height: 425px;">
+                                <table class="table table-bordered table-striped">
+                                    <thead>
+                                    <tr class="text-center align-middle">
+                                        <th>표지</th>
+                                        <th>상품정보</th>
+                                        <th>수량</th>
+                                        <th>가격</th>
+                                        <th>관리</th>
+                                        <th>구매확정</th>
+                                        <th>리뷰관리</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="orderDetailTableBody">
+                                    <!--                 내용 채우기-->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body border-bottom">
+                            <h5>주문 정보</h5>
+                            <p>주문번호: <span class="orderId"></span></p>
+                            <p>주문일시: <span class="orderDate"></span></p>
+                            <p>주문상태: <span class="deliveryStatus"></span></p>
+                        </div>
+
+                        <div class="card-body border-bottom">
+                            <h5>배송 정보</h5>
+                            <p>주소: <span class="deliveryAddr"></span></p>
+                            <p>상세주소: <span class="deliveryAddrextra"></span></p>
+                            <p>운송장번호: <span class="deliveryTracking"></span></p>
+                        </div>
+
+                        <div class="card-body">
+                            <h5>결제 정보</h5>
+                            <p>결제방법: <span class="paymentMethod"></span></p>
+                            <p>결제금액: <span class="paymentAmount"></span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger">주문 취소</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+            </div>
+        </div>
+    </div>
+</div>
