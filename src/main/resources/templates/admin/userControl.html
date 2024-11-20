@@ -28,27 +28,6 @@
             color: white;
         }
 
-        .user-stats {
-            display: block;
-            text-align: left;
-            margin-bottom: 15px;
-            font-size: 15px;
-        }
-
-        .user-stats span {
-            display: inline-block;
-            margin-right: 15px;
-        }
-
-        .user-stats span span{
-            margin-left: 10px;
-        }
-
-        .user-stats span:not(:last-child)::after {
-            content: '|';
-            margin-left: 10px;
-            color: #6c757d;
-        }
     </style>
 </head>
 <body>
@@ -59,19 +38,33 @@
 
     <!-- 필터 버튼 -->
     <div class="d-flex justify-content-start mb-3">
-    <span class="filter-option" th:classappend="${grade == null ? 'active' : ''}"
-          th:onclick="'location.href=\'/admin/user\''">전체 <span th:text="${totalCount}"></span></span>
-        <span class="filter-option" th:classappend="${grade == 0 ? 'active' : ''}"
-              th:onclick="'location.href=\'/admin/user?grade=0\''">일반회원 <span th:text="${generalCount}"></span></span>
-        <span class="filter-option" th:classappend="${grade == 1 ? 'active' : ''}"
-              th:onclick="'location.href=\'/admin/user?grade=1\''">실버회원 <span th:text="${silverCount}"></span></span>
-        <span class="filter-option" th:classappend="${grade == 2 ? 'active' : ''}"
-              th:onclick="'location.href=\'/admin/user?grade=2\''">골드회원 <span th:text="${goldCount}"></span></span>
-        <span class="filter-option" th:classappend="${grade == 3 ? 'active' : ''}"
-              th:onclick="'location.href=\'/admin/user?grade=3\''">VIP 회원 <span th:text="${vipCount}"></span></span>
-        <span class="filter-option" th:classappend="${grade == 4 ? 'active' : ''}"
-              th:onclick="'location.href=\'/admin/user?grade=4\''">관리자 <span th:text="${adminCount}"></span></span>
+        <span class="filter-option" data-grade="" th:classappend="${grade == null ? 'active' : ''}"
+                  onclick="moveToGrade(this)">
+            전체 <span th:text="${totalCount}"></span>
+        </span>
+                <span class="filter-option" data-grade="0" th:classappend="${grade == 0 ? 'active' : ''}"
+                      onclick="moveToGrade(this)">
+            일반회원 <span th:text="${generalCount}"></span>
+        </span>
+                <span class="filter-option" data-grade="1" th:classappend="${grade == 1 ? 'active' : ''}"
+                      onclick="moveToGrade(this)">
+            실버회원 <span th:text="${silverCount}"></span>
+        </span>
+                <span class="filter-option" data-grade="2" th:classappend="${grade == 2 ? 'active' : ''}"
+                      onclick="moveToGrade(this)">
+            골드회원 <span th:text="${goldCount}"></span>
+        </span>
+                <span class="filter-option" data-grade="3" th:classappend="${grade == 3 ? 'active' : ''}"
+                      onclick="moveToGrade(this)">
+            VIP 회원 <span th:text="${vipCount}"></span>
+        </span>
+                <span class="filter-option" data-grade="4" th:classappend="${grade == 4 ? 'active' : ''}"
+                      onclick="moveToGrade(this)">
+            관리자 <span th:text="${adminCount}"></span>
+        </span>
+
     </div>
+
     <hr>
 
     <!-- 검색 및 상태 변경 섹션 -->
@@ -213,6 +206,18 @@
         renderUserList("전체");
     });
 
+    //등급 이름 매칭
+    function getGradeName(grade) {
+        const gradeMap = {
+            0: "일반회원",
+            1: "실버회원",
+            2: "골드회원",
+            3: "VIP 회원",
+            4: "관리자"
+        };
+        return gradeMap[grade] || "알 수 없음"; // 매칭되지 않으면 기본값 반환
+    }
+
     // 사용자 목록 렌더링
     function renderUserList(filterLevel = "전체", searchType = null, searchText = null) {
         const filteredUsers = users.filter(user => {
@@ -259,22 +264,27 @@
         });
     }
 
+    //등급에 따른 파라미터값 변경
+    function moveToGrade(element) {
+        const grade = element.getAttribute("data-grade"); // 선택한 span의 data-grade 값 가져오기
+        const currentURL = new URL(window.location.href); // 현재 URL 가져오기
+        const params = currentURL.searchParams; // URLSearchParams 객체
+
+        if (grade !== null) {
+            params.set("grade", grade); // grade 파라미터 설정
+        } else {
+            params.delete("grade"); // grade 파라미터 제거 (전체 필터)
+        }
+
+        params.set("page", 1); // 항상 첫 페이지로 이동
+        window.location.href = `${currentURL.pathname}?${params.toString()}`; // 새 URL로 이동
+    }
+
+
     // 일괄 변경 초기화
     function initBulkActions() {
         initUpdateAction(); // 등급 상태 변경 초기화
         initDeleteAction(); // 선택 항목 삭제 초기화
-    }
-
-    //등급 이름 매칭
-    function getGradeName(grade) {
-        const gradeMap = {
-            0: "일반회원",
-            1: "실버회원",
-            2: "골드회원",
-            3: "VIP 회원",
-            4: "관리자"
-        };
-        return gradeMap[grade] || "알 수 없음"; // 매칭되지 않으면 기본값 반환
     }
 
     // 등급 상태 변경 초기화

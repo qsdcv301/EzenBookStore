@@ -41,27 +41,33 @@ public class AdminUserApiController {
         // 1-based 페이지를 0-based로 변환
         Pageable pageable = PageRequest.of(page - 1, size);
         Page<User> userPage;
+        long totalCount, generalCount, silverCount, goldCount, vipCount, adminCount;
 
-        if (type != null && !type.isEmpty() && keyword != null && !keyword.isEmpty()) {
-            // 검색 조건이 있을 경우 검색 결과 반환
+        if (grade != null && (type != null && !type.isEmpty()) && (keyword != null && !keyword.isEmpty())) {
+            // grade, type, keyword 모두 존재하는 경우
+            userPage = userService.findByGradeAndSearch(type, keyword, grade, pageable);
+            totalCount = userPage.getTotalElements();
+        } else if (type != null && !type.isEmpty() && keyword != null && !keyword.isEmpty()) {
+            // type과 keyword만 존재하는 경우
             userPage = userService.searchUsers(type, keyword, pageable);
+            totalCount = userPage.getTotalElements();
         } else if (grade != null) {
-            // 등급별 필터링
+            // grade만 존재하는 경우
             userPage = userService.findByGrade(grade, pageable);
+            totalCount = userPage.getTotalElements();
         } else {
-            // 기본 리스트 반환
+            // 기본 리스트 반환 (전체 항목)
             userPage = userService.findAll(pageable);
+            totalCount = userPage.getTotalElements();
         }
 
-        List<User> allUsers = userService.findAllUsers();
-
-        // 사용자 등급별 카운트
-        long totalCount = allUsers.size();
-        long generalCount = allUsers.stream().filter(u -> u.getGrade() == 0).count();
-        long silverCount = allUsers.stream().filter(u -> u.getGrade() == 1).count();
-        long goldCount = allUsers.stream().filter(u -> u.getGrade() == 2).count();
-        long vipCount = allUsers.stream().filter(u -> u.getGrade() == 3).count();
-        long adminCount = allUsers.stream().filter(u -> u.getGrade() == 4).count();
+        // 각 등급별 카운트 계산
+        List<User> filteredUsers = userPage.getContent(); // 현재 페이지 데이터
+        generalCount = filteredUsers.stream().filter(u -> u.getGrade() == 0).count();
+        silverCount = filteredUsers.stream().filter(u -> u.getGrade() == 1).count();
+        goldCount = filteredUsers.stream().filter(u -> u.getGrade() == 2).count();
+        vipCount = filteredUsers.stream().filter(u -> u.getGrade() == 3).count();
+        adminCount = filteredUsers.stream().filter(u -> u.getGrade() == 4).count();
 
         // 모델에 데이터 추가
         model.addAttribute("userList", userPage.getContent());
@@ -79,6 +85,8 @@ public class AdminUserApiController {
 
         return "admin/userControl";
     }
+
+
 
 
 
