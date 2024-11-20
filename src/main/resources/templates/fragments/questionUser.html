@@ -1,5 +1,5 @@
 <div th:fragment="questionUser" th:if="${userData}" class="tab-pane fade" id="inquiry" role="tabpanel"
-     th:classappend="${param.qnaPage != null} ? 'show active'">
+     th:classappend="${param.qnaPage != null && param.orderPage == null} ? 'show active'">
   <h3>문의하기</h3>
 
   <div class="card mb-4">

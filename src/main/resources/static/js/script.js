@@ -793,7 +793,7 @@ $(document).ready(function () {
 
         if (newPassword !== confirmNewPassword) {
             alert("현재 비밀번호와 현재 비밀번호 확인의 값이 일치하지 않습니다.");
-          return;
+            return;
         }
 
         $.ajax({
@@ -910,5 +910,87 @@ $(document).ready(function () {
             }
         });
     });
+
+    // orderInfo
+
+    $('.searchKeywordBtn').click(function (e) {
+        e.preventDefault();
+        const keyword = $('.searchKeyword').val();
+
+        // 새로운 URL로 리디렉션
+        window.location.href = `/user/info?keyword=${keyword}&orderPage=0`;
+    });
+
+    // 날짜 범위 선택 변경 시 이벤트
+    $('#dateRange').change(function () {
+        $('#customDateRange').toggle($(this).val() === 'custom');
+    });
+
+    // 필터 적용 버튼 클릭 시 이벤트
+    $('#applyFilters').click(function () {
+        let dateRange = $('#dateRange').val();
+        const deliveryStatus = $('#deliveryStatus').val();
+        const orderStatus = $('#orderStatus').val();
+        let startDate = $('#startDate').val();
+        let endDate = $('#endDate').val();
+        if (dateRange) {
+            if (dateRange === 'custom') {
+                startDate = $('#startDate').val();
+                endDate = $('#endDate').val();
+                if (startDate && endDate) {
+                    dateRange = '';
+                }
+            }
+        }
+        let deliveryStatusText = '';
+        if (deliveryStatus && deliveryStatus !== '') {
+            deliveryStatusText = $('#deliveryStatus option:selected').val();
+        }
+        let orderStatusText = '';
+        if (orderStatus && orderStatus !== '') {
+            orderStatusText = $('#orderStatus option:selected').val();
+        }
+        // 현재 URL에서 값을 추출
+        const urlParams = new URLSearchParams(window.location.search);
+        const keyword = urlParams.has('keyword') ? urlParams.get('keyword') : '';
+        const direction = urlParams.has('direction') ? urlParams.get('direction') : '';
+        window.location.href = `/user/info?orderPage=0&keyword=${keyword}&direction=${direction}&deliveryStatus=${deliveryStatusText}&orderStatus=${orderStatusText}&dateRange=${dateRange}&startDate=${startDate}&endDate=${endDate}`;
+
+    });
+
+    // 필터 초기화 버튼 클릭 시 이벤트
+    $('#resetFilters').click(function () {
+        $('#dateRange, #deliveryStatus, #orderStatus').val('');
+        $('#startDate, #endDate').val('');
+        $('#customDateRange').hide();
+        $('#appliedFilters').empty();
+        window.location.href = `/user/info?orderPage=0`;
+    });
+
+    // 필터 태그 제거 기능
+    $('#appliedFilters').on('click', '.badge', function (e) {
+        const filterType = $(this).find('span').text().split(':')[0].trim(); // 필터의 타입 추출
+        let urlParams = new URLSearchParams(window.location.search);
+
+        // 필터에 따라 URL 파라미터에서 제거할 필터 결정
+        if (filterType === '기간') {
+            if (urlParams.has('startDate') && urlParams.has('endDate')) {
+                urlParams.delete('startDate');
+                urlParams.delete('endDate');
+            } else if (urlParams.has('dateRange')) {
+                urlParams.delete('dateRange');
+            }
+        } else if (filterType === '배송 상태') {
+            urlParams.delete('deliveryStatus');
+        } else if (filterType === '주문 상태') {
+            urlParams.delete('orderStatus');
+        }
+
+        // 필터 제거 후 새 URL로 리디렉션
+        window.location.href = `/user/info?${urlParams.toString()}`;
+    });
+
+    //     orderInfoModal
+
 
 });
