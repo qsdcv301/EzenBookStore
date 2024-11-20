@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,44 +40,59 @@ public class AdminUserApiController {
             @RequestParam(value = "size", defaultValue = "10") int size,
             Model model) {
 
-        // 1-based 페이지를 0-based로 변환
-        Pageable pageable = PageRequest.of(page - 1, size);
-
-        // 필터링된 결과 가져오기
-        Page<User> userPage;
+        // 전체 사용자 리스트 가져오기 (검색 조건이 있는 경우와 없는 경우 모두 포함)
+        List<User> userList;
         if (type != null && !type.isEmpty() && keyword != null && !keyword.isEmpty()) {
-            userPage = userService.searchUsers(type, keyword, pageable);
+            // type에 따라 검색 필터링을 다르게 적용
+            if (type.equalsIgnoreCase("email")) {
+                userList = userService.findUsersByEmail(keyword);
+            } else if (type.equalsIgnoreCase("name")) {
+                userList = userService.findUsersByName(keyword);
+            } else {
+                userList = userService.findAllUsers();
+            }
         } else {
-            userPage = userService.findAll(pageable);
+            userList = userService.findAllUsers();
         }
 
-        // 검색 결과의 총 유저 수 (검색 조건에 따른 "전체")
-        long totalCount = userPage.getTotalElements();
-
-        // grade로 한번 더 필터링
-        List<User> filteredUsers = userPage.getContent();
-        List<User> gradefFilterUsers = filteredUsers;
+        // grade로 필터링 (옵션)
+        List<User> filteredUsers = userList;
+        long searchUserSize = userList.size();
         if (grade != null) {
-            gradefFilterUsers = gradefFilterUsers.stream()
+            filteredUsers = filteredUsers.stream()
                     .filter(u -> u.getGrade().equals(grade))
                     .collect(Collectors.toList());
         }
 
-        // 필터링 후 새로운 총 유저 수
-        long filteredTotalCount = gradefFilterUsers.size();
+        // 필터링 후 총 유저 수
+        long filteredTotalCount = filteredUsers.size();
+
+        // 페이지네이션 처리 (0-based index로 변환)
+        int fromIndex = (page - 1) * size;
+        int toIndex = Math.min(fromIndex + size, filteredUsers.size());
+
+        List<User> paginatedUsers;
+        if (fromIndex >= filteredUsers.size()) {
+            paginatedUsers = Collections.emptyList();
+        } else {
+            paginatedUsers = filteredUsers.subList(fromIndex, toIndex);
+        }
 
         // 검색 결과 내 각 등급별 카운트
-        long generalCount = filteredUsers.stream().filter(u -> u.getGrade() == 0).count();
-        long silverCount = filteredUsers.stream().filter(u -> u.getGrade() == 1).count();
-        long goldCount = filteredUsers.stream().filter(u -> u.getGrade() == 2).count();
-        long vipCount = filteredUsers.stream().filter(u -> u.getGrade() == 3).count();
-        long adminCount = filteredUsers.stream().filter(u -> u.getGrade() == 4).count();
+        long generalCount = userList.stream().filter(u -> u.getGrade() == 0).count();
+        long silverCount = userList.stream().filter(u -> u.getGrade() == 1).count();
+        long goldCount = userList.stream().filter(u -> u.getGrade() == 2).count();
+        long vipCount = userList.stream().filter(u -> u.getGrade() == 3).count();
+        long adminCount = userList.stream().filter(u -> u.getGrade() == 4).count();
+
+        // 총 페이지 수 계산
+        int totalPages = (int) Math.ceil((double) filteredTotalCount / size);
 
         // 모델에 데이터 추가
-        model.addAttribute("userList", gradefFilterUsers); // 필터링된 유저 리스트
-        model.addAttribute("totalPages", userPage.getTotalPages());
+        model.addAttribute("userList", paginatedUsers); // 필터링된 유저 리스트 (페이지네이션 적용됨)
+        model.addAttribute("totalPages", totalPages);
         model.addAttribute("currentPage", page);
-        model.addAttribute("totalCount", totalCount); // 검색 결과의 총 유저 수
+        model.addAttribute("totalCount", searchUserSize); // 필터링된 총 유저 수
         model.addAttribute("generalCount", generalCount); // 검색 결과 내 일반회원 수
         model.addAttribute("silverCount", silverCount); // 검색 결과 내 실버회원 수
         model.addAttribute("goldCount", goldCount); // 검색 결과 내 골드회원 수
@@ -88,12 +104,6 @@ public class AdminUserApiController {
 
         return "admin/userControl";
     }
-
-
-
-
-
-
     // 회원 정보 삭제
     @PostMapping("/delete")
     public ResponseEntity<Map<String, Boolean>> deleteUser(@RequestBody List<String> userId) {

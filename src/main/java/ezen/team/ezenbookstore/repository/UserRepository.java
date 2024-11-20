@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -18,10 +19,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByEmailAndTel(String email, String tel);
 
-    Page<User> findByGrade(Integer grade, Pageable pageable);
-    Page<User> findByEmailContaining(String email, Pageable pageable);
-    Page<User> findByNameContaining(String name, Pageable pageable);
-    Page<User> findByEmailContainingAndGrade(String email, Integer grade, Pageable pageable);
-    Page<User> findByNameContainingAndGrade(String name, Integer grade, Pageable pageable);
+    // 이메일에 특정 문자열이 포함된 사용자 검색 (대소문자 무시)
+    List<User> findByEmailContainingIgnoreCase(String email);
+
+    // 이름에 특정 문자열이 포함된 사용자 검색 (대소문자 무시)
+    List<User> findByNameContainingIgnoreCase(String name);
 
 }
