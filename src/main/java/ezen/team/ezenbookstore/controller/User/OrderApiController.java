@@ -157,9 +157,11 @@ public class OrderApiController {
             String stock = orderItem.getQuantity().toString();
             String imagePath = fileUploadService.findImageFilePath(orderItem.getBook().getId(), "book");
             String status = orderItem.getStatus().toString();
+            String bookId = orderItem.getBook().getId().toString();
             User user = (User) model.getAttribute("user");
             String userGrade = user.getGrade().toString();
             response.put("success", "true");
+            response.put("bookId", bookId);
             response.put("orderItemId", id.toString());
             response.put("orderItemTitle", title);
             response.put("orderItemAuthor", author);

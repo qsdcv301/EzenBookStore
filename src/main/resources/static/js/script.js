@@ -1,5 +1,14 @@
 $(document).ready(function () {
 
+    // 모달 z-index 관리
+    $('.modal').on('show.bs.modal', function (event) {
+        var zIndex = 1040 + (10 * $('.modal:visible').length);
+        $(this).css('z-index', zIndex);
+        setTimeout(function () {
+            $('.modal-backdrop').not('.modal-stack').css('z-index', zIndex - 1).addClass('modal-stack');
+        }, 0);
+    });
+
     $("#searchAddress").click(function () {
         new daum.Postcode({
             oncomplete: function (data) {
@@ -1066,9 +1075,20 @@ $(document).ready(function () {
             }
         });
 
-        //
-
         // 환불/교환 요청 모달
+
+        // 파일 유효성 검사 및 파일명 표시 (교환/반품 모달)
+        $('#imageFile').on('change', function () {
+            const file = this.files[0];
+            const fileType = file.type;
+            const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+            if (!validTypes.includes(fileType)) {
+                alert('JPG, PNG, GIF 형식의 이미지만 업로드 가능합니다.');
+                $(this).val('');
+            } else {
+                $(this).next('.custom-file-label').html(file.name);
+            }
+        });
 
         // 구매 확정 모달
         $(document).on('click', '.orderSuccessBtn', function () {
@@ -1149,11 +1169,10 @@ $(document).ready(function () {
                 },
                 success: function (response) {
                     if (response.success) {
-                        alert("구매를 확정했습니다.")
+                        alert("구매를 확정했습니다.");
                         location.reload();
                     } else {
                         alert("구매 확정중 오류가 발생했습니다.");
-                        location.reload();
                     }
                 },
                 error: function () {
@@ -1161,5 +1180,110 @@ $(document).ready(function () {
                 }
             });
         });
+
+        // 리뷰 부분
+
+        $(document).on('click', '.reviewBtn', function () {
+            const orderItemId = $(this).attr('data-id');
+            // AJAX 요청을 통해 상세 데이터 가져오기
+            $.ajax({
+                url: `/order/success/${orderItemId}`,
+                type: 'POST',
+                success: function (response) {
+                    if (response.success === "true") {
+                        $("#reviewProductTitle").text(response.orderItemTitle);
+                        $("#reviewProductAuthor").text(response.orderItemAuthor);
+                        $("#reviewProductPublisher").text(response.orderItemPublisher);
+                        $("#reviewProductPrice").text(parseInt(response.orderItemPrice).toLocaleString('ko-KR') + '원');
+                        $("#submitReview").attr("data-id", response.orderItemId);
+
+                        if (response.imagePath) {
+                            $(".orderReviewImg").attr("src", response.imagePath);
+                            $(".orderReviewImg").attr("alt", response.title + '사진');
+                        } else {
+                            $(".orderReviewImg").attr("src", "https://via.placeholder.com/100");
+                            $(".orderReviewImg").attr("alt", '임시 데이터 사진');
+                        }
+                    } else {
+                        alert("리뷰에 필요한 데이터를 가져오는데 실패했습니다.");
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("서버 오류가 발생했습니다.");
+                    alert("서버 오류가 발생했습니다. 다시 시도해주세요.");
+                }
+            });
+        });
+
+        // 리뷰 파일 유효성 검사 및 파일명 표시
+        $('#reviewFile').on('change', function () {
+            const file = this.files[0];
+            const fileType = file.type;
+            const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+            if (!validTypes.includes(fileType)) {
+                alert('JPG, PNG, GIF 형식의 이미지만 업로드 가능합니다.');
+                $(this).val('');
+            } else {
+                $(this).next('.custom-file-label').html(file.name);
+            }
+        });
+
+        // 별점 시스템
+        $('#ratingStars i').on('click', function () {
+            const rating = $(this).data('rating');
+            $('#ratingValue').val(rating);
+            $('#ratingStars i').removeClass('bi-star-fill').addClass('bi-star');
+            $(this).prevAll().addBack().removeClass('bi-star').addClass('bi-star-fill');
+        });
+
+        // 리뷰 제출
+        $('#submitReview').on('click', function () {
+            const rating = $('#ratingValue').val();
+            const reviewTitle = $('#reviewTitle').val();
+            const reviewText = $('#reviewText').val();
+            const orderItemId =  $("#submitReview").attr("data-id");
+            const fileInputs = $('#reviewFile')[0].files;
+
+            if (!rating) {
+                alert('별점을 선택해주세요.');
+                return;
+            }
+            if (!reviewTitle) {
+                alert('리뷰 제목을 입력해주세요.');
+                return;
+            }
+            if (!reviewText) {
+                alert('리뷰 내용을 입력해주세요.');
+                return;
+            }
+
+            // FormData 객체 생성 및 데이터 추가
+            const formData = new FormData();
+            formData.append('rating', rating);
+            formData.append('title', reviewTitle);
+            formData.append('comment', reviewText);
+            formData.append('orderItemId', orderItemId);
+            formData.append('file', fileInputs[0]);
+
+            $.ajax({
+                type: 'POST',
+                url: '/review/add',
+                processData: false,
+                contentType: false,
+                data: formData,
+                success: function (response) {
+                    if (response.success) {
+                        alert("리뷰를 작성했습니다.");
+                        location.reload();
+                    } else {
+                        alert("리뷰 작성중 오류가 발생했습니다.");
+                    }
+                },
+                error: function () {
+                    alert("서버 오류가 발생했습니다.");
+                }
+            });
+        });
+
     });
 });
