@@ -63,6 +63,7 @@ public class OrderApiController {
             List<String> stockList = new ArrayList<>();
             List<String> imageList = new ArrayList<>();
             List<String> orderItemList = new ArrayList<>();
+            List<String> orderItemListStatus = new ArrayList<>();
 
             for (OrderItem orderItem : order.getOrderItems()) {
                 titleList.add(orderItem.getBook().getTitle());
@@ -71,6 +72,7 @@ public class OrderApiController {
                 priceList.add(orderItem.getBook().getPrice().toString());
                 stockList.add(orderItem.getBook().getStock().toString());
                 orderItemList.add(orderItem.getId().toString());
+                orderItemListStatus.add(orderItem.getStatus().toString());
                 // 이미지 파일 경로 찾기
                 String imagePath = fileUploadService.findImageFilePath(orderItem.getBook().getId(), "book");
                 if (imagePath != null) {
@@ -85,6 +87,7 @@ public class OrderApiController {
             response.put("stockList", stockList);
             response.put("imageList", imageList);
             response.put("orderItemList", orderItemList);
+            response.put("orderItemListStatus", orderItemListStatus);
 
             // 주문 관련 정보 추가
             String orderStatus = order.getStatus().toString();

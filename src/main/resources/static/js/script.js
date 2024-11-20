@@ -1002,8 +1002,11 @@ $(document).ready(function () {
                     // 상품 정보 설정
                     const orderDetailTableBody = $('#orderDetailTableBody');
                     orderDetailTableBody.empty(); // 기존 데이터 제거
-
+                    console.log(response.orderItemListStatus);
                     for (let i = 0; i < response.titleList.length; i++) {
+                        const orderSuccessBtnDisabled = parseInt(response.orderItemListStatus[i]) !== 1 ? 'disabled' : '';
+                        const orderExchangeNreturnBtnDisabled = parseInt(response.orderItemListStatus[i]) !== 1 ? 'disabled' : '';
+                        const reviewBtnDisabled = parseInt(response.orderItemListStatus[i]) !== 2 ? 'disabled' : '';
                         const row = `
                         <tr class="text-center">
                             <td class="align-middle">
@@ -1026,13 +1029,13 @@ $(document).ready(function () {
                             <td class="align-middle">1</td>
                             <td class="align-middle">${response.priceList[i]}원</td>
                             <td class="align-middle">
-                                <button class="btn btn-sm btn-warning text-white" data-toggle="modal" data-target="#exchangeNreturn">교환/반품</button>
+                                <button class="btn btn-sm btn-warning text-white orderExchangeNreturnBtn" data-toggle="modal" data-target="#exchangeNreturn" ${orderExchangeNreturnBtnDisabled}>교환/반품</button>
                             </td>
                             <td class="align-middle">
-                                <button class="btn btn-sm btn-success orderSuccessBtn" data-toggle="modal" data-target="#orderConfirmation" data-id="${response.orderItemList[i]}">구매확정</button>
+                                <button class="btn btn-sm btn-success orderSuccessBtn" data-toggle="modal" data-target="#orderConfirmation" data-id="${response.orderItemList[i]}" ${orderSuccessBtnDisabled}>구매확정</button>
                             </td>
                             <td class="align-middle">
-                                <button class="btn btn-sm btn-primary reviewBtn" data-toggle="modal" data-target="#reviewModal" data-id="${response.orderItemList[i]}" disabled>리뷰작성</button>
+                                <button class="btn btn-sm btn-primary reviewBtn" data-toggle="modal" data-target="#reviewModal" data-id="${response.orderItemList[i]}"  ${reviewBtnDisabled}>리뷰작성</button>
                             </td>
                         </tr>
                     `;
@@ -1062,102 +1065,101 @@ $(document).ready(function () {
                 alert("서버 오류가 발생했습니다. 다시 시도해주세요.");
             }
         });
-    });
 
-    //
+        //
 
-    // 환불/교환 요청 모달
+        // 환불/교환 요청 모달
 
-    // 구매 확정 모달
-    $(document).on('click', '.orderSuccessBtn', function () {
-        const orderItemId = $(this).attr('data-id');
-        // AJAX 요청을 통해 상세 데이터 가져오기
-        $.ajax({
-            url: `/order/success/${orderItemId}`,
-            type: 'POST',
-            success: function (response) {
-                if (response.success === "true") {
-                    $("#confirmProductTitle").text(response.orderItemTitle);
-                    $("#confirmProductAuthor").text(response.orderItemAuthor);
-                    $("#confirmProductPublisher").text(response.orderItemPublisher);
-                    $("#confirmProductPrice").text(parseInt(response.orderItemPrice).toLocaleString('ko-KR') + '원');
-                    $("#confirmPurchaseBtn").attr("data-id",response.orderItemId);
-                    const orderItemStock = parseFloat(response.orderItemStock);
-                    const orderItemPrice = parseFloat(response.orderItemPrice);
-                    const userGrade = response.userGrade;
-                    let userGradePoint = 0;
-                    let userGradePercent = 0;
+        // 구매 확정 모달
+        $(document).on('click', '.orderSuccessBtn', function () {
+            const orderItemId = $(this).attr('data-id');
+            // AJAX 요청을 통해 상세 데이터 가져오기
+            $.ajax({
+                url: `/order/success/${orderItemId}`,
+                type: 'POST',
+                success: function (response) {
+                    if (response.success === "true") {
+                        $("#confirmProductTitle").text(response.orderItemTitle);
+                        $("#confirmProductAuthor").text(response.orderItemAuthor);
+                        $("#confirmProductPublisher").text(response.orderItemPublisher);
+                        $("#confirmProductPrice").text(parseInt(response.orderItemPrice).toLocaleString('ko-KR') + '원');
+                        $("#confirmPurchaseBtn").attr("data-id", response.orderItemId);
+                        const orderItemStock = parseFloat(response.orderItemStock);
+                        const orderItemPrice = parseFloat(response.orderItemPrice);
+                        const userGrade = response.userGrade;
+                        let userGradePoint = 0;
+                        let userGradePercent = 0;
 
-                    switch (userGrade) {
-                        case "1" :
-                            userGradePoint = 0.01;
-                            userGradePercent = 1;
-                            break;
-                        case "2" :
-                            userGradePoint = 0.03;
-                            userGradePercent = 3;
-                            break;
-                        case "3" :
-                            userGradePoint = 0.05;
-                            userGradePercent = 5;
-                            break;
-                        default:
-                            userGradePoint = 0;
-                            userGradePercent = 0;
-                            break;
-                    }
+                        switch (userGrade) {
+                            case "1" :
+                                userGradePoint = 0.01;
+                                userGradePercent = 1;
+                                break;
+                            case "2" :
+                                userGradePoint = 0.03;
+                                userGradePercent = 3;
+                                break;
+                            case "3" :
+                                userGradePoint = 0.05;
+                                userGradePercent = 5;
+                                break;
+                            default:
+                                userGradePoint = 0;
+                                userGradePercent = 0;
+                                break;
+                        }
 
-                    const savepoint = (orderItemPrice * orderItemStock) * userGradePoint;
-                    const reviewPoint = (orderItemPrice * orderItemStock) *0.005;
-                    $("#savePoint").text(savepoint);
-                    $("#userGradePoint").text(userGradePercent);
-                    $("#reviewPoint").text(reviewPoint);
+                        const savepoint = Math.floor((orderItemPrice * orderItemStock) * userGradePoint);
+                        const reviewPoint = Math.floor((orderItemPrice * orderItemStock) * 0.005);
+                        $("#savePoint").text(savepoint);
+                        $("#userGradePoint").text(userGradePercent);
+                        $("#reviewPoint").text(reviewPoint);
 
-                    if (response.imagePath) {
-                        $(".orderSuccessImg").attr("src", response.imagePath);
-                        $(".orderSuccessImg").attr("alt", response.title + '사진');
+                        if (response.imagePath) {
+                            $(".orderSuccessImg").attr("src", response.imagePath);
+                            $(".orderSuccessImg").attr("alt", response.title + '사진');
+                        } else {
+                            $(".orderSuccessImg").attr("src", "https://via.placeholder.com/100");
+                            $(".orderSuccessImg").attr("alt", '임시 데이터 사진');
+                        }
                     } else {
-                        $(".orderSuccessImg").attr("src", "https://via.placeholder.com/100");
-                        $(".orderSuccessImg").attr("alt", '임시 데이터 사진');
+                        alert("상품 상세보기 불러오기를 실패했습니다.");
                     }
-                } else {
-                    alert("상품 상세보기 불러오기를 실패했습니다.");
+                },
+                error: function (xhr, status, error) {
+                    console.error("서버 오류가 발생했습니다.");
+                    alert("서버 오류가 발생했습니다. 다시 시도해주세요.");
                 }
-            },
-            error: function (xhr, status, error) {
-                console.error("서버 오류가 발생했습니다.");
-                alert("서버 오류가 발생했습니다. 다시 시도해주세요.");
-            }
+            });
+        });
+
+        $(document).on('click', '#confirmPurchaseBtn', function (event) {
+            event.preventDefault();
+            const orderItemId = $(this).attr('data-id');
+            const userId = $(this).attr('data-userId');
+            const point = $("#savePoint").text();
+
+            $.ajax({
+                type: 'POST',
+                url: '/order/success',
+                data: {
+                    orderItemId: orderItemId,
+                    userId: userId,
+                    point: point,
+                },
+                success: function (response) {
+                    if (response.success) {
+                        alert("구매를 확정했습니다.")
+                        location.reload();
+                    } else {
+                        alert("구매 확정중 오류가 발생했습니다.");
+                        location.reload();
+                    }
+                },
+                error: function () {
+                    alert("서버 오류가 발생했습니다.");
+                }
+            });
         });
     });
-
-    $(document).on('click', '#confirmPurchaseBtn', function (event) {
-        event.preventDefault();
-        const orderItemId = $(this).attr('data-id');
-        const userId = $(this).attr('data-userId');
-        const point = $("#savePoint").text();
-
-        $.ajax({
-            type: 'POST',
-            url: '/order/success',
-            data: {
-                orderItemId: orderItemId,
-                userId: userId,
-                point: point,
-            },
-            success: function (response) {
-                if (response.success) {
-                    alert("구매를 확정했습니다.")
-                    location.reload();
-                } else {
-                    alert("구매 확정중 오류가 발생했습니다.");
-                    location.reload();
-                }
-            },
-            error: function () {
-                alert("서버 오류가 발생했습니다.");
-            }
-        });
-    });
-
 });
