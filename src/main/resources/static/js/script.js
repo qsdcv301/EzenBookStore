@@ -1011,8 +1011,11 @@ $(document).ready(function () {
                     // 상품 정보 설정
                     const orderDetailTableBody = $('#orderDetailTableBody');
                     orderDetailTableBody.empty(); // 기존 데이터 제거
-                    console.log(response.orderItemListStatus);
+                    let orderStatusCheck = 0;
                     for (let i = 0; i < response.titleList.length; i++) {
+                        if (parseInt(response.orderItemListStatus[i]) !== 1) {
+                            orderStatusCheck = 1;
+                        }
                         const orderSuccessBtnDisabled = parseInt(response.orderItemListStatus[i]) !== 1 ? 'disabled' : '';
                         const orderExchangeNreturnBtnDisabled = parseInt(response.orderItemListStatus[i]) !== 1 ? 'disabled' : '';
                         const reviewBtnDisabled = parseInt(response.orderItemListStatus[i]) !== 2 ? 'disabled' : '';
@@ -1064,6 +1067,12 @@ $(document).ready(function () {
                     // 결제 정보 설정
                     $('.paymentMethod').text(response.paymentMethod || "");
                     $('.paymentAmount').text(response.paymentAmount || "");
+
+                    if (orderStatusCheck === 0) {
+                        $('.orderCancel').show();
+                    } else {
+                        $('.orderCancel').hide();
+                    }
 
                 } else {
                     alert("상품 상세보기 불러오기를 실패했습니다.");
@@ -1241,7 +1250,7 @@ $(document).ready(function () {
             const rating = $('#ratingValue').val();
             const reviewTitle = $('#reviewTitle').val();
             const reviewText = $('#reviewText').val();
-            const orderItemId =  $("#submitReview").attr("data-id");
+            const orderItemId = $("#submitReview").attr("data-id");
             const fileInputs = $('#reviewFile')[0].files;
 
             if (!rating) {
