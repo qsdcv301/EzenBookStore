@@ -38,32 +38,32 @@
 
     <!-- 필터 버튼 -->
     <div class="d-flex justify-content-start mb-3">
-        <span class="filter-option" data-grade="" th:classappend="${grade == null ? 'active' : ''}"
-                  onclick="moveToGrade(this)">
-            전체 <span th:text="${totalCount}"></span>
-        </span>
-                <span class="filter-option" data-grade="0" th:classappend="${grade == 0 ? 'active' : ''}"
-                      onclick="moveToGrade(this)">
-            일반회원 <span th:text="${generalCount}"></span>
-        </span>
-                <span class="filter-option" data-grade="1" th:classappend="${grade == 1 ? 'active' : ''}"
-                      onclick="moveToGrade(this)">
-            실버회원 <span th:text="${silverCount}"></span>
-        </span>
-                <span class="filter-option" data-grade="2" th:classappend="${grade == 2 ? 'active' : ''}"
-                      onclick="moveToGrade(this)">
-            골드회원 <span th:text="${goldCount}"></span>
-        </span>
-                <span class="filter-option" data-grade="3" th:classappend="${grade == 3 ? 'active' : ''}"
-                      onclick="moveToGrade(this)">
-            VIP 회원 <span th:text="${vipCount}"></span>
-        </span>
-                <span class="filter-option" data-grade="4" th:classappend="${grade == 4 ? 'active' : ''}"
-                      onclick="moveToGrade(this)">
-            관리자 <span th:text="${adminCount}"></span>
-        </span>
-
+    <span class="filter-option" data-grade="" th:classappend="${grade == null ? 'active' : ''}"
+          onclick="moveToGrade(this)">
+        전체 <span th:text="${totalCount}"></span> <!-- 검색 결과의 총 유저 수 -->
+    </span>
+        <span class="filter-option" data-grade="0" th:classappend="${grade == 0 ? 'active' : ''}"
+              onclick="moveToGrade(this)">
+        일반회원 <span th:text="${generalCount}"></span> <!-- 일반회원 수 -->
+    </span>
+        <span class="filter-option" data-grade="1" th:classappend="${grade == 1 ? 'active' : ''}"
+              onclick="moveToGrade(this)">
+        실버회원 <span th:text="${silverCount}"></span> <!-- 실버회원 수 -->
+    </span>
+        <span class="filter-option" data-grade="2" th:classappend="${grade == 2 ? 'active' : ''}"
+              onclick="moveToGrade(this)">
+        골드회원 <span th:text="${goldCount}"></span> <!-- 골드회원 수 -->
+    </span>
+        <span class="filter-option" data-grade="3" th:classappend="${grade == 3 ? 'active' : ''}"
+              onclick="moveToGrade(this)">
+        VIP 회원 <span th:text="${vipCount}"></span> <!-- VIP 회원 수 -->
+    </span>
+        <span class="filter-option" data-grade="4" th:classappend="${grade == 4 ? 'active' : ''}"
+              onclick="moveToGrade(this)">
+        관리자 <span th:text="${adminCount}"></span> <!-- 관리자 수 -->
+    </span>
     </div>
+
 
     <hr>
 
@@ -76,7 +76,8 @@
                 <option value="name" th:selected="${type == 'name'}">이름</option>
             </select>
             <input type="text" class="form-control mr-2" placeholder="검색어를 입력하세요" style="width: 300px;" id="search-input" th:value="${keyword}">
-            <button class="btn btn-secondary" onclick="searchUsers()">조회</button>
+            <button class="btn btn-primary" onclick="searchUsers()">조회</button>
+            <button class="btn btn-secondary ml-2" onclick="resetSearch()">초기화</button>
         </div>
 
         <!-- 등급 상태 변경 -->
@@ -402,8 +403,13 @@
             return;
         }
 
-        location.href  = `/admin/user?type=${type}&keyword=${keyword}&page=1`;
+        location.href  = `/admin/user?type=${type}&keyword=${encodeURIComponent(keyword)}&page=1`;
 
+    }
+
+    //페이지 초기화
+    function resetSearch() {
+        location.href = "/admin/user"; // 초기화 URL
     }
 </script>
 

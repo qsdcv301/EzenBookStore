@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Controller
@@ -34,57 +35,60 @@ public class AdminUserApiController {
             @RequestParam(value = "grade", required = false) Integer grade,
             @RequestParam(value = "type", required = false) String type,
             @RequestParam(value = "keyword", required = false) String keyword,
-            @RequestParam(value = "page", defaultValue = "1") int page, // 기본값 1
+            @RequestParam(value = "page", defaultValue = "1") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
             Model model) {
 
         // 1-based 페이지를 0-based로 변환
         Pageable pageable = PageRequest.of(page - 1, size);
-        Page<User> userPage;
-        long totalCount, generalCount, silverCount, goldCount, vipCount, adminCount;
 
-        if (grade != null && (type != null && !type.isEmpty()) && (keyword != null && !keyword.isEmpty())) {
-            // grade, type, keyword 모두 존재하는 경우
-            userPage = userService.findByGradeAndSearch(type, keyword, grade, pageable);
-            totalCount = userPage.getTotalElements();
-        } else if (type != null && !type.isEmpty() && keyword != null && !keyword.isEmpty()) {
-            // type과 keyword만 존재하는 경우
+        // 필터링된 결과 가져오기
+        Page<User> userPage;
+        if (type != null && !type.isEmpty() && keyword != null && !keyword.isEmpty()) {
             userPage = userService.searchUsers(type, keyword, pageable);
-            totalCount = userPage.getTotalElements();
-        } else if (grade != null) {
-            // grade만 존재하는 경우
-            userPage = userService.findByGrade(grade, pageable);
-            totalCount = userPage.getTotalElements();
         } else {
-            // 기본 리스트 반환 (전체 항목)
             userPage = userService.findAll(pageable);
-            totalCount = userPage.getTotalElements();
         }
 
-        // 각 등급별 카운트 계산
-        List<User> filteredUsers = userPage.getContent(); // 현재 페이지 데이터
-        generalCount = filteredUsers.stream().filter(u -> u.getGrade() == 0).count();
-        silverCount = filteredUsers.stream().filter(u -> u.getGrade() == 1).count();
-        goldCount = filteredUsers.stream().filter(u -> u.getGrade() == 2).count();
-        vipCount = filteredUsers.stream().filter(u -> u.getGrade() == 3).count();
-        adminCount = filteredUsers.stream().filter(u -> u.getGrade() == 4).count();
+        // 검색 결과의 총 유저 수 (검색 조건에 따른 "전체")
+        long totalCount = userPage.getTotalElements();
+
+        // grade로 한번 더 필터링
+        List<User> filteredUsers = userPage.getContent();
+        List<User> gradefFilterUsers = filteredUsers;
+        if (grade != null) {
+            gradefFilterUsers = gradefFilterUsers.stream()
+                    .filter(u -> u.getGrade().equals(grade))
+                    .collect(Collectors.toList());
+        }
+
+        // 필터링 후 새로운 총 유저 수
+        long filteredTotalCount = gradefFilterUsers.size();
+
+        // 검색 결과 내 각 등급별 카운트
+        long generalCount = filteredUsers.stream().filter(u -> u.getGrade() == 0).count();
+        long silverCount = filteredUsers.stream().filter(u -> u.getGrade() == 1).count();
+        long goldCount = filteredUsers.stream().filter(u -> u.getGrade() == 2).count();
+        long vipCount = filteredUsers.stream().filter(u -> u.getGrade() == 3).count();
+        long adminCount = filteredUsers.stream().filter(u -> u.getGrade() == 4).count();
 
         // 모델에 데이터 추가
-        model.addAttribute("userList", userPage.getContent());
+        model.addAttribute("userList", gradefFilterUsers); // 필터링된 유저 리스트
         model.addAttribute("totalPages", userPage.getTotalPages());
-        model.addAttribute("currentPage", page); // 1-based 페이지 번호 유지
-        model.addAttribute("totalCount", totalCount);
-        model.addAttribute("generalCount", generalCount);
-        model.addAttribute("silverCount", silverCount);
-        model.addAttribute("goldCount", goldCount);
-        model.addAttribute("vipCount", vipCount);
-        model.addAttribute("adminCount", adminCount);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalCount", totalCount); // 검색 결과의 총 유저 수
+        model.addAttribute("generalCount", generalCount); // 검색 결과 내 일반회원 수
+        model.addAttribute("silverCount", silverCount); // 검색 결과 내 실버회원 수
+        model.addAttribute("goldCount", goldCount); // 검색 결과 내 골드회원 수
+        model.addAttribute("vipCount", vipCount); // 검색 결과 내 VIP 회원 수
+        model.addAttribute("adminCount", adminCount); // 검색 결과 내 관리자 수
         model.addAttribute("grade", grade);
         model.addAttribute("type", type);
         model.addAttribute("keyword", keyword);
 
         return "admin/userControl";
     }
+
 
 
 
