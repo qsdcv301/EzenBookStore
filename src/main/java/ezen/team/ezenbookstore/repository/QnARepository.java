@@ -12,9 +12,8 @@ import java.util.List;
 public interface QnARepository extends JpaRepository<QnA, Long> {
     List<QnA> findAllByUserId(Long userId);
 
-    Page<QnA> findAll(Pageable pageable);
-
     Page<QnA> findAllByUserId(Long userId, Pageable pageable);
 
     Page<QnA> findAllByUserIdAndCategory(Long userId, Byte category, Pageable pageable);
+
 }

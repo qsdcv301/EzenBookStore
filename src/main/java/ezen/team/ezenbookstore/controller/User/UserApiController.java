@@ -4,10 +4,8 @@ import ezen.team.ezenbookstore.entity.*;
 import ezen.team.ezenbookstore.service.*;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -18,10 +16,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.time.LocalDate;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Controller
@@ -87,8 +83,8 @@ public class UserApiController {
                     .build();
             userService.create(newUser);
             findUser = newUser;
+            return "redirect:/user/info?first=true";
         }
-
         return "redirect:/book";
     }
 
@@ -303,12 +299,21 @@ public class UserApiController {
     }
 
     @GetMapping("/info")
-    public String infoUser(@RequestParam(name = "qPage", defaultValue = "0", required = false) int qPage,
+    public String infoUser(@RequestParam(name = "keyword", defaultValue = "", required = false) String keyword,
+                           @RequestParam(name = "dateRange", defaultValue = "", required = false) String dateRange,
+                           @RequestParam(name = "deliveryStatus", defaultValue = "", required = false) String deliveryStatusParam,
+                           @RequestParam(name = "orderStatus", defaultValue = "", required = false) String orderStatusParam,
+                           @RequestParam(name = "oPage", defaultValue = "0", required = false) int oPage,
                            @RequestParam(name = "sort", defaultValue = "0", required = false) byte sort,
+                           @RequestParam(name = "direction", defaultValue = "desc", required = false) String direction,
+                           @RequestParam(name = "startDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
+                           @RequestParam(name = "endDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate,
+                           @RequestParam(name = "qPage", defaultValue = "0", required = false) int qPage,
                            Model model) {
+
         User user = (User) model.getAttribute("user");
         int size = 10;
-        Sort.Direction sortDirection = Sort.Direction.DESC;
+        Sort.Direction sortDirection = direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
         Pageable qPageable = PageRequest.of(qPage, size, Sort.by(sortDirection, "id"));
         Page<QnA> qPaging;
         if (sort == 0) {
@@ -316,9 +321,68 @@ public class UserApiController {
         } else {
             qPaging = qnAService.findAllByUserIdAndCategory(user.getId(), sort, qPageable);
         }
+
+        // 배송 상태 및 주문 상태 값 변환
+        Byte deliveryStatus = null;
+        if (deliveryStatusParam != null && !deliveryStatusParam.isEmpty()) {
+            switch (deliveryStatusParam) {
+                case "preparing":
+                    deliveryStatus = 1;
+                    break;
+                case "shipping":
+                    deliveryStatus = 2;
+                    break;
+                case "delivered":
+                    deliveryStatus = 3;
+                    break;
+            }
+        }
+
+        Byte orderStatus = null;
+        if (orderStatusParam != null && !orderStatusParam.isEmpty()) {
+            switch (orderStatusParam) {
+                case "cancelled":
+                    orderStatus = 1;
+                    break;
+                case "exchange":
+                    orderStatus = 2;
+                    break;
+                case "completed":
+                    orderStatus = 3;
+                    break;
+            }
+        }
+
+        // 날짜 범위 설정
+        if (dateRange != null && !dateRange.isEmpty()) {
+            int monthsAgo = Integer.parseInt(dateRange);
+            endDate = LocalDate.now();
+            startDate = endDate.minusMonths(monthsAgo);
+        }
+
+        // 주문 필터링 처리
+        List<Orders> filteredOrders = ordersService.filterOrders(startDate, endDate, deliveryStatus, orderStatus, keyword, user.getId());
+
+        // 페이징 적용
+        Pageable oPageable = PageRequest.of(oPage, size, Sort.by(sortDirection, "orderDate"));
+        int start = Math.min((int) oPageable.getOffset(), filteredOrders.size());
+        int end = Math.min((start + oPageable.getPageSize()), filteredOrders.size());
+        List<Orders> pagedOrders = filteredOrders.subList(start, end);
+        Page<Orders> orderPage = new PageImpl<>(pagedOrders, oPageable, filteredOrders.size());
+
+        model.addAttribute("orderList", orderPage.getContent());
+        model.addAttribute("orderPage", orderPage);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("dateRange", dateRange);
+        model.addAttribute("deliveryStatus", deliveryStatusParam);
+        model.addAttribute("orderStatus", orderStatusParam);
+        model.addAttribute("startDate", startDate);
+        model.addAttribute("endDate", endDate);
+        model.addAttribute("sort", sort);
+        model.addAttribute("direction", direction);
+
         model.addAttribute("questionList", qPaging.getContent());
         model.addAttribute("qnaPage", qPaging);
-        model.addAttribute("sort", sort);
         return "info";
     }
 

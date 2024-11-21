@@ -1,5 +1,14 @@
 $(document).ready(function () {
 
+    // 모달 z-index 관리
+    $('.modal').on('show.bs.modal', function (event) {
+        var zIndex = 1040 + (10 * $('.modal:visible').length);
+        $(this).css('z-index', zIndex);
+        setTimeout(function () {
+            $('.modal-backdrop').not('.modal-stack').css('z-index', zIndex - 1).addClass('modal-stack');
+        }, 0);
+    });
+
     $("#searchAddress").click(function () {
         new daum.Postcode({
             oncomplete: function (data) {
@@ -29,6 +38,233 @@ $(document).ready(function () {
             let price = parseInt($(this).text().replace(/[^0-9]/g, "")) || 0;
             let formattedPrice = price.toLocaleString("ko-KR") + "원";
             $(this).text(formattedPrice);
+        });
+    });
+
+    // signup
+    let currentStep = 1;
+    const totalSteps = 3;
+
+    // 현재 단계 표시 함수
+    function showStep(step) {
+        $('.step').each(function (index) {
+            if (index + 1 === step) {
+                $(this).addClass('active');
+            } else {
+                $(this).removeClass('active');
+            }
+        });
+
+        // 진행 바 업데이트
+        $('.progress-bar').css('width', `${(step / totalSteps) * 100}%`);
+        $('.progress-bar').text(`${step}/${totalSteps}`);
+    }
+
+    // "다음" 버튼 클릭 시 다음 단계로 이동
+    $('#nextBtn1').on('click', function () {
+        if (validateStep1()) {
+            currentStep++;
+            showStep(currentStep);
+            alert("약관 동의가 완료되었습니다.");
+        }
+    });
+
+    $('#nextBtn2').on('click', function () {
+        if (validateStep2()) {
+            const userIdCehck = $(this).attr("data-check");
+            if(userIdCehck === 0){
+                alert("아이디 중복검사를 진행 후 회원가입이 가능합니다.");
+                return;
+            }
+            const form = $('#step2');
+            const userId = form.find('#userId').val();
+            const name = form.find('#userName').val();
+            const password = form.find('#userPwCheck').val();
+            const tel = form.find('#userTel').val();
+            const birthday = form.find('#userBirth').val();
+            const addr = form.find('#addr').val();
+            const addrextra = form.find('#addrextra').val();
+            $.ajax({
+                type: 'POST',
+                url: `/signup`,
+                data:{
+                    email : userId,
+                    provider : "ezen",
+                    name : name,
+                    password: password,
+                    tel : tel,
+                    addr : addr,
+                    addrextra : addrextra,
+                    birthdayString: birthday,
+                },
+                success: function (response) {
+                    if (response.success) {
+                        alert("회원 가입에 성공했습니다.");
+                        currentStep++;
+                        showStep(currentStep);
+                    } else {
+                        alert("회원 가입에 실패 했습니다.");
+                    }
+                },
+                error: function () {
+                    alert("서버 오류가 발생했습니다.");
+                }
+            });
+        }
+    });
+
+    // "이전" 버튼 클릭 시 이전 단계로 이동
+    $('#prevBtn2').on('click', function () {
+        currentStep--;
+        showStep(currentStep);
+    });
+
+    // 초기 단계 표시
+    showStep(currentStep);
+
+    // "모든 약관 동의" 체크박스를 클릭했을 때
+    $('#allAgree').on('change', function () {
+        $('.agreement-checkbox').prop('checked', $('#allAgree').prop('checked'));
+    });
+
+    // 개별 약관 체크박스를 클릭했을 때 "모든 약관 동의" 상태 업데이트
+    $('.agreement-checkbox').on('change', function () {
+        $('#allAgree').prop('checked', $('.agreement-checkbox').filter(':checked').length === $('.agreement-checkbox').length);
+    });
+
+    // Step 1: 약관 동의 유효성 검사
+    function validateStep1() {
+        let isValid = true;
+        let errorMessage = "";
+
+        $('.agreement-checkbox').each(function () {
+            if ($(this).prop('required') && !$(this).prop('checked')) {
+                isValid = false;
+                $(this).addClass('is-invalid');
+                errorMessage += $(this).next().text() + " 에 동의해주세요.\n";
+            } else {
+                $(this).removeClass('is-invalid');
+            }
+        });
+
+        if (!isValid) {
+            alert(errorMessage);
+        }
+
+        return isValid;
+    }
+
+    // 이메일 실시간 유효성 검사
+    $('#userId').on('input', function () {
+        const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        const $feedbackMessage = $('#feedbackMessage');
+        if (!emailPattern.test($('#userId').val())) {
+            $(this).addClass('is-invalid').removeClass('is-valid');
+            $feedbackMessage.text('올바른 이메일 형식을 입력해주세요.');
+            $feedbackMessage.css("color", "#dc3545");
+        } else {
+            $(this).removeClass('is-invalid').addClass('is-valid');
+            $feedbackMessage.text('사용 가능한 아이디입니다.');
+
+            $feedbackMessage.css("color", "#28a745");
+        }
+        $feedbackMessage.css("display", "block");
+    });
+
+    // 비밀번호 실시간 유효성 검사
+    $('#userPw').on('input', function () {
+        const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+        if (!passwordPattern.test($('#userPw').val())) {
+            $('#userPw').addClass('is-invalid').removeClass('is-valid');
+        } else {
+            $('#userPw').removeClass('is-invalid').addClass('is-valid');
+        }
+
+        // 비밀번호 확인도 함께 실시간으로 검사
+        validatePasswordCheck();
+    });
+
+    // 비밀번호 확인 실시간 검사
+    $('#userPwCheck').on('input', validatePasswordCheck);
+
+    function validatePasswordCheck() {
+        if ($('#userPw').val() !== $('#userPwCheck').val()) {
+            $('#userPwCheck').addClass('is-invalid').removeClass('is-valid');
+        } else {
+            $('#userPwCheck').removeClass('is-invalid').addClass('is-valid');
+        }
+    }
+
+    // 전화번호 실시간 유효성 검사 및 하이픈 추가 기능
+    $('#userTel').on('input', function () {
+        let phoneValue = $('#userTel').val().replace(/[^0-9]/g, ''); // 숫자 이외의 문자는 제거
+
+        if (phoneValue.length > 3 && phoneValue.length <= 7) {
+            phoneValue = phoneValue.replace(/(\d{3})(\d{1,4})/, '$1-$2');
+        } else if (phoneValue.length > 7) {
+            phoneValue = phoneValue.replace(/(\d{3})(\d{4})(\d{1,4})/, '$1-$2-$3');
+        }
+
+        $('#userTel').val(phoneValue); // 포맷팅된 값을 다시 입력 필드에 넣음
+
+        const phonePattern = /^01[016789]-\d{3,4}-\d{4}$/; // 하이픈 포함된 형식으로 변경
+        if (!phonePattern.test(phoneValue)) {
+            $('#userTel').addClass('is-invalid').removeClass('is-valid');
+        } else {
+            $('#userTel').removeClass('is-invalid').addClass('is-valid');
+        }
+    });
+
+    // Step 2: 개인정보 입력 유효성 검사 함수 (다음 버튼 클릭 시)
+    function validateStep2() {
+        let isValid = true;
+        let errorMessage = "";
+
+        if (!$('#userId').hasClass('is-valid')) {
+            isValid = false;
+            errorMessage += "올바른 이메일 주소를 입력해주세요.\n";
+        }
+        if (!$('#userPw').hasClass('is-valid')) {
+            isValid = false;
+            errorMessage += "올바른 비밀번호를 입력해주세요.\n";
+        }
+        if (!$('#userPwCheck').hasClass('is-valid')) {
+            isValid = false;
+            errorMessage += "비밀번호가 일치하지 않습니다.\n";
+        }
+        if (!$('#userTel').hasClass('is-valid')) {
+            isValid = false;
+            errorMessage += "올바른 전화번호를 입력해주세요.\n";
+        }
+
+        if (!isValid) {
+            alert(errorMessage);
+        }
+
+        return isValid;
+    }
+
+    $('#checkDuplicateBtn').click(function (e) {
+        e.preventDefault();
+        const form = $('#step2');
+        const userId = form.find('#userId').val();
+        $.ajax({
+            type: 'POST',
+            url: `/duplication/${userId}`,
+            success: function (response) {
+                if (response.success) {
+                    alert("사용 불가능한 아이디입니다.");
+                    $('#nextBtn2').attr("data-check", "0");
+                    $('#checkDuplicateBtn').removeClass('btn-primary').addClass('btn-warning');
+                } else {
+                    alert("사용 가능한 아이디입니다.");
+                    $('#nextBtn2').attr("data-check", "1");
+                    $('#checkDuplicateBtn').removeClass('btn-warning').addClass('btn-success');
+                }
+            },
+            error: function () {
+                alert("서버 오류가 발생했습니다.");
+            }
         });
     });
 
@@ -793,7 +1029,7 @@ $(document).ready(function () {
 
         if (newPassword !== confirmNewPassword) {
             alert("현재 비밀번호와 현재 비밀번호 확인의 값이 일치하지 않습니다.");
-          return;
+            return;
         }
 
         $.ajax({
@@ -849,7 +1085,13 @@ $(document).ready(function () {
         });
     });
 
-//     info
+    //     info
+    const urlParams = new URLSearchParams(window.location.search);
+
+    if (urlParams.get('first') === 'true') {
+        alert("간편 로그인 회원입니다.\n원활한 이용을 위해 개인정보를 입력해주세요.");
+    }
+
     $('.userUpdate').on('click', function (event) {
         event.preventDefault(); // 폼 제출 기본 동작 방지
         const userId = $(this).attr('data-id');
@@ -907,6 +1149,448 @@ $(document).ready(function () {
             },
             error: function () {
                 alert("회원탈퇴 중 오류가 발생했습니다..");
+            }
+        });
+    });
+
+    // orderInfo
+
+    $('.searchKeywordBtn').click(function (e) {
+        e.preventDefault();
+        const keyword = $('.searchKeyword').val();
+
+        // 새로운 URL로 리디렉션
+        window.location.href = `/user/info?keyword=${keyword}&orderPage=0`;
+    });
+
+    // 날짜 범위 선택 변경 시 이벤트
+    $('#dateRange').change(function () {
+        $('#customDateRange').toggle($(this).val() === 'custom');
+    });
+
+    // 필터 적용 버튼 클릭 시 이벤트
+    $('#applyFilters').click(function () {
+        let dateRange = $('#dateRange').val();
+        const deliveryStatus = $('#deliveryStatus').val();
+        const orderStatus = $('#orderStatus').val();
+        let startDate = $('#startDate').val();
+        let endDate = $('#endDate').val();
+        if (dateRange) {
+            if (dateRange === 'custom') {
+                startDate = $('#startDate').val();
+                endDate = $('#endDate').val();
+                if (startDate && endDate) {
+                    dateRange = '';
+                }
+            }
+        }
+        let deliveryStatusText = '';
+        if (deliveryStatus && deliveryStatus !== '') {
+            deliveryStatusText = $('#deliveryStatus option:selected').val();
+        }
+        let orderStatusText = '';
+        if (orderStatus && orderStatus !== '') {
+            orderStatusText = $('#orderStatus option:selected').val();
+        }
+        // 현재 URL에서 값을 추출
+        const urlParams = new URLSearchParams(window.location.search);
+        const keyword = urlParams.has('keyword') ? urlParams.get('keyword') : '';
+        const direction = urlParams.has('direction') ? urlParams.get('direction') : '';
+        window.location.href = `/user/info?orderPage=0&keyword=${keyword}&direction=${direction}&deliveryStatus=${deliveryStatusText}&orderStatus=${orderStatusText}&dateRange=${dateRange}&startDate=${startDate}&endDate=${endDate}`;
+
+    });
+
+    // 필터 초기화 버튼 클릭 시 이벤트
+    $('#resetFilters').click(function () {
+        $('#dateRange, #deliveryStatus, #orderStatus').val('');
+        $('#startDate, #endDate').val('');
+        $('#customDateRange').hide();
+        $('#appliedFilters').empty();
+        window.location.href = `/user/info?orderPage=0`;
+    });
+
+    // 필터 태그 제거 기능
+    $('#appliedFilters').on('click', '.badge', function (e) {
+        const filterType = $(this).find('span').text().split(':')[0].trim(); // 필터의 타입 추출
+        let urlParams = new URLSearchParams(window.location.search);
+
+        // 필터에 따라 URL 파라미터에서 제거할 필터 결정
+        if (filterType === '기간') {
+            if (urlParams.has('startDate') && urlParams.has('endDate')) {
+                urlParams.delete('startDate');
+                urlParams.delete('endDate');
+            } else if (urlParams.has('dateRange')) {
+                urlParams.delete('dateRange');
+            }
+        } else if (filterType === '배송 상태') {
+            urlParams.delete('deliveryStatus');
+        } else if (filterType === '주문 상태') {
+            urlParams.delete('orderStatus');
+        }
+
+        // 필터 제거 후 새 URL로 리디렉션
+        window.location.href = `/user/info?${urlParams.toString()}`;
+    });
+
+    // 주문 상세 정보 모달 요청 처리 orderDetailModal
+    $('.orderDetailBtn').click(function () {
+        const ordersId = $(this).attr('data-id');
+        updateMainModalData(ordersId);
+    });
+
+// 메인 모달 데이터 업데이트 함수 분리
+    function updateMainModalData(ordersId) {
+        // AJAX 요청을 통해 상세 데이터 가져오기
+        $.ajax({
+            url: `/order/${ordersId}`,
+            type: 'POST',
+            success: function (response) {
+                if (response.success === "true") {
+                    // 상품 정보 설정
+                    const orderDetailTableBody = $('#orderDetailTableBody');
+                    orderDetailTableBody.empty(); // 기존 데이터 제거
+                    let orderStatusCheck = 0;
+                    for (let i = 0; i < response.titleList.length; i++) {
+                        if (parseInt(response.orderItemListStatus[i]) !== 1) {
+                            orderStatusCheck = 1;
+                        }
+                        const orderSuccessBtnDisabled = parseInt(response.orderItemListStatus[i]) !== 1 ? 'disabled' : '';
+                        const orderExchangeNreturnBtnDisabled = parseInt(response.orderItemListStatus[i]) !== 1 ? 'disabled' : '';
+                        const reviewBtnDisabled = parseInt(response.orderItemListStatus[i]) !== 2 ? 'disabled' : '';
+                        const row = `
+                    <tr class="text-center orderItemsTable">
+                        <td class="align-middle">
+                            <img src="${response.imageList[i] || "https://via.placeholder.com/100"}" alt="책 표지" width="60" class="orderImage">
+                        </td>
+                        <td class="align-middle text-left">
+                            <p class="mb-1">
+                                <strong class="d-inline-block">제목:</strong>
+                                <span class="text-truncate d-inline-block orderTitle" style="max-width: 120px; vertical-align: top;">${response.titleList[i]}</span>
+                            </p>
+                            <p class="mb-1">
+                                <strong class="d-inline-block">저자:</strong>
+                                <span class="text-truncate d-inline-block orderAuthor" style="max-width: 120px; vertical-align: top;">${response.authorList[i]}</span>
+                            </p>
+                            <p class="mb-0">
+                                <strong class="d-inline-block">출판사:</strong>
+                                <span class="text-truncate d-inline-block orderPublisher" style="max-width: 120px; vertical-align: top;">${response.publisherList[i]}</span>
+                            </p>
+                        </td>
+                        <td class="align-middle">1</td>
+                        <td class="align-middle">${response.priceList[i]}원</td>
+                        <td class="align-middle">
+                            <button class="btn btn-sm btn-warning text-white orderExchangeNreturnBtn" data-toggle="modal" data-target="#exchangeNreturn" ${orderExchangeNreturnBtnDisabled}>교환/반품</button>
+                        </td>
+                        <td class="align-middle">
+                            <button class="btn btn-sm btn-success orderSuccessBtn" data-toggle="modal" data-target="#orderConfirmation" data-id="${response.orderItemList[i]}" ${orderSuccessBtnDisabled}>구매확정</button>
+                        </td>
+                        <td class="align-middle">
+                            <button class="btn btn-sm btn-primary reviewBtn" data-toggle="modal" data-target="#reviewModal" data-id="${response.orderItemList[i]}"  ${reviewBtnDisabled}>리뷰작성</button>
+                        </td>
+                    </tr>
+                `;
+                        orderDetailTableBody.append(row);
+                    }
+
+                    // 주문 정보 설정
+                    $('.orderId').text(ordersId);
+                    $('.orderDate').text(response.orderDate || "");
+                    $('.deliveryStatus').text(response.deliveryStatus || "");
+
+                    // 배송 정보 설정
+                    $('.deliveryAddr').text(response.deliveryAddr || "");
+                    $('.deliveryAddrextra').text(response.deliveryAddrextra || "");
+                    $('.deliveryTracking').text(response.deliveryTracking || "");
+
+                    // 결제 정보 설정
+                    $('.paymentMethod').text(response.paymentMethod || "");
+                    $('.paymentAmount').text(response.paymentAmount || "");
+
+                    if (orderStatusCheck === 0) {
+                        $('.orderCancel').show();
+                    } else {
+                        $('.orderCancel').hide();
+                    }
+
+                } else {
+                    alert("상품 상세보기 불러오기를 실패했습니다.");
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("서버 오류가 발생했습니다.");
+                alert("서버 오류가 발생했습니다. 다시 시도해주세요.");
+            }
+        });
+    }
+
+    // 반품/교환 요청 모달
+    $(document).on('click', '.orderExchangeNreturnBtn', function (e) {
+        const bookTitle = $(this).closest('.orderItemsTable').find('.orderTitle').text();
+        $('#exchangeReturnTitle').val(bookTitle);
+    });
+
+    $(document).on('click', '#submitExchangeReturn', function (e) {
+        e.preventDefault();
+        const form = $('#exchangeReturnForm'); // 폼을 직접 선택
+        const category = form.find('#exchangeReturnCategory option:selected').val(); // 선택된 값
+        const question = form.find('#exchangeReturnReason').val(); // 사유
+        const file = form.find('.exchangeReturnFile')[0]?.files[0]; // 파일 선택
+        if (category === "0") {
+            alert("교환/환불 유형을 선택해주세요.");
+            return;
+        }
+        if (question.trim() === "") {
+            alert("교환/환불 사유 내용을 작성 해주세요.");
+            return;
+        }
+        if (file == null) {
+            alert("교환/환불 사유 사진을 포함시켜주세요.");
+            return;
+        }
+
+        // FormData 객체 생성 및 데이터 추가
+        const formData = new FormData();
+        formData.append('category', category);
+        formData.append('question', question);
+        formData.append('file', file);
+
+        $.ajax({
+            url: '/er/add',
+            type: 'POST',
+            processData: false,
+            contentType: false,
+            data: formData,
+            success: function (response) {
+                if (response.success) {
+                    alert("교환/환불 신청을 했습니다.");
+                    location.reload();
+                } else {
+                    alert("교환/환불 신청에 실패했습니다.");
+                }
+            },
+            error: function () {
+                alert("서버 오류가 발생했습니다.");
+            }
+        });
+    });
+
+    $(document).on('change', '#exchangeReturnFile', function (e) {
+        // 파일 이름을 레이블에 표시
+        const fileName = $(this).val().split('\\').pop();
+        $(this).next('.custom-file-label').html(fileName);
+    });
+
+    // 파일 유효성 검사 및 파일명 표시 (교환/반품 모달)
+    $(document).on('change', '#imageFile', function (e) {
+        const file = this.files[0];
+        const fileType = file.type;
+        const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+        if (!validTypes.includes(fileType)) {
+            alert('JPG, PNG, GIF 형식의 이미지만 업로드 가능합니다.');
+            $(this).val('');
+        } else {
+            $(this).next('.custom-file-label').html(file.name);
+        }
+    });
+
+    // 구매 확정 모달
+    $(document).on('click', '.orderSuccessBtn', function () {
+        const orderItemId = $(this).attr('data-id');
+        // AJAX 요청을 통해 상세 데이터 가져오기
+        $.ajax({
+            url: `/order/success/${orderItemId}`,
+            type: 'POST',
+            success: function (response) {
+                if (response.success === "true") {
+                    $("#confirmProductTitle").text(response.orderItemTitle);
+                    $("#confirmProductAuthor").text(response.orderItemAuthor);
+                    $("#confirmProductPublisher").text(response.orderItemPublisher);
+                    $("#confirmProductPrice").text(parseInt(response.orderItemPrice).toLocaleString('ko-KR') + '원');
+                    $("#confirmPurchaseBtn").attr("data-id", response.orderItemId);
+                    const orderItemStock = parseFloat(response.orderItemStock);
+                    const orderItemPrice = parseFloat(response.orderItemPrice);
+                    const userGrade = response.userGrade;
+                    let userGradePoint = 0;
+                    let userGradePercent = 0;
+
+                    switch (userGrade) {
+                        case "1" :
+                            userGradePoint = 0.01;
+                            userGradePercent = 1;
+                            break;
+                        case "2" :
+                            userGradePoint = 0.03;
+                            userGradePercent = 3;
+                            break;
+                        case "3" :
+                            userGradePoint = 0.05;
+                            userGradePercent = 5;
+                            break;
+                        default:
+                            userGradePoint = 0;
+                            userGradePercent = 0;
+                            break;
+                    }
+
+                    const savepoint = Math.floor((orderItemPrice * orderItemStock) * userGradePoint);
+                    const reviewPoint = Math.floor((orderItemPrice * orderItemStock) * 0.005);
+                    $("#savePoint").text(savepoint);
+                    $("#userGradePoint").text(userGradePercent);
+                    $("#reviewPoint").text(reviewPoint);
+
+                    if (response.imagePath) {
+                        $(".orderSuccessImg").attr("src", response.imagePath);
+                        $(".orderSuccessImg").attr("alt", response.title + '사진');
+                    } else {
+                        $(".orderSuccessImg").attr("src", "https://via.placeholder.com/100");
+                        $(".orderSuccessImg").attr("alt", '임시 데이터 사진');
+                    }
+                } else {
+                    alert("상품 상세보기 불러오기를 실패했습니다.");
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("서버 오류가 발생했습니다.");
+                alert("서버 오류가 발생했습니다. 다시 시도해주세요.");
+            }
+        });
+    });
+
+    $(document).on('click', '#confirmPurchaseBtn', function (event) {
+        event.preventDefault();
+        const orderItemId = $(this).attr('data-id');
+        const userId = $(this).attr('data-userId');
+        const point = $("#savePoint").text();
+
+        $.ajax({
+            type: 'POST',
+            url: '/order/success',
+            data: {
+                orderItemId: orderItemId,
+                userId: userId,
+                point: point,
+            },
+            success: function (response) {
+                if (response.success) {
+                    alert("구매를 확정했습니다.");
+                    // 메인 모달 데이터 갱신
+                    const ordersId = $('.orderId').text(); // 현재 모달에 표시된 주문 ID 가져오기
+                    updateMainModalData(ordersId);
+                    // 모달 닫기
+                    $('#orderConfirmation').modal('hide');
+                } else {
+                    alert("구매 확정중 오류가 발생했습니다.");
+                }
+            },
+            error: function () {
+                alert("서버 오류가 발생했습니다.");
+            }
+        });
+    });
+
+    // 리뷰 파일 유효성 검사 및 파일명 표시
+    $('#reviewFile').on('change', function () {
+        const file = this.files[0];
+        const fileType = file.type;
+        const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+        if (!validTypes.includes(fileType)) {
+            alert('JPG, PNG, GIF 형식의 이미지만 업로드 가능합니다.');
+            $(this).val('');
+        } else {
+            $(this).next('.custom-file-label').html(file.name);
+        }
+    });
+
+    // 별점 시스템
+    $('#ratingStars i').on('click', function () {
+        const rating = $(this).data('rating');
+        $('#ratingValue').val(rating);
+        $('#ratingStars i').removeClass('bi-star-fill').addClass('bi-star');
+        $(this).prevAll().addBack().removeClass('bi-star').addClass('bi-star-fill');
+    });
+
+    // 리뷰 부분
+    $(document).on('click', '.reviewBtn', function () {
+        const orderItemId = $(this).attr('data-id');
+        // AJAX 요청을 통해 상세 데이터 가져오기
+        $.ajax({
+            url: `/order/success/${orderItemId}`,
+            type: 'POST',
+            success: function (response) {
+                if (response.success === "true") {
+                    $("#reviewProductTitle").text(response.orderItemTitle);
+                    $("#reviewProductAuthor").text(response.orderItemAuthor);
+                    $("#reviewProductPublisher").text(response.orderItemPublisher);
+                    $("#reviewProductPrice").text(parseInt(response.orderItemPrice).toLocaleString('ko-KR') + '원');
+                    $("#submitReview").attr("data-id", response.orderItemId);
+
+                    if (response.imagePath) {
+                        $(".orderReviewImg").attr("src", response.imagePath);
+                        $(".orderReviewImg").attr("alt", response.title + '사진');
+                    } else {
+                        $(".orderReviewImg").attr("src", "https://via.placeholder.com/100");
+                        $(".orderReviewImg").attr("alt", '임시 데이터 사진');
+                    }
+                } else {
+                    alert("리뷰에 필요한 데이터를 가져오는데 실패했습니다.");
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("서버 오류가 발생했습니다.");
+                alert("서버 오류가 발생했습니다. 다시 시도해주세요.");
+            }
+        });
+    });
+
+    // 리뷰 제출
+    $('#submitReview').on('click', function () {
+        const rating = $('#ratingValue').val();
+        const reviewTitle = $('#reviewTitle').val();
+        const reviewText = $('#reviewText').val();
+        const orderItemId = $("#submitReview").attr("data-id");
+        const fileInputs = $('#reviewFile')[0].files;
+
+        if (!rating) {
+            alert('별점을 선택해주세요.');
+            return;
+        }
+        if (!reviewTitle) {
+            alert('리뷰 제목을 입력해주세요.');
+            return;
+        }
+        if (!reviewText) {
+            alert('리뷰 내용을 입력해주세요.');
+            return;
+        }
+
+        // FormData 객체 생성 및 데이터 추가
+        const formData = new FormData();
+        formData.append('rating', rating);
+        formData.append('title', reviewTitle);
+        formData.append('comment', reviewText);
+        formData.append('orderItemId', orderItemId);
+        formData.append('file', fileInputs[0]);
+
+        $.ajax({
+            type: 'POST',
+            url: '/review/add',
+            processData: false,
+            contentType: false,
+            data: formData,
+            success: function (response) {
+                if (response.success) {
+                    alert("리뷰를 작성했습니다.");
+                    // 메인 모달 데이터 갱신
+                    const ordersId = $('.orderId').text(); // 현재 모달에 표시된 주문 ID 가져오기
+                    updateMainModalData(ordersId);
+                    // 모달 닫기
+                    $('#reviewModal').modal('hide');
+                } else {
+                    alert("리뷰 작성중 오류가 발생했습니다.");
+                }
+            },
+            error: function () {
+                alert("서버 오류가 발생했습니다.");
             }
         });
     });

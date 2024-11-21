@@ -47,6 +47,7 @@ public class Orders {
     private Byte status;
 
     @OneToMany(mappedBy = "orders")
+    @JsonIgnore
     private List<OrderItem> orderItems;
 
 }

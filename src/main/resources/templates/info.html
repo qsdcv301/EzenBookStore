@@ -9,7 +9,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet">
     <link href="/css/bootstrap.min.css" rel="stylesheet"/>
     <link href="/css/style.css" rel="stylesheet"/>
-    <script src="/js/jquery-1.12.4.min.js"></script>
+    <script src="/js/jquery-3.7.1.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
     <script src="/js/popper.min.js"></script>
     <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
@@ -24,9 +24,10 @@
         <div class="col-md-3">
             <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
                 <a class="nav-link" id="v-pills-info-tab" data-toggle="pill" href="#v-pills-info" role="tab"
-                   th:class="${param.qnaPage == null} ? 'nav-link active' : 'nav-link'">나의 정보</a>
+                   th:class="${param.qnaPage == null && param.orderPage == null} ? 'nav-link active' : 'nav-link'">나의
+                    정보</a>
                 <a class="nav-link" id="v-pills-orders-tab" data-toggle="pill" href="#v-pills-orders" role="tab"
-                   th:class="${param.qnaPage == 'orders'} ? 'nav-link active' : 'nav-link'">주문내역</a>
+                   th:class="${param.orderPage != null} ? 'nav-link active' : 'nav-link'">주문내역</a>
                 <a class="nav-link" id="v-pills-inquiries-tab" data-toggle="pill" href="#inquiry" role="tab"
                    th:class="${param.qnaPage != null} ? 'nav-link active' : 'nav-link'">문의내역</a>
             </div>
@@ -34,257 +35,23 @@
         <div class="col-md-9">
             <div class="tab-content" id="v-pills-tabContent">
                 <div class="tab-pane fade" id="v-pills-info" role="tabpanel"
-                     th:class="${param.qnaPage == null} ? 'tab-pane fade show active' : 'tab-pane fade'">
+                     th:class="${param.qnaPage == null && param.orderPage == null} ? 'tab-pane fade show active' : 'tab-pane fade'">
                     <div th:replace="~{fragments/userInfo :: userInfo}"></div>
                 </div>
-                <div class="tab-pane fade" id="v-pills-orders" role="tabpanel">
-                    <h2>주문내역</h2>
-
-                    <!-- 필터 및 검색 -->
-                    <div class="row mb-3 justify-content-end">
-                        <div class="col-md-3 col-lg-3 mb-2 mb-md-0">
-                            <select class="form-control" id="dateFilter">
-                                <option>최근 1개월</option>
-                                <option>최근 3개월</option>
-                                <option>최근 6개월</option>
-                            </select>
-                        </div>
-                        <div class="col-md-3 col-lg-3 mb-2 mb-md-0">
-                            <select class="form-control" id="statusFilter">
-                                <option>전체 주문</option>
-                                <option>배송 준비중</option>
-                                <option>배송중</option>
-                                <option>배송 완료</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6 col-lg-5">
-                            <div class="input-group">
-                                <input type="text" class="form-control" placeholder="주문번호 또는 상품명 검색">
-                                <div class="input-group-append">
-                                    <button type="button" class="btn btn-outline-secondary">검색</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 주문 목록 테이블 -->
-                    <table class="table table-striped">
-                        <thead>
-                        <tr>
-                            <th>주문번호</th>
-                            <th>주문일자</th>
-                            <th>상품정보</th>
-                            <th>주문금액</th>
-                            <th>주문상태</th>
-                            <th>상세보기</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr>
-                            <td>20231118-001</td>
-                            <td>2023-11-18</td>
-                            <td>책 제목 1 외 2종</td>
-                            <td>35,000원</td>
-                            <td>배송 완료</td>
-                            <td>
-                                <button class="btn btn-sm btn-info" data-toggle="modal"
-                                        data-target="#orderDetailModal">
-                                    상세보기
-                                </button>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-
-                    <!-- 페이지네이션 -->
-                    <nav aria-label="Page navigation">
-                        <ul class="pagination justify-content-center">
-                            <li class="page-item"><a class="page-link" href="#">이전</a></li>
-                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                            <li class="page-item"><a class="page-link" href="#">2</a></li>
-                            <li class="page-item"><a class="page-link" href="#">3</a></li>
-                            <li class="page-item"><a class="page-link" href="#">다음</a></li>
-                        </ul>
-                    </nav>
-                </div>
-
-                <!-- 주문 상세 정보 모달 -->
-                <div class="modal fade" id="orderDetailModal" tabindex="-1" role="dialog">
-                    <div class="modal-dialog modal-xl" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title">주문 상세 정보</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body row">
-                                <div class="col-md-9">
-                                    <div class="card">
-                                        <div class="card-header">
-                                            <h3 class="card-title">상품 정보</h3>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="table-responsive overflow-auto" style="max-height: 600px;">
-                                                <table class="table table-bordered table-striped">
-                                                    <thead>
-                                                    <tr>
-                                                        <th>상품명</th>
-                                                        <th>수량</th>
-                                                        <th>가격</th>
-                                                        <th>상태</th>
-                                                        <th>관리</th>
-                                                    </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                    <tr>
-                                                        <td class="align-middle">
-                                                            <img src="../front/faker1.jpg" alt="책 표지" width="60"
-                                                                 class="mr-2 img-thumbnail">
-                                                            책 제목 1
-                                                        </td>
-                                                        <td class="align-middle">1</td>
-                                                        <td class="align-middle">15,000원</td>
-                                                        <td class="align-middle">배송완료</td>
-                                                        <td class="align-middle text-center">
-                                                            <button
-                                                                    class="btn btn-sm btn-warning">교환/반품
-                                                            </button>
-                                                            <button class="btn btn-sm btn-danger">주문취소</button>
-                                                            <button class="btn btn-sm btn-primary">리뷰작성</button>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td class="align-middle">
-                                                            <img src="../front/faker1.jpg" alt="책 표지" width="60"
-                                                                 class="mr-2 img-thumbnail">
-                                                            책 제목 1
-                                                        </td>
-                                                        <td class="align-middle">1</td>
-                                                        <td class="align-middle">15,000원</td>
-                                                        <td class="align-middle">배송완료</td>
-                                                        <td class="align-middle text-center">
-                                                            <button
-                                                                    class="btn btn-sm btn-warning">교환/반품
-                                                            </button>
-                                                            <button class="btn btn-sm btn-danger">주문취소</button>
-                                                            <button class="btn btn-sm btn-primary">리뷰작성</button>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td class="align-middle">
-                                                            <img src="../front/faker1.jpg" alt="책 표지" width="60"
-                                                                 class="mr-2 img-thumbnail">
-                                                            책 제목 1
-                                                        </td>
-                                                        <td class="align-middle">1</td>
-                                                        <td class="align-middle">15,000원</td>
-                                                        <td class="align-middle">배송완료</td>
-                                                        <td class="align-middle text-center">
-                                                            <button
-                                                                    class="btn btn-sm btn-warning">교환/반품
-                                                            </button>
-                                                            <button class="btn btn-sm btn-danger">주문취소</button>
-                                                            <button class="btn btn-sm btn-primary">리뷰작성</button>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td class="align-middle">
-                                                            <img src="../front/faker1.jpg" alt="책 표지" width="60"
-                                                                 class="mr-2 img-thumbnail">
-                                                            책 제목 1
-                                                        </td>
-                                                        <td class="align-middle">1</td>
-                                                        <td class="align-middle">15,000원</td>
-                                                        <td class="align-middle">배송완료</td>
-                                                        <td class="align-middle text-center">
-                                                            <button
-                                                                    class="btn btn-sm btn-warning">교환/반품
-                                                            </button>
-                                                            <button class="btn btn-sm btn-danger">주문취소</button>
-                                                            <button class="btn btn-sm btn-primary">리뷰작성</button>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td class="align-middle">
-                                                            <img src="../front/faker1.jpg" alt="책 표지" width="60"
-                                                                 class="mr-2 img-thumbnail">
-                                                            책 제목 1
-                                                        </td>
-                                                        <td class="align-middle">1</td>
-                                                        <td class="align-middle">15,000원</td>
-                                                        <td class="align-middle">배송완료</td>
-                                                        <td class="align-middle text-center">
-                                                            <button
-                                                                    class="btn btn-sm btn-warning">교환/반품
-                                                            </button>
-                                                            <button class="btn btn-sm btn-danger">주문취소</button>
-                                                            <button class="btn btn-sm btn-primary">리뷰작성</button>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td class="align-middle">
-                                                            <img src="../front/faker1.jpg" alt="책 표지" width="60"
-                                                                 class="mr-2 img-thumbnail">
-                                                            책 제목 1
-                                                        </td>
-                                                        <td class="align-middle">1</td>
-                                                        <td class="align-middle">15,000원</td>
-                                                        <td class="align-middle">배송완료</td>
-                                                        <td class="align-middle text-center">
-                                                            <button
-                                                                    class="btn btn-sm btn-warning">교환/반품
-                                                            </button>
-                                                            <button class="btn btn-sm btn-danger">주문취소</button>
-                                                            <button class="btn btn-sm btn-primary">리뷰작성</button>
-                                                        </td>
-                                                    </tr>
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-3">
-                                    <div class="card">
-                                        <div class="card-body border-bottom">
-                                            <h5>주문 정보</h5>
-                                            <p>주문번호: 20231118-001</p>
-                                            <p>주문일시: 2023-11-18 14:30</p>
-                                            <p>주문상태: 배송 완료</p>
-                                        </div>
-
-                                        <div class="card-body border-bottom">
-                                            <h5>배송 정보</h5>
-                                            <p>배송지: 서울시 강남구 테헤란로 123</p>
-                                            <p>배송방법: 택배</p>
-                                            <p>운송장번호: 1234567890</p>
-                                        </div>
-
-                                        <div class="card-body">
-                                            <h5>결제 정보</h5>
-                                            <p>총 상품금액: 45,000원</p>
-                                            <p>배송비: 3,000원</p>
-                                            <p>할인금액: 13,000원 (10% 할인쿠폰 적용)</p>
-                                            <p>최종 결제금액: 35,000원</p>
-                                            <p>결제방법: 신용카드</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
-                                <button type="button" class="btn btn-danger">전체 주문 취소</button>
-                            </div>
-                        </div>
-                    </div>
+                <div class="tab-pane fade" id="v-pills-orders" role="tabpanel"
+                      th:classappend="${param.orderPage != null && param.qnaPage == null} ? 'show active'">
+                    <div th:replace="~{fragments/userOrders :: userOrders}"></div>
                 </div>
                 <div th:replace="~{fragments/questionUser :: questionUser}"></div>
             </div>
         </div>
     </div>
 </div>
+<!--모달 추가란-->
+<div th:replace="~{fragments/userOrderExchangeReturnModal :: userOrderExchangeReturnModal}"></div>
+<div th:replace="~{fragments/userOrdersDetailModal :: userOrdersDetailModal}"></div>
+<div th:replace="~{fragments/userOrderSuccessModal :: userOrderSuccessModal}"></div>
+<div th:replace="~{fragments/userOrdersReviewModal :: userOrdersReviewModal}"></div>
 <footer th:replace="~{fragments/footer :: footer}"></footer>
 </body>
 </html>

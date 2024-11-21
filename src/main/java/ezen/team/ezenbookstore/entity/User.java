@@ -58,7 +58,7 @@ public class User implements UserDetails {
     private Integer grade;
 
     @Column(name = "point")
-    private Integer point;
+    private Long point;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

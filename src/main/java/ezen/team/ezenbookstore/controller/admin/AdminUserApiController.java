@@ -12,9 +12,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Controller
@@ -34,54 +36,74 @@ public class AdminUserApiController {
             @RequestParam(value = "grade", required = false) Integer grade,
             @RequestParam(value = "type", required = false) String type,
             @RequestParam(value = "keyword", required = false) String keyword,
-            @RequestParam(value = "page", defaultValue = "1") int page, // 기본값 1
+            @RequestParam(value = "page", defaultValue = "1") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
             Model model) {
 
-        // 1-based 페이지를 0-based로 변환
-        Pageable pageable = PageRequest.of(page - 1, size);
-        Page<User> userPage;
-
+        // 전체 사용자 리스트 가져오기 (검색 조건이 있는 경우와 없는 경우 모두 포함)
+        List<User> userList;
         if (type != null && !type.isEmpty() && keyword != null && !keyword.isEmpty()) {
-            // 검색 조건이 있을 경우 검색 결과 반환
-            userPage = userService.searchUsers(type, keyword, pageable);
-        } else if (grade != null) {
-            // 등급별 필터링
-            userPage = userService.findByGrade(grade, pageable);
+            // type에 따라 검색 필터링을 다르게 적용
+            if (type.equalsIgnoreCase("email")) {
+                userList = userService.findUsersByEmail(keyword);
+            } else if (type.equalsIgnoreCase("name")) {
+                userList = userService.findUsersByName(keyword);
+            } else {
+                userList = userService.findAllUsers();
+            }
         } else {
-            // 기본 리스트 반환
-            userPage = userService.findAll(pageable);
+            userList = userService.findAllUsers();
         }
 
-        List<User> allUsers = userService.findAllUsers();
+        // grade로 필터링 (옵션)
+        List<User> filteredUsers = userList;
+        long searchUserSize = userList.size();
+        if (grade != null) {
+            filteredUsers = filteredUsers.stream()
+                    .filter(u -> u.getGrade().equals(grade))
+                    .collect(Collectors.toList());
+        }
 
-        // 사용자 등급별 카운트
-        long totalCount = allUsers.size();
-        long generalCount = allUsers.stream().filter(u -> u.getGrade() == 0).count();
-        long silverCount = allUsers.stream().filter(u -> u.getGrade() == 1).count();
-        long goldCount = allUsers.stream().filter(u -> u.getGrade() == 2).count();
-        long vipCount = allUsers.stream().filter(u -> u.getGrade() == 3).count();
-        long adminCount = allUsers.stream().filter(u -> u.getGrade() == 4).count();
+        // 필터링 후 총 유저 수
+        long filteredTotalCount = filteredUsers.size();
+
+        // 페이지네이션 처리 (0-based index로 변환)
+        int fromIndex = (page - 1) * size;
+        int toIndex = Math.min(fromIndex + size, filteredUsers.size());
+
+        List<User> paginatedUsers;
+        if (fromIndex >= filteredUsers.size()) {
+            paginatedUsers = Collections.emptyList();
+        } else {
+            paginatedUsers = filteredUsers.subList(fromIndex, toIndex);
+        }
+
+        // 검색 결과 내 각 등급별 카운트
+        long generalCount = userList.stream().filter(u -> u.getGrade() == 0).count();
+        long silverCount = userList.stream().filter(u -> u.getGrade() == 1).count();
+        long goldCount = userList.stream().filter(u -> u.getGrade() == 2).count();
+        long vipCount = userList.stream().filter(u -> u.getGrade() == 3).count();
+        long adminCount = userList.stream().filter(u -> u.getGrade() == 4).count();
+
+        // 총 페이지 수 계산
+        int totalPages = (int) Math.ceil((double) filteredTotalCount / size);
 
         // 모델에 데이터 추가
-        model.addAttribute("userList", userPage.getContent());
-        model.addAttribute("totalPages", userPage.getTotalPages());
-        model.addAttribute("currentPage", page); // 1-based 페이지 번호 유지
-        model.addAttribute("totalCount", totalCount);
-        model.addAttribute("generalCount", generalCount);
-        model.addAttribute("silverCount", silverCount);
-        model.addAttribute("goldCount", goldCount);
-        model.addAttribute("vipCount", vipCount);
-        model.addAttribute("adminCount", adminCount);
+        model.addAttribute("userList", paginatedUsers); // 필터링된 유저 리스트 (페이지네이션 적용됨)
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalCount", searchUserSize); // 필터링된 총 유저 수
+        model.addAttribute("generalCount", generalCount); // 검색 결과 내 일반회원 수
+        model.addAttribute("silverCount", silverCount); // 검색 결과 내 실버회원 수
+        model.addAttribute("goldCount", goldCount); // 검색 결과 내 골드회원 수
+        model.addAttribute("vipCount", vipCount); // 검색 결과 내 VIP 회원 수
+        model.addAttribute("adminCount", adminCount); // 검색 결과 내 관리자 수
         model.addAttribute("grade", grade);
         model.addAttribute("type", type);
         model.addAttribute("keyword", keyword);
 
         return "admin/userControl";
     }
-
-
-
     // 회원 정보 삭제
     @PostMapping("/delete")
     public ResponseEntity<Map<String, Boolean>> deleteUser(@RequestBody List<String> userId) {

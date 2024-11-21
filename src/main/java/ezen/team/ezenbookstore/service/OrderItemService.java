@@ -25,12 +25,13 @@ public class OrderItemService {
         return orderItemRepository.save(orderItem);
     }
 
-    public OrderItem update(Long id, OrderItem orderItem) {
+    public OrderItem update(OrderItem orderItem) {
         OrderItem newOrderItem = OrderItem.builder()
-                .id(id)
+                .id(orderItem.getId())
                 .book(orderItem.getBook())
                 .orders(orderItem.getOrders())
                 .quantity(orderItem.getQuantity())
+                .status(orderItem.getStatus())
                 .build();
         return orderItemRepository.save(newOrderItem);
     }

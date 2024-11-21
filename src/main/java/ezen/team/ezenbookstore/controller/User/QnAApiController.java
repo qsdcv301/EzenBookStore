@@ -25,7 +25,6 @@ public class QnAApiController {
 
     private final QnAService qnAService;
     private final UserService userService;
-    private final CategoryService categoryService;
     private final FileUploadService fileUploadService;
 
     @PostMapping("/{questionId}")
