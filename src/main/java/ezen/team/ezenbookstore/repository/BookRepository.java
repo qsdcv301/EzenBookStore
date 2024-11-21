@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface BookRepository extends JpaRepository<Book, Long> {
@@ -20,6 +21,8 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     List<Book> findByIsbnContaining(String isbn);
 
     Page<Book> findAll(Pageable pageable);
+
+    Optional<Book> findById(Long id);
 
     // 국내/국외 구분 필터링 메서드
     List<Book> findAllByIfkr(Byte ifkr);

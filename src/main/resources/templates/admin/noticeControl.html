@@ -64,7 +64,7 @@
             </tr>
             <tr th:each="noticePage : ${noticePage}">
                 <td class="notice-check">
-                    <input type="checkbox" id="noticeChecked" name="checkBox" />
+                    <input type="checkbox" id="noticeChecked" name="checkBoxNotice" />
                     <label for="noticeChecked"></label>
                 </td>
                 <td class="noticeId" th:text="${noticePage.id}"></td>
@@ -180,20 +180,20 @@
     });
     // 공지사항 체크박스를 일괄 선택하기
     $('#selectAllNotice').click(function() {
-        const allChecked = $('input[name="checkBox"]:checked').length === $('input[name="checkBox"]').length;
+        const atLeastCheckNotice = $('input[name="checkBoxNotice"]:checked').length>0;
 
         // 모든 체크박스가 선택되어 있으면 해제, 그렇지 않으면 선택
-        $('input[name="checkBox"]').prop('checked', !allChecked);
+        $('input[name="checkBoxNotice"]').prop('checked', !atLeastCheckNotice);
 
         // 버튼 텍스트 변경
-        $(this).text(allChecked ? '일괄선택' : '선택해제');
+        $(this).text(atLeastCheckNotice ? '일괄 선택' : '선택 해제');
     });
 
 
     // 선택된 공지사항 일괄 삭제
     $('#deleteNotice').click(function () {
         const selectedIds = [];
-        $('input[name="checkBox"]:checked').each(function () {
+        $('input[name="checkBoxNotice"]:checked').each(function () {
             const noticeId = $(this).closest('tr').find('.noticeId').text();
             selectedIds.push(noticeId);
         });
