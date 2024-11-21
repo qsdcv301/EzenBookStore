@@ -152,7 +152,7 @@ public class ViewApiController {
             model.addAttribute("questionList", qPaging.getContent());
             model.addAttribute("qnaPage", qPaging);
         } catch (Exception e) {
-           e.printStackTrace();
+           System.out.println();
         }
         Pageable noticePageable = PageRequest.of(noticePage, size, Sort.by(sortDirection, "id"));
         Page<Notice> noticePaging = noticeService.findAll(noticePageable);
@@ -165,9 +165,9 @@ public class ViewApiController {
     @GetMapping("/notice")
     public String notice(@RequestParam(name = "id") Long id,
                          Model model) {
-        try{
-            Notice notice =  noticeService.findById(id);
-            String noticeImagePath =  fileUploadService.findImageFilePath(id,"notice");
+        try {
+            Notice notice = noticeService.findById(id);
+            String noticeImagePath = fileUploadService.findImageFilePath(id, "notice");
             model.addAttribute("notice", notice);
             model.addAttribute("noticeImagePath", noticeImagePath);
             return "noticeEvent";
