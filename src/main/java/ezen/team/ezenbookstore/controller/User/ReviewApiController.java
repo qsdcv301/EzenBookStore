@@ -59,7 +59,7 @@ public class ReviewApiController {
                                                          @RequestParam(name = "comment") String comment,
                                                          @RequestParam(name = "rating") byte rating,
                                                          @RequestParam(name = "orderItemId") Long orderItemId,
-                                                         @RequestParam(name = "file") MultipartFile file,
+                                                         @RequestParam(name = "file", required = false) MultipartFile file,
                                                          Model model) {
         Map<String, String> response = new HashMap<>();
         try {
@@ -73,7 +73,9 @@ public class ReviewApiController {
                     .user(user)
                     .build();
             Review createReview = reviewService.create(newReview);
-            fileUploadService.uploadFile(file, createReview.getId().toString(), "review");
+            if (file != null && !file.isEmpty()) {
+                fileUploadService.uploadFile(file, createReview.getId().toString(), "review");
+            }
             byte status = 3;
             OrderItem newOrderItem = OrderItem.builder()
                     .id(orderItemId)

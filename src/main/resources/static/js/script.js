@@ -1002,6 +1002,11 @@ $(document).ready(function () {
     // 주문 상세 정보 모달 요청 처리 orderDetailModal
     $('.orderDetailBtn').click(function () {
         const ordersId = $(this).attr('data-id');
+        updateMainModalData(ordersId);
+    });
+
+// 메인 모달 데이터 업데이트 함수 분리
+    function updateMainModalData(ordersId) {
         // AJAX 요청을 통해 상세 데이터 가져오기
         $.ajax({
             url: `/order/${ordersId}`,
@@ -1020,37 +1025,37 @@ $(document).ready(function () {
                         const orderExchangeNreturnBtnDisabled = parseInt(response.orderItemListStatus[i]) !== 1 ? 'disabled' : '';
                         const reviewBtnDisabled = parseInt(response.orderItemListStatus[i]) !== 2 ? 'disabled' : '';
                         const row = `
-                        <tr class="text-center">
-                            <td class="align-middle">
-                                <img src="${response.imageList[i] || "https://via.placeholder.com/100"}" alt="책 표지" width="60" class="orderImage">
-                            </td>
-                            <td class="align-middle text-left">
-                                <p class="mb-1">
-                                    <strong class="d-inline-block">제목:</strong>
-                                    <span class="text-truncate d-inline-block orderTitle" style="max-width: 120px; vertical-align: top;">${response.titleList[i]}</span>
-                                </p>
-                                <p class="mb-1">
-                                    <strong class="d-inline-block">저자:</strong>
-                                    <span class="text-truncate d-inline-block orderAuthor" style="max-width: 120px; vertical-align: top;">${response.authorList[i]}</span>
-                                </p>
-                                <p class="mb-0">
-                                    <strong class="d-inline-block">출판사:</strong>
-                                    <span class="text-truncate d-inline-block orderPublisher" style="max-width: 120px; vertical-align: top;">${response.publisherList[i]}</span>
-                                </p>
-                            </td>
-                            <td class="align-middle">1</td>
-                            <td class="align-middle">${response.priceList[i]}원</td>
-                            <td class="align-middle">
-                                <button class="btn btn-sm btn-warning text-white orderExchangeNreturnBtn" data-toggle="modal" data-target="#exchangeNreturn" ${orderExchangeNreturnBtnDisabled}>교환/반품</button>
-                            </td>
-                            <td class="align-middle">
-                                <button class="btn btn-sm btn-success orderSuccessBtn" data-toggle="modal" data-target="#orderConfirmation" data-id="${response.orderItemList[i]}" ${orderSuccessBtnDisabled}>구매확정</button>
-                            </td>
-                            <td class="align-middle">
-                                <button class="btn btn-sm btn-primary reviewBtn" data-toggle="modal" data-target="#reviewModal" data-id="${response.orderItemList[i]}"  ${reviewBtnDisabled}>리뷰작성</button>
-                            </td>
-                        </tr>
-                    `;
+                    <tr class="text-center">
+                        <td class="align-middle">
+                            <img src="${response.imageList[i] || "https://via.placeholder.com/100"}" alt="책 표지" width="60" class="orderImage">
+                        </td>
+                        <td class="align-middle text-left">
+                            <p class="mb-1">
+                                <strong class="d-inline-block">제목:</strong>
+                                <span class="text-truncate d-inline-block orderTitle" style="max-width: 120px; vertical-align: top;">${response.titleList[i]}</span>
+                            </p>
+                            <p class="mb-1">
+                                <strong class="d-inline-block">저자:</strong>
+                                <span class="text-truncate d-inline-block orderAuthor" style="max-width: 120px; vertical-align: top;">${response.authorList[i]}</span>
+                            </p>
+                            <p class="mb-0">
+                                <strong class="d-inline-block">출판사:</strong>
+                                <span class="text-truncate d-inline-block orderPublisher" style="max-width: 120px; vertical-align: top;">${response.publisherList[i]}</span>
+                            </p>
+                        </td>
+                        <td class="align-middle">1</td>
+                        <td class="align-middle">${response.priceList[i]}원</td>
+                        <td class="align-middle">
+                            <button class="btn btn-sm btn-warning text-white orderExchangeNreturnBtn" data-toggle="modal" data-target="#exchangeNreturn" ${orderExchangeNreturnBtnDisabled}>교환/반품</button>
+                        </td>
+                        <td class="align-middle">
+                            <button class="btn btn-sm btn-success orderSuccessBtn" data-toggle="modal" data-target="#orderConfirmation" data-id="${response.orderItemList[i]}" ${orderSuccessBtnDisabled}>구매확정</button>
+                        </td>
+                        <td class="align-middle">
+                            <button class="btn btn-sm btn-primary reviewBtn" data-toggle="modal" data-target="#reviewModal" data-id="${response.orderItemList[i]}"  ${reviewBtnDisabled}>리뷰작성</button>
+                        </td>
+                    </tr>
+                `;
                         orderDetailTableBody.append(row);
                     }
 
@@ -1083,216 +1088,219 @@ $(document).ready(function () {
                 alert("서버 오류가 발생했습니다. 다시 시도해주세요.");
             }
         });
+    }
 
-        // 환불/교환 요청 모달
+    // 환불/교환 요청 모달
 
-        // 파일 유효성 검사 및 파일명 표시 (교환/반품 모달)
-        $('#imageFile').on('change', function () {
-            const file = this.files[0];
-            const fileType = file.type;
-            const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
-            if (!validTypes.includes(fileType)) {
-                alert('JPG, PNG, GIF 형식의 이미지만 업로드 가능합니다.');
-                $(this).val('');
-            } else {
-                $(this).next('.custom-file-label').html(file.name);
-            }
-        });
-
-        // 구매 확정 모달
-        $(document).on('click', '.orderSuccessBtn', function () {
-            const orderItemId = $(this).attr('data-id');
-            // AJAX 요청을 통해 상세 데이터 가져오기
-            $.ajax({
-                url: `/order/success/${orderItemId}`,
-                type: 'POST',
-                success: function (response) {
-                    if (response.success === "true") {
-                        $("#confirmProductTitle").text(response.orderItemTitle);
-                        $("#confirmProductAuthor").text(response.orderItemAuthor);
-                        $("#confirmProductPublisher").text(response.orderItemPublisher);
-                        $("#confirmProductPrice").text(parseInt(response.orderItemPrice).toLocaleString('ko-KR') + '원');
-                        $("#confirmPurchaseBtn").attr("data-id", response.orderItemId);
-                        const orderItemStock = parseFloat(response.orderItemStock);
-                        const orderItemPrice = parseFloat(response.orderItemPrice);
-                        const userGrade = response.userGrade;
-                        let userGradePoint = 0;
-                        let userGradePercent = 0;
-
-                        switch (userGrade) {
-                            case "1" :
-                                userGradePoint = 0.01;
-                                userGradePercent = 1;
-                                break;
-                            case "2" :
-                                userGradePoint = 0.03;
-                                userGradePercent = 3;
-                                break;
-                            case "3" :
-                                userGradePoint = 0.05;
-                                userGradePercent = 5;
-                                break;
-                            default:
-                                userGradePoint = 0;
-                                userGradePercent = 0;
-                                break;
-                        }
-
-                        const savepoint = Math.floor((orderItemPrice * orderItemStock) * userGradePoint);
-                        const reviewPoint = Math.floor((orderItemPrice * orderItemStock) * 0.005);
-                        $("#savePoint").text(savepoint);
-                        $("#userGradePoint").text(userGradePercent);
-                        $("#reviewPoint").text(reviewPoint);
-
-                        if (response.imagePath) {
-                            $(".orderSuccessImg").attr("src", response.imagePath);
-                            $(".orderSuccessImg").attr("alt", response.title + '사진');
-                        } else {
-                            $(".orderSuccessImg").attr("src", "https://via.placeholder.com/100");
-                            $(".orderSuccessImg").attr("alt", '임시 데이터 사진');
-                        }
-                    } else {
-                        alert("상품 상세보기 불러오기를 실패했습니다.");
-                    }
-                },
-                error: function (xhr, status, error) {
-                    console.error("서버 오류가 발생했습니다.");
-                    alert("서버 오류가 발생했습니다. 다시 시도해주세요.");
-                }
-            });
-        });
-
-        $(document).on('click', '#confirmPurchaseBtn', function (event) {
-            event.preventDefault();
-            const orderItemId = $(this).attr('data-id');
-            const userId = $(this).attr('data-userId');
-            const point = $("#savePoint").text();
-
-            $.ajax({
-                type: 'POST',
-                url: '/order/success',
-                data: {
-                    orderItemId: orderItemId,
-                    userId: userId,
-                    point: point,
-                },
-                success: function (response) {
-                    if (response.success) {
-                        alert("구매를 확정했습니다.");
-                        location.reload();
-                    } else {
-                        alert("구매 확정중 오류가 발생했습니다.");
-                    }
-                },
-                error: function () {
-                    alert("서버 오류가 발생했습니다.");
-                }
-            });
-        });
-
-        // 리뷰 부분
-
-        $(document).on('click', '.reviewBtn', function () {
-            const orderItemId = $(this).attr('data-id');
-            // AJAX 요청을 통해 상세 데이터 가져오기
-            $.ajax({
-                url: `/order/success/${orderItemId}`,
-                type: 'POST',
-                success: function (response) {
-                    if (response.success === "true") {
-                        $("#reviewProductTitle").text(response.orderItemTitle);
-                        $("#reviewProductAuthor").text(response.orderItemAuthor);
-                        $("#reviewProductPublisher").text(response.orderItemPublisher);
-                        $("#reviewProductPrice").text(parseInt(response.orderItemPrice).toLocaleString('ko-KR') + '원');
-                        $("#submitReview").attr("data-id", response.orderItemId);
-
-                        if (response.imagePath) {
-                            $(".orderReviewImg").attr("src", response.imagePath);
-                            $(".orderReviewImg").attr("alt", response.title + '사진');
-                        } else {
-                            $(".orderReviewImg").attr("src", "https://via.placeholder.com/100");
-                            $(".orderReviewImg").attr("alt", '임시 데이터 사진');
-                        }
-                    } else {
-                        alert("리뷰에 필요한 데이터를 가져오는데 실패했습니다.");
-                    }
-                },
-                error: function (xhr, status, error) {
-                    console.error("서버 오류가 발생했습니다.");
-                    alert("서버 오류가 발생했습니다. 다시 시도해주세요.");
-                }
-            });
-        });
-
-        // 리뷰 파일 유효성 검사 및 파일명 표시
-        $('#reviewFile').on('change', function () {
-            const file = this.files[0];
-            const fileType = file.type;
-            const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
-            if (!validTypes.includes(fileType)) {
-                alert('JPG, PNG, GIF 형식의 이미지만 업로드 가능합니다.');
-                $(this).val('');
-            } else {
-                $(this).next('.custom-file-label').html(file.name);
-            }
-        });
-
-        // 별점 시스템
-        $('#ratingStars i').on('click', function () {
-            const rating = $(this).data('rating');
-            $('#ratingValue').val(rating);
-            $('#ratingStars i').removeClass('bi-star-fill').addClass('bi-star');
-            $(this).prevAll().addBack().removeClass('bi-star').addClass('bi-star-fill');
-        });
-
-        // 리뷰 제출
-        $('#submitReview').on('click', function () {
-            const rating = $('#ratingValue').val();
-            const reviewTitle = $('#reviewTitle').val();
-            const reviewText = $('#reviewText').val();
-            const orderItemId = $("#submitReview").attr("data-id");
-            const fileInputs = $('#reviewFile')[0].files;
-
-            if (!rating) {
-                alert('별점을 선택해주세요.');
-                return;
-            }
-            if (!reviewTitle) {
-                alert('리뷰 제목을 입력해주세요.');
-                return;
-            }
-            if (!reviewText) {
-                alert('리뷰 내용을 입력해주세요.');
-                return;
-            }
-
-            // FormData 객체 생성 및 데이터 추가
-            const formData = new FormData();
-            formData.append('rating', rating);
-            formData.append('title', reviewTitle);
-            formData.append('comment', reviewText);
-            formData.append('orderItemId', orderItemId);
-            formData.append('file', fileInputs[0]);
-
-            $.ajax({
-                type: 'POST',
-                url: '/review/add',
-                processData: false,
-                contentType: false,
-                data: formData,
-                success: function (response) {
-                    if (response.success) {
-                        alert("리뷰를 작성했습니다.");
-                        location.reload();
-                    } else {
-                        alert("리뷰 작성중 오류가 발생했습니다.");
-                    }
-                },
-                error: function () {
-                    alert("서버 오류가 발생했습니다.");
-                }
-            });
-        });
-
+    // 파일 유효성 검사 및 파일명 표시 (교환/반품 모달)
+    $('#imageFile').on('change', function () {
+        const file = this.files[0];
+        const fileType = file.type;
+        const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+        if (!validTypes.includes(fileType)) {
+            alert('JPG, PNG, GIF 형식의 이미지만 업로드 가능합니다.');
+            $(this).val('');
+        } else {
+            $(this).next('.custom-file-label').html(file.name);
+        }
     });
+
+    // 구매 확정 모달
+    $(document).on('click', '.orderSuccessBtn', function () {
+        const orderItemId = $(this).attr('data-id');
+        // AJAX 요청을 통해 상세 데이터 가져오기
+        $.ajax({
+            url: `/order/success/${orderItemId}`,
+            type: 'POST',
+            success: function (response) {
+                if (response.success === "true") {
+                    $("#confirmProductTitle").text(response.orderItemTitle);
+                    $("#confirmProductAuthor").text(response.orderItemAuthor);
+                    $("#confirmProductPublisher").text(response.orderItemPublisher);
+                    $("#confirmProductPrice").text(parseInt(response.orderItemPrice).toLocaleString('ko-KR') + '원');
+                    $("#confirmPurchaseBtn").attr("data-id", response.orderItemId);
+                    const orderItemStock = parseFloat(response.orderItemStock);
+                    const orderItemPrice = parseFloat(response.orderItemPrice);
+                    const userGrade = response.userGrade;
+                    let userGradePoint = 0;
+                    let userGradePercent = 0;
+
+                    switch (userGrade) {
+                        case "1" :
+                            userGradePoint = 0.01;
+                            userGradePercent = 1;
+                            break;
+                        case "2" :
+                            userGradePoint = 0.03;
+                            userGradePercent = 3;
+                            break;
+                        case "3" :
+                            userGradePoint = 0.05;
+                            userGradePercent = 5;
+                            break;
+                        default:
+                            userGradePoint = 0;
+                            userGradePercent = 0;
+                            break;
+                    }
+
+                    const savepoint = Math.floor((orderItemPrice * orderItemStock) * userGradePoint);
+                    const reviewPoint = Math.floor((orderItemPrice * orderItemStock) * 0.005);
+                    $("#savePoint").text(savepoint);
+                    $("#userGradePoint").text(userGradePercent);
+                    $("#reviewPoint").text(reviewPoint);
+
+                    if (response.imagePath) {
+                        $(".orderSuccessImg").attr("src", response.imagePath);
+                        $(".orderSuccessImg").attr("alt", response.title + '사진');
+                    } else {
+                        $(".orderSuccessImg").attr("src", "https://via.placeholder.com/100");
+                        $(".orderSuccessImg").attr("alt", '임시 데이터 사진');
+                    }
+                } else {
+                    alert("상품 상세보기 불러오기를 실패했습니다.");
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("서버 오류가 발생했습니다.");
+                alert("서버 오류가 발생했습니다. 다시 시도해주세요.");
+            }
+        });
+    });
+
+    $(document).on('click', '#confirmPurchaseBtn', function (event) {
+        event.preventDefault();
+        const orderItemId = $(this).attr('data-id');
+        const userId = $(this).attr('data-userId');
+        const point = $("#savePoint").text();
+
+        $.ajax({
+            type: 'POST',
+            url: '/order/success',
+            data: {
+                orderItemId: orderItemId,
+                userId: userId,
+                point: point,
+            },
+            success: function (response) {
+                if (response.success) {
+                    alert("구매를 확정했습니다.");
+                    // 메인 모달 데이터 갱신
+                    const ordersId = $('.orderId').text(); // 현재 모달에 표시된 주문 ID 가져오기
+                    updateMainModalData(ordersId);
+                } else {
+                    alert("구매 확정중 오류가 발생했습니다.");
+                }
+            },
+            error: function () {
+                alert("서버 오류가 발생했습니다.");
+            }
+        });
+    });
+
+    // 리뷰 파일 유효성 검사 및 파일명 표시
+    $('#reviewFile').on('change', function () {
+        const file = this.files[0];
+        const fileType = file.type;
+        const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+        if (!validTypes.includes(fileType)) {
+            alert('JPG, PNG, GIF 형식의 이미지만 업로드 가능합니다.');
+            $(this).val('');
+        } else {
+            $(this).next('.custom-file-label').html(file.name);
+        }
+    });
+
+    // 별점 시스템
+    $('#ratingStars i').on('click', function () {
+        const rating = $(this).data('rating');
+        $('#ratingValue').val(rating);
+        $('#ratingStars i').removeClass('bi-star-fill').addClass('bi-star');
+        $(this).prevAll().addBack().removeClass('bi-star').addClass('bi-star-fill');
+    });
+
+    // 리뷰 부분
+    $(document).on('click', '.reviewBtn', function () {
+        const orderItemId = $(this).attr('data-id');
+        // AJAX 요청을 통해 상세 데이터 가져오기
+        $.ajax({
+            url: `/order/success/${orderItemId}`,
+            type: 'POST',
+            success: function (response) {
+                if (response.success === "true") {
+                    $("#reviewProductTitle").text(response.orderItemTitle);
+                    $("#reviewProductAuthor").text(response.orderItemAuthor);
+                    $("#reviewProductPublisher").text(response.orderItemPublisher);
+                    $("#reviewProductPrice").text(parseInt(response.orderItemPrice).toLocaleString('ko-KR') + '원');
+                    $("#submitReview").attr("data-id", response.orderItemId);
+
+                    if (response.imagePath) {
+                        $(".orderReviewImg").attr("src", response.imagePath);
+                        $(".orderReviewImg").attr("alt", response.title + '사진');
+                    } else {
+                        $(".orderReviewImg").attr("src", "https://via.placeholder.com/100");
+                        $(".orderReviewImg").attr("alt", '임시 데이터 사진');
+                    }
+                } else {
+                    alert("리뷰에 필요한 데이터를 가져오는데 실패했습니다.");
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("서버 오류가 발생했습니다.");
+                alert("서버 오류가 발생했습니다. 다시 시도해주세요.");
+            }
+        });
+    });
+
+    // 리뷰 제출
+    $('#submitReview').on('click', function () {
+        const rating = $('#ratingValue').val();
+        const reviewTitle = $('#reviewTitle').val();
+        const reviewText = $('#reviewText').val();
+        const orderItemId = $("#submitReview").attr("data-id");
+        const fileInputs = $('#reviewFile')[0].files;
+
+        if (!rating) {
+            alert('별점을 선택해주세요.');
+            return;
+        }
+        if (!reviewTitle) {
+            alert('리뷰 제목을 입력해주세요.');
+            return;
+        }
+        if (!reviewText) {
+            alert('리뷰 내용을 입력해주세요.');
+            return;
+        }
+
+        // FormData 객체 생성 및 데이터 추가
+        const formData = new FormData();
+        formData.append('rating', rating);
+        formData.append('title', reviewTitle);
+        formData.append('comment', reviewText);
+        formData.append('orderItemId', orderItemId);
+        formData.append('file', fileInputs[0]);
+
+        $.ajax({
+            type: 'POST',
+            url: '/review/add',
+            processData: false,
+            contentType: false,
+            data: formData,
+            success: function (response) {
+                if (response.success) {
+                    alert("리뷰를 작성했습니다.");
+                    // 메인 모달 데이터 갱신
+                    const ordersId = $('.orderId').text(); // 현재 모달에 표시된 주문 ID 가져오기
+                    updateMainModalData(ordersId);
+                } else {
+                    alert("리뷰 작성중 오류가 발생했습니다.");
+                }
+            },
+            error: function () {
+                alert("서버 오류가 발생했습니다.");
+            }
+        });
+    });
+
 });
