@@ -99,7 +99,7 @@ CREATE TABLE `cart` (
 
 LOCK TABLES `cart` WRITE;
 /*!40000 ALTER TABLE `cart` DISABLE KEYS */;
-INSERT INTO `cart` VALUES (1,5,1,2),(2,8,2,83),(3,8,3,44),(4,9,4,91),(5,1,5,34);
+INSERT INTO `cart` VALUES (1,1,1,2),(2,2,2,83),(3,3,3,44),(4,4,4,91),(5,1,5,34);
 /*!40000 ALTER TABLE `cart` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -111,10 +111,10 @@ DROP TABLE IF EXISTS `category`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `category` (
-  `id` bigint NOT NULL,
+  `id` bigint NOT NULL AUTO_INCREMENT,
   `name` varchar(45) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -263,7 +263,7 @@ CREATE TABLE `orderitem` (
 
 LOCK TABLES `orderitem` WRITE;
 /*!40000 ALTER TABLE `orderitem` DISABLE KEYS */;
-INSERT INTO `orderitem` VALUES (1,19,4,1,NULL),(2,1,2,1,NULL),(3,1,2,1,NULL),(4,6,4,1,NULL),(5,15,4,1,NULL);
+INSERT INTO `orderitem` VALUES (1,19,4,1,1),(2,1,2,1,1),(3,1,2,1,1),(4,6,4,1,1),(5,15,4,1,1);
 /*!40000 ALTER TABLE `orderitem` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -292,7 +292,7 @@ CREATE TABLE `orders` (
 
 LOCK TABLES `orders` WRITE;
 /*!40000 ALTER TABLE `orders` DISABLE KEYS */;
-INSERT INTO `orders` VALUES (1,5,'2024-11-10 08:34:51',1325,4,19,19),(2,2,'2024-11-10 08:34:51',1132,5,17,6),(3,7,'2024-11-10 08:34:51',1290,5,20,2),(4,1,'2024-11-10 08:34:51',1172,3,10,1),(5,10,'2024-11-10 08:34:51',1484,5,16,18);
+INSERT INTO `orders` VALUES (1,1,'2024-11-10 08:34:51',1325,4,1,1),(2,2,'2024-11-10 08:34:51',1132,5,3,3),(3,3,'2024-11-10 08:34:51',1290,5,2,2),(4,4,'2024-11-10 08:34:51',1172,3,4,5),(5,5,'2024-11-10 08:34:51',1484,5,5,4);
 /*!40000 ALTER TABLE `orders` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -320,7 +320,7 @@ CREATE TABLE `payment` (
 
 LOCK TABLES `payment` WRITE;
 /*!40000 ALTER TABLE `payment` DISABLE KEYS */;
-INSERT INTO `payment` VALUES (1,'2024-11-10 08:40:03',1043,0,1,1),(2,'2024-11-10 08:40:03',1091,2,0,3),(3,'2024-11-10 08:40:03',1194,2,1,4),(4,'2024-11-10 08:40:03',1342,0,1,8),(5,'2024-11-10 08:40:03',1011,2,2,4);
+INSERT INTO `payment` VALUES (1,'2024-11-10 08:40:03',1043,1,1,1),(2,'2024-11-10 08:40:03',1091,2,0,3),(3,'2024-11-10 08:40:03',1194,2,1,4),(4,'2024-11-10 08:40:03',1342,1,1,5),(5,'2024-11-10 08:40:03',1011,2,2,2);
 /*!40000 ALTER TABLE `payment` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -349,7 +349,7 @@ CREATE TABLE `qna` (
 
 LOCK TABLES `qna` WRITE;
 /*!40000 ALTER TABLE `qna` DISABLE KEYS */;
-INSERT INTO `qna` VALUES (1,4,3,'문의 제목 1','문의 내용 1','2024-11-10 08:40:19','답변 내용 1'),(2,9,4,'문의 제목 2','문의 내용 2','2024-11-10 08:40:19','답변 내용 2'),(3,9,2,'문의 제목 3','문의 내용 3','2024-11-10 08:40:19','답변 내용 3'),(4,10,0,'문의 제목 4','문의 내용 4','2024-11-10 08:40:19','답변 내용 4'),(5,8,3,'문의 제목 5','문의 내용 5','2024-11-10 08:40:19','답변 내용 5');
+INSERT INTO `qna` VALUES (1,1,3,'문의 제목 1','문의 내용 1','2024-11-10 08:40:19','답변 내용 1'),(2,2,4,'문의 제목 2','문의 내용 2','2024-11-10 08:40:19','답변 내용 2'),(3,3,2,'문의 제목 3','문의 내용 3','2024-11-10 08:40:19','답변 내용 3'),(4,4,0,'문의 제목 4','문의 내용 4','2024-11-10 08:40:19','답변 내용 4'),(5,5,3,'문의 제목 5','문의 내용 5','2024-11-10 08:40:19','답변 내용 5');
 /*!40000 ALTER TABLE `qna` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -378,7 +378,7 @@ CREATE TABLE `review` (
 
 LOCK TABLES `review` WRITE;
 /*!40000 ALTER TABLE `review` DISABLE KEYS */;
-INSERT INTO `review` VALUES (1,15,9,1,'','리뷰 내용 1','2024-11-10 08:40:40'),(2,6,9,2,'','리뷰 내용 2','2024-11-10 08:40:40'),(3,7,5,3,'','리뷰 내용 3','2024-11-10 08:40:40'),(4,16,6,3,'','리뷰 내용 4','2024-11-10 08:40:40'),(5,11,3,5,'','리뷰 내용 5','2024-11-10 08:40:40');
+INSERT INTO `review` VALUES (1,1,1,1,'타이틀','리뷰 내용 1','2024-11-10 08:40:40'),(2,2,2,2,'타이틀 ','리뷰내용2','2024-11-21 07:35:07'),(3,3,3,3,'타이틀 ','리뷰 내용 3','2024-11-21 07:35:35'),(4,4,4,4,'타이틀 ','리뷰 내용임니다.4','2024-11-21 07:35:35'),(5,5,5,5,'타이틀 ','리뷰내용5','2024-11-21 04:07:54');
 /*!40000 ALTER TABLE `review` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -390,11 +390,11 @@ DROP TABLE IF EXISTS `subcategory`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `subcategory` (
-  `id` bigint NOT NULL,
+  `id` bigint NOT NULL AUTO_INCREMENT,
   `category_id` bigint NOT NULL,
   `name` varchar(45) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -451,4 +451,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-11-21 11:32:46
+-- Dump completed on 2024-11-21 17:59:25
