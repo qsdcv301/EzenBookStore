@@ -1085,7 +1085,13 @@ $(document).ready(function () {
         });
     });
 
-//     info
+    //     info
+    const urlParams = new URLSearchParams(window.location.search);
+
+    if (urlParams.get('first') === 'true') {
+        alert("간편 로그인 회원입니다.\n원활한 이용을 위해 개인정보를 입력해주세요.");
+    }
+
     $('.userUpdate').on('click', function (event) {
         event.preventDefault(); // 폼 제출 기본 동작 방지
         const userId = $(this).attr('data-id');
