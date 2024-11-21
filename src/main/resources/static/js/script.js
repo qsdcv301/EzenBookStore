@@ -1119,7 +1119,7 @@ $(document).ready(function () {
             success: function (response) {
                 if (response.success) {
                     alert("회원 정보가 성공적으로 수정 되었습니다.")
-                    location.reload();
+                    location.replace("/user/info");
                 } else {
                     alert("회원 정보 수정중 오류가 발생했습니다.");
                     location.reload();
