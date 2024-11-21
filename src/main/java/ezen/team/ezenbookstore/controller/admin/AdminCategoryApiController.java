@@ -26,12 +26,50 @@ public class AdminCategoryApiController {
 
     // 모든 카테고리 리스트 반환
     @GetMapping("")
-    public String categoryControl(Model model) {
-        List<Category> categoryList = categoryService.findAll();
-        System.out.println("카테고리 리스트: " + categoryList);
-        model.addAttribute("categoryList", categoryList);
-        return "/admin/categoryControl";
+    public String getCategoryList(
+            @RequestParam(value = "keyword", required = false) String keyword,
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            Model model) {
+
+        // 전체 카테고리 리스트 가져오기
+        List<Category> categoryList;
+
+        if (keyword != null && !keyword.isEmpty()) {
+            // type에 따라 검색 필터링 적용
+                categoryList = categoryService.findCategoriesByName(keyword);
+        } else {
+            categoryList = categoryService.findAll();
+        }
+
+        // 필터링 후 총 카테고리 수
+        long totalCategories = categoryList.size();
+
+        // 페이지네이션 처리 (0-based index)
+        int fromIndex = (page - 1) * size;
+        int toIndex = Math.min(fromIndex + size, categoryList.size());
+
+        List<Category> paginatedCategories;
+        if (fromIndex >= categoryList.size()) {
+            paginatedCategories = Collections.emptyList();
+        } else {
+            paginatedCategories = categoryList.subList(fromIndex, toIndex);
+        }
+
+        // 총 페이지 수 계산
+        int totalPages = (int) Math.ceil((double) totalCategories / size);
+
+        // 모델에 데이터 추가
+        model.addAttribute("categoryList", paginatedCategories); // 필터링된 카테고리 리스트 (페이지네이션 적용됨)
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalCount", totalCategories); // 총 카테고리 수
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("pageSize", size);
+
+        return "admin/categoryControl";
     }
+
 
 
     @GetMapping("/{categoryId}/subcategories")

@@ -72,7 +72,7 @@
         <!-- Thymeleaf를 이용해 서버에서 카테고리 데이터를 가져와 표시 -->
         <tr th:each="category, iter : ${categoryList}">
             <td><input type="checkbox" class="category-checkbox" th:data-id="${category.id}"></td>
-            <td th:text="${iter.index + 1}"></td> <!-- 인덱스 번호 출력 (0부터 시작하므로 +1 추가) -->
+            <td th:text="${(currentPage - 1) * pageSize + iter.index + 1}"></td> <!-- 전체 인덱스 번호 계산 -->
             <td><input th:value="${category.name}" type="text"></td>
             <td th:text="${category.subCategory.size()}"></td>
             <td>
@@ -86,9 +86,7 @@
                 <input type="checkbox" class="category-checkbox"
                        th:data-id="${#lists.size(categoryList) > 0 ? categoryList.get(categoryList.size() - 1).id + 1 : 1}">
             </td>
-            <!-- 고정된 값 출력 -->
-            <td th:text="${#lists.size(categoryList) + 1}"></td>
-            <!-- 추가할 이름 입력 -->
+            <td>추가</td>
             <td><input type="text" id="newCategoryName" placeholder="추가할 카테고리 이름"></td>
             <td>
                 <button class="btn btn-primary" onclick="addCategory()">추가</button>
@@ -98,6 +96,46 @@
 
         </tbody>
     </table>
+
+    <!-- 페이지네이션 -->
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+            <!-- 이전 버튼 -->
+            <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
+                <a class="page-link"
+                   th:href="@{/admin/categories(page=${currentPage - 1})}"
+                   th:if="${keyword == null or #strings.isEmpty(keyword)}">이전</a>
+                <a class="page-link"
+                   th:href="@{/admin/categories(page=${currentPage - 1}, keyword=${keyword})}"
+                   th:if="${keyword != null and !#strings.isEmpty(keyword)}">이전</a>
+            </li>
+
+            <!-- 페이지 번호 -->
+            <li class="page-item" th:each="i : ${#numbers.sequence(1, totalPages)}" th:classappend="${i == currentPage} ? 'active'">
+                <a class="page-link"
+                   th:href="@{/admin/categories(page=${i})}"
+                   th:if="${keyword == null or #strings.isEmpty(keyword)}"
+                   th:text="${i}">
+                </a>
+                <a class="page-link"
+                   th:href="@{/admin/categories(page=${i}, keyword=${keyword})}"
+                   th:if="${keyword != null and !#strings.isEmpty(keyword)}"
+                   th:text="${i}">
+                </a>
+            </li>
+
+            <!-- 다음 버튼 -->
+            <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
+                <a class="page-link"
+                   th:href="@{/admin/categories(page=${currentPage + 1})}"
+                   th:if="${keyword == null or #strings.isEmpty(keyword)}">다음</a>
+                <a class="page-link"
+                   th:href="@{/admin/categories(page=${currentPage + 1}, keyword=${keyword})}"
+                   th:if="${keyword != null and !#strings.isEmpty(keyword)}">다음</a>
+            </li>
+        </ul>
+    </nav>
+
 
 </div>
 
@@ -129,7 +167,7 @@
                             <td><input type="text" th:value="${subcategory.name}" class="form-control" th:id="'subCategoryName-' + ${subcategory.id}"></td>
                             <td>
                                 <button class="btn btn-primary" th:onclick="'editSubCategory(' + ${subcategory.id} + ')'">수정</button>
-                                <button class="btn btn-danger" th:onclick="'deleteSubCategory(' + ${subcategory.id} + ')'">삭제</button>
+                                <button class="btn btn-danger" th:onclick="'deleteSubCategory(' + ${subcategory.id} + ', ' + ${category.id} + ')'">삭제</button>
                             </td>
                         </tr>
                         <tr>
@@ -170,6 +208,7 @@
             checkboxes.forEach(cb => cb.checked = checkbox.checked);
         }
 
+        //카테고리 로직들 =============================
         //카테고리 삭제 로직
         function deleteSelected() {
             const selectedIds = Array.from(document.querySelectorAll('.category-checkbox:checked'))
@@ -255,13 +294,15 @@
                 data: JSON.stringify({ name: categoryName }),
                 success: function (response) {
                     alert('새 카테고리가 성공적으로 추가되었습니다.');
-                    location.reload(); // 새로고침하여 추가된 카테고리 표시
+                    location.reload();
                 },
                 error: function () {
                     alert('새 카테고리를 추가하는 중 오류가 발생했습니다.');
                 }
             });
         }
+        //서브카테고리 로직들 =============================
+        //서브카테고리 추가
         function addSubCategory(categoryId) {
             const subCategoryName = document.getElementById(`newSubCategoryName-${categoryId}`).value.trim();
 
@@ -279,7 +320,7 @@
                 data: JSON.stringify({ name: subCategoryName }),
                 success: function () {
                     alert('새 서브카테고리가 성공적으로 추가되었습니다.');
-                    location.reload(); // 새로고침으로 추가 반영
+                    refreshModalContent(categoryId); // 모달 내용 갱신
                 },
                 error: function () {
                     alert('서브카테고리를 추가하는 중 오류가 발생했습니다.');
@@ -303,7 +344,7 @@
                 data: JSON.stringify({ name: subCategoryName }),
                 success: function () {
                     alert('서브카테고리가 성공적으로 수정되었습니다.');
-                    location.reload();
+                    refreshModalContent(subCategoryId.category.id); // 모달 내용 갱신
                 },
                 error: function () {
                     alert('서브카테고리를 수정하는 중 오류가 발생했습니다.');
@@ -312,7 +353,7 @@
         }
 
         //서브카테고리 삭제
-        function deleteSubCategory(subCategoryId) {
+        function deleteSubCategory(subCategoryId, categoryId) {
             if (!confirm('정말 삭제하시겠습니까?')) {
                 return;
             }
@@ -322,7 +363,7 @@
                 type: 'POST',
                 success: function () {
                     alert('서브카테고리가 성공적으로 삭제되었습니다.');
-                    location.reload();
+                    refreshModalContent(categoryId); // 모달 내용을 갱신
                 },
                 error: function () {
                     alert('서브카테고리를 삭제하는 중 오류가 발생했습니다.');
@@ -330,47 +371,65 @@
             });
         }
 
+
+
         //카테고리 검색
         function searchCategories() {
             const keyword = document.getElementById('searchKeyword').value.trim();
-
             if (!keyword) {
-                alert('검색어를 입력하세요.');
+                window.location.href = `/admin/categories`;
+                //검색결과 없으면 기본 페이지 리로드
                 return;
             }
 
-            // AJAX 요청으로 검색 요청
-            $.ajax({
-                url: `/admin/categories/search`,
-                type: 'GET',
-                data: { keyword: keyword },
-                success: function (response) {
-                    // 검색 결과 렌더링
-                    const tbody = document.querySelector('table tbody');
-                    tbody.innerHTML = ''; // 기존 데이터 초기화
+            window.location.href = `/admin/categories?&keyword=${keyword}`; // 검색 결과로 이동
+        }
 
-                    response.forEach((category, index) => {
-                        const subCategoryCount = category.subCategory.length ? category.subCategory.length : 0; // 서브카테고리 개수 확인
-                        const row = `
-                <tr>
-                    <td><input type="checkbox" class="category-checkbox" data-id="${category.id}"></td>
-                    <td>${index + 1}</td>
-                    <td>${category.name}</td>
-                    <td>${subCategoryCount}</td>
-                    <td>
-                        <button class="btn btn-outline-secondary btn-sm"
-                                th:data-target="'#categoryDetailModal-' + ${category.id}"
-                                data-toggle="modal">서브카테고리 관리</button>
-                    </td>
-                </tr>`;
-                        tbody.insertAdjacentHTML('beforeend', row);
+
+        //모달 새로고침 함수
+        function refreshModalContent(categoryId) {
+            $.ajax({
+                url: `/admin/categories/${categoryId}/subcategories`,
+                type: 'GET',
+                success: function (data) {
+                    const tbody = document.querySelector(`#categoryDetailModal-${categoryId} .modal-body tbody`);
+                    tbody.innerHTML = ''; // 기존 내용 제거
+
+                    // 데이터가 있는 경우 목록 생성
+                    data.forEach((subCategory, index) => {
+                        tbody.innerHTML += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td><input type="text" id="subCategoryName-${subCategory.id}" value="${subCategory.name}" class="form-control"></td>
+                        <td>
+                            <button class="btn btn-primary" onclick="editSubCategory(${subCategory.id}, ${categoryId})">수정</button>
+                            <button class="btn btn-danger" onclick="deleteSubCategory(${subCategory.id}, ${categoryId})">삭제</button>
+                        </td>
+                    </tr>
+                `;
                     });
+
+                    // 추가 폼 삽입
+                    tbody.innerHTML += `
+                <tr>
+                    <td>${data.length + 1}</td>
+                    <td>
+                        <input type="text" id="newSubCategoryName-${categoryId}" placeholder="추가할 서브카테고리 이름" class="form-control">
+                    </td>
+                    <td>
+                        <button class="btn btn-primary" onclick="addSubCategory(${categoryId})">추가</button>
+                    </td>
+                </tr>
+            `;
                 },
                 error: function () {
-                    alert('검색 중 오류가 발생했습니다.');
+                    alert('모달 내용을 갱신하는 중 오류가 발생했습니다.');
                 }
             });
         }
+
+
+
     </script>
 
 </body>
