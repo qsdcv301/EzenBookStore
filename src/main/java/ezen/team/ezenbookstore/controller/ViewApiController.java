@@ -4,6 +4,7 @@ import ezen.team.ezenbookstore.entity.CustomOAuth2User;
 import ezen.team.ezenbookstore.entity.Notice;
 import ezen.team.ezenbookstore.entity.QnA;
 import ezen.team.ezenbookstore.entity.User;
+import ezen.team.ezenbookstore.service.FileUploadService;
 import ezen.team.ezenbookstore.service.NoticeService;
 import ezen.team.ezenbookstore.service.QnAService;
 import ezen.team.ezenbookstore.service.UserService;
@@ -34,6 +35,7 @@ public class ViewApiController {
     private final NoticeService noticeService;
     private final QnAService qnAService;
     private final UserService userService;
+    private final FileUploadService fileUploadService;
 
     @ModelAttribute
     public void findUser(Model model) {
@@ -73,7 +75,8 @@ public class ViewApiController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<Map<String, Boolean>> signup(@ModelAttribute User user, @RequestParam(name = "birthdayString") String birthday) {
+    public ResponseEntity<Map<String, Boolean>> signup(@ModelAttribute User user, @RequestParam(name =
+            "birthdayString") String birthday) {
         Map<String, Boolean> response = new HashMap<>();
         try {
             // 생일 문자열이 유효한지 확인
@@ -149,7 +152,7 @@ public class ViewApiController {
             model.addAttribute("questionList", qPaging.getContent());
             model.addAttribute("qnaPage", qPaging);
         } catch (Exception e) {
-            e.printStackTrace();
+           e.printStackTrace();
         }
         Pageable noticePageable = PageRequest.of(noticePage, size, Sort.by(sortDirection, "id"));
         Page<Notice> noticePaging = noticeService.findAll(noticePageable);
@@ -157,6 +160,20 @@ public class ViewApiController {
         model.addAttribute("noticePage", noticePaging);
         model.addAttribute("sort", sort);
         return "customerService";
+    }
+
+    @GetMapping("/notice")
+    public String notice(@RequestParam(name = "id") Long id,
+                         Model model) {
+        try{
+            Notice notice =  noticeService.findById(id);
+            String noticeImagePath =  fileUploadService.findImageFilePath(id,"notice");
+            model.addAttribute("notice", notice);
+            model.addAttribute("noticeImagePath", noticeImagePath);
+            return "noticeEvent";
+        } catch (Exception e) {
+            return "redirect:/logout";
+        }
     }
 
 }
