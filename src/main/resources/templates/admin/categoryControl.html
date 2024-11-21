@@ -1,11 +1,20 @@
-<!DOCTYPE html>
-<html lang="ko">
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>상품 카테고리별 관리</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>책 상세페이지</title>
+    <link rel="canonical" href="https://getbootstrap.kr/docs/5.1/examples/blog/">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet">
+    <link href="/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="/css/style.css" rel="stylesheet"/>
+    <script src="/js/jquery-1.12.4.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/popper.min.js"></script>
+    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/script.js"></script>
 
     <style>
         .filter-option {
@@ -37,8 +46,8 @@
     <div class="d-flex justify-content-between mb-3">
         <!-- 검색 섹션 -->
         <div class="search-section d-flex align-items-center mr-4">
-            <input type="text" class="form-control mr-2" placeholder="카테고리를 입력하세요" style="width: 300px;" id="search-input">
-            <button class="btn btn-secondary" onclick="searchOrders()">조회</button>
+            <input type="text" class="form-control mr-2" placeholder="카테고리를 입력하세요" style="width: 300px;" id="searchKeyword">
+            <button class="btn btn-secondary" onclick="searchCategories()">조회</button>
         </div>
 
         <!-- 수정/삭제 버튼 -->
@@ -52,8 +61,8 @@
     <table class="table table-bordered text-center">
         <thead class="thead-light">
         <tr>
-            <th><input type="checkbox" id="select-all-checkbox" onclick="toggleSelectAll()"></th> <!-- 체크박스 클릭 시 전체 체크 및 해제 -->
-            <th>카테고리 번호</th>
+            <th><input type="checkbox" id="select-all" onclick="toggleAllCheckboxes()"></th> <!-- 체크박스 클릭 시 전체 체크 및 해제 -->
+            <th>번호</th>
             <th>카테고리 이름</th>
             <th>서브카테고리 개수</th>
             <th>서브카테고리 목록</th>
@@ -61,19 +70,31 @@
         </thead>
         <tbody>
         <!-- Thymeleaf를 이용해 서버에서 카테고리 데이터를 가져와 표시 -->
-        <tr th:each="category : ${categoryList}">
-            <td><input type="checkbox" class="order-checkbox"></td>
-            <td th:text="${category.id}"></td>
-            <td><input th:value="${category.name}"></td>
+        <tr th:each="category, iter : ${categoryList}">
+            <td><input type="checkbox" class="category-checkbox" th:data-id="${category.id}"></td>
+            <td th:text="${iter.index + 1}"></td> <!-- 인덱스 번호 출력 (0부터 시작하므로 +1 추가) -->
+            <td><input th:value="${category.name}" type="text"></td>
             <td th:text="${category.subCategory.size()}"></td>
             <td>
                 <button class="btn btn-outline-secondary btn-sm"
-                        th:data-target="'categoryDetailModal-' + ${category.id}"
-                        data-toggle="modal">
-                    서브카테고리 관리
-                </button>
+                        th:data-target="'#categoryDetailModal-' + ${category.id}"
+                        data-toggle="modal">서브카테고리 관리</button>
             </td>
         </tr>
+        <tr>
+            <td>
+                <input type="checkbox" class="category-checkbox"
+                       th:data-id="${#lists.size(categoryList) > 0 ? categoryList.get(categoryList.size() - 1).id + 1 : 1}">
+            </td>
+            <!-- 고정된 값 출력 -->
+            <td th:text="${#lists.size(categoryList) + 1}"></td>
+            <!-- 추가할 이름 입력 -->
+            <td><input type="text" id="newCategoryName" placeholder="추가할 카테고리 이름"></td>
+            <td>
+                <button class="btn btn-primary" onclick="addCategory()">추가</button>
+            </td>
+        </tr>
+
 
         </tbody>
     </table>
@@ -97,18 +118,28 @@
                     <table class="table table-bordered">
                         <thead>
                         <tr>
-                            <th>ID</th>
+                            <th>번호</th>
                             <th>서브카테고리 이름</th>
                             <th>수정 및 삭제</th>
                         </tr>
                         </thead>
                         <tbody>
-                        <tr th:each="subcategory : ${category.subCategory}">
-                            <td th:text="${subcategory.id}">ID</td>
-                            <td th:text="${subcategory.name}">서브카테고리 이름</td>
+                        <tr th:each="subcategory, iter : ${category.subCategory}">
+                            <td th:text="${iter.index + 1}">번호</td>
+                            <td><input type="text" th:value="${subcategory.name}" class="form-control" th:id="'subCategoryName-' + ${subcategory.id}"></td>
                             <td>
-                                <button class="btn btn-primary" onclick="updateBulkStatus()">수정</button>
-                                <button class="btn btn-danger ml-1" onclick="deleteSelected()">삭제</button>
+                                <button class="btn btn-primary" th:onclick="'editSubCategory(' + ${subcategory.id} + ')'">수정</button>
+                                <button class="btn btn-danger" th:onclick="'deleteSubCategory(' + ${subcategory.id} + ')'">삭제</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <!-- 마지막 ID에 +1 없으면 1-->
+                            <td th:text="${#lists.size(category.subCategory) + 1}"></td>
+                            <!-- 추가할 이름 입력 -->
+                            <td>
+                                <input type="text" th:id="'newSubCategoryName-' + ${category.id}" placeholder="추가할 서브카테고리 이름"></td>
+                            <td>
+                                <button class="btn btn-primary" th:onclick="'addSubCategory(' + ${category.id} + ')'">추가</button>
                             </td>
                         </tr>
                         </tbody>
@@ -118,61 +149,228 @@
         </div>
     </div>
 </div>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
     <script>
-        // 서브카테고리 관리 모달 열기
-        function viewSubcategories(categoryId) {
-            console.log('전달된 categoryId:', categoryId); // categoryId 값 확인
+        document.addEventListener("DOMContentLoaded", () => {
+            //초기화
+            initSelectAll();
+        });
+
+        // 전체 선택 체크박스 초기화
+        function initSelectAll() {
+            document.getElementById("select-all").addEventListener("change", event => {
+                const isChecked = event.target.checked;
+                document.querySelectorAll(".category-checkbox").forEach(cb => {
+                    cb.checked = isChecked;
+                });
+            });
+        }
+        //체크박스 일괄체크/해제
+        function toggleAllCheckboxes(checkbox) {
+            const checkboxes = document.querySelectorAll('.category-checkbox');
+            checkboxes.forEach(cb => cb.checked = checkbox.checked);
+        }
+
+        //카테고리 삭제 로직
+        function deleteSelected() {
+            const selectedIds = Array.from(document.querySelectorAll('.category-checkbox:checked'))
+                .map(checkbox => checkbox.getAttribute('data-id'));
+
+            if (selectedIds.length === 0) {
+                alert("삭제할 카테고리를 선택해주세요.");
+                return;
+            }
+
+            if (!confirm("선택한 카테고리를 삭제하시겠습니까?")) {
+                return;
+            }
+
+            // AJAX 요청으로 선택된 ID 전달
             $.ajax({
-                url: `/admin/categories/${categoryId}/subcategories`,
-                type: 'GET',
+                url: '/admin/categories/delete',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(selectedIds),
                 success: function (response) {
-                    console.log('응답 데이터:', response);
-                    const subcategory = response.subcategory;
-                    if (subcategory) {
-                        $('#subcategoryId').val(subcategory.id);
-                        $('#subcategoryName').val(subcategory.name);
+                    if (response.success) {
+                        alert('카테고리가 성공적으로 삭제되었습니다.');
+                        location.reload();
+                    } else {
+                        alert('카테고리를 삭제하는 데 실패했습니다.');
                     }
-                    $('#categoryDetailModal-' + categoryId).modal('show');
                 },
-                error: function (error) {
-                    console.error('서브카테고리 데이터를 불러오는 중 오류:', error);
-                    alert('서브카테고리 데이터를 불러오지 못했습니다.');
+                error: function () {
+                    alert('서버 오류로 인해 카테고리를 삭제할 수 없습니다.');
                 }
             });
         }
 
+        //카테고리 수정 로직
+        function updateBulkStatus() {
+            const selectedCategories = Array.from(document.querySelectorAll('.category-checkbox:checked'))
+                .map(checkbox => {
+                    const id = checkbox.getAttribute('data-id');
+                    const name = checkbox.closest('tr').querySelector('input[type="text"]').value;
+                    return { id, name };
+                });
 
-        // 서브카테고리 수정/추가 폼 제출 이벤트 핸들러
-        $('#subcategoryForm').submit(function (event) {
-            event.preventDefault(); // 기본 제출 동작 방지
+            if (selectedCategories.length === 0) {
+                alert("수정할 카테고리를 선택해주세요.");
+                return;
+            }
 
-            const categoryId = $('#categoryId').val();
-            const subcategoryId = $('#subcategoryId').val();
-            const subcategoryName = $('#subcategoryName').val();
-
-            // AJAX를 통해 서브카테고리 수정/추가 요청
+            // AJAX 요청으로 선택된 카테고리 데이터 전달
             $.ajax({
-                url: '/admin/categories/' + categoryId + '/subcategories',
+                url: '/admin/categories/update',
                 type: 'POST',
                 contentType: 'application/json',
-                data: JSON.stringify({
-                    id: subcategoryId,
-                    name: subcategoryName
-                }),
-                success: function () {
-                    alert('서브카테고리가 성공적으로 저장되었습니다.');
-                    $('#subcategoryModal').modal('hide');
-                    // 페이지 새로고침 또는 데이터 갱신 로직
-                    location.reload();
+                data: JSON.stringify(selectedCategories),
+                success: function (response) {
+                    if (response.success) {
+                        alert('카테고리가 성공적으로 수정되었습니다.');
+                        location.reload();
+                    } else {
+                        alert('카테고리를 수정하는 데 실패했습니다.');
+                    }
                 },
-                error: function (error) {
-                    console.error('서브카테고리를 저장하는 중 오류가 발생했습니다.', error);
-                    alert('서브카테고리를 저장하지 못했습니다.');
+                error: function () {
+                    alert('서버 오류로 인해 카테고리를 수정할 수 없습니다.');
                 }
             });
-        });
+        }
 
+        //카테고리 추가 로직
+        function addCategory() {
+            const categoryName = document.getElementById('newCategoryName').value.trim();
+
+            if (!categoryName) {
+                alert('카테고리 이름을 입력해주세요.');
+                return;
+            }
+
+            // AJAX 요청으로 새로운 카테고리 데이터 전송
+            $.ajax({
+                url: '/admin/categories',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ name: categoryName }),
+                success: function (response) {
+                    alert('새 카테고리가 성공적으로 추가되었습니다.');
+                    location.reload(); // 새로고침하여 추가된 카테고리 표시
+                },
+                error: function () {
+                    alert('새 카테고리를 추가하는 중 오류가 발생했습니다.');
+                }
+            });
+        }
+        function addSubCategory(categoryId) {
+            const subCategoryName = document.getElementById(`newSubCategoryName-${categoryId}`).value.trim();
+
+
+            if (!subCategoryName) {
+                alert('서브카테고리 이름을 입력해주세요.');
+                return;
+            }
+
+            // AJAX 요청으로 새로운 서브카테고리 추가
+            $.ajax({
+                url: `/admin/categories/${categoryId}/subcategories`,
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ name: subCategoryName }),
+                success: function () {
+                    alert('새 서브카테고리가 성공적으로 추가되었습니다.');
+                    location.reload(); // 새로고침으로 추가 반영
+                },
+                error: function () {
+                    alert('서브카테고리를 추가하는 중 오류가 발생했습니다.');
+                }
+            });
+        }
+
+        //서브카테고리 수정
+        function editSubCategory(subCategoryId) {
+            const subCategoryName = document.getElementById(`subCategoryName-${subCategoryId}`).value.trim();
+
+            if (!subCategoryName) {
+                alert('서브카테고리 이름을 입력해주세요.');
+                return;
+            }
+
+            $.ajax({
+                url: `/admin/categories/subcategories/${subCategoryId}/edit`,
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ name: subCategoryName }),
+                success: function () {
+                    alert('서브카테고리가 성공적으로 수정되었습니다.');
+                    location.reload();
+                },
+                error: function () {
+                    alert('서브카테고리를 수정하는 중 오류가 발생했습니다.');
+                }
+            });
+        }
+
+        //서브카테고리 삭제
+        function deleteSubCategory(subCategoryId) {
+            if (!confirm('정말 삭제하시겠습니까?')) {
+                return;
+            }
+
+            $.ajax({
+                url: `/admin/categories/subcategories/${subCategoryId}/delete`,
+                type: 'POST',
+                success: function () {
+                    alert('서브카테고리가 성공적으로 삭제되었습니다.');
+                    location.reload();
+                },
+                error: function () {
+                    alert('서브카테고리를 삭제하는 중 오류가 발생했습니다.');
+                }
+            });
+        }
+
+        //카테고리 검색
+        function searchCategories() {
+            const keyword = document.getElementById('searchKeyword').value.trim();
+
+            if (!keyword) {
+                alert('검색어를 입력하세요.');
+                return;
+            }
+
+            // AJAX 요청으로 검색 요청
+            $.ajax({
+                url: `/admin/categories/search`,
+                type: 'GET',
+                data: { keyword: keyword },
+                success: function (response) {
+                    // 검색 결과 렌더링
+                    const tbody = document.querySelector('table tbody');
+                    tbody.innerHTML = ''; // 기존 데이터 초기화
+
+                    response.forEach((category, index) => {
+                        const subCategoryCount = category.subCategory.length ? category.subCategory.length : 0; // 서브카테고리 개수 확인
+                        const row = `
+                <tr>
+                    <td><input type="checkbox" class="category-checkbox" data-id="${category.id}"></td>
+                    <td>${index + 1}</td>
+                    <td>${category.name}</td>
+                    <td>${subCategoryCount}</td>
+                    <td>
+                        <button class="btn btn-outline-secondary btn-sm"
+                                th:data-target="'#categoryDetailModal-' + ${category.id}"
+                                data-toggle="modal">서브카테고리 관리</button>
+                    </td>
+                </tr>`;
+                        tbody.insertAdjacentHTML('beforeend', row);
+                    });
+                },
+                error: function () {
+                    alert('검색 중 오류가 발생했습니다.');
+                }
+            });
+        }
     </script>
 
 </body>
