@@ -27,6 +27,7 @@ public class BookApiController {
     private final SubCategoryService subCategoryService;
     private final UserService userService;
     private final FileUploadService fileUploadService;
+    private final ReviewService reviewService;
 
     @ModelAttribute
     public void findUser(Model model) {
@@ -296,11 +297,22 @@ public class BookApiController {
         bookService.update(bookId, newBook);
         // 이미지 파일 경로 찾기
         String imagePath = fileUploadService.findImageFilePath(bookId, "book");
+        List<String> reviewImagePathList = new ArrayList<>();
+        List<Review> reviewList = reviewService.findAllByBookId(bookId);
+        for(Review review : reviewList){
+            String reviewImagePath = fileUploadService.findImageFilePath(review.getId(), "review");
+            if (imagePath != null) {
+                reviewImagePathList.add(reviewImagePath);
+            }else{
+                reviewImagePathList.add("");
+            }
+        }
         if (imagePath != null) {
             model.addAttribute("imagePath", imagePath);
         }else{
             model.addAttribute("imagePath", "");
         }
+        model.addAttribute("reviewImagePathList", reviewImagePathList);
         model.addAttribute("book", book);
         return "bookDetail";
     }
