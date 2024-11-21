@@ -31,6 +31,7 @@ public class ExchangeReturnService {
         ExchangeReturn newExchangeReturn = ExchangeReturn.builder()
                 .id(exchangeReturn.getId())
                 .user(exchangeReturn.getUser())
+                .orderItem(exchangeReturn.getOrderItem())
                 .category(exchangeReturn.getCategory())
                 .question(exchangeReturn.getQuestion())
                 .answer(exchangeReturn.getAnswer())

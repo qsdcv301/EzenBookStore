@@ -83,8 +83,8 @@ public class UserApiController {
                     .build();
             userService.create(newUser);
             findUser = newUser;
+            return "redirect:/user/info?first=true";
         }
-
         return "redirect:/book";
     }
 

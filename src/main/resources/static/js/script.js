@@ -41,6 +41,233 @@ $(document).ready(function () {
         });
     });
 
+    // signup
+    let currentStep = 1;
+    const totalSteps = 3;
+
+    // 현재 단계 표시 함수
+    function showStep(step) {
+        $('.step').each(function (index) {
+            if (index + 1 === step) {
+                $(this).addClass('active');
+            } else {
+                $(this).removeClass('active');
+            }
+        });
+
+        // 진행 바 업데이트
+        $('.progress-bar').css('width', `${(step / totalSteps) * 100}%`);
+        $('.progress-bar').text(`${step}/${totalSteps}`);
+    }
+
+    // "다음" 버튼 클릭 시 다음 단계로 이동
+    $('#nextBtn1').on('click', function () {
+        if (validateStep1()) {
+            currentStep++;
+            showStep(currentStep);
+            alert("약관 동의가 완료되었습니다.");
+        }
+    });
+
+    $('#nextBtn2').on('click', function () {
+        if (validateStep2()) {
+            const userIdCehck = $(this).attr("data-check");
+            if(userIdCehck === 0){
+                alert("아이디 중복검사를 진행 후 회원가입이 가능합니다.");
+                return;
+            }
+            const form = $('#step2');
+            const userId = form.find('#userId').val();
+            const name = form.find('#userName').val();
+            const password = form.find('#userPwCheck').val();
+            const tel = form.find('#userTel').val();
+            const birthday = form.find('#userBirth').val();
+            const addr = form.find('#addr').val();
+            const addrextra = form.find('#addrextra').val();
+            $.ajax({
+                type: 'POST',
+                url: `/signup`,
+                data:{
+                    email : userId,
+                    provider : "ezen",
+                    name : name,
+                    password: password,
+                    tel : tel,
+                    addr : addr,
+                    addrextra : addrextra,
+                    birthdayString: birthday,
+                },
+                success: function (response) {
+                    if (response.success) {
+                        alert("회원 가입에 성공했습니다.");
+                        currentStep++;
+                        showStep(currentStep);
+                    } else {
+                        alert("회원 가입에 실패 했습니다.");
+                    }
+                },
+                error: function () {
+                    alert("서버 오류가 발생했습니다.");
+                }
+            });
+        }
+    });
+
+    // "이전" 버튼 클릭 시 이전 단계로 이동
+    $('#prevBtn2').on('click', function () {
+        currentStep--;
+        showStep(currentStep);
+    });
+
+    // 초기 단계 표시
+    showStep(currentStep);
+
+    // "모든 약관 동의" 체크박스를 클릭했을 때
+    $('#allAgree').on('change', function () {
+        $('.agreement-checkbox').prop('checked', $('#allAgree').prop('checked'));
+    });
+
+    // 개별 약관 체크박스를 클릭했을 때 "모든 약관 동의" 상태 업데이트
+    $('.agreement-checkbox').on('change', function () {
+        $('#allAgree').prop('checked', $('.agreement-checkbox').filter(':checked').length === $('.agreement-checkbox').length);
+    });
+
+    // Step 1: 약관 동의 유효성 검사
+    function validateStep1() {
+        let isValid = true;
+        let errorMessage = "";
+
+        $('.agreement-checkbox').each(function () {
+            if ($(this).prop('required') && !$(this).prop('checked')) {
+                isValid = false;
+                $(this).addClass('is-invalid');
+                errorMessage += $(this).next().text() + " 에 동의해주세요.\n";
+            } else {
+                $(this).removeClass('is-invalid');
+            }
+        });
+
+        if (!isValid) {
+            alert(errorMessage);
+        }
+
+        return isValid;
+    }
+
+    // 이메일 실시간 유효성 검사
+    $('#userId').on('input', function () {
+        const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        const $feedbackMessage = $('#feedbackMessage');
+        if (!emailPattern.test($('#userId').val())) {
+            $(this).addClass('is-invalid').removeClass('is-valid');
+            $feedbackMessage.text('올바른 이메일 형식을 입력해주세요.');
+            $feedbackMessage.css("color", "#dc3545");
+        } else {
+            $(this).removeClass('is-invalid').addClass('is-valid');
+            $feedbackMessage.text('사용 가능한 아이디입니다.');
+
+            $feedbackMessage.css("color", "#28a745");
+        }
+        $feedbackMessage.css("display", "block");
+    });
+
+    // 비밀번호 실시간 유효성 검사
+    $('#userPw').on('input', function () {
+        const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+        if (!passwordPattern.test($('#userPw').val())) {
+            $('#userPw').addClass('is-invalid').removeClass('is-valid');
+        } else {
+            $('#userPw').removeClass('is-invalid').addClass('is-valid');
+        }
+
+        // 비밀번호 확인도 함께 실시간으로 검사
+        validatePasswordCheck();
+    });
+
+    // 비밀번호 확인 실시간 검사
+    $('#userPwCheck').on('input', validatePasswordCheck);
+
+    function validatePasswordCheck() {
+        if ($('#userPw').val() !== $('#userPwCheck').val()) {
+            $('#userPwCheck').addClass('is-invalid').removeClass('is-valid');
+        } else {
+            $('#userPwCheck').removeClass('is-invalid').addClass('is-valid');
+        }
+    }
+
+    // 전화번호 실시간 유효성 검사 및 하이픈 추가 기능
+    $('#userTel').on('input', function () {
+        let phoneValue = $('#userTel').val().replace(/[^0-9]/g, ''); // 숫자 이외의 문자는 제거
+
+        if (phoneValue.length > 3 && phoneValue.length <= 7) {
+            phoneValue = phoneValue.replace(/(\d{3})(\d{1,4})/, '$1-$2');
+        } else if (phoneValue.length > 7) {
+            phoneValue = phoneValue.replace(/(\d{3})(\d{4})(\d{1,4})/, '$1-$2-$3');
+        }
+
+        $('#userTel').val(phoneValue); // 포맷팅된 값을 다시 입력 필드에 넣음
+
+        const phonePattern = /^01[016789]-\d{3,4}-\d{4}$/; // 하이픈 포함된 형식으로 변경
+        if (!phonePattern.test(phoneValue)) {
+            $('#userTel').addClass('is-invalid').removeClass('is-valid');
+        } else {
+            $('#userTel').removeClass('is-invalid').addClass('is-valid');
+        }
+    });
+
+    // Step 2: 개인정보 입력 유효성 검사 함수 (다음 버튼 클릭 시)
+    function validateStep2() {
+        let isValid = true;
+        let errorMessage = "";
+
+        if (!$('#userId').hasClass('is-valid')) {
+            isValid = false;
+            errorMessage += "올바른 이메일 주소를 입력해주세요.\n";
+        }
+        if (!$('#userPw').hasClass('is-valid')) {
+            isValid = false;
+            errorMessage += "올바른 비밀번호를 입력해주세요.\n";
+        }
+        if (!$('#userPwCheck').hasClass('is-valid')) {
+            isValid = false;
+            errorMessage += "비밀번호가 일치하지 않습니다.\n";
+        }
+        if (!$('#userTel').hasClass('is-valid')) {
+            isValid = false;
+            errorMessage += "올바른 전화번호를 입력해주세요.\n";
+        }
+
+        if (!isValid) {
+            alert(errorMessage);
+        }
+
+        return isValid;
+    }
+
+    $('#checkDuplicateBtn').click(function (e) {
+        e.preventDefault();
+        const form = $('#step2');
+        const userId = form.find('#userId').val();
+        $.ajax({
+            type: 'POST',
+            url: `/duplication/${userId}`,
+            success: function (response) {
+                if (response.success) {
+                    alert("사용 불가능한 아이디입니다.");
+                    $('#nextBtn2').attr("data-check", "0");
+                    $('#checkDuplicateBtn').removeClass('btn-primary').addClass('btn-warning');
+                } else {
+                    alert("사용 가능한 아이디입니다.");
+                    $('#nextBtn2').attr("data-check", "1");
+                    $('#checkDuplicateBtn').removeClass('btn-warning').addClass('btn-success');
+                }
+            },
+            error: function () {
+                alert("서버 오류가 발생했습니다.");
+            }
+        });
+    });
+
     // customerService
     $('#userQnASelect').change(function () {
         const sort = $('#userQnASelect option:selected').val();
@@ -858,7 +1085,13 @@ $(document).ready(function () {
         });
     });
 
-//     info
+    //     info
+    const urlParams = new URLSearchParams(window.location.search);
+
+    if (urlParams.get('first') === 'true') {
+        alert("간편 로그인 회원입니다.\n원활한 이용을 위해 개인정보를 입력해주세요.");
+    }
+
     $('.userUpdate').on('click', function (event) {
         event.preventDefault(); // 폼 제출 기본 동작 방지
         const userId = $(this).attr('data-id');
@@ -886,7 +1119,7 @@ $(document).ready(function () {
             success: function (response) {
                 if (response.success) {
                     alert("회원 정보가 성공적으로 수정 되었습니다.")
-                    location.reload();
+                    location.replace("/user/info");
                 } else {
                     alert("회원 정보 수정중 오류가 발생했습니다.");
                     location.reload();
@@ -1025,7 +1258,7 @@ $(document).ready(function () {
                         const orderExchangeNreturnBtnDisabled = parseInt(response.orderItemListStatus[i]) !== 1 ? 'disabled' : '';
                         const reviewBtnDisabled = parseInt(response.orderItemListStatus[i]) !== 2 ? 'disabled' : '';
                         const row = `
-                    <tr class="text-center">
+                    <tr class="text-center orderItemsTable">
                         <td class="align-middle">
                             <img src="${response.imageList[i] || "https://via.placeholder.com/100"}" alt="책 표지" width="60" class="orderImage">
                         </td>
@@ -1090,10 +1323,65 @@ $(document).ready(function () {
         });
     }
 
-    // 환불/교환 요청 모달
+    // 반품/교환 요청 모달
+    $(document).on('click', '.orderExchangeNreturnBtn', function (e) {
+        const bookTitle = $(this).closest('.orderItemsTable').find('.orderTitle').text();
+        $('#exchangeReturnTitle').val(bookTitle);
+    });
+
+    $(document).on('click', '#submitExchangeReturn', function (e) {
+        e.preventDefault();
+        const form = $('#exchangeReturnForm'); // 폼을 직접 선택
+        const category = form.find('#exchangeReturnCategory option:selected').val(); // 선택된 값
+        const question = form.find('#exchangeReturnReason').val(); // 사유
+        const file = form.find('.exchangeReturnFile')[0]?.files[0]; // 파일 선택
+        if (category === "0") {
+            alert("교환/환불 유형을 선택해주세요.");
+            return;
+        }
+        if (question.trim() === "") {
+            alert("교환/환불 사유 내용을 작성 해주세요.");
+            return;
+        }
+        if (file == null) {
+            alert("교환/환불 사유 사진을 포함시켜주세요.");
+            return;
+        }
+
+        // FormData 객체 생성 및 데이터 추가
+        const formData = new FormData();
+        formData.append('category', category);
+        formData.append('question', question);
+        formData.append('file', file);
+
+        $.ajax({
+            url: '/er/add',
+            type: 'POST',
+            processData: false,
+            contentType: false,
+            data: formData,
+            success: function (response) {
+                if (response.success) {
+                    alert("교환/환불 신청을 했습니다.");
+                    location.reload();
+                } else {
+                    alert("교환/환불 신청에 실패했습니다.");
+                }
+            },
+            error: function () {
+                alert("서버 오류가 발생했습니다.");
+            }
+        });
+    });
+
+    $(document).on('change', '#exchangeReturnFile', function (e) {
+        // 파일 이름을 레이블에 표시
+        const fileName = $(this).val().split('\\').pop();
+        $(this).next('.custom-file-label').html(fileName);
+    });
 
     // 파일 유효성 검사 및 파일명 표시 (교환/반품 모달)
-    $('#imageFile').on('change', function () {
+    $(document).on('change', '#imageFile', function (e) {
         const file = this.files[0];
         const fileType = file.type;
         const validTypes = ['image/jpeg', 'image/png', 'image/gif'];

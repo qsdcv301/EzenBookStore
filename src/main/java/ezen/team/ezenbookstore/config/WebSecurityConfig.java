@@ -39,6 +39,8 @@ public class WebSecurityConfig {
                 // 폼 기반 로그인 설정
                 .formLogin(form -> form
                         .loginPage("/login")
+                        .usernameParameter("email")
+                        .passwordParameter("password")
                         .successHandler(customAuthenticationSuccessHandler)
                         .failureUrl("/login?error=true")
                 )
@@ -48,7 +50,7 @@ public class WebSecurityConfig {
                         .defaultSuccessUrl("/user/loginSuccess", true) // 로그인 성공 후 이동할 URL
                 )
                 .logout(logout -> logout
-                        .logoutSuccessUrl("/")
+                        .logoutSuccessUrl("/login")
                         .invalidateHttpSession(true)
                 )
                 .csrf(AbstractHttpConfigurer::disable); // CSRF 비활성화

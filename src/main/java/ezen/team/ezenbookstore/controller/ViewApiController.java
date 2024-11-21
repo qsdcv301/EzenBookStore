@@ -14,14 +14,18 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+
+import java.sql.Timestamp;
+import java.util.HashMap;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @Controller
@@ -68,6 +72,50 @@ public class ViewApiController {
         return "signup";
     }
 
+    @PostMapping("/signup")
+    public ResponseEntity<Map<String, Boolean>> signup(@ModelAttribute User user, @RequestParam(name = "birthdayString") String birthday) {
+        Map<String, Boolean> response = new HashMap<>();
+        try {
+            // 생일 문자열이 유효한지 확인
+            Timestamp convertedTimestamp = null;
+            if (birthday != null) {
+                String birthdayTime = birthday + " 00:00:00";
+                convertedTimestamp = Timestamp.valueOf(birthdayTime);
+            }
+            User newUser = User.builder()
+                    .provider(user.getProvider())
+                    .email(user.getEmail())
+                    .name(user.getName())
+                    .password(user.getPassword())
+                    .tel(user.getTel())
+                    .birthday(convertedTimestamp)
+                    .addr(user.getAddr())
+                    .addrextra(user.getAddrextra())
+                    .grade(1) //기본 회원 1
+                    .build();
+            userService.create(newUser);
+            response.put("success", true);
+            return ResponseEntity.ok(response); // 성공 시 200 OK와 함께 반환
+        } catch (Exception e) {
+            response.put("success", false);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response); // 예외 발생 시 500 오류 반환
+        }
+    }
+
+    @PostMapping("/duplication/{email}")
+    public ResponseEntity<Map<String, Boolean>> duplication(@PathVariable("email") String email) {
+        Map<String, Boolean> response = new HashMap<>();
+        try {
+            boolean findUser = userService.findByEmail(email) != null;
+            response.put("success", findUser);
+            return ResponseEntity.ok(response); // 성공 시 200 OK와 함께 반환
+        } catch (Exception e) {
+            response.put("success", false);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response); // 예외 발생 시 500 오류 반환
+        }
+    }
+
+
     @GetMapping("/findIdPassword")
     public String findIdPassword() {
         return "findIdPassword";
@@ -107,7 +155,7 @@ public class ViewApiController {
         Page<Notice> noticePaging = noticeService.findAll(noticePageable);
         model.addAttribute("notices", noticePaging.getContent());
         model.addAttribute("noticePage", noticePaging);
-        model.addAttribute("sort",sort);
+        model.addAttribute("sort", sort);
         return "customerService";
     }
 

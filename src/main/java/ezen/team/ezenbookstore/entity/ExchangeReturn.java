@@ -26,6 +26,10 @@ public class ExchangeReturn {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
+    @OneToOne
+    @JoinColumn(name = "orderitem_id", referencedColumnName = "id")
+    private OrderItem orderItem;
+
     @Column(name = "category")
     private Byte category;
 
