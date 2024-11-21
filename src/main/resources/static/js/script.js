@@ -41,6 +41,233 @@ $(document).ready(function () {
         });
     });
 
+    // signup
+    let currentStep = 1;
+    const totalSteps = 3;
+
+    // 현재 단계 표시 함수
+    function showStep(step) {
+        $('.step').each(function (index) {
+            if (index + 1 === step) {
+                $(this).addClass('active');
+            } else {
+                $(this).removeClass('active');
+            }
+        });
+
+        // 진행 바 업데이트
+        $('.progress-bar').css('width', `${(step / totalSteps) * 100}%`);
+        $('.progress-bar').text(`${step}/${totalSteps}`);
+    }
+
+    // "다음" 버튼 클릭 시 다음 단계로 이동
+    $('#nextBtn1').on('click', function () {
+        if (validateStep1()) {
+            currentStep++;
+            showStep(currentStep);
+            alert("약관 동의가 완료되었습니다.");
+        }
+    });
+
+    $('#nextBtn2').on('click', function () {
+        if (validateStep2()) {
+            const userIdCehck = $(this).attr("data-check");
+            if(userIdCehck === 0){
+                alert("아이디 중복검사를 진행 후 회원가입이 가능합니다.");
+                return;
+            }
+            const form = $('#step2');
+            const userId = form.find('#userId').val();
+            const name = form.find('#userName').val();
+            const password = form.find('#userPwCheck').val();
+            const tel = form.find('#userTel').val();
+            const birthday = form.find('#userBirth').val();
+            const addr = form.find('#addr').val();
+            const addrextra = form.find('#addrextra').val();
+            $.ajax({
+                type: 'POST',
+                url: `/signup`,
+                data:{
+                    email : userId,
+                    provider : "ezen",
+                    name : name,
+                    password: password,
+                    tel : tel,
+                    addr : addr,
+                    addrextra : addrextra,
+                    birthdayString: birthday,
+                },
+                success: function (response) {
+                    if (response.success) {
+                        alert("회원 가입에 성공했습니다.");
+                        currentStep++;
+                        showStep(currentStep);
+                    } else {
+                        alert("회원 가입에 실패 했습니다.");
+                    }
+                },
+                error: function () {
+                    alert("서버 오류가 발생했습니다.");
+                }
+            });
+        }
+    });
+
+    // "이전" 버튼 클릭 시 이전 단계로 이동
+    $('#prevBtn2').on('click', function () {
+        currentStep--;
+        showStep(currentStep);
+    });
+
+    // 초기 단계 표시
+    showStep(currentStep);
+
+    // "모든 약관 동의" 체크박스를 클릭했을 때
+    $('#allAgree').on('change', function () {
+        $('.agreement-checkbox').prop('checked', $('#allAgree').prop('checked'));
+    });
+
+    // 개별 약관 체크박스를 클릭했을 때 "모든 약관 동의" 상태 업데이트
+    $('.agreement-checkbox').on('change', function () {
+        $('#allAgree').prop('checked', $('.agreement-checkbox').filter(':checked').length === $('.agreement-checkbox').length);
+    });
+
+    // Step 1: 약관 동의 유효성 검사
+    function validateStep1() {
+        let isValid = true;
+        let errorMessage = "";
+
+        $('.agreement-checkbox').each(function () {
+            if ($(this).prop('required') && !$(this).prop('checked')) {
+                isValid = false;
+                $(this).addClass('is-invalid');
+                errorMessage += $(this).next().text() + " 에 동의해주세요.\n";
+            } else {
+                $(this).removeClass('is-invalid');
+            }
+        });
+
+        if (!isValid) {
+            alert(errorMessage);
+        }
+
+        return isValid;
+    }
+
+    // 이메일 실시간 유효성 검사
+    $('#userId').on('input', function () {
+        const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        const $feedbackMessage = $('#feedbackMessage');
+        if (!emailPattern.test($('#userId').val())) {
+            $(this).addClass('is-invalid').removeClass('is-valid');
+            $feedbackMessage.text('올바른 이메일 형식을 입력해주세요.');
+            $feedbackMessage.css("color", "#dc3545");
+        } else {
+            $(this).removeClass('is-invalid').addClass('is-valid');
+            $feedbackMessage.text('사용 가능한 아이디입니다.');
+
+            $feedbackMessage.css("color", "#28a745");
+        }
+        $feedbackMessage.css("display", "block");
+    });
+
+    // 비밀번호 실시간 유효성 검사
+    $('#userPw').on('input', function () {
+        const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+        if (!passwordPattern.test($('#userPw').val())) {
+            $('#userPw').addClass('is-invalid').removeClass('is-valid');
+        } else {
+            $('#userPw').removeClass('is-invalid').addClass('is-valid');
+        }
+
+        // 비밀번호 확인도 함께 실시간으로 검사
+        validatePasswordCheck();
+    });
+
+    // 비밀번호 확인 실시간 검사
+    $('#userPwCheck').on('input', validatePasswordCheck);
+
+    function validatePasswordCheck() {
+        if ($('#userPw').val() !== $('#userPwCheck').val()) {
+            $('#userPwCheck').addClass('is-invalid').removeClass('is-valid');
+        } else {
+            $('#userPwCheck').removeClass('is-invalid').addClass('is-valid');
+        }
+    }
+
+    // 전화번호 실시간 유효성 검사 및 하이픈 추가 기능
+    $('#userTel').on('input', function () {
+        let phoneValue = $('#userTel').val().replace(/[^0-9]/g, ''); // 숫자 이외의 문자는 제거
+
+        if (phoneValue.length > 3 && phoneValue.length <= 7) {
+            phoneValue = phoneValue.replace(/(\d{3})(\d{1,4})/, '$1-$2');
+        } else if (phoneValue.length > 7) {
+            phoneValue = phoneValue.replace(/(\d{3})(\d{4})(\d{1,4})/, '$1-$2-$3');
+        }
+
+        $('#userTel').val(phoneValue); // 포맷팅된 값을 다시 입력 필드에 넣음
+
+        const phonePattern = /^01[016789]-\d{3,4}-\d{4}$/; // 하이픈 포함된 형식으로 변경
+        if (!phonePattern.test(phoneValue)) {
+            $('#userTel').addClass('is-invalid').removeClass('is-valid');
+        } else {
+            $('#userTel').removeClass('is-invalid').addClass('is-valid');
+        }
+    });
+
+    // Step 2: 개인정보 입력 유효성 검사 함수 (다음 버튼 클릭 시)
+    function validateStep2() {
+        let isValid = true;
+        let errorMessage = "";
+
+        if (!$('#userId').hasClass('is-valid')) {
+            isValid = false;
+            errorMessage += "올바른 이메일 주소를 입력해주세요.\n";
+        }
+        if (!$('#userPw').hasClass('is-valid')) {
+            isValid = false;
+            errorMessage += "올바른 비밀번호를 입력해주세요.\n";
+        }
+        if (!$('#userPwCheck').hasClass('is-valid')) {
+            isValid = false;
+            errorMessage += "비밀번호가 일치하지 않습니다.\n";
+        }
+        if (!$('#userTel').hasClass('is-valid')) {
+            isValid = false;
+            errorMessage += "올바른 전화번호를 입력해주세요.\n";
+        }
+
+        if (!isValid) {
+            alert(errorMessage);
+        }
+
+        return isValid;
+    }
+
+    $('#checkDuplicateBtn').click(function (e) {
+        e.preventDefault();
+        const form = $('#step2');
+        const userId = form.find('#userId').val();
+        $.ajax({
+            type: 'POST',
+            url: `/duplication/${userId}`,
+            success: function (response) {
+                if (response.success) {
+                    alert("사용 불가능한 아이디입니다.");
+                    $('#nextBtn2').attr("data-check", "0");
+                    $('#checkDuplicateBtn').removeClass('btn-primary').addClass('btn-warning');
+                } else {
+                    alert("사용 가능한 아이디입니다.");
+                    $('#nextBtn2').attr("data-check", "1");
+                    $('#checkDuplicateBtn').removeClass('btn-warning').addClass('btn-success');
+                }
+            },
+            error: function () {
+                alert("서버 오류가 발생했습니다.");
+            }
+        });
+    });
+
     // customerService
     $('#userQnASelect').change(function () {
         const sort = $('#userQnASelect option:selected').val();
