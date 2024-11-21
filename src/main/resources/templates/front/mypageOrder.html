@@ -303,6 +303,18 @@
                 <div class="modal-body">
                     <form id="exchangeReturnForm" enctype="multipart/form-data">
                         <div class="form-group">
+                            <label for="exchangeReturnTitle">책제목:</label>
+                            <input class=" form-control" type="text" value="책제목" id="exchangeReturnTitle" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="exchangeReturnReason">교환/반품 선택:</label>
+                            <select class="form-control" name="" id="exchangeReturnCategory">
+                                <option value="0" selected disabled>선택</option>
+                                <option value="1">교환</option>
+                                <option value="2">반품</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
                             <label for="exchangeReturnReason">교환/반품 사유:</label>
                             <textarea class="form-control" id="exchangeReturnReason" name="reason" rows="3"
                                 required></textarea>

@@ -1025,7 +1025,7 @@ $(document).ready(function () {
                         const orderExchangeNreturnBtnDisabled = parseInt(response.orderItemListStatus[i]) !== 1 ? 'disabled' : '';
                         const reviewBtnDisabled = parseInt(response.orderItemListStatus[i]) !== 2 ? 'disabled' : '';
                         const row = `
-                    <tr class="text-center">
+                    <tr class="text-center orderItemsTable">
                         <td class="align-middle">
                             <img src="${response.imageList[i] || "https://via.placeholder.com/100"}" alt="책 표지" width="60" class="orderImage">
                         </td>
@@ -1090,10 +1090,65 @@ $(document).ready(function () {
         });
     }
 
-    // 환불/교환 요청 모달
+    // 반품/교환 요청 모달
+    $(document).on('click', '.orderExchangeNreturnBtn', function (e) {
+        const bookTitle = $(this).closest('.orderItemsTable').find('.orderTitle').text();
+        $('#exchangeReturnTitle').val(bookTitle);
+    });
+
+    $(document).on('click', '#submitExchangeReturn', function (e) {
+        e.preventDefault();
+        const form = $('#exchangeReturnForm'); // 폼을 직접 선택
+        const category = form.find('#exchangeReturnCategory option:selected').val(); // 선택된 값
+        const question = form.find('#exchangeReturnReason').val(); // 사유
+        const file = form.find('.exchangeReturnFile')[0]?.files[0]; // 파일 선택
+        if (category === "0") {
+            alert("교환/환불 유형을 선택해주세요.");
+            return;
+        }
+        if (question.trim() === "") {
+            alert("교환/환불 사유 내용을 작성 해주세요.");
+            return;
+        }
+        if (file == null) {
+            alert("교환/환불 사유 사진을 포함시켜주세요.");
+            return;
+        }
+
+        // FormData 객체 생성 및 데이터 추가
+        const formData = new FormData();
+        formData.append('category', category);
+        formData.append('question', question);
+        formData.append('file', file);
+
+        $.ajax({
+            url: '/er/add',
+            type: 'POST',
+            processData: false,
+            contentType: false,
+            data: formData,
+            success: function (response) {
+                if (response.success) {
+                    alert("교환/환불 신청을 했습니다.");
+                    location.reload();
+                } else {
+                    alert("교환/환불 신청에 실패했습니다.");
+                }
+            },
+            error: function () {
+                alert("서버 오류가 발생했습니다.");
+            }
+        });
+    });
+
+    $(document).on('change', '#exchangeReturnFile', function (e) {
+        // 파일 이름을 레이블에 표시
+        const fileName = $(this).val().split('\\').pop();
+        $(this).next('.custom-file-label').html(fileName);
+    });
 
     // 파일 유효성 검사 및 파일명 표시 (교환/반품 모달)
-    $('#imageFile').on('change', function () {
+    $(document).on('change', '#imageFile', function (e) {
         const file = this.files[0];
         const fileType = file.type;
         const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
