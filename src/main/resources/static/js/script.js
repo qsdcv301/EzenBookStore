@@ -1188,6 +1188,8 @@ $(document).ready(function () {
                     // 메인 모달 데이터 갱신
                     const ordersId = $('.orderId').text(); // 현재 모달에 표시된 주문 ID 가져오기
                     updateMainModalData(ordersId);
+                    // 모달 닫기
+                    $('#orderConfirmation').modal('hide');
                 } else {
                     alert("구매 확정중 오류가 발생했습니다.");
                 }
@@ -1293,6 +1295,8 @@ $(document).ready(function () {
                     // 메인 모달 데이터 갱신
                     const ordersId = $('.orderId').text(); // 현재 모달에 표시된 주문 ID 가져오기
                     updateMainModalData(ordersId);
+                    // 모달 닫기
+                    $('#reviewModal').modal('hide');
                 } else {
                     alert("리뷰 작성중 오류가 발생했습니다.");
                 }
