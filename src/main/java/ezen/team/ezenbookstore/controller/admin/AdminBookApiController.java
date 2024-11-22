@@ -1,8 +1,11 @@
 package ezen.team.ezenbookstore.controller.admin;
 
 import ezen.team.ezenbookstore.entity.Book;
+import ezen.team.ezenbookstore.entity.SubCategory;
 import ezen.team.ezenbookstore.service.BookService;
+import ezen.team.ezenbookstore.service.CategoryService;
 import ezen.team.ezenbookstore.service.FileUploadService;
+import ezen.team.ezenbookstore.service.SubCategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,6 +28,8 @@ public class AdminBookApiController {
 
     private final BookService bookService;
     private final FileUploadService fileUploadService;
+    private final CategoryService categoryService;
+    private final SubCategoryService subCategoryService;
 
     @GetMapping("")
     public String bookControl(Model model,
@@ -33,7 +38,11 @@ public class AdminBookApiController {
         Pageable pageable = PageRequest.of(page, size);  // Pageable 생성
         Page<Book> bookList = bookService.findAll(pageable);  // bookService에 Pageable 전달
 
+
         model.addAttribute("bookList", bookList);
+        model.addAttribute("categoryList", categoryService.findAll());
+        model.addAttribute("subCategoryList", subCategoryService.findAll());
+
 
         return "/admin/bookControl";
     }
