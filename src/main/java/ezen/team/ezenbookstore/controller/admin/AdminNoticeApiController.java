@@ -34,7 +34,7 @@ public class AdminNoticeApiController {
             noticePage = noticeService.searchByTitle(keyword, pageable);
         } else if ("content".equals(searchType)) {
             noticePage = noticeService.searchByContent(keyword, pageable);
-        } else {
+        }else {
             noticePage = noticeService.findAll(pageable); // 전체 조회
         }
 
@@ -94,24 +94,23 @@ public class AdminNoticeApiController {
         }
     }
 
-    @GetMapping("/searchTitle")
-    public String searchTitle(@RequestParam(required = false) String keyword,
-                              @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
-                              Model model) {
-        // 페이징 처리된 공지사항 리스트 조회
-        Page<Notice> noticePage = noticeService.searchByTitle(keyword, pageable);
-        model.addAttribute("noticePage", noticePage);
-        return "/admin/noticeControl";
+    @GetMapping("/search")
+    public ResponseEntity<Page<Notice>> searchNotices(
+            @RequestParam(required = false) String searchType,
+            @RequestParam(required = false) String keyword,
+            @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+
+        Page<Notice> noticePage;
+
+        if ("title".equals(searchType)) {
+            noticePage = noticeService.searchByTitle(keyword, pageable);
+        } else if ("content".equals(searchType)) {
+            noticePage = noticeService.searchByContent(keyword, pageable);
+        } else {
+            noticePage = noticeService.findAll(pageable); // 전체 조회
+        }
+
+        return ResponseEntity.ok(noticePage);
     }
 
-    @GetMapping("/searchContent")
-    public String searchContent(@RequestParam(required = false) String keyword,
-                                @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
-                                Model model) {
-        // 페이징 처리된 공지사항 리스트 조회
-        Page<Notice> noticePage = noticeService.searchByContent(keyword, pageable);
-        model.addAttribute("noticePage", noticePage);
-        return "/admin/noticeControl";
-
-    }
 }

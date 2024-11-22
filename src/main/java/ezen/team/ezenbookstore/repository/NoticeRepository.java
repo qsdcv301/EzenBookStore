@@ -16,4 +16,6 @@ public interface NoticeRepository extends JpaRepository<Notice, Long> {
     Page<Notice> findByTitleContaining(String keyword,Pageable pageable);
 
     Page<Notice> findByContentContaining(String keyword,Pageable pageable);
+
+    Page<Notice> findByTitleContainingOrContentContaining(String titleKeyword, String contentKeyword, Pageable pageable);
 }

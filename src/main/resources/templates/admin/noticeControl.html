@@ -2,234 +2,293 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>NNNNNNNNNNNNNNNotice</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>공지사항 관리</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <style>
-        .container{
-            display: flex;
-        }
-        .col-6{
-            width: 50%;
-        }
-        .hidden{
-            display: none;
-        }
-        .asdf{
-            background: #888;
-        }
-        .innerAsdf{
-            display: inline-block;
-            background: #eee;
-            border-radius: 3px;
-            border: 1px solid #000000;
-            padding: 20px;
-        }
-        .noticeTitle{
-            padding-right: 10px;
-            padding-left: 10px;
-        }
-        .noticeTitle::after{
-            content: "";
-            width: 2px;
-            color: #000;
-            height: 25px;
-            position: relative;
-        }
+        .container { margin-top: 20px; }
+        .table th, .table td { text-align: center; }
     </style>
 </head>
 <body>
 <div class="container">
-    <div class="col-6">
-        <h2>공지사항 관리</h2>
-        <form id="addNoticeForm">
-            <input type="text" id="title" placeholder="제목" required>
-            <textarea id="content" placeholder="내용" required></textarea>
-            <button type="button" id="addNotice">추가</button>
-            <br>
-            <select id="searchType">
-                <option value="title">제목</option>
-                <option value="content">내용</option>
-            </select>
-            <input type="text" id="keyword" placeholder="검색어를 입력하세요">
-            <button type="button" id="btnSearch">검색</button>
-        </form>
-        <table>
-            <tr>
-                <td>체크박스</td>
-                <td>notice번호</td>
-                <td class="noticeTitle">공지사항 제목</td>
-                <td>공지사항 내용</td>
-            </tr>
-            <tr th:each="noticePage : ${noticePage}">
-                <td class="notice-check">
-                    <input type="checkbox" id="noticeChecked" name="checkBoxNotice" />
-                    <label for="noticeChecked"></label>
-                </td>
-                <td class="noticeId" th:text="${noticePage.id}"></td>
-                <td class="noticeTitle" th:text="${noticePage.title}"></td>
-                <td class="noticeContent" th:text="${noticePage.content}"></td>
-                <td><button id='updateNotice'>수정</button></td>
-            </tr>
-        </table>
-        <button id='selectAllNotice'>일괄선택</button>
-        <button id='deleteNotice'>일괄삭제</button>
-        <!-- 페이징 -->
-        <div>
-            <!-- 이전 페이지 그룹 -->
-            <a th:if="${startPage > 0}"
-                    th:href="@{/admin/notice(page=${startPage - 1}, size=${noticePage.size}, keyword=${keyword}, searchType=${searchType})}">
-                이전
-            </a>
+    <h2>공지사항 관리</h2>
+    <p>공지사항 추가, 수정, 삭제 및 검색을 위한 관리 페이지입니다.</p>
 
-            <!-- 페이지 번호 그룹 -->
-            <span th:each="i : ${#numbers.sequence(startPage, endPage - 1)}">
-        <a th:href="@{/admin/notice(page=${i}, size=${noticePage.size}, keyword=${keyword}, searchType=${searchType})}"
-           th:text="${i + 1}"
-           th:classappend="${noticePage.number == i ? 'active' : ''}"></a>
-    </span>
+    <!-- 공지사항 추가 버튼 -->
+    <button type="button" class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#addNoticeModal">공지사항 추가</button>
 
-            <!-- 다음 페이지 그룹 -->
-            <a th:if="${endPage < noticePage.totalPages}"
-                    th:href="@{/admin/notice(page=${endPage}, size=${noticePage.size}, keyword=${keyword}, searchType=${searchType})}">
-                다음
-            </a>
-        </div>
+    <!-- 검색 영역 -->
+    <form id="searchForm" class="d-flex mb-3">
+        <select id="searchType" class="form-select me-2" style="width: 150px;">
+            <option value="title">제목</option>
+            <option value="content">내용</option>
+        </select>
+        <input type="text" id="keyword" class="form-control me-2" placeholder="검색어를 입력하세요">
+        <button type="button" id="btnSearch" class="btn btn-primary">검색</button>
+    </form>
 
+    <!-- 공지사항 목록 -->
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>선택</th>
+            <th>공지사항 번호</th>
+            <th>제목</th>
+            <th>내용</th>
+            <th>수정</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="notice : ${noticePage}">
+            <td><input type="checkbox" name="checkBoxNotice"></td>
+            <td th:text="${notice.id}">1</td>
+            <td th:text="${notice.title}">공지사항 제목</td>
+            <td th:text="${notice.content}">공지사항 내용</td>
+            <td>
+                <button type="button" class="btn btn-warning btn-sm edit-btn" data-bs-toggle="modal" data-bs-target="#editNoticeModal">수정</button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- 페이징 -->
+    <div class="d-flex justify-content-center">
+        <nav>
+            <ul class="pagination">
+                <li th:if="${startPage > 0}" class="page-item">
+                    <a class="page-link" th:href="@{/admin/notice(page=${startPage - 1}, size=${noticePage.size}, keyword=${keyword}, searchType=${searchType})}">이전</a>
+                </li>
+                <li th:each="i : ${#numbers.sequence(startPage, endPage - 1)}" class="page-item">
+                    <a class="page-link" th:href="@{/admin/notice(page=${i}, size=${noticePage.size}, keyword=${keyword}, searchType=${searchType})}" th:text="${i + 1}"></a>
+                </li>
+                <li th:if="${endPage < noticePage.totalPages}" class="page-item">
+                    <a class="page-link" th:href="@{/admin/notice(page=${endPage}, size=${noticePage.size}, keyword=${keyword}, searchType=${searchType})}">다음</a>
+                </li>
+            </ul>
+        </nav>
     </div>
 
-    <div class="col-6 hidden asdf" id="editForm">
-        <div class="innerAsdf">
-            <p>제목</p>
-            <input type="text" id="editTitle">
-            <p>내용</p>
-            <textarea id="editContent"></textarea>
-            <button type="button" id="saveUpdate">수정</button>
+    <!-- 일괄 선택/삭제 -->
+    <div class="mt-3">
+        <button id="selectAllNotice" class="btn btn-secondary">일괄 선택</button>
+        <button id="deleteNotice" class="btn btn-danger">일괄 삭제</button>
+    </div>
+</div>
+
+<!-- 공지사항 추가 모달 -->
+<div class="modal fade" id="addNoticeModal" tabindex="-1" aria-labelledby="addNoticeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addNoticeModalLabel">공지사항 추가</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addNoticeForm">
+                    <div class="mb-3">
+                        <label for="addTitle" class="form-label">제목</label>
+                        <input type="text" class="form-control" id="addTitle" placeholder="공지사항 제목을 입력하세요" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="addContent" class="form-label">내용</label>
+                        <textarea class="form-control" id="addContent" rows="5" placeholder="공지사항 내용을 입력하세요" required></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                <button type="button" class="btn btn-primary" id="saveAddNotice">추가</button>
+            </div>
         </div>
     </div>
 </div>
-<!-- 스크립트 부분 -->
+
+<!-- 공지사항 수정 모달 -->
+<div class="modal fade" id="editNoticeModal" tabindex="-1" aria-labelledby="editNoticeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editNoticeModalLabel">공지사항 수정</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editNoticeForm">
+                    <div class="mb-3">
+                        <label for="editTitle" class="form-label">제목</label>
+                        <input type="text" class="form-control" id="editTitle" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editContent" class="form-label">내용</label>
+                        <textarea class="form-control" id="editContent" rows="5" required></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                <button type="button" class="btn btn-primary" id="saveEditNotice">저장</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
-    // 공지사항 등록 처리 ajax
-    $("#addNotice").click(function () {
-        const title = $('#title').val();
-        const content = $('#content').val();
+    // 공지사항 추가 처리
+    $('#saveAddNotice').click(function () {
+        const title = $('#addTitle').val().trim();
+        const content = $('#addContent').val().trim();
 
-        if (title && content) {
-            $.ajax({
-                url: '/admin/notice/add',
-                type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify({ title: title, content: content }),
-                success: function (res) {
-                    alert('공지사항이 추가되었습니다.');
-                    location.reload(); // 성공 시 페이지 새로고침
-                },
-                error: function (xhr, status, error) {
-                    console.error('에러',xhr,status,error);
-                    alert('공지사항 등록 실패');
-                }
-            });
-        } else {
+        if (!title || !content) {
             alert('제목과 내용을 입력해주세요.');
+            return;
         }
+
+        $.ajax({
+            url: '/admin/notice/add',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ title: title, content: content }),
+            success: function () {
+                alert('공지사항이 추가되었습니다.');
+                $('#addNoticeModal').modal('hide');
+                location.reload();
+            },
+            error: function () {
+                alert('공지사항 추가에 실패했습니다.');
+            }
+        });
     });
 
-    // '수정' 버튼 클릭 시 하단 입력 폼에 데이터 전송
-    $(document).on('click', '#updateNotice', function () {
+    // 공지사항 수정 버튼 클릭
+    $(document).on('click', '.edit-btn', function () {
         const row = $(this).closest('tr');
-        const noticeId = row.find('.noticeId').text();
-        const noticeTitle = row.find('.noticeTitle').text();
-        const noticeContent = row.find('.noticeContent').text();
+        const id = row.find('td:nth-child(2)').text();
+        const title = row.find('td:nth-child(3)').text();
+        const content = row.find('td:nth-child(4)').text();
 
-        // 하단 입력 폼에 데이터 채우기
-        $('#editTitle').val(noticeTitle);
-        $('#editContent').val(noticeContent);
-        $('#editForm').removeClass('hidden').data('id', noticeId);
+        $('#editTitle').val(title);
+        $('#editContent').val(content);
+        $('#editNoticeForm').data('id', id);
     });
 
-    // 수정된 공지사항을 서버로 전송하는 ajax 요청
-    $('#saveUpdate').click(function () {
-        const noticeId = $('#editForm').data('id');
-        const updatedTitle = $('#editTitle').val();
-        const updatedContent = $('#editContent').val();
+    // 공지사항 수정 처리
+    $('#saveEditNotice').click(function () {
+        const id = $('#editNoticeForm').data('id');
+        const title = $('#editTitle').val().trim();
+        const content = $('#editContent').val().trim();
 
-        if (updatedTitle && updatedContent) {
-            $.ajax({
-                url: '/admin/notice/update',
-                type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify({
-                    id: noticeId,
-                    title: updatedTitle,
-                    content: updatedContent
-                }),
-                success: function (res) {
-                    alert('공지사항이 수정되었습니다.');
-                    location.reload(); // 수정 후 페이지 새로고침
-                },
-                error: function (xhr, status, error) {
-                    console.error("에러", error);
-                    alert("공지사항 수정 실패");
-                }
-            });
-        } else {
-            alert('수정할 제목과 내용을 입력해주세요.');
+        if (!title || !content) {
+            alert('제목과 내용을 입력해주세요.');
+            return;
         }
+
+        $.ajax({
+            url: '/admin/notice/update',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ id: id, title: title, content: content }),
+            success: function () {
+                alert('공지사항이 수정되었습니다.');
+                $('#editNoticeModal').modal('hide');
+                location.reload();
+            },
+            error: function () {
+                alert('공지사항 수정에 실패했습니다.');
+            }
+        });
     });
-    // 공지사항 체크박스를 일괄 선택하기
-    $('#selectAllNotice').click(function() {
-        const atLeastCheckNotice = $('input[name="checkBoxNotice"]:checked').length>0;
 
-        // 모든 체크박스가 선택되어 있으면 해제, 그렇지 않으면 선택
-        $('input[name="checkBoxNotice"]').prop('checked', !atLeastCheckNotice);
-
-        // 버튼 텍스트 변경
-        $(this).text(atLeastCheckNotice ? '일괄 선택' : '선택 해제');
+    // 일괄 선택 처리
+    $('#selectAllNotice').click(function () {
+        const isChecked = $('input[name="checkBoxNotice"]').length === $('input[name="checkBoxNotice"]:checked').length;
+        $('input[name="checkBoxNotice"]').prop('checked', !isChecked);
+        $(this).text(isChecked ? '일괄 선택' : '선택 해제');
     });
 
-
-    // 선택된 공지사항 일괄 삭제
+    // 일괄 삭제 처리
     $('#deleteNotice').click(function () {
         const selectedIds = [];
         $('input[name="checkBoxNotice"]:checked').each(function () {
-            const noticeId = $(this).closest('tr').find('.noticeId').text();
-            selectedIds.push(noticeId);
+            const id = $(this).closest('tr').find('td:nth-child(2)').text();
+            selectedIds.push(id);
         });
 
-        if (selectedIds.length > 0) {
+        if (selectedIds.length === 0) {
+            alert('삭제할 공지사항을 선택해주세요.');
+            return;
+        }
+
+        if (confirm('선택된 공지사항을 삭제하시겠습니까?')) {
             $.ajax({
                 url: '/admin/notice/delete',
                 type: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify(selectedIds),
-                success: function (res) {
+                success: function () {
                     alert('선택된 공지사항이 삭제되었습니다.');
                     location.reload();
                 },
-                error: function (xhr, status, error) {
-                    console.error('삭제 오류', error);
-                    alert('공지사항 삭제 실패');
+                error: function () {
+                    alert('공지사항 삭제에 실패했습니다.');
                 }
             });
-        } else {
-            alert('삭제할 공지사항을 선택해주세요.');
         }
     });
-    $("#btnSearch").click(function () {
+    // 검색 버튼 클릭 시 AJAX 요청
+    $('#btnSearch').click(function () {
         const searchType = $('#searchType').val(); // 검색 유형 (title/content)
-        const keyword = $('#keyword').val(); // 검색어
+        const keyword = $('#keyword').val().trim(); // 검색어
 
-        if (keyword.trim() === '') {
+        if (!keyword) {
             alert('검색어를 입력해주세요.');
             return;
         }
 
-        // 검색 요청 URL 생성 및 이동
-        const url = `/admin/notice?searchType=${searchType}&keyword=${keyword}&page=0`;
-        location.href = url;
+        // AJAX 요청
+        $.ajax({
+            url: '/admin/notice/search', // 검색을 처리하는 URL
+            type: 'GET',
+            data: { searchType: searchType, keyword: keyword, page: 0 }, // 검색 파라미터
+            success: function (response) {
+                console.log('검색 결과:', response);
+                renderTable(response.content); // 검색 결과 테이블 렌더링
+            },
+            error: function (xhr, status, error) {
+                console.error('검색 오류:', error);
+                alert('검색에 실패했습니다.');
+            }
+        });
     });
+
+    // 검색 결과를 테이블에 렌더링
+    function renderTable(notices) {
+        const tableBody = $('table tbody');
+        tableBody.empty(); // 기존 테이블 내용 비우기
+
+        if (notices.length === 0) {
+            tableBody.append('<tr><td colspan="5" class="text-center">검색 결과가 없습니다.</td></tr>');
+            return;
+        }
+
+        // 검색 결과 데이터를 테이블에 추가
+        notices.forEach(notice => {
+            const row = `
+            <tr>
+                <td><input type="checkbox" name="checkBoxNotice"></td>
+                <td>${notice.id}</td>
+                <td>${notice.title}</td>
+                <td>${notice.content}</td>
+                <td>
+                    <button type="button" class="btn btn-warning btn-sm edit-btn" data-bs-toggle="modal" data-bs-target="#editNoticeModal">수정</button>
+                </td>
+            </tr>
+        `;
+            tableBody.append(row);
+        });
+    }
+
 </script>
 </body>
 </html>
