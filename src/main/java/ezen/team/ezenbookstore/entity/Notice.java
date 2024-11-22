@@ -22,10 +22,10 @@ public class Notice {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "title",nullable = false ,length = 255)
+    @Column(name = "title")
     private String title;
 
-    @Column(name = "content",nullable = false)
+    @Column(name = "content")
     private String content;
 
     @Column(name = "create_at")

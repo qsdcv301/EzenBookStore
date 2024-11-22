@@ -16,8 +16,12 @@
                         <h4>구매하실 상품</h4>
                         <div class="modal-items"></div>
                     </div>
-                    <form class="col-6">
+                    <div class="col-6 paymentInfo">
                         <h5>배송지 정보</h5>
+                        <div class="mb-3">
+                            <label class="form-label">아이디</label>
+                            <input th:value="${user.email}" type="text" class="form-control payment-email" required readonly>
+                        </div>
                         <div class="mb-3">
                             <label class="form-label">이름</label>
                             <input th:value="${user.name}" type="text" class="form-control payment-name" required>
@@ -49,7 +53,7 @@
                             <p class="mt-3">결제 수단</p>
                             <div class="col">
                                 <button id="bank-transfer" class="col-md-5 btn btn-primary btn-lg me-2">무통장 입금</button>
-                                <button id="credit-card" class="col-md-5 btn btn-success btn-lg">신용 카드</button>
+                                <button id="credit-card" class="col-md-5 btn btn-success btn-lg">카드 & 간편 결제</button>
                             </div>
                         </div>
                         <hr>
@@ -62,12 +66,12 @@
                             <p>총 결제 금액: <span id="order-final-total"></span></p>
                             <div id="order-deduction-summary" class="pl-5 text-muted"></div>
                         </div>
-                    </form>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">취소</button>
-                <button type="button" class="btn btn-primary confirmPurchase">결제 하기</button>
+                <button class="btn btn-primary confirmPurchase">결제 하기</button>
             </div>
         </div>
     </div>

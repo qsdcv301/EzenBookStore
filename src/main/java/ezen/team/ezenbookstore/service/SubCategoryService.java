@@ -66,5 +66,4 @@ public class SubCategoryService {
         subCategoryRepository.save(subCategory);
     }
 
-
 }
