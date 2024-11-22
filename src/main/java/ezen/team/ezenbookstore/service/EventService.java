@@ -8,6 +8,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -42,11 +44,28 @@ public class EventService{
     public void delete(Long id){
         eventRepository.deleteById(id);
     }
-    public Page<Event> searchByTitle(String keyword, Pageable pageable) {
-        return eventRepository.findByTitleContaining(keyword,pageable);
+
+    // 시작 전 이벤트 조회
+    public Page<Event> findUpcomingEvents(Pageable pageable) {
+        return eventRepository.findByStartDateAfter(new Timestamp(System.currentTimeMillis()).toLocalDateTime(), pageable);
     }
 
-    public Page<Event> searchByContent(String keyword,Pageable pageable) {
-        return eventRepository.findByContentContaining(keyword,pageable);
+    // 진행 중 이벤트 조회
+    public Page<Event> findOngoingEvents(Pageable pageable) {
+        Timestamp now = new Timestamp(System.currentTimeMillis());
+        return eventRepository.findByStartDateBeforeAndEndDateAfter(now.toLocalDateTime(), now.toLocalDateTime(), pageable);
+    }
+
+    // 종료된 이벤트 조회
+    public Page<Event> findEndedEvents(Pageable pageable) {
+        return eventRepository.findByEndDateBefore(new Timestamp(System.currentTimeMillis()).toLocalDateTime(), pageable);
+    }
+
+    public Page<Event> searchByContent(String keyword, Pageable pageable) {
+        return eventRepository.findByContentContaining(keyword, pageable);
+    }
+
+    public Page<Event> searchByTitle(String keyword, Pageable pageable) {
+        return eventRepository.findByTitleContaining(keyword, pageable);
     }
 }

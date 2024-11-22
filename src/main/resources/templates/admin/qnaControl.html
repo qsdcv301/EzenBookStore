@@ -2,9 +2,88 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>QnA Control</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.min.js"></script>
+    <style>
+        .container{
+            display: flex;
+        }
+        .col-8{
+            width: 66.6667%;
+        }
+        .col-4{
+            width: 33.333333%;
+        }
+        .hidden{
+            display: none;
+        }
+    </style>
 </head>
 <body>
+    <div class="container">
+        <div class="col-8">
+            <table>
+                <tr>
+                    <td>체크박스</td>
+                    <td>QnA 아이디</td>
+                    <td>유저 이름</td>
+                    <td>질문 카테고리</td>
+                    <td>질문 제목</td>
+                    <td>질문 내용</td>
+                    <td>질문 답변</td>
+                    <td>질문 시간</td>
+                </tr>
+                <tr th:each="qnAPage : ${qnAPage}">
+                    <td> <input type="checkbox" name="checkBoxQnA"></td>
+                    <td th:text="${qnAPage.id}"></td>
+                    <td th:text="${qnAPage.user.name}"></td>
+                    <td th:text="${qnAPage.category}"></td>
+                    <td th:text="${qnAPage.title}"></td>
+                    <td th:text="${qnAPage.question}"></td>
+                    <td th:text="${qnAPage.answer}"></td>
+                    <td th:text="${qnAPage.createAt}"></td>
+                </tr>
+            </table>
+            <!-- 페이징 -->
+            <div>
+                <!-- 이전 페이지 그룹 -->
+                <a th:if="${startPage > 0}"
+                   th:href="@{/admin/qna(page=${startPage - 1}, size=${qnAPage.size}, keyword=${keyword}, searchType=${searchType})}">
+                    이전
+                </a>
 
+                <!-- 페이지 번호 그룹 -->
+                <span th:each="i : ${#numbers.sequence(startPage, endPage - 1)}">
+                <a th:href="@{/admin/qna(page=${i}, size=${qnAPage.size}, keyword=${keyword}, searchType=${searchType})}"
+                   th:text="${i + 1}"
+                   th:classappend="${qnAPage.number == i ? 'active' : ''}"></a>
+                </span>
+                <!-- 다음 페이지 그룹 -->
+                <a th:if="${endPage < qnAPage.totalPages}"
+                   th:href="@{/admin/qna(page=${endPage}, size=${qnAPage.size}, keyword=${keyword}, searchType=${searchType})}">
+                    다음
+                </a>
+            </div>
+        </div>
+        <div class="col-4 hidden" id="editForm">
+            <div clsss="" th:each="qnAPage : ${qnAPage}">
+                <p>유저 이름</p>
+                <p th:text="${qnAPage.user.name}"></p>
+                <p>질문 카테고리</p>
+                <p th:text="${qnAPage.category}"></p>
+                <p>질문 제목</p>
+                <p th:text="${qnAPage.title}"></p>
+                <p>질문 내용</p>
+                <p th:text="${qnAPage.question}"></p>
+                <p>질문 시간</p>
+                <p th:text="${qnAPage.createAt}"></p>
+                <p>질문 답변</p>
+                <textarea id="editAnswer"></textarea>
+                <button id="editQnA">질문답변</button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

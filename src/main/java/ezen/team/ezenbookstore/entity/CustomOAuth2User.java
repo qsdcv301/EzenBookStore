@@ -58,13 +58,13 @@ public class CustomOAuth2User implements OAuth2User {
     public String getProvider() {
         if (oauth2User.getAttributes().containsKey("response")) {
             // 네이버의 경우
-            return "naver";
+            return "네이버";
         } else if (oauth2User.getAttributes().containsKey("kakao_account")) {
             // 카카오의 경우
-            return "kakao";
+            return "카카오";
         } else {
             // 구글의 경우
-            return "google";
+            return "구글";
         }
     }
 }

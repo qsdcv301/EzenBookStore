@@ -3,6 +3,8 @@ package ezen.team.ezenbookstore.service;
 import ezen.team.ezenbookstore.entity.Review;
 import ezen.team.ezenbookstore.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -44,6 +46,17 @@ public class ReviewService {
 
     public List<Review> findAllByUserId(Long userId) {
         return reviewRepository.findAllByUserId(userId);
+    }
+
+    public List<Review> findAllByBookId(Long bookId) {
+        return reviewRepository.findAllByBookId(bookId);
+    }
+    // 모든 리뷰 조회 (페이지네이션)
+    public Page<Review> findAll(Pageable pageable) {
+        return reviewRepository.findAll(pageable);
+    }
+    public List<Review> findAllByBookIdAndUserId(Long bookId, Long userId) {
+        return reviewRepository.findAllByBookIdAndUserId(bookId, userId);
     }
 
 }

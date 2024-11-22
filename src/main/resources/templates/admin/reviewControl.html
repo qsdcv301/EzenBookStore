@@ -1,10 +1,104 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Review Control</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.min.js"></script>
+    <style>
+        .reviewTable {
+            width: 90%;
+            border-collapse: collapse;
+            margin: 20px auto;
+        }
+        .reviewTable th, .reviewTable td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+        .reviewTable th {
+            background-color: #f4f4f4;
+        }
+    </style>
 </head>
 <body>
+<div class="container">
+    <h2>리뷰 관리</h2>
+    <!-- 검색 폼 -->
+    <form method="get" action="/admin/review/search">
+        <select name="type">
+            <option value="book">책 제목</option>
+            <option value="user">작성자</option>
+        </select>
+        <input type="text" name="keyword" placeholder="검색어를 입력하세요">
+        <button type="submit">검색</button>
+    </form>
+<!-- 리뷰 테이블 -->
+<table class="reviewTable">
+    <thead>
+    <tr>
+        <th>체크박스</th>
+        <th>리뷰 ID</th>
+        <th>책 제목</th>
+        <th>작성자</th>
+        <th>평점</th>
+        <th>리뷰 제목</th>
+        <th>리뷰 내용</th>
+        <th>작성일</th>
+    </tr>
+    </thead>
+    <tbody>
+    <!-- 리뷰 목록 반복 -->
+    <tr th:each="review : ${reviewList}">
+        <td><input type="checkbox" name="checkBoxReview"></td>
+        <td class="reviewId" th:text="${review.id}"></td>
+        <td th:text="${review.book.title}"></td>
+        <td th:text="${review.user.name}"></td>
+        <td th:text="${review.rating}"></td>
+        <td th:text="${review.title}"></td>
+        <td th:text="${review.comment}"></td>
+        <td th:text="${#dates.format(review.createAt,'yyyy-MM-dd HH:mm')}"></td>
+    </tr>
+    </tbody>
+</table>
+    <button type="button" id="selectAllReview">일괄 선택</button>
+    <button type="button" id="deleteReview">선택 삭제</button>
+</div>
+<!-- 스크립트 부분 -->
+<script>
+    $('#selectAllReview').click(function () {
+        //allCheckReview = $('input[name="checkBoxReview"]:checked').length === $('input[name="checkBoxReview"]').length;
+        atLeastOneCheckReview=$('input[name="checkBoxReview"]:checked').length > 0;
+        //console.log(atLeastOneCheckReview);
+        //선택된 체크박스가 없을시 전체선택
+            $('input[name="checkBoxReview"]').prop('checked', !atLeastOneCheckReview);
 
+            $(this).text(atLeastOneCheckReview  ? '일괄 선택' : '선택 해제');
+    });
+    $('#deleteReview').click(function(){
+        const selectedIds=[];
+        $('input[name="checkBoxReview"]:checked').each(function () {
+            const reviewId = $(this).closest('tr').find('.reviewId').text();
+            selectedIds.push(reviewId);
+        });
+        if(selectedIds.length>0){
+            $.ajax({
+                url: '/admin/review/delete',
+                type: 'post',
+                contentType: 'application/json',
+                data: JSON.stringify(selectedIds),
+                success: function(res){
+                    alert("선택한 리뷰가 삭제되었습니다.");
+                    location.reload();
+                },
+                error:function (xhr,status,error) {
+                    console.log("삭제오류"+error);
+                    alert("리뷰 삭제 실패");
+                }
+            });
+        }
+    });
+</script>
 </body>
 </html>

@@ -30,4 +30,7 @@ public class OrderItem {
     @Column(name = "quantity")
     private Integer quantity;
 
+    @Column(name = "status")
+    private Byte status;
+
 }

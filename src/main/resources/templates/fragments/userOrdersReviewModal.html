@@ -1,0 +1,71 @@
+<div th:fragment="userOrdersReviewModal" class="modal fade" id="reviewModal" tabindex="-1" role="dialog" aria-labelledby="reviewModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="reviewModalLabel">리뷰 작성</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <!-- 상품 정보 섹션 추가 -->
+        <div class="product-info mb-4">
+          <h6>상품 정보</h6>
+          <div class="card mb-3">
+            <div class="row no-gutters">
+              <div class="col-md-5 p-3">
+                <img src="" class="card-img orderReviewImg p-3" alt="" style="width: 145px; height: 200px;">
+              </div>
+              <div class="col-md-7">
+                <div class="card-body">
+                  <h5 class="card-title mb-5" id="reviewProductTitle"></h5>
+                  <p class="card-text mb-3"><strong>저자:</strong> <span
+                          id="reviewProductAuthor"></span></p>
+                  <p class="card-text mb-3"><strong>출판사:</strong> <span
+                          id="reviewProductPublisher"></span></p>
+                  <p class="card-text mb-0"><strong>가격:</strong> <span
+                          id="reviewProductPrice"></span></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <form id="reviewForm">
+          <div class="form-group">
+            <p>별점:</p>
+            <div id="ratingStars">
+              <i class="bi bi-star" data-rating="1"></i>
+              <i class="bi bi-star" data-rating="2"></i>
+              <i class="bi bi-star" data-rating="3"></i>
+              <i class="bi bi-star" data-rating="4"></i>
+              <i class="bi bi-star" data-rating="5"></i>
+            </div>
+            <input type="hidden" id="ratingValue" name="rating" required>
+          </div>
+          <div class="form-group">
+            <label for="reviewTitle">리뷰 제목:</label>
+            <input class="form-control" id="reviewTitle" required>
+          </div>
+          <div class="form-group">
+            <label for="reviewText">리뷰 내용:</label>
+            <textarea class="form-control" id="reviewText" name="reviewText" rows="5"
+                      required></textarea>
+          </div>
+          <div class="form-group">
+            <label for="reviewFile">첨부 파일:</label>
+            <div class="custom-file">
+              <input type="file" class="custom-file-input" id="reviewFile" name="reviewFile">
+              <label class="custom-file-label" for="reviewFile">파일 선택</label>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <input type="hidden" id="reviewBookId">
+        <button class="btn btn-primary" id="submitReview">리뷰 제출</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+      </div>
+    </div>
+  </div>
+</div>

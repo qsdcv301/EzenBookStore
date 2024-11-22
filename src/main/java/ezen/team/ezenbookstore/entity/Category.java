@@ -15,6 +15,7 @@ import java.util.List;
 @DynamicInsert
 @DynamicUpdate
 @Builder
+@ToString
 @Table(name = "category")
 public class Category {
 
@@ -26,6 +27,7 @@ public class Category {
     private String name;
 
     @OneToMany(mappedBy = "category")
+    @ToString.Exclude
     @JsonIgnore
     List<SubCategory> subCategory;
 

@@ -1,0 +1,206 @@
+<div th:fragment="userOrders">
+  <h2>주문내역</h2>
+  <!-- 필터 및 검색 개선 -->
+  <div class="card mb-4">
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <div class="input-group">
+            <input type="text" class="form-control searchKeyword"
+                   th:placeholder="${keyword == null} ? '상품명으로 검색' : ${keyword}">
+            <div class="input-group-append">
+              <button class="btn btn-outline-secondary searchKeywordBtn" type="button">
+                <i class="bi bi-search"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 mb-3">
+          <button class="btn btn-outline-primary" type="button" data-toggle="collapse"
+                  data-target="#advancedSearch">
+            고급 검색 <i class="bi bi-chevron-down"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="collapse mt-3" id="advancedSearch">
+        <div class="row">
+          <div class="col-md-4 mb-3">
+            <label for="dateRange">기간 선택</label>
+            <select class="form-control" id="dateRange">
+              <option value="">전체</option>
+              <option value="1">최근 1개월</option>
+              <option value="3">최근 3개월</option>
+              <option value="6">최근 6개월</option>
+              <option value="custom">직접 입력</option>
+            </select>
+          </div>
+          <div class="col-md-4 mb-3">
+            <label for="deliveryStatus">배송 상태</label>
+            <select class="form-control" id="deliveryStatus">
+              <option value="">전체</option>
+              <option value="preparing">배송 준비중</option>
+              <option value="shipping">배송중</option>
+              <option value="delivered">배송 완료</option>
+            </select>
+          </div>
+          <div class="col-md-4 mb-3">
+            <label for="orderStatus">주문 상태</label>
+            <select class="form-control" id="orderStatus">
+              <option value="">전체</option>
+              <option value="cancelled">주문 취소</option>
+              <option value="exchange">교환/반품 신청</option>
+              <option value="completed">결제 완료</option>
+            </select>
+          </div>
+        </div>
+        <div id="customDateRange" class="row mt-3" style="display: none;">
+          <div class="col-md-6 mb-3">
+            <label for="startDate">시작일</label>
+            <input type="date" class="form-control" id="startDate">
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="endDate">종료일</label>
+            <input type="date" class="form-control" id="endDate">
+          </div>
+        </div>
+        <div class="row mt-3">
+          <div class="col-12">
+            <button class="btn btn-primary" type="button" id="applyFilters">필터
+              적용
+            </button>
+            <button class="btn btn-secondary" type="button"
+                    id="resetFilters">초기화
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 적용된 필터 태그 -->
+  <div id="appliedFilters" class="mb-3">
+                        <span class="badge badge-primary mr-2" th:unless="${startDate ==null && endDate==null}">
+                            <span th:text="'기간: '+${startDate}+'~'+${endDate} "></span><i class="bi bi-x-circle"></i>
+                        </span>
+    <span class="badge badge-primary mr-2" th:unless="${dateRange.isEmpty()}">
+                            <span th:text="'기간: 최근 ' + ${dateRange} + '개월'"></span><i class="bi bi-x-circle"></i>
+                        </span>
+    <span class="badge badge-primary mr-2" th:unless="${deliveryStatus.isEmpty()}">
+                            <span th:switch="${deliveryStatus}">
+                                <span th:case="'preparing'">배송 상태: 배송 준비중</span>
+                                <span th:case="'shipping'">배송 상태: 배송중</span>
+                                <span th:case="'delivered'">배송 상태: 배송 완료</span>
+                            </span><i class="bi bi-x-circle"></i>
+                        </span>
+    <span class="badge badge-primary mr-2" th:unless="${orderStatus.isEmpty()}">
+                            <span th:switch="${orderStatus}">
+                                <span th:case="'cancelled'">주문 상태: 주문 취소</span>
+                                <span th:case="'exchange'">주문 상태: 교환/반품 신청</span>
+                                <span th:case="'completed'">주문 상태: 결제 완료</span>
+                            </span><i class="bi bi-x-circle"></i>
+                        </span>
+  </div>
+
+  <!-- 주문 목록 테이블 -->
+  <table class="table table-striped">
+    <thead>
+    <tr>
+      <th>주문번호</th>
+      <th>주문일자</th>
+      <th>상품정보</th>
+      <th>주문금액</th>
+      <th>배송상태</th>
+      <th>주문상태</th>
+      <th>상세보기</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr class="orderData" th:each="order:${orderList}">
+      <td th:text="${order.id}"></td>
+      <td th:text="${#dates.format(order.orderDate, 'yyyy-MM-dd')}"></td>
+      <td class="text-truncate" style="max-width: 220px;"
+          th:title="${order.orderItems.get(0).book.title}+' 외 '+${order.orderItems.size() -1 +'건'}"
+          th:text="${order.orderItems.get(0).book.title}+' 외 '+${order.orderItems.size() -1 +'건'}">
+      </td>
+      <td th:text="${order.orderItems.get(0).book.price}" class="price"></td>
+      <td>
+        <div th:switch="${order.delivery.status}">
+          <span th:case="1">배송 준비중</span>
+          <span th:case="2">배송중</span>
+          <span th:case="3">배송 완료</span>
+        </div>
+      </td>
+      <td>
+        <div th:switch="${order.status}">
+          <span th:case="1">주문 취소</span>
+          <span th:case="2">교환/반품 신청</span>
+          <span th:case="3">결제 완료</span>
+        </div>
+      </td>
+      <td>
+        <button class="btn btn-sm btn-info orderDetailBtn" data-toggle="modal"
+                data-target="#orderDetailModal" th:data-id="${order.id}">
+          상세보기
+        </button>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+
+  <th:block th:if="${orderPage != null and orderPage.totalElements > 0}">
+    <!-- 페이징 -->
+    <nav aria-label="Page navigation" class="mt-4">
+      <ul class="pagination justify-content-center">
+        <!-- 첫 페이지 버튼 -->
+        <li class="page-item" th:classappend="${orderPage.first} ? 'disabled' : ''">
+          <a class="page-link"
+             th:href="@{/user/info(orderPage=0,keywrod=${keyword},direction=${direction},deliveryStatus=${deliveryStatus},orderStatus=${orderStatus},dateRange=${dateRange},startDate=${startDate},endDate=${endDate})}"
+             aria-label="First">
+            << 처음
+          </a>
+        </li>
+
+        <!-- 이전 페이지 버튼 -->
+        <li class="page-item"
+            th:classappend="${orderPage.hasPrevious} ? '' : 'disabled'">
+          <a class="page-link"
+             th:href="@{/user/info(orderPage=${orderPage.number -1},keywrod=${keyword},direction=${direction},deliveryStatus=${deliveryStatus},orderStatus=${orderStatus},dateRange=${dateRange},startDate=${startDate},endDate=${endDate})}"
+             aria-label="Previous">
+            이전
+          </a>
+        </li>
+
+        <!-- 페이지 번호 버튼 (최대 5개까지 보이도록 설정) -->
+        <li class="page-item"
+            th:each="i : ${#numbers.sequence(
+                                                                    orderPage.totalPages <= 5 ? 0 : (orderPage.number <= 2 ? 0 : (orderPage.number >= orderPage.totalPages - 3 ? orderPage.totalPages - 5 : orderPage.number - 2)),
+                                                                    orderPage.totalPages <= 5 ? orderPage.totalPages - 1 : (orderPage.number <= 2 ? 4 : (orderPage.number >= orderPage.totalPages - 3 ? orderPage.totalPages - 1 : orderPage.number + 2))
+                                                                    )}"
+            th:classappend="${orderPage.number == i} ? 'active' : ''">
+          <a class="page-link"
+             th:href="@{/user/info(orderPage=${i},keywrod=${keyword},direction=${direction},deliveryStatus=${deliveryStatus},orderStatus=${orderStatus},dateRange=${dateRange},startDate=${startDate},endDate=${endDate})}"
+             th:text="${i + 1}"></a>
+        </li>
+
+        <!-- 다음 페이지 버튼 -->
+        <li class="page-item" th:classappend="${orderPage.hasNext} ? '' : 'disabled'">
+          <a class="page-link"
+             th:href="@{/user/info(orderPage=${orderPage.number +1},keywrod=${keyword},direction=${direction},deliveryStatus=${deliveryStatus},orderStatus=${orderStatus},dateRange=${dateRange},startDate=${startDate},endDate=${endDate})}"
+             aria-label="Next">
+            다음
+          </a>
+        </li>
+
+        <!-- 맨 뒤 페이지 버튼 -->
+        <li class="page-item" th:classappend="${orderPage.last} ? 'disabled' : ''">
+          <a class="page-link"
+             th:href="@{/user/info(orderPage=${orderPage.totalPages -1},keywrod=${keyword},direction=${direction},deliveryStatus=${deliveryStatus},orderStatus=${orderStatus},dateRange=${dateRange},startDate=${startDate},endDate=${endDate})}"
+             aria-label="Last">
+            끝 >>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </th:block>
+</div>

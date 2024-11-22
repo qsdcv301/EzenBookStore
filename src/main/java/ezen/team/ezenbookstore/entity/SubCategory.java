@@ -12,6 +12,7 @@ import org.hibernate.annotations.DynamicUpdate;
 @DynamicInsert
 @DynamicUpdate
 @Builder
+@ToString
 @Table(name = "subcategory")
 public class SubCategory {
 
@@ -20,6 +21,7 @@ public class SubCategory {
     private Long id;
 
     @ManyToOne
+    @ToString.Exclude
     @JoinColumn(name = "category_id", referencedColumnName = "id")
     private Category category;
 

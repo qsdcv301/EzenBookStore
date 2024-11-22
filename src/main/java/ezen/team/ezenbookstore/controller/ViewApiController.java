@@ -4,6 +4,7 @@ import ezen.team.ezenbookstore.entity.CustomOAuth2User;
 import ezen.team.ezenbookstore.entity.Notice;
 import ezen.team.ezenbookstore.entity.QnA;
 import ezen.team.ezenbookstore.entity.User;
+import ezen.team.ezenbookstore.service.FileUploadService;
 import ezen.team.ezenbookstore.service.NoticeService;
 import ezen.team.ezenbookstore.service.QnAService;
 import ezen.team.ezenbookstore.service.UserService;
@@ -14,14 +15,18 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+
+import java.sql.Timestamp;
+import java.util.HashMap;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @Controller
@@ -30,6 +35,7 @@ public class ViewApiController {
     private final NoticeService noticeService;
     private final QnAService qnAService;
     private final UserService userService;
+    private final FileUploadService fileUploadService;
 
     @ModelAttribute
     public void findUser(Model model) {
@@ -68,6 +74,51 @@ public class ViewApiController {
         return "signup";
     }
 
+    @PostMapping("/signup")
+    public ResponseEntity<Map<String, Boolean>> signup(@ModelAttribute User user, @RequestParam(name =
+            "birthdayString") String birthday) {
+        Map<String, Boolean> response = new HashMap<>();
+        try {
+            // 생일 문자열이 유효한지 확인
+            Timestamp convertedTimestamp = null;
+            if (birthday != null) {
+                String birthdayTime = birthday + " 00:00:00";
+                convertedTimestamp = Timestamp.valueOf(birthdayTime);
+            }
+            User newUser = User.builder()
+                    .provider(user.getProvider())
+                    .email(user.getEmail())
+                    .name(user.getName())
+                    .password(user.getPassword())
+                    .tel(user.getTel())
+                    .birthday(convertedTimestamp)
+                    .addr(user.getAddr())
+                    .addrextra(user.getAddrextra())
+                    .grade(1) //기본 회원 1
+                    .build();
+            userService.create(newUser);
+            response.put("success", true);
+            return ResponseEntity.ok(response); // 성공 시 200 OK와 함께 반환
+        } catch (Exception e) {
+            response.put("success", false);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response); // 예외 발생 시 500 오류 반환
+        }
+    }
+
+    @PostMapping("/duplication/{email}")
+    public ResponseEntity<Map<String, Boolean>> duplication(@PathVariable("email") String email) {
+        Map<String, Boolean> response = new HashMap<>();
+        try {
+            boolean findUser = userService.findByEmail(email) != null;
+            response.put("success", findUser);
+            return ResponseEntity.ok(response); // 성공 시 200 OK와 함께 반환
+        } catch (Exception e) {
+            response.put("success", false);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response); // 예외 발생 시 500 오류 반환
+        }
+    }
+
+
     @GetMapping("/findIdPassword")
     public String findIdPassword() {
         return "findIdPassword";
@@ -101,14 +152,28 @@ public class ViewApiController {
             model.addAttribute("questionList", qPaging.getContent());
             model.addAttribute("qnaPage", qPaging);
         } catch (Exception e) {
-            e.printStackTrace();
+           System.out.println();
         }
         Pageable noticePageable = PageRequest.of(noticePage, size, Sort.by(sortDirection, "id"));
         Page<Notice> noticePaging = noticeService.findAll(noticePageable);
         model.addAttribute("notices", noticePaging.getContent());
         model.addAttribute("noticePage", noticePaging);
-        model.addAttribute("sort",sort);
+        model.addAttribute("sort", sort);
         return "customerService";
+    }
+
+    @GetMapping("/notice")
+    public String notice(@RequestParam(name = "id") Long id,
+                         Model model) {
+        try {
+            Notice notice = noticeService.findById(id);
+            String noticeImagePath = fileUploadService.findImageFilePath(id, "notice");
+            model.addAttribute("notice", notice);
+            model.addAttribute("noticeImagePath", noticeImagePath);
+            return "noticeEvent";
+        } catch (Exception e) {
+            return "redirect:/logout";
+        }
     }
 
 }

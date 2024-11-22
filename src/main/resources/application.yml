@@ -1,3 +1,5 @@
+server:
+  port: 8080
 spring:
   servlet:
     multipart:
@@ -63,6 +65,7 @@ spring:
       mail.smtp.ssl.enable: true
 file:
   upload-dir: C:/ezenBookStore/images
+#  upload-dir: /opt/ezenBookStore/images
 #jwt:
 #  issuer:
 #  secret_key:

@@ -138,17 +138,13 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public Page<User> findByGrade(Integer grade, Pageable pageable) {
-        return userRepository.findByGrade(grade, pageable);
+    // 이메일로 사용자 목록 검색하기
+    public List<User> findUsersByEmail(String email) {
+        return userRepository.findByEmailContainingIgnoreCase(email);
     }
 
-    public Page<User> searchUsers(String type, String keyword, Pageable pageable) {
-        if ("email".equals(type)) {
-            return userRepository.findByEmailContaining(keyword, pageable);
-        } else if ("name".equals(type)) {
-            return userRepository.findByNameContaining(keyword, pageable);
-        } else {
-            return userRepository.findAll(pageable); // 기본값: 모든 회원
-        }
+    // 이름으로 사용자 목록 검색하기
+    public List<User> findUsersByName(String name) {
+        return userRepository.findByNameContainingIgnoreCase(name);
     }
 }
