@@ -16,4 +16,13 @@ public interface QnARepository extends JpaRepository<QnA, Long> {
 
     Page<QnA> findAllByUserIdAndCategory(Long userId, Byte category, Pageable pageable);
 
+    Page<QnA> findByCategory(Byte category, Pageable pageable);
+
+    Page<QnA> findByAnswerNot(Pageable pageable, String s);
+
+    Page<QnA> findByAnswer(Pageable pageable, String s);
+
+    Page<QnA> findByCategoryAndAnswerNot(Byte category, String s, Pageable pageable);
+
+    Page<QnA> findByCategoryAndAnswer(Byte category, String s, Pageable pageable);
 }

@@ -7,23 +7,28 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @Controller
 @RequestMapping("/admin/qna")
 public class AdminQnAApiController {
 
-    private final QnAService qnAService;
+    private final QnAService qnaService;
 
-    @GetMapping("")
+    // QnA 목록 조회 및 카테고리 필터링
+    @GetMapping
     public String qnAControl(@PageableDefault(size = 15, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
-                            Model model) {
-        Page<QnA> qnAPage = qnAService.findAll(pageable);
+                             Model model) {
+        Page<QnA> qnAPage = qnaService.findAll(pageable);
+
         int totalPages = qnAPage.getTotalPages(); // 총 페이지 수
         int currentPage = qnAPage.getNumber();
         int pageGroupSize = 10; // 페이지 그룹 크기
@@ -35,33 +40,66 @@ public class AdminQnAApiController {
         model.addAttribute("endPage", endPage);
         return "/admin/qnaControl";
     }
-    //
-    // QnA 상세 조회 (답변 작성 시 조회)
-    @PostMapping("/detail")
-    public String getQnADetail(@RequestParam Long qnaId) {
-        // 특정 QnA 상세 조회 로직
-        return "redirect:/admin/qna"; // 상세 페이지로 리다이렉트
-    }
-
-    // QnA 삭제
-//    @PostMapping("/delete")
-//    public String deleteQnA(@RequestParam Long qnaId) {
-//        // QnA 삭제 로직
-//        return "redirect:/admin/qna"; // 답변 삭제 후 QnA 목록 페이지로 리다이렉트
+// 구현중
+//    @PostMapping("/filter")
+//    public  ResponseEntity<Page<QnA>> filterQnAList(
+//                @RequestBody Map<String, String> filterData,
+//                @PageableDefault(size = 15, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+//        Byte category = Byte.valueOf(filterData.getOrDefault("category", "all"));
+//        String status = filterData.getOrDefault("status", "all");
+//
+//        Page<QnA> qnaPage;
+//        // 필터 조건 처리
+//        if ("answered".equals(status)) {
+//            // 답변 완료 필터
+//            qnaPage = qnaService.findAnsweredQnA(pageable,category);
+//        } else if ("pending".equals(status)) {
+//            // 답변 대기중 필터
+//            qnaPage = qnaService.findPendingQnA(parseCategory(category), pageable);
+//        } else if (!"all".equals(category)) {
+//            // 카테고리 필터
+//            qnaPage = qnaService.findByCategory(parseCategory(category), pageable);
+//        } else {
+//            // 전체 조회
+//            qnaPage = qnaService.findAll(pageable);
+//        }
+//        return ResponseEntity.ok(qnaPage);
 //    }
 
-    // QnA 답변 작성
-    @PostMapping("/answer")
-    public String addAnswer(@RequestParam Long qnaId, @RequestParam String answerContent) {
-        // QnA 답변 작성 로직
-        return "redirect:/admin/qna"; // 답변 작성 후 QnA 목록 페이지로 리다이렉트
+    // QnA 상세 조회
+    @GetMapping("/{id}")
+    public ResponseEntity<QnA> getQnADetail(@PathVariable Long id) {
+        QnA qna = qnaService.findById(id);
+        if (qna != null) {
+            return ResponseEntity.ok(qna);
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
     }
 
-    // QnA 답변 삭제 << 필요하면
-//    @PostMapping("/answer/delete")
-//    public String deleteAnswer(@RequestParam Long qnaId) {
-//        // QnA 답변 삭제 로직
-//        return "redirect:/admin/qna"; // 답변 삭제 후 QnA 목록 페이지로 리다이렉트
-//    }
+    // QnA 답변 저장
+    @PostMapping("/{id}/answer")
+    public ResponseEntity<String> saveAnswer(@PathVariable Long id, @RequestBody Map<String, String> request) {
+        String answer = request.get("answer");
+        boolean updated = qnaService.saveAnswer(id, answer);
 
+        if (updated) {
+            return ResponseEntity.ok("답변이 저장되었습니다.");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("QnA를 찾을 수 없습니다.");
+        }
+    }
+
+    // QnA 일괄 답변 저장
+    @PostMapping("/bulk-answer")
+    public ResponseEntity<String> bulkAnswer(@RequestBody Map<String, Object> request) {
+        List<Long> ids = (List<Long>) request.get("ids");
+        String answer = (String) request.get("answer");
+
+        if (ids == null || ids.isEmpty() || answer == null || answer.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("잘못된 요청입니다.");
+        }
+
+        qnaService.bulkAnswer(ids, answer);
+        return ResponseEntity.ok("일괄 답변이 완료되었습니다.");
+    }
 }
