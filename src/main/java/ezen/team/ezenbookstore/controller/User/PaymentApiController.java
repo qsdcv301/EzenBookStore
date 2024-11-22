@@ -57,7 +57,6 @@ public class PaymentApiController {
                                                                @RequestParam(name = "addr") String addr,
                                                                @RequestParam(name = "addrextra") String addrextra,
                                                                @RequestParam(name = "tel") String tel,
-                                                               @RequestParam(name = "method") Byte method,
                                                                @RequestParam(name = "amount") Long amount,
                                                                @RequestParam(name = "titleList") List<String> titleList,
                                                                @RequestParam(name = "quantityList") List<Integer> quantityList,
@@ -81,7 +80,6 @@ public class PaymentApiController {
             Payment payment = Payment.builder()
                     .user(user)
                     .amount(amount)
-                    .method(method)
                     .status((byte) 1)
                     .paymentCode(paymentCode)
                     .build();

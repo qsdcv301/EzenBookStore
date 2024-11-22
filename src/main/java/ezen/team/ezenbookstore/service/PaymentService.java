@@ -31,7 +31,6 @@ public class PaymentService {
                 .user(payment.getUser())
                 .paymentDate(payment.getPaymentDate())
                 .amount(payment.getAmount())
-                .method(payment.getMethod())
                 .status(payment.getStatus())
                 .paymentCode(payment.getPaymentCode())
                 .build();

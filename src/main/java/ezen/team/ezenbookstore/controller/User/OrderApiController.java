@@ -106,9 +106,9 @@ public class OrderApiController {
 
             // 주문 상태를 변환
             String status = switch (order.getStatus()) {
-                case 1 -> "주문 취소";
-                case 2 -> "교환/반품 신청";
-                case 3 -> "결제 완료";
+                case 1 -> "주문 완료";
+                case 2 -> "주문 취소";
+                case 3 -> "교환/반품 신청";
                 default -> "기타";
             };
             String deliveryStatus = switch (order.getDelivery().getStatus()) {
@@ -117,10 +117,9 @@ public class OrderApiController {
                 case 3 -> "배송 완료";
                 default -> "기타";
             };
-            String paymentMethod = switch (order.getPayment().getMethod()) {
-                case 1 -> "무통장 입금";
-                case 2 -> "카드 결제";
-                case 3 -> "간편 결제";
+            String paymentStatus = switch (order.getPayment().getStatus()) {
+                case 1 -> "결제 완료";
+                case 2 -> "결제 취소";
                 default -> "기타";
             };
 
@@ -132,9 +131,9 @@ public class OrderApiController {
             response.put("deliveryName", deliveryName);
             response.put("deliveryTel", deliveryTel);
             response.put("paymentAmount", formattedPaymentAmount);
+            response.put("paymentStatus", paymentStatus);
             response.put("status", status);
             response.put("deliveryStatus", deliveryStatus);
-            response.put("paymentMethod", paymentMethod);
 
             response.put("success", "true");
             return ResponseEntity.ok(response); // 성공 시 200 OK와 함께 반환
