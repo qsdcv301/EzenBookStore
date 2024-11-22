@@ -825,7 +825,6 @@ $(document).ready(function () {
                             quantityList: quantityList,
                             cartIdList: cartIdList,
                             amount: amount,
-                            method: 2,
                             userName: userName,
                             addr: userAddr,
                             addrextra: userAddrextra,
@@ -1389,7 +1388,7 @@ $(document).ready(function () {
                     $('.deliveryTracking').text(response.deliveryTracking || "");
 
                     // 결제 정보 설정
-                    $('.paymentMethod').text(response.paymentMethod || "");
+                    $('.paymentStatus').text(response.paymentStatus || "");
                     $('.paymentAmount').text(response.paymentAmount || "");
 
                     if (orderStatusCheck === 0) {

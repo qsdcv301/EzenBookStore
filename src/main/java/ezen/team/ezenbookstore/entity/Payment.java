@@ -32,9 +32,6 @@ public class Payment {
     @Column(name = "amount")
     private Long amount;
 
-    @Column(name = "method")
-    private Byte method;
-
     @Column(name = "status")
     private Byte status;
 
