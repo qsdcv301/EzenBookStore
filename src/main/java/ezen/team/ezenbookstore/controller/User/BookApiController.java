@@ -294,7 +294,7 @@ public class BookApiController {
                 .bookdescription(book.getBookdescription())
                 .review(book.getReview())
                 .build();
-        bookService.update(bookId, newBook);
+        bookService.update(newBook);
         // 이미지 파일 경로 찾기
         String imagePath = fileUploadService.findImageFilePath(bookId, "book");
         List<String> reviewImagePathList = new ArrayList<>();

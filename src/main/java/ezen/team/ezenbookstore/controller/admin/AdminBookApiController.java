@@ -83,7 +83,7 @@ public class AdminBookApiController {
     @PutMapping("/update")
     @ResponseBody
     public ResponseEntity<Book> updateBook(@RequestBody Book book) {
-        Book updatedBook = bookService.update(book.getId(), book);
+        Book updatedBook = bookService.update(book);
         return ResponseEntity.ok(updatedBook);
     }
 

@@ -40,9 +40,9 @@ public class BookService {
         return bookRepository.save(book);
     }
 
-    public Book update(Long id, Book book) {
+    public Book update(Book book) {
         Book newBook = Book.builder()
-                .id(id)
+                .id(book.getId())
                 .title(book.getTitle())
                 .author(book.getAuthor())
                 .publisher(book.getPublisher())
@@ -93,11 +93,11 @@ public class BookService {
         return bookRepository.findAllByIfkr(ifkr);
     }
 
-    public List<Book> findAllByCategoryId(Long categoryId){
+    public List<Book> findAllByCategoryId(Long categoryId) {
         return bookRepository.findAllByCategoryId(categoryId);
     }
 
-    public List<Book> findAllBySubcategoryId(Long subcategoryId){
+    public List<Book> findAllBySubcategoryId(Long subcategoryId) {
         return bookRepository.findAllBySubcategoryId(subcategoryId);
     }
 
@@ -111,6 +111,10 @@ public class BookService {
 
     public Page<Book> findAllByIfkr(byte ifkr, Pageable pageable) {
         return bookRepository.findAllByIfkr(ifkr, pageable);
+    }
+
+    public Book findByTitle(String title) {
+        return bookRepository.findByTitle(title).orElse(null);
     }
 
 }

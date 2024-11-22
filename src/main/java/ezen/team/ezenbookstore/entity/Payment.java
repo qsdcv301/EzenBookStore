@@ -27,16 +27,18 @@ public class Payment {
     private User user;
 
     @Column(name = "payment_date")
-    @CreationTimestamp
     private Timestamp paymentDate;
 
     @Column(name = "amount")
-    private Integer amount;
+    private Long amount;
 
     @Column(name = "method")
     private Byte method;
 
     @Column(name = "status")
     private Byte status;
+
+    @Column(name = "payment_code")
+    private String paymentCode;
 
 }

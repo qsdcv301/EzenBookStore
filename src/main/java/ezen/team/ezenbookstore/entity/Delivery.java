@@ -26,7 +26,6 @@ public class Delivery {
     private String trackingNum;
 
     @Column(name = "start_date")
-    @CreationTimestamp
     private Timestamp startDate;
 
     @Column(name = "end_date")
