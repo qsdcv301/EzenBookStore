@@ -37,11 +37,7 @@ public class Orders {
     private Payment payment;
 
     @Column(name = "orders_date")
-    @CreationTimestamp
     private Timestamp orderDate;
-
-    @Column(name = "total_price")
-    private Integer totalPrice;
 
     @Column(name = "status")
     private Byte status;

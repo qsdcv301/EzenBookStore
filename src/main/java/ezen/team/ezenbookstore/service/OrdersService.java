@@ -28,14 +28,13 @@ public class OrdersService {
         return orderRepository.save(order);
     }
 
-    public Orders update(Long id, Orders order) {
+    public Orders update(Orders order) {
         Orders newOrder = Orders.builder()
-                .id(id)
+                .id(order.getId())
                 .user(order.getUser())
                 .delivery(order.getDelivery())
                 .payment(order.getPayment())
                 .orderDate(order.getOrderDate())
-                .totalPrice(order.getTotalPrice())
                 .status(order.getStatus())
                 .build();
         return orderRepository.save(newOrder);

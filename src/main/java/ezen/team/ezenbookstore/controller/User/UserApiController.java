@@ -116,7 +116,7 @@ public class UserApiController {
         if (storedCode != null && storedCode.equals(verificationCode) && user != null) {
             try {
                 User findUser = userService.findByEmailAndTel(user.getEmail(), user.getTel());
-                if (!findUser.getProvider().equals("ezen")) {
+                if (!findUser.getProvider().equals("이젠")) {
                     response.put("success", "false");
                     response.put("error", "간편 로그인 회원입니다.");
                     return ResponseEntity.ok(response);
@@ -332,19 +332,31 @@ public class UserApiController {
                 case "delivered":
                     deliveryStatus = 3;
                     break;
+                case "preparingReturn":
+                    deliveryStatus = 4;
+                    break;
+                case "Returning":
+                    deliveryStatus = 5;
+                    break;
+                case "Returned":
+                    deliveryStatus = 6;
+                    break;
+                default:
+                    deliveryStatus = 0;
+                    break;
             }
         }
 
         Byte orderStatus = null;
         if (orderStatusParam != null && !orderStatusParam.isEmpty()) {
             switch (orderStatusParam) {
-                case "cancelled":
+                case "completed":
                     orderStatus = 1;
                     break;
-                case "exchange":
+                case "cancelled":
                     orderStatus = 2;
                     break;
-                case "completed":
+                case "exchange":
                     orderStatus = 3;
                     break;
             }
@@ -377,7 +389,6 @@ public class UserApiController {
         model.addAttribute("endDate", endDate);
         model.addAttribute("sort", sort);
         model.addAttribute("direction", direction);
-
         model.addAttribute("questionList", qPaging.getContent());
         model.addAttribute("qnaPage", qPaging);
         return "info";
