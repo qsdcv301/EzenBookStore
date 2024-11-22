@@ -60,4 +60,48 @@ public class QnAService {
         return qnARepository.findAllByUserIdAndCategory(userId, category, pageable);
     }
 
+    public Page<QnA> findByCategory(Byte category, Pageable pageable) {
+        // 카테고리로 QnA를 검색하는 로직
+        return qnARepository.findByCategory(category, pageable);
+    }
+
+    public boolean saveAnswer(Long id, String answer) {
+        // 특정 QnA에 답변 저장
+        QnA qna = findById(id); // QnA를 조회
+        if (qna != null) {
+            qna.setAnswer(answer); // 답변 설정
+            qnARepository.save(qna); // 저장
+            return true; // 성공적으로 저장된 경우
+        }
+        return false; // QnA를 찾지 못한 경우
+    }
+
+    public void bulkAnswer(List<Long> ids, String answer) {
+        // 여러 QnA에 동일한 답변 저장
+        List<QnA> qnaList = qnARepository.findAllById(ids); // ID 리스트로 QnA 조회
+        for (QnA qna : qnaList) {
+            qna.setAnswer(answer); // 답변 설정
+        }
+        qnARepository.saveAll(qnaList); // 모든 QnA 저장
+    }
+    // 답변 완료된 QnA 조회
+    public Page<QnA> findAnsweredQnA(Pageable pageable) {
+        return qnARepository.findByAnswerNot(pageable, "");
+    }
+
+    // 답변 대기 중인 QnA 조회
+    public Page<QnA> findPendingQnA(Pageable pageable) {
+        return qnARepository.findByAnswer(pageable, "");
+    }
+
+    // 특정 카테고리에서 답변 완료된 QnA 조회
+    public Page<QnA> findAnsweredQnAByCategory(Byte category, Pageable pageable) {
+        return qnARepository.findByCategoryAndAnswerNot(category, "", pageable);
+    }
+
+    // 특정 카테고리에서 답변 대기 중인 QnA 조회
+    public Page<QnA> findPendingQnAByCategory(Byte category, Pageable pageable) {
+        return qnARepository.findByCategoryAndAnswer(category, "", pageable);
+    }
+
 }

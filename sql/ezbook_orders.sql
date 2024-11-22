@@ -26,7 +26,6 @@ CREATE TABLE `orders` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `user_id` bigint NOT NULL,
   `orders_date` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `total_price` bigint NOT NULL DEFAULT '0',
   `status` tinyint NOT NULL DEFAULT '0',
   `delivery_id` bigint NOT NULL,
   `payment_id` bigint NOT NULL,
@@ -52,4 +51,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-11-22 15:55:29
+-- Dump completed on 2024-11-22 17:45:57

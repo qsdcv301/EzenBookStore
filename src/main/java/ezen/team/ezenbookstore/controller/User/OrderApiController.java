@@ -104,6 +104,13 @@ public class OrderApiController {
             // 금액을 포맷하여 "원"을 추가
             String formattedPaymentAmount = numberFormatter.format(order.getPayment().getAmount()) + "원";
 
+            //orderItem Status
+            // 1 배송 전
+            // 2 배송 완료
+            // 3 주문 확정
+            // 4 교환
+            // 5 반품
+
             // 주문 상태를 변환
             String status = switch (order.getStatus()) {
                 case 1 -> "주문 완료";
@@ -115,11 +122,15 @@ public class OrderApiController {
                 case 1 -> "배송 준비중";
                 case 2 -> "배송중";
                 case 3 -> "배송 완료";
+                case 4 -> "반송 준비중";
+                case 5 -> "반송중";
+                case 6 -> "반송 완료";
                 default -> "기타";
             };
             String paymentStatus = switch (order.getPayment().getStatus()) {
                 case 1 -> "결제 완료";
                 case 2 -> "결제 취소";
+                case 3 -> "재결제 완료";
                 default -> "기타";
             };
 
@@ -217,24 +228,28 @@ public class OrderApiController {
         }
     }
 
-    //order 생성
-    @PostMapping("/add")
-    public String addOrder(@ModelAttribute Orders order) {
-        //로직추가
-        return "redirect:/order";
+    @PostMapping("/orderCancel")
+    public ResponseEntity<Map<String, Boolean>> orderCancel(@RequestParam(name = "orderId") Long orderId,
+                                                            Model model) {
+        Map<String, Boolean> response = new HashMap<>();
+        try {
+            Orders orders = ordersService.findById(orderId);
+            Orders newOrders = Orders.builder()
+                    .id(orders.getId())
+                    .user(orders.getUser())
+                    .delivery(orders.getDelivery())
+                    .payment(orders.getPayment())
+                    .orderDate(orders.getOrderDate())
+                    .status((byte) 3)
+                    .orderItems(orders.getOrderItems())
+                    .build();
+            ordersService.update(newOrders);
+            response.put("success", true);
+            return ResponseEntity.ok(response); // 성공 시 200 OK와 함께 반환
+        } catch (Exception e) {
+            response.put("success", false);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response); // 예외 발생 시 500 오류 반환
+        }
     }
 
-    //오더 업데이트
-    @PostMapping("/update")
-    public String updateOrder(@ModelAttribute Orders order) {
-        //로직추가
-        return "redirect:/order";
-    }
-
-    //오더삭제
-    @PostMapping("/delete")
-    public String deleteOrder(@RequestParam long orderId) {
-        //로직추가
-        return "redirect:/order";
-    }
 }

@@ -62,4 +62,13 @@ public class AdminReviewApiController {
         model.addAttribute("reviewList", result);
         return "/admin/reviewControl"; // 검색 결과를 포함해 Thymeleaf로 렌더링
     }
+    @GetMapping("/{id}")
+    public ResponseEntity<Review> getReviewDetail(@PathVariable Long id) {
+        Review review = reviewService.findById(id);
+        if (review != null) {
+            return ResponseEntity.ok(review);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
 }

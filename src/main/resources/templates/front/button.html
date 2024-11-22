@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>네비게이션 버튼</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.5.0/font/bootstrap-icons.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .navigation-buttons {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .navigation-buttons button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            width: 50px; /* 버튼의 가로 크기 */
+            height: 50px; /* 버튼의 세로 크기 */
+            border-radius: 50%; /* 동그라미 모양 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px; /* 아이콘 크기 */
+            cursor: pointer;
+        }
+
+        .navigation-buttons button:hover {
+            background-color: #007bff;
+        }
+    </style>
+</head>
+<body>
+    <h1>홈페이지</h1>
+    <p>이 페이지는 버튼 기능을 테스트하기 위한 샘플 페이지입니다.</p>
+    <div style="height: 1500px;">
+        <p>스크롤 테스트를 위한 내용</p>
+    </div>
+
+    <div class="navigation-buttons">
+        <button id="scrollTopBtn"><i class="bi bi-arrow-up"></i></button>
+        <button id="goHomeBtn"><i class="bi bi-house-fill"></i></button>
+    </div>
+
+    <script>
+        document.getElementById("scrollTopBtn").addEventListener("click", () => {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+
+        document.getElementById("goHomeBtn").addEventListener("click", () => {
+            window.location.href = "/";
+        });
+    </script>
+</body>
+</html>
