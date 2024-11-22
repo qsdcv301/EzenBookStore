@@ -23,7 +23,6 @@
     </style>
 </head>
 <body>
-<!-- 작성일 뒤에 초단위 짜르기 미구현 -->
 <div class="container">
     <h2>리뷰 관리</h2>
     <!-- 검색 폼 -->
@@ -59,7 +58,7 @@
         <td th:text="${review.rating}"></td>
         <td th:text="${review.title}"></td>
         <td th:text="${review.comment}"></td>
-        <td th:text="${review.createAt}"></td>
+        <td th:text="${#dates.format(review.createAt,'yyyy-MM-dd HH:mm')}"></td>
     </tr>
     </tbody>
 </table>

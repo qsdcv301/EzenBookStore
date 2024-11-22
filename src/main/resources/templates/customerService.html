@@ -53,7 +53,7 @@
                 <tbody>
                 <tr th:each="notice : ${notices}">
                     <td th:text="${notice.id}"></td>
-                    <td><a href="#" th:text="${notice.title}"></a></td>
+                    <td><a th:href="@{/notice(id=${notice.id})}" th:text="${notice.title}"></a></td>
                     <td th:text="${#dates.format(notice.createAt, 'yyyy-MM-dd')}"></td>
                     <td>관리자</td>
                 </tr>

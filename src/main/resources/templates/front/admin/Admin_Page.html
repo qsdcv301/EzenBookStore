@@ -8,12 +8,12 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <style>
-     body {
+    body {
       font-family: Arial, sans-serif;
     }
     hr {
-    border-color: #ffffff;
-    }   
+      border-color: #ffffff;
+    }
     .sidebar {
       background-color: #343a40;
       height: 100vh;
@@ -23,7 +23,7 @@
       list-style: none;
     }
     .sidebar ul li {
-      padding: 10px 0; 
+      padding: 10px 0;
     }
     .sidebar ul li ul {
       display: none;
@@ -73,7 +73,7 @@
     }
   </style>
 </head>
-<body>
+<body onload="loadOrderHistory()">
 
   <div class="container-fluid">
     <div class="row">
@@ -127,9 +127,8 @@
             </ul>
           </li>
         </ul>
-       
-        <!-- 사이드바 메뉴 하단 부분 
-         돌아가기 클릭시 메인홈화면으로 / 로그아웃 클릭시 로그아웃 -->
+
+        <!-- 사이드바 메뉴 하단 부분 -->
         <div class="sidebar-last" style="text-align: center;">
           <hr>
           <a href="#">돌아가기<i class="fas fa-reply ml-1"></i></a> 
@@ -137,7 +136,6 @@
           <a href="#">로그아웃<i class="fas fa-sign-out-alt ml-1"></i></a>
         </div>
       </nav>
-      
 
       <main class="col-10 content">
         <div class="bg-light p-4" style="height: 100%;">
@@ -155,6 +153,7 @@
       var iframe = document.getElementById('content-frame');
       iframe.src = 'Order_History.html';
       iframe.style.display = 'block';
+      setActiveMenu('loadOrderHistory'); // 해당 메뉴 활성화
     }
 
     // 상품 관리
@@ -162,18 +161,21 @@
       var iframe = document.getElementById('content-frame');
       iframe.src = 'Refund_Exchange.html';
       iframe.style.display = 'block';
+      setActiveMenu('loadRefundExchange');
     }
 
     function loadPaymentManagement() {
       var iframe = document.getElementById('content-frame');
       iframe.src = 'Payment_Management.html';
       iframe.style.display = 'block';
+      setActiveMenu('loadPaymentManagement');
     }
 
     function loadProductCategory() {
       var iframe = document.getElementById('content-frame');
       iframe.src = 'Product_Category.html';
       iframe.style.display = 'block';
+      setActiveMenu('loadProductCategory');
     }
 
     // 회원 관리
@@ -181,7 +183,18 @@
       var iframe = document.getElementById('content-frame');
       iframe.src = 'Membership_levels.html';
       iframe.style.display = 'block';
+      setActiveMenu('loadMembershipLevels');
     }
+
+
+    // 첫화면에 주문 조회 및 상태관리 페이지가 나오도록 설정
+    function setActiveMenu(menuFunction) {
+      $('.sidebar ul li a').removeClass('active');  // 모든 메뉴에서 active 클래스 제거
+      if (menuFunction === 'loadOrderHistory') {
+        $('a[href="javascript:void(0)"][onclick="loadOrderHistory()"]').addClass('active'); // 해당 메뉴 활성화
+      }
+    }
+
 
     // 사이드바 메뉴 슬라이드 및 active 효과 
     $(document).ready(function () {
