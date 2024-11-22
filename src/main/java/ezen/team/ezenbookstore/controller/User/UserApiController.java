@@ -332,19 +332,31 @@ public class UserApiController {
                 case "delivered":
                     deliveryStatus = 3;
                     break;
+                case "preparingReturn":
+                    deliveryStatus = 4;
+                    break;
+                case "Returning":
+                    deliveryStatus = 5;
+                    break;
+                case "Returned":
+                    deliveryStatus = 6;
+                    break;
+                default:
+                    deliveryStatus = 0;
+                    break;
             }
         }
 
         Byte orderStatus = null;
         if (orderStatusParam != null && !orderStatusParam.isEmpty()) {
             switch (orderStatusParam) {
-                case "cancelled":
+                case "completed":
                     orderStatus = 1;
                     break;
-                case "exchange":
+                case "cancelled":
                     orderStatus = 2;
                     break;
-                case "completed":
+                case "exchange":
                     orderStatus = 3;
                     break;
             }

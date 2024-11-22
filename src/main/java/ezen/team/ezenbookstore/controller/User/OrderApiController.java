@@ -228,24 +228,28 @@ public class OrderApiController {
         }
     }
 
-    //order 생성
-    @PostMapping("/add")
-    public String addOrder(@ModelAttribute Orders order) {
-        //로직추가
-        return "redirect:/order";
+    @PostMapping("/orderCancel")
+    public ResponseEntity<Map<String, Boolean>> orderCancel(@RequestParam(name = "orderId") Long orderId,
+                                                            Model model) {
+        Map<String, Boolean> response = new HashMap<>();
+        try {
+            Orders orders = ordersService.findById(orderId);
+            Orders newOrders = Orders.builder()
+                    .id(orders.getId())
+                    .user(orders.getUser())
+                    .delivery(orders.getDelivery())
+                    .payment(orders.getPayment())
+                    .orderDate(orders.getOrderDate())
+                    .status((byte) 3)
+                    .orderItems(orders.getOrderItems())
+                    .build();
+            ordersService.update(newOrders);
+            response.put("success", true);
+            return ResponseEntity.ok(response); // 성공 시 200 OK와 함께 반환
+        } catch (Exception e) {
+            response.put("success", false);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response); // 예외 발생 시 500 오류 반환
+        }
     }
 
-    //오더 업데이트
-    @PostMapping("/update")
-    public String updateOrder(@ModelAttribute Orders order) {
-        //로직추가
-        return "redirect:/order";
-    }
-
-    //오더삭제
-    @PostMapping("/delete")
-    public String deleteOrder(@RequestParam long orderId) {
-        //로직추가
-        return "redirect:/order";
-    }
 }

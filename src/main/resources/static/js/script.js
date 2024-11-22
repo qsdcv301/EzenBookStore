@@ -1408,6 +1408,28 @@ $(document).ready(function () {
         });
     }
 
+    // 주문 취소 요청
+    $(document).on('click', '.orderCancel', function (e) {
+        const orderId = $(".orderId").text();
+        $.ajax({
+            type: 'POST',
+            url: '/order/orderCancel',
+            data: {orderId: orderId},
+            success: function (response) {
+                if (response.success) {
+                    alert("주문 취소 요청을 했습니다.");
+                    updateMainModalData(orderId);
+                } else {
+                    alert("주문 취소 요청중 오류가 발생했습니다.");
+                    updateMainModalData(orderId);
+                }
+            },
+            error: function () {
+                alert("서버 오류가 발생했습니다.");
+            }
+        });
+    });
+
     // 반품/교환 요청 모달
     $(document).on('click', '.orderExchangeNreturnBtn', function (e) {
         const bookTitle = $(this).closest('.orderItemsTable').find('.orderTitle').text();
