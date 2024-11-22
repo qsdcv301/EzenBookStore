@@ -88,7 +88,6 @@ public class PaymentApiController {
                     .user(user)
                     .delivery(newDelivery)
                     .payment(newPayment)
-                    .totalPrice(amount)
                     .status((byte) 1)
                     .build();
             Orders newOrders = ordersService.create(orders);
