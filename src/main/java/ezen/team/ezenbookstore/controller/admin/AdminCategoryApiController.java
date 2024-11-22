@@ -24,7 +24,6 @@ public class AdminCategoryApiController {
     private final CategoryService categoryService;
     private final SubCategoryService subCategoryService;
 
-    // 모든 카테고리 리스트 반환
     @GetMapping("")
     public String getCategoryList(
             @RequestParam(value = "keyword", required = false) String keyword,
@@ -69,6 +68,16 @@ public class AdminCategoryApiController {
 
         return "admin/categoryControl";
     }
+
+    // 모든 카테고리 리스트 반환
+    @GetMapping("/category")
+    @ResponseBody
+    public ResponseEntity<List<Category>> getAllCategories() {
+        List<Category> categoryList = categoryService.findAll();
+        System.out.println("카테고리 리스트: " + categoryList);
+        return ResponseEntity.ok(categoryList);
+    }
+
 
 
 

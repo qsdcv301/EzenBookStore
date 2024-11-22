@@ -31,6 +31,7 @@
                 buyer_postcode: "01181"
             }, function (rsp) {
                 if (rsp.success) {
+                    console.log(rsp);
                     console.log("결제 성공");
                 } else {
                     console.error("결제 실패:", rsp.error_msg);
