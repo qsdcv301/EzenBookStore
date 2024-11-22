@@ -47,5 +47,7 @@ public class NoticeService {
     public Page<Notice> searchByContent(String keyword,Pageable pageable) {
         return noticeRepository.findByContentContaining(keyword,pageable);
     }
-
+    public Page<Notice> searchByTitleAndContent(String keyword, Pageable pageable){
+        return noticeRepository.findByTitleContainingOrContentContaining(keyword, keyword, pageable);
+    };
 }

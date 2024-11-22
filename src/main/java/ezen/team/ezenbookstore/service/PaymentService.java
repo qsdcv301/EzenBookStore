@@ -33,6 +33,7 @@ public class PaymentService {
                 .amount(payment.getAmount())
                 .method(payment.getMethod())
                 .status(payment.getStatus())
+                .paymentCode(payment.getPaymentCode())
                 .build();
         return paymentRepository.save(newPayment);
     }

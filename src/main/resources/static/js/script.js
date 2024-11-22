@@ -1,5 +1,8 @@
 $(document).ready(function () {
 
+    const IMP = window.IMP;
+    IMP.init("imp27564405");
+
     // 모달 z-index 관리
     $('.modal').on('show.bs.modal', function (event) {
         var zIndex = 1040 + (10 * $('.modal:visible').length);
@@ -72,7 +75,7 @@ $(document).ready(function () {
     $('#nextBtn2').on('click', function () {
         if (validateStep2()) {
             const userIdCehck = $(this).attr("data-check");
-            if(userIdCehck === 0){
+            if (userIdCehck === 0) {
                 alert("아이디 중복검사를 진행 후 회원가입이 가능합니다.");
                 return;
             }
@@ -87,14 +90,14 @@ $(document).ready(function () {
             $.ajax({
                 type: 'POST',
                 url: `/signup`,
-                data:{
-                    email : userId,
-                    provider : "ezen",
-                    name : name,
+                data: {
+                    email: userId,
+                    provider: "ezen",
+                    name: name,
                     password: password,
-                    tel : tel,
-                    addr : addr,
-                    addrextra : addrextra,
+                    tel: tel,
+                    addr: addr,
+                    addrextra: addrextra,
                     birthdayString: birthday,
                 },
                 success: function (response) {
@@ -599,6 +602,7 @@ $(document).ready(function () {
             const cardBody = $(this).closest(".paymentModal-Data");
 
             // 각 값들을 올바르게 가져오고 기본값 설정
+            const cartId = cardBody.find(".cartId").val() || "";
             const title = cardBody.find(".title").text().trim() || "상품명 없음";
             const quantity = parseInt(cardBody.find(".quantity").val()) || 0;
             const price = parseInt(cardBody.find(".price").text().replace(/[^0-9]/g, "")) || 0;
@@ -619,13 +623,14 @@ $(document).ready(function () {
 
             // 모달에 표시할 개별 상품 정보 HTML 생성
             const modalItem = `
-            <div class="card col">
+            <div class="card col paymentItems">
                 <div class="row g-0">
                     <div class="col-md-5 pt-3 d-flex align-items-center justify-content-center">
                         <img src="${bookImage}" alt="${bookImageAlt}" style="width: 100px;height: 150px;object-fit: cover">
                     </div>
                     <div class="col-md-7">
                         <div class="card-body pl-0">
+                            <input type="hidden" class="modalCartId" value="${cartId}">
                             <p>상품명: <span class="modalBookTitle">${title}</span></p>
                             <p>수량: <span class="modalQuantity">${quantity}</span></p>
                             <p>가격: <span class="modalTotalPrice">${itemTotalPrice.toLocaleString()}</span>원</p>
@@ -766,6 +771,87 @@ $(document).ready(function () {
     // 출고 예정일 업데이트
     const formattedDate = `${year}년 ${month}월 ${date}일 (${day})`;
     $("#expected-shipping-date").text(formattedDate);
+
+    $(".confirmPurchase").click(function (e) {
+        e.preventDefault();
+        const name = $(".modalBookTitle").eq(0).text();
+        const quantity = $(".modalQuantity").eq(0).text();
+        let quantityList = [];
+        let titleList = [];
+        let totalQuantity = 0;
+        let cartIdList = [];
+        $(".modalQuantity").each(function () {
+            totalQuantity += parseInt($(this).text().replace(/[^0-9]/g, ""), 10) || 0;
+            quantityList.push($(this).text().replace(/[^0-9]/g, ""));
+        });
+
+        $(".modalBookTitle").each(function () {
+            titleList.push($(this).text());
+        });
+        $(".modalCartId").each(function () {
+            const value = $(this).val();
+            if (value) {
+                cartIdList.push(value);
+            }
+        });
+        console.log(cartIdList);
+        totalQuantity -= quantity;
+        const userAddr = $(".payment-addr").val();
+        const userAddrextra = $(".payment-addrextra").val();
+        const amount = $("#order-final-total").text().replace(/[^0-9]/g, "") || 0;
+        const userEmail = $(".payment-email").val();
+        const userName = $(".payment-name").val();
+        const userTel = $(".payment-tel").val();
+        const paymentCode = Date.now();
+        IMP.request_pay(
+            {
+                pg: "html5_inicis",
+                pay_method: "card",
+                merchant_uid: paymentCode,
+                name: name + ` ${quantity}개 외 ` + totalQuantity + "개 상품",
+                amount: amount,
+                buyer_email: userEmail,
+                buyer_name: userName,
+                buyer_tel: userTel,
+            },
+            function (response) {
+                if (response.success) {
+                    $.ajax({
+                        url: '/order/payment',
+                        type: 'POST',
+                        data: {
+                            paymentCode: paymentCode,
+                            titleList: titleList,
+                            quantityList: quantityList,
+                            cartIdList: cartIdList,
+                            amount: amount,
+                            method: 2,
+                            userName: userName,
+                            addr: userAddr,
+                            addrextra: userAddrextra,
+                            tel: userTel,
+                        },
+                        success: function (response) {
+                            if (response.success) {
+                                alert("결제가 완료되었습니다.");
+                                location.reload();
+                            } else {
+                                alert("결제에 실패했습니다.");
+                                location.reload();
+                            }
+                        },
+                        error: function () {
+                            alert("서버 오류가 발생했습니다.");
+                        }
+                    });
+                } else {
+                    alert("결제에 실패했습니다.");
+                    location.reload();
+                }
+            },
+        );
+    });
+
 
     //     book
     $('#bookSortOptions').change(function () {

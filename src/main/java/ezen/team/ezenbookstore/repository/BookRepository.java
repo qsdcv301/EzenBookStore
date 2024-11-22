@@ -37,4 +37,6 @@ public interface BookRepository extends JpaRepository<Book, Long> {
 
     Page<Book> findAllByIfkr(Byte ifkr, Pageable pageable);
 
+    Optional<Book> findByTitle(String title);
+
 }
