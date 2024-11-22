@@ -136,17 +136,4 @@ public class PaymentApiController {
         }
     }
 
-    //결제 완료
-    @PostMapping("/success")
-    public String completePayment(@ModelAttribute Payment payment) {
-        //결제 완료 와 오류 처리
-        return "redirect:/payment";
-    }
-
-    //결제 취소
-    @PostMapping("/cancel")
-    public String deletePayment(@RequestParam long paymentId) {
-        return "redirect:/payment";
-    }
-
 }
