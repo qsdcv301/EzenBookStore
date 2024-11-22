@@ -1339,9 +1339,9 @@ $(document).ready(function () {
                         if (parseInt(response.orderItemListStatus[i]) !== 1) {
                             orderStatusCheck = 1;
                         }
-                        const orderSuccessBtnDisabled = parseInt(response.orderItemListStatus[i]) !== 1 ? 'disabled' : '';
-                        const orderExchangeNreturnBtnDisabled = parseInt(response.orderItemListStatus[i]) !== 1 ? 'disabled' : '';
-                        const reviewBtnDisabled = parseInt(response.orderItemListStatus[i]) !== 2 ? 'disabled' : '';
+                        const orderSuccessBtnDisabled = parseInt(response.orderItemListStatus[i]) !== 2 ? 'disabled' : '';
+                        const orderExchangeNreturnBtnDisabled = parseInt(response.orderItemListStatus[i]) !== 2 ? 'disabled' : '';
+                        const reviewBtnDisabled = parseInt(response.orderItemListStatus[i]) !== 3 ? 'disabled' : '';
                         const row = `
                     <tr class="text-center orderItemsTable">
                         <td class="align-middle">
