@@ -76,9 +76,6 @@ public class UserApiController {
             User newUser = User.builder()
                     .provider(provider)
                     .email(email)
-                    .addr("주소 입력 필요")
-                    .addrextra("상세 주소 입력 필요")
-                    .tel("전화 번호 입력 필요")
                     .name(name)
                     .build();
             userService.create(newUser);
