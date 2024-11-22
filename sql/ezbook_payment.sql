@@ -26,7 +26,6 @@ CREATE TABLE `payment` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `payment_date` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `amount` bigint NOT NULL DEFAULT '0',
-  `method` tinyint NOT NULL DEFAULT '0',
   `status` tinyint NOT NULL DEFAULT '0',
   `user_id` bigint NOT NULL,
   `payment_code` varchar(255) NOT NULL,
@@ -52,4 +51,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-11-22 14:53:35
+-- Dump completed on 2024-11-22 15:55:29
