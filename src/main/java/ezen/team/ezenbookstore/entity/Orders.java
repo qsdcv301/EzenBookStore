@@ -39,9 +39,6 @@ public class Orders {
     @Column(name = "orders_date")
     private Timestamp orderDate;
 
-    @Column(name = "total_price")
-    private Long totalPrice;
-
     @Column(name = "status")
     private Byte status;
 

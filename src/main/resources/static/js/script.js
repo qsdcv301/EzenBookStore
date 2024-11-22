@@ -1339,9 +1339,9 @@ $(document).ready(function () {
                         if (parseInt(response.orderItemListStatus[i]) !== 1) {
                             orderStatusCheck = 1;
                         }
-                        const orderSuccessBtnDisabled = parseInt(response.orderItemListStatus[i]) !== 1 ? 'disabled' : '';
-                        const orderExchangeNreturnBtnDisabled = parseInt(response.orderItemListStatus[i]) !== 1 ? 'disabled' : '';
-                        const reviewBtnDisabled = parseInt(response.orderItemListStatus[i]) !== 2 ? 'disabled' : '';
+                        const orderSuccessBtnDisabled = parseInt(response.orderItemListStatus[i]) !== 2 ? 'disabled' : '';
+                        const orderExchangeNreturnBtnDisabled = parseInt(response.orderItemListStatus[i]) !== 2 ? 'disabled' : '';
+                        const reviewBtnDisabled = parseInt(response.orderItemListStatus[i]) !== 3 ? 'disabled' : '';
                         const row = `
                     <tr class="text-center orderItemsTable">
                         <td class="align-middle">
@@ -1407,6 +1407,28 @@ $(document).ready(function () {
             }
         });
     }
+
+    // 주문 취소 요청
+    $(document).on('click', '.orderCancel', function (e) {
+        const orderId = $(".orderId").text();
+        $.ajax({
+            type: 'POST',
+            url: '/order/orderCancel',
+            data: {orderId: orderId},
+            success: function (response) {
+                if (response.success) {
+                    alert("주문 취소 요청을 했습니다.");
+                    updateMainModalData(orderId);
+                } else {
+                    alert("주문 취소 요청중 오류가 발생했습니다.");
+                    updateMainModalData(orderId);
+                }
+            },
+            error: function () {
+                alert("서버 오류가 발생했습니다.");
+            }
+        });
+    });
 
     // 반품/교환 요청 모달
     $(document).on('click', '.orderExchangeNreturnBtn', function (e) {
