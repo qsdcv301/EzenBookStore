@@ -16,10 +16,12 @@
         .col-4{
             width: 33.333333%;
         }
+        .hidden{
+            display: none;
+        }
     </style>
 </head>
 <body>
-    <!-- nav bar? 미구현  카테고리 탭 구현과 검색 미구현,모달창 미구현, 답변하기 controller와 html 미구현-->
     <div class="container">
         <div class="col-8">
             <table>
@@ -65,8 +67,22 @@
                 </a>
             </div>
         </div>
-        <div class="col-4">
-            모달창
+        <div class="col-4 hidden" id="editForm">
+            <div clsss="" th:each="qnAPage : ${qnAPage}">
+                <p>유저 이름</p>
+                <p th:text="${qnAPage.user.name}"></p>
+                <p>질문 카테고리</p>
+                <p th:text="${qnAPage.category}"></p>
+                <p>질문 제목</p>
+                <p th:text="${qnAPage.title}"></p>
+                <p>질문 내용</p>
+                <p th:text="${qnAPage.question}"></p>
+                <p>질문 시간</p>
+                <p th:text="${qnAPage.createAt}"></p>
+                <p>질문 답변</p>
+                <textarea id="editAnswer"></textarea>
+                <button id="editQnA">질문답변</button>
+            </div>
         </div>
     </div>
 </body>
