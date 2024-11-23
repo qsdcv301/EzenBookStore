@@ -66,6 +66,16 @@
     margin-left: 10px;
 }
 
+.dropdown-arrow {
+    width: 40px; /* 화살표 클릭 영역 넓히기 */
+    height: 40px;
+    cursor: pointer;
+    text-align: center;
+}
+.arrow-icon {
+    font-size: 16px;
+}
+
 #bank-transfer,
 #credit-card
 {

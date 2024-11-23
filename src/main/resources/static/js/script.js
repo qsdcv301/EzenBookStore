@@ -46,6 +46,15 @@ $(document).ready(function () {
 
     //header
 
+    $('.dropdown-arrow').on('click', function(event) {
+        event.preventDefault();
+        const target = $(this).attr('data-target');
+        $(target).collapse('toggle');
+
+        // 드롭다운 메뉴가 닫히지 않도록 이벤트 전파 방지
+        event.stopPropagation();
+    });
+
     $(".searchBtn").click(function (e) {
         e.preventDefault();
         const searchSelect = $(".searchSelect").select().val();

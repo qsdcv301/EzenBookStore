@@ -43,13 +43,15 @@
             <!-- User Menu -->
             <div th:if="${userData}" class="user-menu d-flex align-items-center">
                 <a href="/cart" class="btn btn-outline-primary">
-                    <i class="fas fa-shopping-cart mr-1"></i><span class="badge badge-pill badge-primary">3</span>
+                    <i class="fas fa-shopping-cart mr-1"></i><span class="badge badge-pill badge-primary"
+                                                                   th:text="${cartSize}"></span>
                 </a>
                 <a href="/user/info" class="btn btn-outline-primary"><i class="fas fa-user"></i></a>
             </div>
             <div th:unless="${userData}" class="user-menu d-flex align-items-center">
                 <a href="/cart" class="btn btn-outline-primary loginCheck">
-                    <i class="fas fa-shopping-cart mr-1"></i><span class="badge badge-pill badge-primary">3</span>
+                    <i class="fas fa-shopping-cart mr-1"></i><span class="badge badge-pill badge-primary"
+                                                                   th:text="${cartSize}"></span>
                 </a>
                 <a href="/user/info" class="btn btn-outline-primary loginCheck"><i class="fas fa-user"></i></a>
             </div>
@@ -70,16 +72,44 @@
                                 <i class="fas fa-bars"></i> 카테고리
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="/category1">카테고리1</a>
-                                <a class="dropdown-item" href="/category2">카테고리2</a>
-                                <a class="dropdown-item" href="/category3">카테고리3</a>
-                                <a class="dropdown-item" href="/category4">카테고리4</a>
+                                <!-- 카테고리 반복 -->
+                                <div class="d-flex flex-column flex-wrap"
+                                     style="width: 650px; height: 400px;">
+                                    <div th:each="categoryItem, index : ${categoryList}" style="width: 200px;">
+                                        <div class="d-flex align-items-center">
+                                            <!-- 카테고리 링크 -->
+                                            <a class="dropdown-item flex-grow-1"
+                                               th:href="@{/book(page=0, sort=${sort}, direction=${direction}, ifkr='0', category=${categoryItem.name}, subcategory='')}"
+                                               th:text="${categoryItem.name}"></a>
+                                            <!-- 넉넉한 화살표 영역 -->
+                                            <a href="#"
+                                               class="dropdown-arrow d-flex align-items-center justify-content-center text-decoration-none"
+                                               data-toggle="collapse"
+                                               th:data-target="'#categoryDropdown' + ${index.index}"
+                                               aria-expanded="false" onclick="event.preventDefault();">
+                                                <span class="arrow-icon text-black-50">&#9662;</span>
+                                            </a>
+                                        </div>
+                                        <div class="dropdown-divider"></div>
+                                        <!-- 서브 카테고리 반복 -->
+                                        <div class="collapse" th:id="'categoryDropdown' + ${index.index}">
+                                            <ul class="nav flex-column">
+                                                <li class="nav-item"
+                                                    th:each="subCategoryItem, subIndex : ${categoryItem.subCategory}">
+                                                    <a class="dropdown-item"
+                                                       th:href="@{/book(page=0, sort=${sort}, direction=${direction}, ifkr='0', category=${categoryItem.name}, subcategory=${subCategoryItem.name})}"
+                                                       th:text="${subCategoryItem.name}"></a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </li>
-                        <li class="nav-item"><a class="nav-link" href="/">베스트셀러</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/">신상품</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/">국내도서</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/">해외도서</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/book?sort=count&direction=desc">베스트셀러</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/book?sort=publishDate&direction=asc">신상품</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/book?ifkr=0">국내도서</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/book?ifkr=1">해외도서</a></li>
                         <li class="nav-item"><a class="nav-link" href="/">이벤트</a></li>
                         <li class="nav-item"><a class="nav-link" href="/customerService">공지사항</a></li>
                     </ul>

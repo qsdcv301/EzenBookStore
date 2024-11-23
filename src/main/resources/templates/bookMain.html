@@ -77,7 +77,7 @@
                                     <a th:href="@{/book(page=0,sort=${sort},direction=${direction}, ifkr='0', category='', subcategory='')}">국내</a>
                                     <a href="#" class="float-right" data-toggle="collapse"
                                        data-target="#domesticCategories"
-                                       aria-expanded="false" onclick="event.preventDefault();">&#9662;</a>
+                                       aria-expanded="false" onclick="event.preventDefault();"><span class="arrow-icon">&#9662;</span></a>
                                 </p>
                                 <ul class="nav flex-column collapse show" id="domesticCategories">
                                     <li class="nav-item" th:each="categoryItem, index : ${categoryList}">
@@ -86,7 +86,7 @@
                                                th:text="${categoryItem.name}"></a>
                                             <a href="#" class="float-right" data-toggle="collapse"
                                                th:data-target="'#domesticCategory' + ${index.index}"
-                                               aria-expanded="false" onclick="event.preventDefault();">&#9662;</a>
+                                               aria-expanded="false" onclick="event.preventDefault();"><span class="arrow-icon">&#9662;</span></a>
                                         </p>
                                         <ul class="nav flex-column collapse"
                                             th:id="'domesticCategory' + ${index.index}">
@@ -106,7 +106,7 @@
                                     <a th:href="@{/book(page=0,sort=${sort},direction=${direction}, ifkr='1', category='', subcategory='')}">국외</a>
                                     <a href="#" class="float-right" data-toggle="collapse"
                                        data-target="#foreignCategories" aria-expanded="false"
-                                       onclick="event.preventDefault();">&#9662; </a>
+                                       onclick="event.preventDefault();"><span class="arrow-icon">&#9662;</span></a>
                                 </p>
                                 <ul class="nav flex-column collapse show" id="foreignCategories">
                                     <li class="nav-item" th:each="categoryItem, index : ${categoryList}">
@@ -116,7 +116,7 @@
                                             <a class="float-right" data-toggle="collapse"
                                                th:data-target="'#foreignCategory' + ${index.index}"
                                                aria-expanded="false" onclick="event.preventDefault();">
-                                                &#9662;
+                                                <span class="arrow-icon">&#9662;</span>
                                             </a>
                                         </p>
                                         <ul class="nav flex-column collapse" th:id="'foreignCategory' + ${index.index}">
@@ -154,6 +154,11 @@
                             <select class="form-select form-select-sm" id="bookSortOptions"
                                     style="width: auto;">
                                 <option selected disabled>정렬 방식 선택</option>
+                                <option value="count"
+                                        th:data-option="count"
+                                        th:data-direction="high"
+                                        th:selected="${sort == 'count' and direction == 'desc'}">관심많은순
+                                </option>
                                 <option value="publishDateNew"
                                         th:data-option="publishDate"
                                         th:data-direction="new"

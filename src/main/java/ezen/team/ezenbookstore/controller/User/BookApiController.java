@@ -20,7 +20,6 @@ public class BookApiController {
     private final BookService bookService;
     private final CategoryService categoryService;
     private final SubCategoryService subCategoryService;
-    private final UserService userService;
     private final FileUploadService fileUploadService;
     private final ReviewService reviewService;
 
@@ -274,17 +273,17 @@ public class BookApiController {
         String imagePath = fileUploadService.findImageFilePath(bookId, "book");
         List<String> reviewImagePathList = new ArrayList<>();
         List<Review> reviewList = reviewService.findAllByBookId(bookId);
-        for(Review review : reviewList){
+        for (Review review : reviewList) {
             String reviewImagePath = fileUploadService.findImageFilePath(review.getId(), "review");
             if (imagePath != null) {
                 reviewImagePathList.add(reviewImagePath);
-            }else{
+            } else {
                 reviewImagePathList.add("");
             }
         }
         if (imagePath != null) {
             model.addAttribute("imagePath", imagePath);
-        }else{
+        } else {
             model.addAttribute("imagePath", "");
         }
         model.addAttribute("reviewImagePathList", reviewImagePathList);
