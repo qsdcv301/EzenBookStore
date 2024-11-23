@@ -88,6 +88,16 @@ $(document).ready(function () {
         }
     });
 
+    //footer
+
+    $("#scrollTopBtn").on("click", function () {
+        $("html, body").animate({ scrollTop: 0 }, "slow");
+    });
+
+    $("#goHomeBtn").on("click", function () {
+        window.location.href = "/";
+    });
+
     // signup
     let currentStep = 1;
     const totalSteps = 3;
