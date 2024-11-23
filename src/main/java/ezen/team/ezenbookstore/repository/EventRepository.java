@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Repository
 public interface EventRepository extends JpaRepository<Event, Long> {
@@ -24,4 +25,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     // 종료된 이벤트 조회
     Page<Event> findByEndDateBefore(LocalDateTime now, Pageable pageable);
+
+    List<Event> findByStartDateBeforeAndEndDateAfter(LocalDateTime nowStart, LocalDateTime nowEnd);
+
 }

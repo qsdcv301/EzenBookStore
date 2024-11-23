@@ -34,6 +34,25 @@ public class ViewApiController {
     private final FileUploadService fileUploadService;
     private final EventService eventService;
 
+    @GetMapping({"","/"})
+    public String home(Model model) {
+        List<Notice> noticeList = noticeService.findTop5ByOrderByIdDesc();
+        List<Event> eventList = eventService.findOngoingEventList();
+        List<String> eventImageList = new ArrayList<>();
+        for (Event event : eventList) {
+            String imagePath = fileUploadService.findImageFilePath(event.getId(), "event");
+            if (imagePath != null) {
+                eventImageList.add(imagePath);
+            } else {
+                eventImageList.add("");
+            }
+        }
+        model.addAttribute("noticeList", noticeList);
+        model.addAttribute("eventList", eventList);
+        model.addAttribute("eventImageList", eventImageList);
+        return "main";
+    }
+
     @GetMapping("/login")
     public String login() {
         return "login";
@@ -168,7 +187,7 @@ public class ViewApiController {
     }
 
     @GetMapping("/event")
-    public String evnet(@RequestParam(name = "onPage", required = false, defaultValue = "0") Integer onPage,
+    public String event(@RequestParam(name = "onPage", required = false, defaultValue = "0") Integer onPage,
                         @RequestParam(name = "offPage", required = false, defaultValue = "0") Integer offPage,
                         Model model) {
         try {

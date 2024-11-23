@@ -1,0 +1,335 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>책 리스트</title>
+    <link rel="canonical" href="https://getbootstrap.kr/docs/5.1/examples/blog/">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet">
+    <link href="/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="/css/style.css" rel="stylesheet"/>
+    <script src="/js/jquery-3.7.1.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/popper.min.js"></script>
+    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.iamport.kr/v1/iamport.js"></script>
+    <script src="/js/script.js"></script>
+</head>
+<header th:replace="~{fragments/header :: header}"></header>
+<body>
+<div class="container mt-5">
+    <main class="mb-5">
+        <!-- 섹션 0: 공지사항 -->
+        <div class="container-fluid px-0">
+            <div class="row no-gutters">
+                <div class="col-12">
+                    <div class="d-flex justify-content-between align-items-center bg-info">
+                        <div class="px-3">
+                            <span class="text-white font-weight-bold">공지사항</span>
+                        </div>
+                        <div class="flex-grow-1">
+                            <div id="noticeCarousel" class="carousel slide vertical py-2" data-ride="carousel"
+                                 data-interval="7000">
+                                <div class="carousel-inner">
+                                    <div class="carousel-item active text-center" th:each="notice : ${noticeList}">
+                                        <a th:href="@{/notice/{id}(id=${notice.id})}" class="text-decoration-none text-white"><i
+                                                class="bi bi-megaphone-fill mr-2"></i><span th:text="${notice.title}"></span></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="px-3">
+                            <a href="/customerService" class="text-white text-decoration-none">+더보기</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 섹션 1: 이벤트/프로모션-->
+        <section class="row">
+            <div class="col-12">
+                <div id="eventCarousel" class="carousel slide" data-ride="carousel" data-interval="6000">
+                    <div class="carousel-inner" style="border-radius: 0 0 5px 5px;">
+                        <div class="carousel-item active" th:each="event, index : ${eventList}">
+                            <a th:href="@{/event/{id}(id=${event.id})}">
+                                <img th:src="${eventImageList.get(index.index)}" class="d-block w-100"
+                                     th:alt="${event.title} + ' 이미지'"></a>
+                        </div>
+                    </div>
+                    <a class="carousel-control-prev" href="#eventCarousel" role="button" data-slide="prev">
+                        <i class="bi bi-chevron-left" aria-hidden="true"></i>
+                        <span class="sr-only">이전</span>
+                    </a>
+                    <a class="carousel-control-next" href="#eventCarousel" role="button" data-slide="next">
+                        <i class="bi bi-chevron-right" aria-hidden="true"></i>
+                        <span class="sr-only">다음</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- 섹션 2: 이달의 베스트셀러 -->
+        <section class="mt-5">
+            <h2 class="section-title">이달의 베스트셀러</h2>
+            <div id="bestsellerCarousel" class="carousel slide" data-ride="carousel" data-interval="5000">
+                <div class="carousel-inner">
+                    <div class="carousel-item active">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="book-item">
+                                    <a href="베스트1상세페이지">
+                                        <img src="https://via.placeholder.com/200x300?text=베스트셀러1" class="img-fluid"
+                                             alt="베스트셀러1"></a>
+                                    <div class="book-info">
+                                        <h5>책 제목</h5>
+                                        <p>작가: 홍길동</p>
+                                        <p>출판사: 길벗</p>
+                                        <strong>가격: 15,000원</strong>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="book-item">
+                                    <a href="베스트2상세페이지">
+                                        <img src="https://via.placeholder.com/200x300?text=베스트셀러2" class="img-fluid"
+                                             alt="베스트셀러2"></a>
+                                    <div class="book-info">
+                                        <h5>책 제목</h5>
+                                        <p>작가: 유희왕</p>
+                                        <p>출판사: 으갸갹</p>
+                                        <strong>가격: 15,000원</strong>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="book-item">
+                                    <a href="베스트3상세페이지">
+                                        <img src="https://via.placeholder.com/200x300?text=베스트셀러3" class="img-fluid"
+                                             alt="베스트셀러3"></a>
+                                    <div class="book-info">
+                                        <h5>책 제목</h5>
+                                        <p>작가: 갈아만든배</p>
+                                        <p>출판사: 배퓨레</p>
+                                        <strong>가격: 15,000원</strong>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="book-item">
+                                    <a href="베스트4상세페이지">
+                                        <img src="https://via.placeholder.com/200x300?text=베스트셀러4" class="img-fluid"
+                                             alt="베스트셀러4"></a>
+                                    <div class="book-info">
+                                        <h5>책 제목</h5>
+                                        <p>작가: 갈아만든배</p>
+                                        <p>출판사: 배퓨레</p>
+                                        <strong>가격: 15,000원</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="carousel-item">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="book-item">
+                                    <a href="베스트5상세페이지">
+                                        <img src="https://via.placeholder.com/200x300?text=베스트셀러5" class="img-fluid"
+                                             alt="베스트셀러5"></a>
+                                    <div class="book-info">
+                                        <h5>책 제목</h5>
+                                        <p>작가: 갈아만든배</p>
+                                        <p>출판사: 배퓨레</p>
+                                        <strong>가격: 15,000원</strong>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="book-item">
+                                    <a href="베스트6상세페이지">
+                                        <img src="https://via.placeholder.com/200x300?text=베스트셀러6" class="img-fluid"
+                                             alt="베스트셀러6"></a>
+                                    <div class="book-info">
+                                        <h5>책 제목</h5>
+                                        <p>작가: 갈아만든배</p>
+                                        <p>출판사: 배퓨레</p>
+                                        <strong>가격: 15,000원</strong>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="book-item">
+                                    <a href="베스트7상세페이지">
+                                        <img src="https://via.placeholder.com/200x300?text=베스트셀러7" class="img-fluid"
+                                             alt="베스트셀러7"></a>
+                                    <div class="book-info">
+                                        <h5>책 제목</h5>
+                                        <p>작가: 갈아만든배</p>
+                                        <p>출판사: 배퓨레</p>
+                                        <strong>가격: 15,000원</strong>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="book-item">
+                                    <a href="베스트8상세페이지">
+                                        <img src="https://via.placeholder.com/200x300?text=베스트셀러8" class="img-fluid"
+                                             alt="베스트셀러8"></a>
+                                    <div class="book-info">
+                                        <h5>책 제목</h5>
+                                        <p>작가: 갈아만든배</p>
+                                        <p>출판사: 배퓨레</p>
+                                        <strong>가격: 15,000원</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <a class="carousel-control-prev" href="#bestsellerCarousel" role="button" data-slide="prev">
+                    <i class="bi bi-chevron-left" aria-hidden="true"></i>
+                    <span class="sr-only">이전</span>
+                </a>
+                <a class="carousel-control-next" href="#bestsellerCarousel" role="button" data-slide="next">
+                    <i class="bi bi-chevron-right" aria-hidden="true"></i>
+                    <span class="sr-only">다음</span>
+                </a>
+            </div>
+        </section>
+
+        <!-- 섹션 3: 신상품 -->
+        <section class="mt-5">
+            <h2 class="section-title">신상품</h2>
+            <div id="newArrivalsCarousel" class="carousel slide" data-ride="carousel" data-interval="5000">
+                <div class="carousel-inner">
+                    <div class="carousel-item active">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="book-item">
+                                    <a href="신상품1상세페이지">
+                                        <img src="https://via.placeholder.com/200x300?text=신상품1" class="img-fluid"
+                                             alt="신상품1"></a>
+                                    <div class="book-info">
+                                        <h5>책 제목</h5>
+                                        <p>작가: 갈아만든배</p>
+                                        <p>출판사: 배퓨레</p>
+                                        <strong>가격: 15,000원</strong>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="book-item">
+                                    <a href="신상품2상세페이지">
+                                        <img src="https://via.placeholder.com/200x300?text=신상품2" class="img-fluid"
+                                             alt="신상품2"></a>
+                                    <div class="book-info">
+                                        <h5>책 제목</h5>
+                                        <p>작가: 갈아만든배</p>
+                                        <p>출판사: 배퓨레</p>
+                                        <strong>가격: 15,000원</strong>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="book-item">
+                                    <a href="신상품3상세페이지">
+                                        <img src="https://via.placeholder.com/200x300?text=신상품3" class="img-fluid"
+                                             alt="신상품3"></a>
+                                    <div class="book-info">
+                                        <h5>책 제목</h5>
+                                        <p>작가: 갈아만든배</p>
+                                        <p>출판사: 배퓨레</p>
+                                        <strong>가격: 15,000원</strong>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="book-item">
+                                    <a href="신상품4상세페이지">
+                                        <img src="https://via.placeholder.com/200x300?text=신상품4" class="img-fluid"
+                                             alt="신상품8\4"></a>
+                                    <div class="book-info">
+                                        <h5>책 제목</h5>
+                                        <p>작가: 갈아만든배</p>
+                                        <p>출판사: 배퓨레</p>
+                                        <strong>가격: 15,000원</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="carousel-item">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="book-item">
+                                    <a href="신상품5상세페이지">
+                                        <img src="https://via.placeholder.com/200x300?text=신상품5" class="img-fluid"
+                                             alt="신상품5"></a>
+                                    <div class="book-info">
+                                        <h5>책 제목</h5>
+                                        <p>작가: 갈아만든배</p>
+                                        <p>출판사: 배퓨레</p>
+                                        <strong>가격: 15,000원</strong>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="book-item">
+                                    <a href="신상품6상세페이지">
+                                        <img src="https://via.placeholder.com/200x300?text=신상품6" class="img-fluid"
+                                             alt="신상품6"></a>
+                                    <div class="book-info">
+                                        <h5>책 제목</h5>
+                                        <p>작가: 갈아만든배</p>
+                                        <p>출판사: 배퓨레</p>
+                                        <strong>가격: 15,000원</strong>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="book-item">
+                                    <a href="신상품7상세페이지">
+                                        <img src="https://via.placeholder.com/200x300?text=신상품7" class="img-fluid"
+                                             alt="신상품7"></a>
+                                    <div class="book-info">
+                                        <h5>책 제목</h5>
+                                        <p>작가: 갈아만든배</p>
+                                        <p>출판사: 배퓨레</p>
+                                        <strong>가격: 15,000원</strong>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="book-item">
+                                    <a href="신상품8상세페이지">
+                                        <img src="https://via.placeholder.com/200x300?text=신상품8" class="img-fluid"
+                                             alt="신상품8"></a>
+                                    <div class="book-info">
+                                        <h5>책 제목</h5>
+                                        <p>작가: 갈아만든배</p>
+                                        <p>출판사: 배퓨레</p>
+                                        <strong>가격: 15,000원</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <a class="carousel-control-prev" href="#newArrivalsCarousel" role="button" data-slide="prev">
+                    <i class="bi bi-chevron-left" aria-hidden="true"></i>
+                    <span class="sr-only">이전</span>
+                </a>
+                <a class="carousel-control-next" href="#newArrivalsCarousel" role="button" data-slide="next">
+                    <i class="bi bi-chevron-right" aria-hidden="true"></i>
+                    <span class="sr-only">다음</span>
+                </a>
+            </div>
+        </section>
+    </main>
+</div>
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>
