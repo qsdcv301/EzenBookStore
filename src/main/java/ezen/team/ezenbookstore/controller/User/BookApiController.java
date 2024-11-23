@@ -4,18 +4,13 @@ import ezen.team.ezenbookstore.entity.*;
 import ezen.team.ezenbookstore.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Controller
@@ -25,29 +20,8 @@ public class BookApiController {
     private final BookService bookService;
     private final CategoryService categoryService;
     private final SubCategoryService subCategoryService;
-    private final UserService userService;
     private final FileUploadService fileUploadService;
     private final ReviewService reviewService;
-
-    @ModelAttribute
-    public void findUser(Model model) {
-        try {
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            Object userData = auth.getPrincipal();
-            if (userData instanceof User user) {
-                model.addAttribute("user", user);
-                model.addAttribute("userData", true);
-            } else if (userData instanceof CustomOAuth2User customOAuth2User) {
-                User customUser = userService.findByEmail(customOAuth2User.getEmail());
-                model.addAttribute("user", customUser);
-                model.addAttribute("userData", true);
-            } else {
-                model.addAttribute("userData", false);
-            }
-        } catch (Exception e) {
-            model.addAttribute("userData", false);
-        }
-    }
 
     @GetMapping
     public String book(@RequestParam(name = "page", defaultValue = "0", required = false) int page,
@@ -299,17 +273,17 @@ public class BookApiController {
         String imagePath = fileUploadService.findImageFilePath(bookId, "book");
         List<String> reviewImagePathList = new ArrayList<>();
         List<Review> reviewList = reviewService.findAllByBookId(bookId);
-        for(Review review : reviewList){
+        for (Review review : reviewList) {
             String reviewImagePath = fileUploadService.findImageFilePath(review.getId(), "review");
             if (imagePath != null) {
                 reviewImagePathList.add(reviewImagePath);
-            }else{
+            } else {
                 reviewImagePathList.add("");
             }
         }
         if (imagePath != null) {
             model.addAttribute("imagePath", imagePath);
-        }else{
+        } else {
             model.addAttribute("imagePath", "");
         }
         model.addAttribute("reviewImagePathList", reviewImagePathList);

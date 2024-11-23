@@ -6,6 +6,7 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -37,6 +38,7 @@ public class Orders {
     private Payment payment;
 
     @Column(name = "orders_date")
+    @UpdateTimestamp
     private Timestamp orderDate;
 
     @Column(name = "status")

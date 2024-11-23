@@ -5,8 +5,6 @@ import ezen.team.ezenbookstore.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -21,32 +19,8 @@ import java.util.Map;
 public class ReviewApiController {
 
     private final ReviewService reviewService;
-    private final UserService userService;
-    private final BookService bookService;
     private final FileUploadService fileUploadService;
     private final OrderItemService orderItemService;
-
-    @ModelAttribute
-    public void findUser(Model model) {
-        try {
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            Object userData = auth.getPrincipal();
-            if (userData instanceof User user) {
-                model.addAttribute("user", user);
-                model.addAttribute("userData", true);
-                model.addAttribute("mypage", true);
-            } else if (userData instanceof CustomOAuth2User customOAuth2User) {
-                User customUser = userService.findByEmail(customOAuth2User.getEmail());
-                model.addAttribute("user", customUser);
-                model.addAttribute("userData", true);
-                model.addAttribute("mypage", true);
-            } else {
-                model.addAttribute("userData", false);
-            }
-        } catch (Exception e) {
-            model.addAttribute("userData", false);
-        }
-    }
 
     @GetMapping
     public String viewReview() {

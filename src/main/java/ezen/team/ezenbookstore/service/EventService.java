@@ -68,4 +68,10 @@ public class EventService{
     public Page<Event> searchByTitle(String keyword, Pageable pageable) {
         return eventRepository.findByTitleContaining(keyword, pageable);
     }
+
+    public List<Event> findOngoingEventList(){
+        Timestamp now = new Timestamp(System.currentTimeMillis());
+        return eventRepository.findByStartDateBeforeAndEndDateAfter(now.toLocalDateTime(), now.toLocalDateTime());
+
+    }
 }

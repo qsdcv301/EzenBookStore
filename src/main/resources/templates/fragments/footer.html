@@ -1,4 +1,66 @@
-<!DOCTYPE html>
-<html lang="en">
-<footer th:fragment="footer"></footer>
-</html>
+<footer th:fragment="footer" class="bg-light py-5 mt-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3 mb-4">
+                <h5 class="text-primary mb-3">도서 카테고리</h5>
+                <ul class="list-unstyled">
+                    <li><a href="/book?sort=count&direction=desc" class="text-muted">베스트셀러</a></li>
+                    <li><a href="/book?sort=publishDate&direction=asc" class="text-muted">신상품</a></li>
+                    <li><a href="/book?ifkr=0" class="text-muted">국내도서</a></li>
+                    <li><a href="/book?ifkr=1" class="text-muted">해외도서</a></li>
+                    <li><a href="/event" class="text-muted">이벤트</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3 mb-4">
+                <h5 class="text-primary mb-3">고객 서비스</h5>
+                <ul class="list-unstyled">
+                    <li><a href="/customerService" class="text-muted">고객센터</a></li>
+                    <li><a href="/customerService?tab=faq" class="text-muted">자주 묻는 질문</a></li>
+                    <li><a href="#" class="text-muted">반품/교환 안내</a></li>
+                    <li><a href="/customerService?tab=inquiry" class="text-muted">문의하기</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3 mb-4">
+                <h5 class="text-primary mb-3">이용안내</h5>
+                <ul class="list-unstyled">
+                    <li><a href="/customerService?tab=terms-of-service-tab" class="text-muted">이용약관</a></li>
+                    <li><a href="/customerService?tab=privacy-policy-tab" class="text-muted">개인정보처리방침</a></li>
+                    <li><a href="/customerService?tab=youth-protection-tab" class="text-muted">청소년보호정책</a></li>
+                    <li><a href="/customerService" class="text-muted">고객센터</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3 mb-4">
+                <h5 class="text-primary mb-3">소셜 미디어</h5>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><a href="#" class="text-muted"><i class="bi bi-facebook mr-2"></i>Facebook</a></li>
+                    <li class="mb-2"><a href="#" class="text-muted"><i class="bi bi-instagram mr-2"></i>Instagram</a></li>
+                    <li class="mb-2"><a href="#" class="text-muted"><i class="bi bi-twitter mr-2"></i>Twitter</a></li>
+                    <li><a href="#" class="text-muted"><i class="bi bi-youtube mr-2"></i>YouTube</a></li>
+                </ul>
+            </div>
+        </div>
+        <hr class="my-4">
+        <div class="row align-items-center">
+            <div class="col-md-4 text-center text-md-left mb-3 mb-md-0">
+                <a href="/" class="navbar-brand text-primary">EzenBookStore</a>
+            </div>
+            <div class="col-md-4 text-center mb-3 mb-md-0">
+                <small class="text-muted">
+                    Dveloper-Team:
+                    <a href="https://github.com/qsdcv301" class="text-muted">김태현</a>,
+                    <a href="https://github.com/HwangYeJoo" class="text-muted">황예주</a>,
+                    <a href="https://github.com/ChaiTope" class="text-muted">채윤성</a>,
+                    <a href="https://github.com/JaeHwan2569" class="text-muted">정재환</a>,
+                    <a href="https://github.com/LEE-JUNGIN" class="text-muted">이정인</a>
+                </small>
+            </div>
+            <div class="col-md-4 text-center text-md-right">
+                <small class="text-muted">&copy; 2024 Ezen Book Store. All Rights Reserved</small>
+            </div>
+        </div>
+    </div>
+    <div class="navigation-buttons">
+        <button id="scrollTopBtn"><i class="bi bi-arrow-up"></i></button>
+        <button id="goHomeBtn"><i class="bi bi-house-fill"></i></button>
+    </div>
+</footer>

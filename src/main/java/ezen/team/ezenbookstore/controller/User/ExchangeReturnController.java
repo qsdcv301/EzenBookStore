@@ -1,18 +1,13 @@
 package ezen.team.ezenbookstore.controller.User;
 
-import ezen.team.ezenbookstore.entity.CustomOAuth2User;
 import ezen.team.ezenbookstore.entity.ExchangeReturn;
 import ezen.team.ezenbookstore.entity.OrderItem;
+import ezen.team.ezenbookstore.entity.Orders;
 import ezen.team.ezenbookstore.entity.User;
-import ezen.team.ezenbookstore.service.ExchangeReturnService;
-import ezen.team.ezenbookstore.service.FileUploadService;
-import ezen.team.ezenbookstore.service.OrderItemService;
-import ezen.team.ezenbookstore.service.UserService;
+import ezen.team.ezenbookstore.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -30,28 +25,7 @@ public class ExchangeReturnController {
     private final UserService userService;
     private final FileUploadService fileUploadService;
     private final OrderItemService orderItemService;
-
-    @ModelAttribute
-    public void findUser(Model model) {
-        try {
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            Object userData = auth.getPrincipal();
-            if (userData instanceof User user) {
-                model.addAttribute("user", user);
-                model.addAttribute("userData", true);
-                model.addAttribute("mypage", true);
-            } else if (userData instanceof CustomOAuth2User customOAuth2User) {
-                User customUser = userService.findByEmail(customOAuth2User.getEmail());
-                model.addAttribute("user", customUser);
-                model.addAttribute("userData", true);
-                model.addAttribute("mypage", true);
-            } else {
-                model.addAttribute("userData", false);
-            }
-        } catch (Exception e) {
-            model.addAttribute("userData", false);
-        }
-    }
+    private final OrdersService ordersService;
 
     @PostMapping("/{questionId}")
     public ResponseEntity<Map<String, String>> findEA(@PathVariable(required = false) String questionId) {
@@ -95,13 +69,24 @@ public class ExchangeReturnController {
 
     @PostMapping("/add")
     public ResponseEntity<Map<String, Boolean>> addQnA(@ModelAttribute ExchangeReturn er,
+                                                       @RequestParam(name = "orderItemId") long orderItemId,
                                                        @RequestParam(name = "file") MultipartFile file,
                                                        Model model) {
         Map<String, Boolean> response = new HashMap<>();
         try {
             User user = (User) model.getAttribute("user");
+            OrderItem orderItem = orderItemService.findById(orderItemId);
+            OrderItem newOrderItem = OrderItem.builder()
+                    .id(orderItem.getId())
+                    .book(orderItem.getBook())
+                    .orders(orderItem.getOrders())
+                    .quantity(orderItem.getQuantity())
+                    .status((byte) 4)
+                    .build();
+            orderItemService.update(newOrderItem);
             ExchangeReturn newExchangeReturn = ExchangeReturn.builder()
                     .user(user)
+                    .orderItem(orderItem)
                     .category(er.getCategory())
                     .question(er.getQuestion())
                     .build();
@@ -109,6 +94,16 @@ public class ExchangeReturnController {
             if (file != null && !file.isEmpty()) {
                 fileUploadService.uploadFile(file, addExchangeReturn.getId().toString(), "er");
             }
+            Orders orders = ordersService.findById(orderItem.getOrders().getId());
+            Orders newOrders = Orders.builder()
+                    .id(orders.getId())
+                    .user(orders.getUser())
+                    .delivery(orders.getDelivery())
+                    .payment(orders.getPayment())
+                    .status((byte) 3)
+                    .orderItems(orders.getOrderItems())
+                    .build();
+            ordersService.update(newOrders);
             response.put("success", true);
             return ResponseEntity.ok(response); // 성공 시 200 OK와 함께 반환
         } catch (Exception e) {

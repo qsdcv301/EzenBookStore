@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface NoticeRepository extends JpaRepository<Notice, Long> {
@@ -18,4 +17,7 @@ public interface NoticeRepository extends JpaRepository<Notice, Long> {
     Page<Notice> findByContentContaining(String keyword,Pageable pageable);
 
     Page<Notice> findByTitleContainingOrContentContaining(String titleKeyword, String contentKeyword, Pageable pageable);
+
+    List<Notice> findTop5ByOrderByIdDesc();
+
 }

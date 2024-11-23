@@ -2,29 +2,66 @@
 <html lang="ko">
 <head xmlns:th="http://www.thymeleaf.org">
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>상품 관리</title>
-    <link rel="canonical" href="https://getbootstrap.kr/docs/5.1/examples/blog/">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet"/>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet">
-    <link href="/css/bootstrap.min.css" rel="stylesheet"/>
-    <link href="/css/style.css" rel="stylesheet"/>
-    <script src="/js/jquery-3.7.1.min.js"></script>
-    <script src="/js/bootstrap.min.js"></script>
-    <script src="/js/popper.min.js"></script>
-    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.iamport.kr/v1/iamport.js"></script>
-    <script src="/js/script.js"></script>
+    <!-- 공통 Bootstrap 및 스타일 추가 -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+
+    <style>
+        .filter-option {
+            cursor: pointer;
+            padding: 10px 20px;
+            margin-right: 10px;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+            color: #495057;
+            transition: background-color 0.3s;
+        }
+
+        .filter-option:hover {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .filter-option.active {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .table th, .table td {
+            vertical-align: middle;
+        }
+
+        .btn {
+            margin-right: 5px;
+        }
+
+        .pagination {
+            justify-content: center;
+        }
+
+        .modal-header {
+            background-color: #f8f9fa;
+        }
+
+        .modal-footer {
+            background-color: #f8f9fa;
+        }
+    </style>
 </head>
 <body>
-<!-- 상품 관리 테이블 -->
-<div class="col-md-9 p-4">
-    <h2 class="mb-4">상품 관리</h2>
+<div class="container mt-5">
+    <h3 class="font-weight-bold mb-4">상품 관리</h3>
+    <p>상품 정보와 필터링 옵션을 관리할 수 있는 페이지입니다.</p>
+    <hr>
 
-    <!-- 필터링 섹션 -->
-    <div class="d-flex mb-3">
-        <!-- 국내/외 필터링 -->
-        <div class="card mb-4 col-8">
+    <!-- 필터 섹션 -->
+    <!-- 국내/외 필터링 -->
+    <div class="d-flex justify-content-between">
+        <div class="card mb-4 col-8 d-flex">
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-6 mb-3">
@@ -88,13 +125,16 @@
             <button class="btn btn-danger delete-button">
                 선택항목 삭제
             </button>
+            <button class="btn btn-primary" data-toggle="modal" data-target="#addProductModal">상품 추가</button>
         </div>
+
     </div>
 
-    <table class="table table-hover">
-        <thead class="table-dark">
+    <!-- 상품 테이블 -->
+    <table class="table table-bordered text-center">
+        <thead class="thead-light">
         <tr>
-            <th><input type="checkbox" id="select-all" onclick="toggleAllCheckboxes()"></th> <!-- 체크박스 클릭 시 전체 체크 및 해제 -->
+            <th><input type="checkbox" id="select-all" onclick="toggleAllCheckboxes(this)"></th>
             <th>제목</th>
             <th>저자</th>
             <th>출판사</th>
@@ -108,81 +148,53 @@
             <td th:text="${book.title}"></td>
             <td th:text="${book.author}"></td>
             <td th:text="${book.publisher}"></td>
-            <th><input th:value="${book.discount}"></th>
+            <td th:text="${book.discount + '%'}"></td>
             <td>
-                <button class="btn btn-success btn-sm"
-                        th:data-book-id="${book.id}"
-                        data-toggle="modal"
-                        data-target="#productModal">
-                    수정
-                </button>
-                <button class="btn btn-danger btn-sm delete-button" th:data-book-id="${book.id}">
-                    삭제
-                </button>
+                <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#productModal" th:data-book-id="${book.id}">수정</button>
+                <button class="btn btn-danger btn-sm delete-button" th:data-book-id="${book.id}">삭제</button>
             </td>
         </tr>
         </tbody>
     </table>
+
+    <!-- 페이지네이션 -->
+    <nav>
+        <ul class="pagination">
+            <li class="page-item" th:classappend="${bookList.first} ? 'disabled' : ''">
+                <a class="page-link" th:if="${!bookList.first}" th:href="@{/admin/book(page=0)}">처음</a>
+                <span class="page-link" th:if="${bookList.first}">처음</span>
+            </li>
+            <li class="page-item" th:classappend="${bookList.hasPrevious()} ? '' : 'disabled'">
+                <a class="page-link" th:if="${bookList.hasPrevious()}" th:href="@{/admin/book(page=${bookList.number - 1})}">이전</a>
+                <span class="page-link" th:if="${!bookList.hasPrevious()}">이전</span>
+            </li>
+            <li class="page-item" th:each="i : ${#numbers.sequence(0, bookList.totalPages - 1)}" th:classappend="${i == bookList.number} ? 'active'">
+                <a class="page-link" th:href="@{/admin/book(page=${i})}" th:text="${i + 1}"></a>
+            </li>
+            <li class="page-item" th:classappend="${bookList.hasNext()} ? '' : 'disabled'">
+                <a class="page-link" th:if="${bookList.hasNext()}" th:href="@{/admin/book(page=${bookList.number + 1})}">다음</a>
+                <span class="page-link" th:if="${!bookList.hasNext()}">다음</span>
+            </li>
+            <li class="page-item" th:classappend="${bookList.last} ? 'disabled' : ''">
+                <a class="page-link" th:if="${!bookList.last}" th:href="@{/admin/book(page=${bookList.totalPages - 1})}">마지막</a>
+                <span class="page-link" th:if="${bookList.last}">마지막</span>
+            </li>
+        </ul>
+    </nav>
 </div>
 
-<!--페이징-->
-<div class="pagination">
-    <ul class="pagination">
-        <!-- 처음 페이지로 이동 버튼 -->
-        <li th:classappend="${bookList.first} ? 'disabled' : ''">
-            <a th:if="${!bookList.first}" th:href="@{/admin/book(page=0, size=${bookList.size})}">처음</a>
-            <a th:if="${bookList.first}" class="disabled">처음</a>
-        </li>
-
-        <!-- 이전 페이지로 이동 버튼 -->
-        <li th:classappend="${bookList.hasPrevious()} ? '' : 'disabled'">
-            <a th:if="${bookList.hasPrevious()}"
-               th:href="@{/admin/book(page=${bookList.number - 1}, size=${bookList.size})}">이전</a>
-            <a th:if="${!bookList.hasPrevious()}" class="disabled">이전</a>
-        </li>
-
-        <!-- 페이지 번호 버튼 -->
-        <li th:each="i : ${#numbers.sequence(0, bookList.totalPages - 1)}"
-            th:classappend="${i == bookList.number} ? 'active'">
-            <a th:href="@{/admin/book(page=${i}, size=${bookList.size})}"
-               th:text="${i + 1}">1</a>
-        </li>
-
-        <!-- 다음 페이지로 이동 버튼 -->
-        <li th:classappend="${bookList.hasNext()} ? '' : 'disabled'">
-            <a th:if="${bookList.hasNext()}"
-               th:href="@{/admin/book(page=${bookList.number + 1}, size=${bookList.size})}">다음</a>
-            <a th:if="${!bookList.hasNext()}" class="disabled">다음</a>
-        </li>
-
-        <!-- 마지막 페이지로 이동 버튼 -->
-        <li th:classappend="${bookList.last} ? 'disabled' : ''">
-            <a th:if="${!bookList.last}"
-               th:href="@{/admin/book(page=${bookList.totalPages - 1}, size=${bookList.size})}">마지막</a>
-            <a th:if="${bookList.last}" class="disabled">마지막</a>
-        </li>
-    </ul>
-</div>
-
-
-<!-- 상품 추가 버튼 -->
-<div class="col-md-12 text-right mb-3">
-    <button class="btn btn-primary" data-toggle="modal" data-target="#addProductModal">상품 추가</button>
-</div>
-
-<!-- 추가 및 수정 모달 -->
+<!-- 수정 모달 -->
 <div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">상품 수정</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
             <form id="productForm">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="productModalLabel">상품 관리</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
                 <div class="modal-body">
-                    <input type="hidden" id="bookId" name="id"/>
                     <div class="form-group">
                         <label for="title">제목</label>
                         <input type="text" class="form-control" id="title" name="title" required>
@@ -256,7 +268,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">취소</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
                     <button type="submit" class="btn btn-primary">저장</button>
                 </div>
             </form>
@@ -265,19 +277,18 @@
 </div>
 
 
-<!-- 추가 모달 (수정 모달과 동일한 구조) -->
+<!-- 추가 모달 -->
 <div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">상품 추가</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
             <form id="addProductForm">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="addProductModalLabel">상품 추가</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
                 <div class="modal-body">
-                    <!-- 기존 수정 모달과 동일한 입력 폼 -->
                     <div class="form-group">
                         <label for="addTitle">제목</label>
                         <input type="text" class="form-control" id="addTitle" name="title" required>
@@ -348,7 +359,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">취소</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
                     <button type="submit" class="btn btn-primary">저장</button>
                 </div>
             </form>
@@ -360,6 +371,26 @@
 <!-- JavaScript 코드 -->
 
 <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        //초기화
+        initSelectAll();
+    });
+
+    // 전체 선택 체크박스 초기화
+    function initSelectAll() {
+        document.getElementById("select-all").addEventListener("change", event => {
+            const isChecked = event.target.checked;
+            document.querySelectorAll(".book-checkbox").forEach(cb => {
+                cb.checked = isChecked;
+            });
+        });
+    }
+    //체크박스 일괄체크/해제
+    function toggleAllCheckboxes(checkbox) {
+        const checkboxes = document.querySelectorAll('.book-checkbox');
+        checkboxes.forEach(cb => cb.checked = checkbox.checked);
+    }
+
     $(document).ready(function () {
 
         // 카테고리 목록 로드
