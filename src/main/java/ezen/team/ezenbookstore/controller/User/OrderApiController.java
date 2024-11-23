@@ -84,14 +84,16 @@ public class OrderApiController {
             // 1 배송 전
             // 2 배송 완료
             // 3 주문 확정
-            // 4 교환
-            // 5 반품
+            // 4 교환/반품 신청
+            // 5 교환됨
+            // 6 반품됨
 
             // 주문 상태를 변환
             String status = switch (order.getStatus()) {
                 case 1 -> "주문 완료";
                 case 2 -> "주문 취소";
                 case 3 -> "교환/반품 신청";
+                case 4 -> "교환/반품 승인";
                 default -> "기타";
             };
             String deliveryStatus = switch (order.getDelivery().getStatus()) {
@@ -187,7 +189,12 @@ public class OrderApiController {
                     .build();
             userService.update(newUser);
             OrderItem orderItem = orderItemService.findById(orderItemId);
-            byte status = 2; // 1일반 2구매 확정 3리뷰 작성 4 교환 5 반품
+            // 1 배송 전
+            // 2 배송 완료
+            // 3 주문 확정
+            // 4 교환
+            // 5 반품
+            byte status = 3;
             OrderItem newOrderItem = OrderItem.builder()
                     .id(orderItem.getId())
                     .book(orderItem.getBook())

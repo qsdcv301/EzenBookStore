@@ -1451,7 +1451,7 @@ $(document).ready(function () {
                         <td class="align-middle">1</td>
                         <td class="align-middle">${response.priceList[i]}원</td>
                         <td class="align-middle">
-                            <button class="btn btn-sm btn-warning text-white orderExchangeNreturnBtn" data-toggle="modal" data-target="#exchangeNreturn" ${orderExchangeNreturnBtnDisabled}>교환/반품</button>
+                            <button class="btn btn-sm btn-warning text-white orderExchangeNreturnBtn" data-toggle="modal" data-target="#exchangeNreturn" data-id="${response.orderItemList[i]}" ${orderExchangeNreturnBtnDisabled}>교환/반품</button>
                         </td>
                         <td class="align-middle">
                             <button class="btn btn-sm btn-success orderSuccessBtn" data-toggle="modal" data-target="#orderConfirmation" data-id="${response.orderItemList[i]}" ${orderSuccessBtnDisabled}>구매확정</button>
@@ -1506,6 +1506,7 @@ $(document).ready(function () {
                 if (response.success) {
                     alert("주문 취소 요청을 했습니다.");
                     updateMainModalData(orderId);
+                    $(".closeDetailBtn").click();
                 } else {
                     alert("주문 취소 요청중 오류가 발생했습니다.");
                     updateMainModalData(orderId);
@@ -1520,7 +1521,9 @@ $(document).ready(function () {
     // 반품/교환 요청 모달
     $(document).on('click', '.orderExchangeNreturnBtn', function (e) {
         const bookTitle = $(this).closest('.orderItemsTable').find('.orderTitle').text();
+        const orderItemId = $(this).attr("data-id");
         $('#exchangeReturnTitle').val(bookTitle);
+        $('#submitExchangeReturn').attr("data-id", orderItemId);
     });
 
     $(document).on('click', '#submitExchangeReturn', function (e) {
@@ -1529,6 +1532,7 @@ $(document).ready(function () {
         const category = form.find('#exchangeReturnCategory option:selected').val(); // 선택된 값
         const question = form.find('#exchangeReturnReason').val(); // 사유
         const file = form.find('.exchangeReturnFile')[0]?.files[0]; // 파일 선택
+        const orderItemId = $(this).attr("data-id");
         if (category === "0") {
             alert("교환/환불 유형을 선택해주세요.");
             return;
@@ -1541,9 +1545,9 @@ $(document).ready(function () {
             alert("교환/환불 사유 사진을 포함시켜주세요.");
             return;
         }
-
         // FormData 객체 생성 및 데이터 추가
         const formData = new FormData();
+        formData.append('orderItemId', orderItemId);
         formData.append('category', category);
         formData.append('question', question);
         formData.append('file', file);
@@ -1568,10 +1572,10 @@ $(document).ready(function () {
         });
     });
 
-    $(document).on('change', '#exchangeReturnFile', function (e) {
+    $(document).on('change', '.exchangeReturnFile', function (e) {
         // 파일 이름을 레이블에 표시
         const fileName = $(this).val().split('\\').pop();
-        $(this).next('.custom-file-label').html(fileName);
+        $('#exchangeReturnFile-label').html(fileName);
     });
 
     // 파일 유효성 검사 및 파일명 표시 (교환/반품 모달)
@@ -1670,8 +1674,7 @@ $(document).ready(function () {
                     // 메인 모달 데이터 갱신
                     const ordersId = $('.orderId').text(); // 현재 모달에 표시된 주문 ID 가져오기
                     updateMainModalData(ordersId);
-                    // 모달 닫기
-                    $('#orderConfirmation').modal('hide');
+                    $(".closeBtn").click();
                 } else {
                     alert("구매 확정중 오류가 발생했습니다.");
                 }
@@ -1777,8 +1780,7 @@ $(document).ready(function () {
                     // 메인 모달 데이터 갱신
                     const ordersId = $('.orderId').text(); // 현재 모달에 표시된 주문 ID 가져오기
                     updateMainModalData(ordersId);
-                    // 모달 닫기
-                    $('#reviewModal').modal('hide');
+                    $(".closeBtn").click();
                 } else {
                     alert("리뷰 작성중 오류가 발생했습니다.");
                 }
