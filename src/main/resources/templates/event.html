@@ -1,91 +1,191 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>이벤트 페이지</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
-    <style>
-        /* 화면 전체 높이 설정 및 기본 여백 제거 */
-        body, html {
-            height: 100%;
-            margin: 0;
-        }
-        /* 전체 화면 중앙 정렬을 위한 컨테이너 스타일 */
-        .full-page-container {
-            align-items: flex-start; /* 위쪽에 더 가까이 위치 */
-            padding-top: 40px; /* 화면 상단과 여유를 두기 위해 패딩 추가 */
-            padding-bottom: 40px; /* 화면 하단에도 여유를 두기 위해 패딩 추가 */
-            box-sizing: border-box; /* 패딩이 높이에 포함되도록 설정 */
-        }
-        /* 이벤트 섹션 스타일 */
-        .event-section {
-            padding: 80px;
-            width: 80%; /* 필요에 따라 너비 조정 가능 */
-            background-color: #d8d8d8; /* 배경 색상 - 위차 확인용 */
-        }
-        /* 배너 스타일 */
-        .event-banner {
-            height: 250px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: #61afce;
-            border-radius: 10px;
-        }
-        /* 제목과 기간 스타일 */
-        .event-title, .event-period {
-            font-size: 20px;
-            padding: 5px;
-            background-color: #fff;
-        }
-    </style>
+    <link rel="canonical" href="https://getbootstrap.kr/docs/5.1/examples/blog/">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet">
+    <link href="/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="/css/style.css" rel="stylesheet"/>
+    <script src="/js/jquery-1.12.4.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/popper.min.js"></script>
+    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.iamport.kr/v1/iamport.js"></script>
+    <script src="/js/script.js"></script>
 </head>
 <body>
+<header th:replace="~{fragments/header :: header}"></header>
+<div class="container mt-5">
+    <h1 class="text-left mb-5">Ezen-Book 이벤트</h1>
 
-    <!-- 전체 페이지 중앙에 배치하기 위한 컨테이너 -->
-    <div class="col-12 full-page-container">
-        <div class="event-section container">
-            <h2 class="mb-4">이벤트</h2>
-            <div class="row">
-                <!-- 이벤트 배너 1 -->
-                <div class="col-md-6 mb-4">
-                    <div class="event-banner mb-4">
-                        <img src="" alt="이벤트 배너 이미지" class="img-fluid">
+    <!-- 탭 네비게이션 -->
+    <ul class="nav nav-tabs" id="eventTabs" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" id="ongoing-events-tab" data-toggle="tab" href="#ongoing-events" role="tab"
+               aria-controls="ongoing-events" aria-selected="true">진행 중인 이벤트</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="ended-events-tab" data-toggle="tab" href="#ended-events" role="tab"
+               aria-controls="ended-events" aria-selected="false">종료된 이벤트</a>
+        </li>
+    </ul>
+
+    <!-- 탭 콘텐츠 -->
+    <div class="tab-content mt-3">
+        <!-- 진행중인 이벤트 -->
+        <div class="tab-pane fade show active" id="ongoing-events" role="tabpanel"
+             aria-labelledby="ongoing-events-tab">
+            <div class="row mt-4">
+                <!--이벤트 카드 목록 // 배너를 누르면 상세 이벤트 페이지로 넘어가도록 구현-->
+                <div class="col-md-6 mb-4" th:each="event, index : ${onEvents}">
+                    <div class="card event-card">
+                        <img th:src="${onImageList.get(index.index)}" class="card-img-top"
+                             th:alt="${event.title}+' 이벤트'">
+                        <div class="card-body">
+                            <h5 class="card-title" th:text="${event.title}"></h5>
+                            <p class="card-text"
+                               th:text="'기간: ' + ${#dates.format(event.startDate, 'yyyy년 MM월 dd일') + ' ~ ' + #dates.format(event.endDate, 'yyyy년 MM월 dd일')}"></p>
+                        </div>
+                        <a th:href="@{/event/{id}(id=${event.id})}" class="stretched-link"></a>
                     </div>
-                    <div class="event-title">이벤트 제목이 들어갈 공간입니다.</div>
-                    <div class="event-period">이벤트 기간이 들어갈 공간입니다.</div>
                 </div>
-
-                <!-- 이벤트 배너 2 -->
-                <div class="col-md-6 mb-4">
-                    <div class="event-banner mb-4">
-                        <img src="" alt="이벤트 배너 이미지" class="img-fluid">
-                    </div>
-                    <div class="event-title">이벤트 제목</div>
-                    <div class="event-period">이벤트 기간</div>
-                </div>
-
-                <!-- 이벤트 배너 3 -->
-                <div class="col-md-6 mb-4">
-                    <div class="event-banner mb-4">
-                        <img src="" alt="이벤트 배너 이미지" class="img-fluid">
-                    </div>
-                    <div class="event-title">이벤트 제목</div>
-                    <div class="event-period">이벤트 기간</div>
-                </div>
-
-                <!-- 이벤트 배너 4 -->
-                <div class="col-md-6 mb-4">
-                    <div class="event-banner mb-4">
-                        <img src="" alt="이벤트 배너 이미지" class="img-fluid">
-                    </div>
-                    <div class="event-title">이벤트 제목</div>
-                    <div class="event-period">이벤트 기간</div>
-                </div>
-
+                <!--이벤트 카드 목록 끝-->
             </div>
+            <!-- 페이징 -->
+            <th:block th:if="${onEvent != null and onEvent.totalElements > 0}">
+                <nav aria-label="Page navigation" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        <!-- 첫 페이지 버튼 -->
+                        <li class="page-item" th:classappend="${onEvent.first} ? 'disabled' : ''">
+                            <a class="page-link"
+                               th:href="@{/event(onPage=0, offPage=${offPage})}"
+                               aria-label="First">
+                                << 처음
+                            </a>
+                        </li>
+
+                        <!-- 이전 페이지 버튼 -->
+                        <li class="page-item"
+                            th:classappend="${onEvent.hasPrevious} ? '' : 'disabled'">
+                            <a class="page-link"
+                               th:href="@{/event(onPage=${onEvent.number - 1}, offPage=${offPage})}"
+                               aria-label="Previous">
+                                이전
+                            </a>
+                        </li>
+
+                        <!-- 페이지 번호 버튼 (최대 5개까지 보이도록 설정) -->
+                        <li class="page-item"
+                            th:each="i : ${#numbers.sequence(
+                                                onEvent.totalPages <= 5 ? 0 : (onEvent.number <= 2 ? 0 : (onEvent.number >= onEvent.totalPages - 3 ? onEvent.totalPages - 5 : onEvent.number - 2)),
+                                                onEvent.totalPages <= 5 ? onEvent.totalPages - 1 : (onEvent.number <= 2 ? 4 : (onEvent.number >= onEvent.totalPages - 3 ? onEvent.totalPages - 1 : onEvent.number + 2))
+                                                )}"
+                            th:classappend="${onEvent.number == i} ? 'active' : ''">
+                            <a class="page-link"
+                               th:href="@{/event(onPage=${i}, offPage=${offPage})}"
+                               th:text="${i + 1}"></a>
+                        </li>
+
+                        <!-- 다음 페이지 버튼 -->
+                        <li class="page-item" th:classappend="${onEvent.hasNext} ? '' : 'disabled'">
+                            <a class="page-link"
+                               th:href="@{/event(onPage=${onEvent.number + 1}, offPage=${offPage})}"
+                               aria-label="Next">
+                                다음
+                            </a>
+                        </li>
+
+                        <!-- 맨 뒤 페이지 버튼 -->
+                        <li class="page-item" th:classappend="${onEvent.last} ? 'disabled' : ''">
+                            <a class="page-link"
+                               th:href="@{/event(onPage=${onEvent.totalPages - 1}, offPage=${offPage})}"
+                               aria-label="Last">
+                                끝 >>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </th:block>
+        </div>
+        <!-- 종료된 이벤트 -->
+        <div class="tab-pane fade" id="ended-events" role="tabpanel" aria-labelledby="ended-events-tab">
+            <div class="row mt-4">
+                <!--이벤트 카드 목록 // 배너를 누르면 상세 이벤트 페이지로 넘어가도록 구현-->
+                <div class="col-md-6 mb-4" th:each="event, index : ${offEvents}">
+                    <div class="card event-card disabled-card">
+                        <img th:src="${offImageList.get(index.index)}" class="card-img-top"
+                             th:alt="${event.title}+' 이벤트'">
+                        <div class="card-body">
+                            <h5 class="card-title" th:text="${event.title}"></h5>
+                            <p class="card-text"
+                               th:text="'기간: ' + ${#dates.format(event.startDate, 'yyyy년 MM월 dd일') + ' ~ ' + #dates.format(event.endDate, 'yyyy년 MM월 dd일')}"></p>
+                        </div>
+                        <a th:href="@{/event/{id}(id=${event.id})}" class="stretched-link"></a>
+                    </div>
+                </div>
+            </div>
+            <!-- 페이징 -->
+            <th:block th:if="${offEvent != null and offEvent.totalElements > 0}">
+                <nav aria-label="Page navigation" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        <!-- 첫 페이지 버튼 -->
+                        <li class="page-item" th:classappend="${offEvent.first} ? 'disabled' : ''">
+                            <a class="page-link"
+                               th:href="@{/event(onPage=${onPage}, offPage=0)}"
+                               aria-label="First">
+                                << 처음
+                            </a>
+                        </li>
+
+                        <!-- 이전 페이지 버튼 -->
+                        <li class="page-item"
+                            th:classappend="${offEvent.hasPrevious} ? '' : 'disabled'">
+                            <a class="page-link"
+                               th:href="@{/event(onPage=${onPage}, offPage=${offEvent.number - 1})}"
+                               aria-label="Previous">
+                                이전
+                            </a>
+                        </li>
+
+                        <!-- 페이지 번호 버튼 (최대 5개까지 보이도록 설정) -->
+                        <li class="page-item"
+                            th:each="i : ${#numbers.sequence(
+                                                offEvent.totalPages <= 5 ? 0 : (offEvent.number <= 2 ? 0 : (offEvent.number >= offEvent.totalPages - 3 ? offEvent.totalPages - 5 : offEvent.number - 2)),
+                                                offEvent.totalPages <= 5 ? offEvent.totalPages - 1 : (offEvent.number <= 2 ? 4 : (offEvent.number >= offEvent.totalPages - 3 ? offEvent.totalPages - 1 : offEvent.number + 2))
+                                                )}"
+                            th:classappend="${offEvent.number == i} ? 'active' : ''">
+                            <a class="page-link"
+                               th:href="@{/event(onPage=${onPage}, offPage=${i})}"
+                               th:text="${i + 1}"></a>
+                        </li>
+
+                        <!-- 다음 페이지 버튼 -->
+                        <li class="page-item" th:classappend="${offEvent.hasNext} ? '' : 'disabled'">
+                            <a class="page-link"
+                               th:href="@{/event(onPage=${onPage}, offPage=${offEvent.number + 1})}"
+                               aria-label="Next">
+                                다음
+                            </a>
+                        </li>
+
+                        <!-- 맨 뒤 페이지 버튼 -->
+                        <li class="page-item" th:classappend="${offEvent.last} ? 'disabled' : ''">
+                            <a class="page-link"
+                               th:href="@{/event(onPage=${onPage}, offPage=${offEvent.totalPages - 1})}"
+                               aria-label="Last">
+                                끝 >>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </th:block>
         </div>
     </div>
-
+</div>
+<footer th:replace="~{fragments/footer :: footer}"></footer>
 </body>
 </html>

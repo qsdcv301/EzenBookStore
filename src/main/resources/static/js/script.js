@@ -895,7 +895,6 @@ $(document).ready(function () {
         );
     });
 
-
     //     book
     $('#bookSortOptions').change(function () {
         // 선택된 <option> 요소의 data 속성 값을 가져옴
@@ -1744,6 +1743,16 @@ $(document).ready(function () {
                 alert("서버 오류가 발생했습니다.");
             }
         });
+    });
+
+    //event
+
+    // 카드 클릭 시 상세 페이지로 이동
+    $(".event-card").click(function () {
+        if (!$(this).hasClass('disabled-card')) {
+            const url = $(this).data("url");
+            window.location.href = url;
+        }
     });
 
 });

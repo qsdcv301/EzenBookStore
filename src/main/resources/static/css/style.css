@@ -76,6 +76,25 @@
     font-size: 16px;
 }
 
+.event-card img {
+    height: 200px;
+    object-fit: cover;
+    width: 100%;
+}
+
+.event-card {
+    cursor: pointer;
+}
+
+.event-card:hover {
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* 종료된 이벤트 */
+.disabled-card {
+    opacity: 0.5;
+}
+
 #bank-transfer,
 #credit-card
 {
@@ -111,4 +130,12 @@
 .progress-bar {
     font-size: 1rem;
     line-height: 30px;
+}
+
+.quantity-input {
+    width: 70px;
+}
+
+.cart-item {
+    margin-bottom: 1rem;
 }

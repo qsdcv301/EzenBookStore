@@ -24,23 +24,27 @@
         <div class="card-header">
 
             <div class="row mt-4">
-                <h3 class="col-md-12 d-flex justify-content-center mb-0" th:text="${notice.title != null ? notice.title : ''}"></h3>
+                <h3 class="col-md-12 d-flex justify-content-center mb-0"
+                    th:text="${notice != null ? notice.title : event.title}"></h3>
             </div>
             <div class="row mt-5">
                 <p class="col-md-6 d-flex align-items-center mb-0">유형 : &nbsp;<strong
-                        th:text="notice != null ? '공지사항' : '이벤트'"></strong></p>
+                        th:text="${notice != null ? '공지사항' : '이벤트'}"></strong></p>
                 <p class="col-md-3 a d-flex justify-content-end align-items-center mb-0">작성자
                     :&nbsp;<strong>관리자</strong></p>
                 <p class="col-md-3 d-flex justify-content-end align-items-center mb-0">날짜 :
-                    &nbsp;<strong th:text="${notice.createAt != null ?  #dates.format(notice.createAt, 'yyyy-MM-dd') : ''}"></strong></p>
+                    &nbsp;<strong
+                            th:text="${notice != null ?  #dates.format(notice.createAt, 'yyyy-MM-dd') : #dates.format(event.startDate, 'yyyy-MM-dd') + ' ~ ' + #dates.format(event.endDate, 'yyyy-MM-dd')}"></strong>
+                </p>
             </div>
         </div>
 
         <div class="card-body overflow-auto">
-            <div class="card-text" th:text="${notice.content != null ? notice.content : ''}">
+            <div class="card-text" th:text="${notice != null ? notice.content : event.content}">
             </div>
             <div class="card-img mt-3">
-                <img th:src="${noticeImagePath != null ? noticeImagePath : ''}" class="card-img-top img-thumbnail" th:alt="${notice != null ? '공지사항 이미지' : '이벤트 이미지'}">
+                <img th:src="${noticeImagePath != null ? noticeImagePath : eventImagePath}" class="card-img-top img-thumbnail"
+                     th:alt="${notice != null ? '공지사항 이미지' : '이벤트 이미지'}">
             </div>
         </div>
         <div class="card-footer">

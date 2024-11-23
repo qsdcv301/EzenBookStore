@@ -1,13 +1,7 @@
 package ezen.team.ezenbookstore.controller;
 
-import ezen.team.ezenbookstore.entity.CustomOAuth2User;
-import ezen.team.ezenbookstore.entity.Notice;
-import ezen.team.ezenbookstore.entity.QnA;
-import ezen.team.ezenbookstore.entity.User;
-import ezen.team.ezenbookstore.service.FileUploadService;
-import ezen.team.ezenbookstore.service.NoticeService;
-import ezen.team.ezenbookstore.service.QnAService;
-import ezen.team.ezenbookstore.service.UserService;
+import ezen.team.ezenbookstore.entity.*;
+import ezen.team.ezenbookstore.service.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +19,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RequiredArgsConstructor
@@ -36,6 +32,7 @@ public class ViewApiController {
     private final QnAService qnAService;
     private final UserService userService;
     private final FileUploadService fileUploadService;
+    private final EventService eventService;
 
     @GetMapping("/login")
     public String login() {
@@ -132,7 +129,7 @@ public class ViewApiController {
             model.addAttribute("questionList", qPaging.getContent());
             model.addAttribute("qnaPage", qPaging);
         } catch (Exception e) {
-           System.out.println();
+            System.out.println();
         }
         Pageable noticePageable = PageRequest.of(noticePage, size, Sort.by(sortDirection, "id"));
         Page<Notice> noticePaging = noticeService.findAll(noticePageable);
@@ -142,15 +139,72 @@ public class ViewApiController {
         return "customerService";
     }
 
-    @GetMapping("/notice")
-    public String notice(@RequestParam(name = "id") Long id,
-                         Model model) {
+    @GetMapping("/notice/{id}")
+    public String viewNotice(@PathVariable Long id,
+                             Model model) {
         try {
             Notice notice = noticeService.findById(id);
             String noticeImagePath = fileUploadService.findImageFilePath(id, "notice");
             model.addAttribute("notice", notice);
             model.addAttribute("noticeImagePath", noticeImagePath);
             return "noticeEvent";
+        } catch (Exception e) {
+            return "redirect:/logout";
+        }
+    }
+
+    @GetMapping("/event/{id}")
+    public String viewEvent(@PathVariable Long id,
+                            Model model) {
+        try {
+            Event event = eventService.findById(id);
+            String eventImagePath = fileUploadService.findImageFilePath(id, "event");
+            model.addAttribute("event", event);
+            model.addAttribute("eventImagePath", eventImagePath);
+            return "noticeEvent";
+        } catch (Exception e) {
+            return "redirect:/logout";
+        }
+    }
+
+    @GetMapping("/event")
+    public String evnet(@RequestParam(name = "onPage", required = false, defaultValue = "0") Integer onPage,
+                        @RequestParam(name = "offPage", required = false, defaultValue = "0") Integer offPage,
+                        Model model) {
+        try {
+            int size = 10;
+            Sort.Direction sortDirection = Sort.Direction.DESC;
+            Pageable onPageable = PageRequest.of(onPage, size, Sort.by(sortDirection, "id"));
+            Page<Event> onEvent = eventService.findOngoingEvents(onPageable);
+            Pageable offPageable = PageRequest.of(offPage, size, Sort.by(sortDirection, "id"));
+            Page<Event> offEvent = eventService.findEndedEvents(offPageable);
+            List<String> onImageList = new ArrayList<>();
+            List<String> offImageList = new ArrayList<>();
+            for (Event event : onEvent.getContent()) {
+                String imagePath = fileUploadService.findImageFilePath(event.getId(), "event");
+                if (imagePath != null) {
+                    onImageList.add(imagePath);
+                } else {
+                    onImageList.add("");
+                }
+            }
+            for (Event event : offEvent.getContent()) {
+                String imagePath = fileUploadService.findImageFilePath(event.getId(), "event");
+                if (imagePath != null) {
+                    offImageList.add(imagePath);
+                } else {
+                    offImageList.add("");
+                }
+            }
+            model.addAttribute("onImageList", onImageList);
+            model.addAttribute("offImageList", offImageList);
+            model.addAttribute("onEvents", onEvent.getContent());
+            model.addAttribute("onEvent", onEvent);
+            model.addAttribute("onPage", onPage);
+            model.addAttribute("offEvents", offEvent.getContent());
+            model.addAttribute("offEvent", offEvent);
+            model.addAttribute("offPage", offPage);
+            return "event";
         } catch (Exception e) {
             return "redirect:/logout";
         }
