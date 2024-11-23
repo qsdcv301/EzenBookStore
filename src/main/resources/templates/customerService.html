@@ -23,17 +23,17 @@
     <ul class="nav nav-tabs" role="tablist">
         <li class="nav-item">
             <a class="nav-link" data-toggle="tab" href="#notice" role="tab"
-               th:classappend="${param.qnaPage == null} ? 'active' : ''">공지사항</a>
+               th:classappend="${param.qnaPage == null} ? 'active' : ''" id="noticeTabLink">공지사항</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" data-toggle="tab" href="#faq" role="tab">FAQ</a>
+            <a class="nav-link" data-toggle="tab" href="#faq" role="tab" id="faqTabLink">FAQ</a>
         </li>
         <li th:if="${userData}" class="nav-item">
             <a class="nav-link questionBtn" data-toggle="tab" href="#inquiry" role="tab"
-               th:classappend="${param.qnaPage != null} ? 'active'">문의하기</a>
+               th:classappend="${param.qnaPage != null} ? 'active'" id="inquiryTabLink">문의하기</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" data-toggle="tab" href="#terms" role="tab">이용약관</a>
+            <a class="nav-link" data-toggle="tab" href="#terms" role="tab" id="termsTabLink">이용약관</a>
         </li>
     </ul>
     <!--공지사항탭 데이터베이스 연결필요 // 공지사항 목록들의 제목을 누르면 링크로 공지사항페이지로 이동할수 있도록 // notice테이블에 작성자 컬럼이 있으면 어떨지-->

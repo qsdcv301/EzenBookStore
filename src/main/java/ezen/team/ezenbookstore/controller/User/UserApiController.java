@@ -59,7 +59,7 @@ public class UserApiController {
             findUser = newUser;
             return "redirect:/user/info?first=true";
         }
-        return "redirect:/book";
+        return "redirect:/";
     }
 
     @PostMapping("/findId")
