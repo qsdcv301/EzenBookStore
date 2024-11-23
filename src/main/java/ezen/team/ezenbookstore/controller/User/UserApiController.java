@@ -53,6 +53,7 @@ public class UserApiController {
                     .provider(provider)
                     .email(email)
                     .name(name)
+                    .grade(1) //기본 회원
                     .build();
             userService.create(newUser);
             findUser = newUser;

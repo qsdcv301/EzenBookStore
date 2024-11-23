@@ -1,18 +1,20 @@
 package ezen.team.ezenbookstore.entity;
 
+import ezen.team.ezenbookstore.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 
+@RequiredArgsConstructor
 public class CustomOAuth2User implements OAuth2User {
 
     private final OAuth2User oauth2User;
-
-    public CustomOAuth2User(OAuth2User oauth2User) {
-        this.oauth2User = oauth2User;
-    }
+    private final UserService userService;
 
     @Override
     public Map<String, Object> getAttributes() {
@@ -21,7 +23,13 @@ public class CustomOAuth2User implements OAuth2User {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return oauth2User.getAuthorities();
+        // 등급에 따라 권한 설정
+        String email = getEmail();
+        int grade = userService.findByEmail(email).getGrade(); // UserService에서 등급 검색
+
+        // 등급에 따라 권한 설정
+        String role = (grade == 99) ? "ROLE_ADMIN" : "ROLE_USER";
+        return Collections.singletonList(new SimpleGrantedAuthority(role));
     }
 
     @Override
