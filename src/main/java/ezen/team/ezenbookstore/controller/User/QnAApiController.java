@@ -2,7 +2,6 @@ package ezen.team.ezenbookstore.controller.User;
 
 import ezen.team.ezenbookstore.entity.QnA;
 import ezen.team.ezenbookstore.entity.User;
-import ezen.team.ezenbookstore.service.CategoryService;
 import ezen.team.ezenbookstore.service.FileUploadService;
 import ezen.team.ezenbookstore.service.QnAService;
 import ezen.team.ezenbookstore.service.UserService;

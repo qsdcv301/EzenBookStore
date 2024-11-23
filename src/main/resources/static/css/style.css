@@ -1,3 +1,71 @@
+/* Custom styles for the header */
+.header {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    /* background-color: #f8f9fa; */
+}
+
+/* 최상단바 */
+.top-bar {
+    background-color: #007bff;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 500;
+    padding: 12px 405px;
+}
+
+.navbar-brand {
+    font-size: 30px;
+    font-weight: bold;
+    margin-right: -45px;
+}
+
+.search-bar {
+    display: flex;
+    align-items: center;
+    max-width: 500px;
+    width: 100%;
+    border: 2px solid #007bff;
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.search-bar select,
+.search-bar input,
+.search-bar button {
+    border: none;
+    border-radius: 0;
+    outline: none;
+    color: #007bff;
+}
+
+.search-bar select {
+    padding-left: 15px;
+    background-color: transparent;
+    font-weight: bold;
+}
+
+.user-menu a {
+    margin-left: 1rem;
+    font-size: 18px;
+}
+
+.nav-item .nav-link {
+    color: #555;
+    transition: color 0.3s ease;
+}
+
+.nav-item .nav-link:hover {
+    color: #007bff;
+}
+
+.badge {
+    font-size: 0.8rem;
+}
+
+.nav-item {
+    margin-left: 10px;
+}
+
 #bank-transfer,
 #credit-card
 {

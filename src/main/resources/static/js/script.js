@@ -44,6 +44,41 @@ $(document).ready(function () {
         });
     });
 
+    //header
+
+    $(".searchBtn").click(function (e) {
+        e.preventDefault();
+        const searchSelect = $(".searchSelect").select().val();
+        const searchInput = $(".searchInput").val().trim();
+        let encodedKeyword = encodeURIComponent("[title,author,isbn,publisher]");
+        switch (searchSelect){
+            case "0":
+                 encodedKeyword = encodeURIComponent("[title,author,isbn,publisher]");
+                window.location.href = `/book/search?keyword=${encodedKeyword}&val=${searchInput}`;
+                break;
+            case "1":
+                 encodedKeyword = encodeURIComponent("[title]");
+                window.location.href = `/book/search?keyword=${encodedKeyword}&val=${searchInput}`;
+                break;
+            case "2":
+                 encodedKeyword = encodeURIComponent("[author]");
+                window.location.href = `/book/search?keyword=${encodedKeyword}&val=${searchInput}`;
+                break;
+            case "3":
+                 encodedKeyword = encodeURIComponent("isbn]");
+                window.location.href = `/book/search?keyword=${encodedKeyword}&val=${searchInput}`;
+                break;
+            case "4":
+                 encodedKeyword = encodeURIComponent("[publisher]");
+                window.location.href = `/book/search?keyword=${encodedKeyword}&val=${searchInput}`;
+                break;
+            default :
+                 encodedKeyword = encodeURIComponent("[title,author,isbn,publisher]");
+                window.location.href = `/book/search?keyword=${encodedKeyword}&val=${searchInput}`;
+                break;
+        }
+    });
+
     // signup
     let currentStep = 1;
     const totalSteps = 3;

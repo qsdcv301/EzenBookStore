@@ -37,26 +37,6 @@ public class ViewApiController {
     private final UserService userService;
     private final FileUploadService fileUploadService;
 
-    @ModelAttribute
-    public void findUser(Model model) {
-        try {
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            Object userData = auth.getPrincipal();
-            if (userData instanceof User user) {
-                model.addAttribute("user", user);
-                model.addAttribute("userData", true);
-            } else if (userData instanceof CustomOAuth2User customOAuth2User) {
-                User customUser = userService.findByEmail(customOAuth2User.getEmail());
-                model.addAttribute("user", customUser);
-                model.addAttribute("userData", true);
-            } else {
-                model.addAttribute("userData", false);
-            }
-        } catch (Exception e) {
-            model.addAttribute("userData", false);
-        }
-    }
-
     @GetMapping("/login")
     public String login() {
         return "login";
