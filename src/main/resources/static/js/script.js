@@ -326,6 +326,40 @@ $(document).ready(function () {
     });
 
     // customerService
+    $(window).on('load', function () {
+        // URL의 쿼리 파라미터를 확인
+        let customerUrlParams = new URLSearchParams(window.location.search);
+        const tab = customerUrlParams.get("tab");
+
+        if (tab) {
+            switch (tab) {
+                case "faq":
+                    $("#faqTabLink").click();
+                    break;
+                case "inquiry":
+                    $("#inquiryTabLink").click();
+                    break;
+                case "terms":
+                    $("#termsTabLink").click();
+                    break;
+                case "terms-of-service-tab":
+                    $("#termsTabLink").click();
+                    $("#terms-of-service-tab").click();
+                    break;
+                case "privacy-policy-tab":
+                    $("#termsTabLink").click();
+                    $("#privacy-policy-tab").click();
+                    break;
+                case "youth-protection-tab":
+                    $("#termsTabLink").click();
+                    $("#youth-protection-tab").click();
+                    break;
+                default:
+                    $("#noticeTabLink").click();
+            }
+        }
+    });
+
     $('#userQnASelect').change(function () {
         const sort = $('#userQnASelect option:selected').val();
 
