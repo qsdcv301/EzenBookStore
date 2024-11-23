@@ -1,6 +1,7 @@
 package ezen.team.ezenbookstore.repository;
 
 import ezen.team.ezenbookstore.entity.Book;
+import ezen.team.ezenbookstore.entity.Notice;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -38,5 +39,9 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     Page<Book> findAllByIfkr(Byte ifkr, Pageable pageable);
 
     Optional<Book> findByTitle(String title);
+
+    List<Book> findTop8ByOrderByCountDesc();
+
+    List<Book> findTop8ByOrderByPublishDateDesc();
 
 }

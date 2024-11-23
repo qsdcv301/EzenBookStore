@@ -33,24 +33,53 @@ public class ViewApiController {
     private final UserService userService;
     private final FileUploadService fileUploadService;
     private final EventService eventService;
+    private final BookService bookService;
 
-    @GetMapping({"","/"})
+    @GetMapping({"", "/"})
     public String home(Model model) {
-        List<Notice> noticeList = noticeService.findTop5ByOrderByIdDesc();
-        List<Event> eventList = eventService.findOngoingEventList();
-        List<String> eventImageList = new ArrayList<>();
-        for (Event event : eventList) {
-            String imagePath = fileUploadService.findImageFilePath(event.getId(), "event");
-            if (imagePath != null) {
-                eventImageList.add(imagePath);
-            } else {
-                eventImageList.add("");
+        try {
+            List<Notice> noticeList = noticeService.findTop5ByOrderByIdDesc();
+            List<Event> eventList = eventService.findOngoingEventList();
+            List<String> eventImageList = new ArrayList<>();
+            for (Event event : eventList) {
+                String imagePath = fileUploadService.findImageFilePath(event.getId(), "event");
+                if (imagePath != null) {
+                    eventImageList.add(imagePath);
+                } else {
+                    eventImageList.add("");
+                }
             }
+            List<Book> bestBookList = bookService.findTop8ByOrderByCountDesc();
+            List<String> bestBookImageList = new ArrayList<>();
+            for (Book book : bestBookList) {
+                String imagePath = fileUploadService.findImageFilePath(book.getId(), "book");
+                if (imagePath != null) {
+                    bestBookImageList.add(imagePath);
+                } else {
+                    bestBookImageList.add("https://via.placeholder.com/200x300?text=이미지없음");
+                }
+            }
+            List<Book> newBookList = bookService.findTop8ByOrderByPublishDateDesc();
+            List<String> newBookImageList = new ArrayList<>();
+            for (Book book : newBookList) {
+                String imagePath = fileUploadService.findImageFilePath(book.getId(), "book");
+                if (imagePath != null) {
+                    newBookImageList.add(imagePath);
+                } else {
+                    newBookImageList.add("https://via.placeholder.com/200x300?text=이미지없음");
+                }
+            }
+            model.addAttribute("noticeList", noticeList);
+            model.addAttribute("eventList", eventList);
+            model.addAttribute("eventImageList", eventImageList);
+            model.addAttribute("bestBookList", bestBookList);
+            model.addAttribute("bestBookImageList", bestBookImageList);
+            model.addAttribute("newBookList", newBookList);
+            model.addAttribute("newBookImageList", newBookImageList);
+            return "main";
+        } catch (Exception e) {
+            return "redirect:/login";
         }
-        model.addAttribute("noticeList", noticeList);
-        model.addAttribute("eventList", eventList);
-        model.addAttribute("eventImageList", eventImageList);
-        return "main";
     }
 
     @GetMapping("/login")

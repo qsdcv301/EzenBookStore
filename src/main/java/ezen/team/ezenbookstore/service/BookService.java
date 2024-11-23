@@ -117,4 +117,12 @@ public class BookService {
         return bookRepository.findByTitle(title).orElse(null);
     }
 
+    public List<Book> findTop8ByOrderByCountDesc(){
+        return bookRepository.findTop8ByOrderByCountDesc();
+    }
+
+    public List<Book> findTop8ByOrderByPublishDateDesc(){
+        return bookRepository.findTop8ByOrderByPublishDateDesc();
+    }
+
 }
