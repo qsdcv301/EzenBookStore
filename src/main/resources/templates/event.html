@@ -135,17 +135,16 @@
                         <!-- 첫 페이지 버튼 -->
                         <li class="page-item" th:classappend="${offEvent.first} ? 'disabled' : ''">
                             <a class="page-link"
-                               th:href="@{/event(onPage=${onPage}, offPage=0)}"
+                               th:href="@{/event(onPage=${onPage}, offPage=0, tab='ended-events')}"
                                aria-label="First">
                                 << 처음
                             </a>
                         </li>
 
                         <!-- 이전 페이지 버튼 -->
-                        <li class="page-item"
-                            th:classappend="${offEvent.hasPrevious} ? '' : 'disabled'">
+                        <li class="page-item" th:classappend="${offEvent.hasPrevious} ? '' : 'disabled'">
                             <a class="page-link"
-                               th:href="@{/event(onPage=${onPage}, offPage=${offEvent.number - 1})}"
+                               th:href="@{/event(onPage=${onPage}, offPage=${offEvent.number - 1}, tab='ended-events')}"
                                aria-label="Previous">
                                 이전
                             </a>
@@ -154,19 +153,19 @@
                         <!-- 페이지 번호 버튼 (최대 5개까지 보이도록 설정) -->
                         <li class="page-item"
                             th:each="i : ${#numbers.sequence(
-                                                offEvent.totalPages <= 5 ? 0 : (offEvent.number <= 2 ? 0 : (offEvent.number >= offEvent.totalPages - 3 ? offEvent.totalPages - 5 : offEvent.number - 2)),
-                                                offEvent.totalPages <= 5 ? offEvent.totalPages - 1 : (offEvent.number <= 2 ? 4 : (offEvent.number >= offEvent.totalPages - 3 ? offEvent.totalPages - 1 : offEvent.number + 2))
-                                                )}"
+                        offEvent.totalPages <= 5 ? 0 : (offEvent.number <= 2 ? 0 : (offEvent.number >= offEvent.totalPages - 3 ? offEvent.totalPages - 5 : offEvent.number - 2)),
+                        offEvent.totalPages <= 5 ? offEvent.totalPages - 1 : (offEvent.number <= 2 ? 4 : (offEvent.number >= offEvent.totalPages - 3 ? offEvent.totalPages - 1 : offEvent.number + 2))
+                        )}"
                             th:classappend="${offEvent.number == i} ? 'active' : ''">
                             <a class="page-link"
-                               th:href="@{/event(onPage=${onPage}, offPage=${i})}"
+                               th:href="@{/event(onPage=${onPage}, offPage=${i}, tab='ended-events')}"
                                th:text="${i + 1}"></a>
                         </li>
 
                         <!-- 다음 페이지 버튼 -->
                         <li class="page-item" th:classappend="${offEvent.hasNext} ? '' : 'disabled'">
                             <a class="page-link"
-                               th:href="@{/event(onPage=${onPage}, offPage=${offEvent.number + 1})}"
+                               th:href="@{/event(onPage=${onPage}, offPage=${offEvent.number + 1}, tab='ended-events')}"
                                aria-label="Next">
                                 다음
                             </a>
@@ -175,7 +174,7 @@
                         <!-- 맨 뒤 페이지 버튼 -->
                         <li class="page-item" th:classappend="${offEvent.last} ? 'disabled' : ''">
                             <a class="page-link"
-                               th:href="@{/event(onPage=${onPage}, offPage=${offEvent.totalPages - 1})}"
+                               th:href="@{/event(onPage=${onPage}, offPage=${offEvent.totalPages - 1}, tab='ended-events')}"
                                aria-label="Last">
                                 끝 >>
                             </a>

@@ -1747,6 +1747,20 @@ $(document).ready(function () {
 
     //event
 
+    const activeTab = urlParams.get('tab');
+
+    // 탭 상태 설정
+    if (activeTab) {
+        $('#eventTabs a[href="#' + activeTab + '"]').tab('show');
+    }
+
+    // 탭 클릭 시 URL에 탭 정보 추가
+    $('#eventTabs a').on('click', function (e) {
+        const tabId = $(this).attr('href').substring(1);
+        const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?tab=' + tabId;
+        window.history.pushState({path: newUrl}, '', newUrl);
+    });
+
     // 카드 클릭 시 상세 페이지로 이동
     $(".event-card").click(function () {
         if (!$(this).hasClass('disabled-card')) {
