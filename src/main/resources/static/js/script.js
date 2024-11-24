@@ -46,20 +46,21 @@ $(document).ready(function () {
 
     //header
 
-    $('.dropdown-arrow').on('click', function(event) {
-        event.preventDefault();
-        const target = $(this).attr('data-target');
-        $(target).collapse('toggle');
-
-        // 드롭다운 메뉴가 닫히지 않도록 이벤트 전파 방지
-        event.stopPropagation();
-    });
+    // 서브메뉴 호버 효과
+    $('.category-item').hover(
+        function () {
+            $(this).find('.submenu').stop(true, true).show();
+        },
+        function () {
+            $(this).find('.submenu').stop(true, true).hide();
+        }
+    );
 
     $(".searchBtn").click(function (e) {
         e.preventDefault();
         const searchSelect = $(".searchSelect").select().val();
         const searchInput = $(".searchInput").val().trim();
-        let encodedKeyword = encodeURIComponent("[title,author,isbn,publisher]");
+        let encodedKeyword;
         switch (searchSelect){
             case "0":
                  encodedKeyword = encodeURIComponent("[title,author,isbn,publisher]");
