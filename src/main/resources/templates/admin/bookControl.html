@@ -138,6 +138,8 @@
             <th>제목</th>
             <th>저자</th>
             <th>출판사</th>
+            <th>카테고리</th>
+            <th>서브 카테고리</th>
             <th>할인율</th>
             <th>관리</th>
         </tr>
@@ -148,6 +150,8 @@
             <td th:text="${book.title}"></td>
             <td th:text="${book.author}"></td>
             <td th:text="${book.publisher}"></td>
+            <td th:text="${book.category.name}"></td>
+            <td th:text="${book.subcategory.name}"></td>
             <td th:text="${book.discount + '%'}"></td>
             <td>
                 <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#productModal" th:data-book-id="${book.id}">수정</button>
@@ -222,7 +226,10 @@
                     </div>
                     <div class="form-group">
                         <label for="ifkr">국내/국외</label>
-                        <input type="text" class="form-control" id="ifkr" name="ifkr" required>
+                        <select class="form-control" name="ifkr" id="ifkr" required>
+                            <option value="0">국내</option>
+                            <option value="1">국외</option>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label for="price">가격</label>
@@ -315,7 +322,10 @@
                     </div>
                     <div class="form-group">
                         <label for="addIfkr">국내/국외</label>
-                        <input type="text" class="form-control" id="addIfkr" name="ifkr" required>
+                        <select class="form-control" name="ifkr" id="addIfkr" required>
+                            <option value="0">국내</option>
+                            <option value="1">국외</option>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label for="addPrice">가격</label>
@@ -466,7 +476,7 @@
                 $('#publisher').val(data.publisher || '');
                 $('#isbn').val(data.isbn || '');
                 $('#stock').val(data.stock || '');
-                $('#ifkr').val(data.ifkr || '');
+                $('#ifkr').val(data.ifkr);
                 $('#price').val(data.price || '');
                 $('#discount').val(data.discount || '');
 
