@@ -459,6 +459,34 @@
         });
     });
 
+    //검색기능 스크립트
+    $('.searchKeywordBtn').on('click', function () {
+        const keyword = $('.searchKeyword').val();
+        const query = keyword ? `?keyword=${keyword}` : '';
+        location.href = `/admin/book${query}`;
+    });
+
+    //필터적용 스크립트
+    $('#applyFilters').on('click', function () {
+        const ifkr = $('#dateRange').val();
+        const category = $('#searchCategory').val();
+        const subcategory = $('#searchSubCategory').val();
+        const queryParams = [];
+
+        if (ifkr) queryParams.push(`ifkr=${ifkr}`);
+        if (category) queryParams.push(`category=${category}`);
+        if (subcategory) queryParams.push(`subcategory=${subcategory}`);
+
+        const query = queryParams.length > 0 ? `?${queryParams.join('&')}` : '';
+        location.href = `/admin/book${query}`;
+    });
+    //초기화
+    $('#resetFilters').on('click', function () {
+        location.href = '/admin/book';
+    });
+
+
+
     //수정모달 카테고리와 서브카테고리
     $(document).ready(function () {
         // 카테고리 목록 로드

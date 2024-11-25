@@ -30,177 +30,63 @@ public class AdminBookApiController {
     private final SubCategoryService subCategoryService;
 
     @GetMapping("")
-    public String bookControl(@RequestParam(name = "keyword", defaultValue = "", required = false) String keyword,
-                              @RequestParam(name = "sort", defaultValue = "id", required = false) String sort,
-                              @RequestParam(name = "val", defaultValue = "", required = false) String val,
-                              @RequestParam(name = "direction", defaultValue = "asc", required = false) String direction,
-                              @RequestParam(name = "page", defaultValue = "0", required = false) int page,
-                              @RequestParam(name = "ifkr", defaultValue = "", required = false) String ifkr,
-                              @RequestParam(name = "category", defaultValue = "", required = false) String category,
-                              @RequestParam(name = "subcategory", defaultValue = "", required = false) String subcategory,
-                              Model model) { // 페이지 크기 (기본값 10)
-        // 페이지 설정
-        int size = 10;
-        Sort.Direction sortDirection = direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
-        Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, sort));
-        List<Book> filteredBooks = new ArrayList<>();
-        // 아무런 검색 조건이 없는 경우 모든 책을 조회
-        if (keyword.isEmpty() && val.isEmpty() && category.isEmpty() && subcategory.isEmpty() && ifkr.isEmpty()) {
-            List<Book> allBooks = bookService.findAll();  // 전체 데이터를 한 번 가져옴
-            filteredBooks.addAll(allBooks);
-        } else {
-            boolean isFirstFilter = true;
+    public String bookControl(
+            @RequestParam(name = "keyword", defaultValue = "", required = false) String keyword,
+            @RequestParam(name = "ifkr", defaultValue = "", required = false) String ifkr,
+            @RequestParam(name = "category", defaultValue = "", required = false) String category,
+            @RequestParam(name = "subcategory", defaultValue = "", required = false) String subcategory,
+            Pageable pageable,
+            Model model) {
 
-            // 국내/국외 필터링 (교집합)
-            if (!ifkr.isEmpty()) {
-                byte ifkrValue = (byte) (ifkr.equals("1") ? 1 : 0);
-                List<Book> booksByIfkr = bookService.findAllByIfkr(ifkrValue);
-                if (isFirstFilter) {
-                    filteredBooks.addAll(booksByIfkr);
-                    isFirstFilter = false;
-                } else {
-                    filteredBooks.retainAll(booksByIfkr);
-                }
-            }
+        List<Book> filteredBooks = bookService.findAll(); // 기본적으로 전체 책 조회
 
-            // 카테고리 필터링 (교집합)
-            if (!category.isEmpty()) {
-                Category categories = categoryService.findByName(category);
-                List<Book> booksByCategory = bookService.findAllByCategoryId(categories.getId());
-                if (isFirstFilter) {
-                    filteredBooks.addAll(booksByCategory);
-                    isFirstFilter = false;
-                } else {
-                    filteredBooks.retainAll(booksByCategory);
-                }
-            }
+        // 키워드로 필터링
+        if (!keyword.isEmpty()) {
+            filteredBooks = bookService.findByTitleContaining(keyword);
+        }
 
-            // 서브카테고리 필터링 (교집합)
-            if (!subcategory.isEmpty()) {
-                SubCategory subCategories = subCategoryService.findByName(subcategory);
-                List<Book> booksBySubCategory = bookService.findAllBySubcategoryId(subCategories.getId());
-                if (isFirstFilter) {
-                    filteredBooks.addAll(booksBySubCategory);
-                    isFirstFilter = false;
-                } else {
-                    filteredBooks.retainAll(booksBySubCategory);
-                }
-            }
+        // 국내/국외 필터링
+        if (!ifkr.isEmpty()) {
+            byte ifkrValue = Byte.parseByte(ifkr);
+            filteredBooks.retainAll(bookService.findAllByIfkr(ifkrValue));
+        }
 
-            // 키워드와 값을 쉼표로 나누기
-            if (!keyword.isEmpty() || !val.isEmpty()) {
-                String[] keywordGroups = keyword.split("\\],\\[");
-                String[] valueGroups = val != null ? val.split(",") : new String[0];
-
-                // 각 그룹을 순회하며 검색 수행
-                for (int groupIndex = 0; groupIndex < keywordGroups.length; groupIndex++) {
-                    String[] keywords = keywordGroups[groupIndex].replaceAll("[\\[\\]]", "").split(",");
-                    String searchValue = groupIndex < valueGroups.length ? valueGroups[groupIndex].trim() : "";
-
-                    // 현재 그룹 검색 결과를 저장할 임시 리스트
-                    List<Book> groupBooks = new ArrayList<>();
-
-                    // 각 키워드로 검색 수행
-                    for (String currentKeyword : keywords) {
-                        List<Book> books = switch (currentKeyword.trim()) {
-                            case "title" -> bookService.findByTitleContaining(searchValue);
-                            case "author" -> bookService.findByAuthorContaining(searchValue);
-                            case "publisher" -> bookService.findByPublisherContaining(searchValue);
-                            case "isbn" -> bookService.findByIsbnContaining(searchValue);
-                            default -> List.of();  // 잘못된 키워드의 경우 빈 리스트 반환
-                        };
-
-                        // 그룹별 검색 조건에 따라 합집합 추가
-                        if (groupBooks.isEmpty()) {
-                            groupBooks.addAll(books);  // 처음에는 모두 추가
-                        } else {
-                            groupBooks.retainAll(books); // 조건에 맞게 필터링
-                        }
-                    }
-
-                    // 이전 그룹 결과와 교집합 수행
-                    if (isFirstFilter) {
-                        filteredBooks.addAll(groupBooks);  // 첫 번째 그룹 결과를 초기값으로 사용
-                        isFirstFilter = false;
-                    } else {
-                        filteredBooks.retainAll(groupBooks);  // 이후 그룹별 결과를 재검색
-                    }
-                }
-            }
-
-            // 아무런 필터링 결과가 없는 경우 모든 책을 조회
-            if (filteredBooks.isEmpty()) {
-                List<Book> allBooks = bookService.findAll();  // 전체 데이터를 한 번 가져옴
-                filteredBooks.addAll(allBooks);
+        // 카테고리 필터링
+        if (!category.isEmpty()) {
+            Category selectedCategory = categoryService.findByName(category);
+            if (selectedCategory != null) {
+                filteredBooks.retainAll(bookService.findAllByCategoryId(selectedCategory.getId()));
+            } else {
+                // 카테고리가 존재하지 않는 경우 로그를 출력하고 빈 결과 반환
+                System.out.println("Category not found: " + category);
+                filteredBooks.clear(); // 결과를 비움
             }
         }
 
-        // 필터링된 리스트를 정렬
-        Comparator<Book> comparator = switch (sort) {
-            case "title" -> Comparator.comparing(Book::getTitle);
-            case "author" -> Comparator.comparing(Book::getAuthor);
-            case "publisher" -> Comparator.comparing(Book::getPublisher);
-            case "count" -> Comparator.comparing(Book::getCount);
-            case "price" -> Comparator.comparing(Book::getPrice);
-            default -> Comparator.comparing(Book::getId); // 기본적으로 id로 정렬
-        };
-
-        if (sortDirection == Sort.Direction.DESC) {
-            comparator = comparator.reversed();
+// 서브 카테고리 필터링
+        if (!subcategory.isEmpty()) {
+            SubCategory selectedSubCategory = subCategoryService.findByName(subcategory);
+            if (selectedSubCategory != null) {
+                filteredBooks.retainAll(bookService.findAllBySubcategoryId(selectedSubCategory.getId()));
+            } else {
+                // 서브 카테고리가 존재하지 않는 경우 로그를 출력하고 빈 결과 반환
+                System.out.println("SubCategory not found: " + subcategory);
+                filteredBooks.clear(); // 결과를 비움
+            }
         }
 
-        filteredBooks.sort(comparator);
 
-        // 검색된 결과에 해당하는 카테고리 및 서브카테고리 목록 생성
-        Map<Category, Set<SubCategory>> domesticCategoryMap = new HashMap<>();
-        Map<Category, Set<SubCategory>> foreignCategoryMap = new HashMap<>();
-
-        filteredBooks.stream()
-                .filter(book -> book.getIfkr() == 0)  // 국내 책 필터링
-                .forEach(book -> {
-                    Category categoryObj = book.getCategory();
-                    SubCategory subCategoryObj = book.getSubcategory();
-                    domesticCategoryMap.computeIfAbsent(categoryObj, k -> new HashSet<>()).add(subCategoryObj);
-                });
-
-        filteredBooks.stream()
-                .filter(book -> book.getIfkr() == 1)  // 국외 책 필터링
-                .forEach(book -> {
-                    Category categoryObj = book.getCategory();
-                    SubCategory subCategoryObj = book.getSubcategory();
-                    foreignCategoryMap.computeIfAbsent(categoryObj, k -> new HashSet<>()).add(subCategoryObj);
-                });
-
-        // 모델에 추가
-        model.addAttribute("domesticCategoryMap", domesticCategoryMap);
-        model.addAttribute("foreignCategoryMap", foreignCategoryMap);
-
-        // 페이징 적용
+        // 페이지네이션 적용
         int start = Math.min((int) pageable.getOffset(), filteredBooks.size());
         int end = Math.min((start + pageable.getPageSize()), filteredBooks.size());
         List<Book> pagedBooks = filteredBooks.subList(start, end);
         Page<Book> bookPage = new PageImpl<>(pagedBooks, pageable, filteredBooks.size());
-        List<String> ImageList = new ArrayList<>();
-        for (Book book : bookPage.getContent()) {
-            String imagePath = fileUploadService.findImageFilePath(book.getId(), "book");
-            if (imagePath != null) {
-                ImageList.add(imagePath);
-            } else {
-                ImageList.add("");
-            }
-        }
-        model.addAttribute("imageList", ImageList);
-        model.addAttribute("keyword", keyword);
-        model.addAttribute("val", val);
-        model.addAttribute("sort", sort);
-        model.addAttribute("direction", direction);
+
         model.addAttribute("bookList", bookPage.getContent());
         model.addAttribute("page", bookPage);
-        model.addAttribute("ifkr", ifkr);
-        model.addAttribute("category", category);
-        model.addAttribute("subcategory", subcategory);
         return "admin/bookControl";
     }
+
 
     // ID로 책 조회
     @GetMapping("/{id}")
