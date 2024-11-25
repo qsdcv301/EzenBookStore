@@ -1,6 +1,7 @@
 package ezen.team.ezenbookstore.controller.admin;
 
 import ezen.team.ezenbookstore.entity.Notice;
+import ezen.team.ezenbookstore.service.FileUploadService;
 import ezen.team.ezenbookstore.service.NoticeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -21,6 +22,7 @@ import java.util.List;
 public class AdminNoticeApiController {
 
     private final NoticeService noticeService;
+    private final FileUploadService fileUploadService;
 
     // 공지사항 페이지 이동 및 목록 조회
     @GetMapping
