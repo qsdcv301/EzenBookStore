@@ -53,52 +53,19 @@ public class AdminBookApiController {
 
         // 카테고리 필터링
         if (!category.isEmpty()) {
-            try {
-                Long categoryId = Long.parseLong(category); // 숫자인 경우 ID로 처리
-                Category selectedCategory = categoryService.findById(categoryId);
-                if (selectedCategory != null) {
-                    filteredBooks.retainAll(bookService.findAllByCategoryId(selectedCategory.getId()));
-                } else {
-                    System.out.println("Category not found for ID: " + categoryId);
-                }
-            } catch (NumberFormatException e) {
-                System.out.println("Category is not an ID, attempting to find by name: " + category);
-                Category selectedCategory = categoryService.findByName(category); // 이름으로 조회
-                if (selectedCategory != null) {
-                    filteredBooks.retainAll(bookService.findAllByCategoryId(selectedCategory.getId()));
-                } else {
-                    System.out.println("Category not found for name: " + category);
-                }
+            Category selectedCategory = categoryService.findById(Long.parseLong(category));
+            if (selectedCategory != null) {
+                filteredBooks.retainAll(bookService.findAllByCategoryId(selectedCategory.getId()));
             }
         }
 
-// 서브카테고리 필터링
+        // 서브카테고리 필터링
         if (!subcategory.isEmpty()) {
-            try {
-                Long subcategoryId = Long.parseLong(subcategory);
-                SubCategory selectedSubCategory = subCategoryService.findById(subcategoryId);
-                if (selectedSubCategory != null) {
-                    filteredBooks.retainAll(bookService.findAllBySubcategoryId(selectedSubCategory.getId()));
-                } else {
-                    System.out.println("SubCategory not found for ID: " + subcategoryId);
-                }
-            } catch (NumberFormatException e) {
-                System.out.println("SubCategory is not an ID, attempting to find by name: " + subcategory);
-                SubCategory selectedSubCategory = subCategoryService.findByName(subcategory);
-                if (selectedSubCategory != null) {
-                    filteredBooks.retainAll(bookService.findAllBySubcategoryId(selectedSubCategory.getId()));
-                } else {
-                    System.out.println("SubCategory not found for name: " + subcategory);
-                }
+            SubCategory selectedSubCategory = subCategoryService.findById(Long.parseLong(subcategory));
+            if (selectedSubCategory != null) {
+                filteredBooks.retainAll(bookService.findAllBySubcategoryId(selectedSubCategory.getId()));
             }
         }
-
-
-        System.out.println("Received category: " + category);
-        Category selectedCategory = categoryService.findByName(category);
-        System.out.println("Found category: " + (selectedCategory != null ? selectedCategory.getName() : "null"));
-
-
 
         // 페이지네이션 적용
         int start = Math.min((int) pageable.getOffset(), filteredBooks.size());
@@ -106,8 +73,13 @@ public class AdminBookApiController {
         List<Book> pagedBooks = filteredBooks.subList(start, end);
         Page<Book> bookPage = new PageImpl<>(pagedBooks, pageable, filteredBooks.size());
 
+        // 필터 값과 페이지 데이터 모델에 추가
         model.addAttribute("bookList", bookPage.getContent());
         model.addAttribute("page", bookPage);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("ifkr", ifkr);
+        model.addAttribute("category", category);
+        model.addAttribute("subcategory", subcategory);
         return "admin/bookControl";
     }
 
