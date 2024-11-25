@@ -225,7 +225,7 @@
                                                         </p>
 
                                                         <!-- 책 소개 -->
-                                                        <p class="card-text"
+                                                        <p class="card-text text-truncate"
                                                            th:text="${book.bookdescription.description}"></p>
                                                         <a th:href="@{/book/detail(bookId=${book.id})}"
                                                            class="stretched-link"></a>

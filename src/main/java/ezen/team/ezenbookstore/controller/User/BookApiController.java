@@ -115,7 +115,7 @@ public class BookApiController {
                     if (groupBooks.isEmpty()) {
                         groupBooks.addAll(books);  // 처음에는 모두 추가
                     } else {
-                        groupBooks.retainAll(books); // 조건에 맞게 필터링 (교집합)
+                        groupBooks.addAll(books); // 조건에 맞게 합집합 수행
                     }
                 }
 
