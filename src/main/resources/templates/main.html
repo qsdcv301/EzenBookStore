@@ -138,7 +138,7 @@
                                           th:if="${chunkIndex * 4 + bookIndex < #lists.size(bestBookList)}">
                                     <div class="col-md-3">
                                         <div class="book-item">
-                                            <a th:href="@{'/book/detail'(bookId=${bestBookList[chunkIndex * 4 + bookIndex].id})}">
+                                            <a th:href="@{'/book/detail'(bookId=${newBookList[chunkIndex * 4 + bookIndex].id})}">
                                                 <img th:src="${newBookImageList[chunkIndex * 4 + bookIndex]}"
                                                      class="img-fluid"
                                                      th:alt="${newBookList[chunkIndex * 4 + bookIndex].title} + ' 이미지'">

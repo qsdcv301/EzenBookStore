@@ -46,7 +46,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 
         // 로그인 성공 후 권한에 따른 리다이렉트 처리
         if ("ROLE_ADMIN".equals(role)) {
-            response.sendRedirect("/admin/dashboard");
+            response.sendRedirect("/admin/book");
         } else {
             response.sendRedirect("/");
         }

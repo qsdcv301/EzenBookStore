@@ -83,7 +83,7 @@ $(document).ready(function () {
                 window.location.href = `/book/search?keyword=${encodedKeyword}&val=${searchInput}`;
                 break;
             default :
-                 encodedKeyword = encodeURIComponent("[title,author,isbn,publisher]");
+                encodedKeyword = encodeURIComponent("[title,author,isbn,publisher]");
                 window.location.href = `/book/search?keyword=${encodedKeyword}&val=${searchInput}`;
                 break;
         }
@@ -1088,17 +1088,19 @@ $(document).ready(function () {
         return params;
     }
 
-//     findIdPw
+    //     findIdPw
 
     // 버튼 클릭 시 폼 표시 토글
-    $('#showFindIdBtn').on('click', function () {
-        $('#findId').show();
-        $('#initialForm, #idResult, #providerResult, #pwResultSuccess, #pwResultError').hide();
-    });
-
-    $('#showResetPwBtn').on('click', function () {
-        $('#initialForm').show();
-        $('#findId, #idResult, #providerResult, #pwResultSuccess, #pwResultError').hide();
+    $('#findIdTab, #resetPwTab').on('shown.bs.tab', function (e) {
+        const target = $(e.target).attr("href");
+        if (target === "#findIdContent") {
+            $('#findId').show();
+            $('#initialForm, #afterFind').hide();
+        } else if (target === "#resetPwContent") {
+            $('#initialForm').show();
+            $('#findId, #afterFind').hide();
+        }
+        $('#idResult, #providerResult, #pwResultSuccess, #pwResultError').hide();
     });
 
     // 비밀번호 재설정에서 이메일 인증

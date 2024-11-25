@@ -58,8 +58,14 @@ public class UserApiController {
             userService.create(newUser);
             findUser = newUser;
             return "redirect:/user/info?first=true";
+        }else{
+           int userGrade = userService.findByEmail(user.getEmail()).getGrade();
+            if(userGrade == 99){
+                return "redirect:/admin/book";
+            }else{
+                return "redirect:/";
+            }
         }
-        return "redirect:/";
     }
 
     @PostMapping("/findId")

@@ -42,23 +42,23 @@
           onclick="moveToGrade(this)">
         전체 <span th:text="${totalCount}"></span> <!-- 검색 결과의 총 유저 수 -->
     </span>
-        <span class="filter-option" data-grade="0" th:classappend="${grade == 1 ? 'active' : ''}"
+        <span class="filter-option" data-grade="1" th:classappend="${grade == 1 ? 'active' : ''}"
               onclick="moveToGrade(this)">
         일반회원 <span th:text="${generalCount}"></span> <!-- 일반회원 수 -->
     </span>
-        <span class="filter-option" data-grade="1" th:classappend="${grade == 2 ? 'active' : ''}"
+        <span class="filter-option" data-grade="2" th:classappend="${grade == 2 ? 'active' : ''}"
               onclick="moveToGrade(this)">
         실버회원 <span th:text="${silverCount}"></span> <!-- 실버회원 수 -->
     </span>
-        <span class="filter-option" data-grade="2" th:classappend="${grade == 3 ? 'active' : ''}"
+        <span class="filter-option" data-grade="3" th:classappend="${grade == 3 ? 'active' : ''}"
               onclick="moveToGrade(this)">
         골드회원 <span th:text="${goldCount}"></span> <!-- 골드회원 수 -->
     </span>
-        <span class="filter-option" data-grade="3" th:classappend="${grade == 4 ? 'active' : ''}"
+        <span class="filter-option" data-grade="4" th:classappend="${grade == 4 ? 'active' : ''}"
               onclick="moveToGrade(this)">
         VIP 회원 <span th:text="${vipCount}"></span> <!-- VIP 회원 수 -->
     </span>
-        <span class="filter-option" data-grade="4" th:classappend="${grade == 99 ? 'active' : ''}"
+        <span class="filter-option" data-grade="99" th:classappend="${grade == 99 ? 'active' : ''}"
               onclick="moveToGrade(this)">
         관리자 <span th:text="${adminCount}"></span> <!-- 관리자 수 -->
     </span>
@@ -174,10 +174,10 @@
                 <p><strong>생년월일:</strong> <span th:text="${user.birthday}"></span></p>
                 <p><strong>회원 등급:</strong>
                     <span th:switch="${user.grade}">
-                        <span th:case="2">일반회원</span>
-                        <span th:case="3">실버회원</span>
-                        <span th:case="4">골드회원</span>
-                        <span th:case="5">VIP회원</span>
+                        <span th:case="1">일반회원</span>
+                        <span th:case="2">실버회원</span>
+                        <span th:case="3">골드회원</span>
+                        <span th:case="4">VIP회원</span>
                         <span th:case="99">관리자</span>
                     </span>
                 </p>
