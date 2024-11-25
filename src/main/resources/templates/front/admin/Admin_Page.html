@@ -122,10 +122,18 @@
           <!-- 게시판 관리 -->
           <li><i class="fas fa-comments mr-2"></i> <strong>게시판 관리</strong>
             <ul>
-              <li>공지사항 관리</li>
-              <li>이벤트 관리</li>
-              <li>문의하기 관리</li>
-              <li>리뷰 평점 관리</li>
+              <li><a href="javascript:void(0)" onclick="loadNoticeManagements()">공지사항 관리
+                <div class="underline"></div>
+              </a></li>
+              <li><a href="javascript:void(0)" onclick="loadEventsManagement()">이벤트 관리
+                <div class="underline"></div>
+              </a></li>
+              <li><a href="javascript:void(0)" onclick="loadInquiriesManagement()">문의하기 관리
+                <div class="underline"></div>
+              </a></li>
+              <li><a href="javascript:void(0)" onclick="loadReviewManagement()">리뷰 평점 관리
+                <div class="underline"></div>
+              </a></li>
             </ul>
           </li>
         </ul>
@@ -190,9 +198,38 @@
     // 회원 관리
     function loadMembershipLevels() {
       var iframe = document.getElementById('content-frame');
-      iframe.src = 'Membership_levels.html';
+      iframe.src = 'Membership_levels.html'; // 회원 정보 관리
       iframe.style.display = 'block';
       setActiveMenu('loadMembershipLevels');
+    }
+
+    // 게시판 관리
+    function loadNoticeManagements() {
+      var iframe = document.getElementById('content-frame');
+      iframe.src = 'Notice_Management.html'; // 공지사항 관리
+      iframe.style.display = 'block';
+      setActiveMenu('loadNoticeManagements');
+    }
+
+    function loadEventsManagement() {
+      var iframe = document.getElementById('content-frame');
+      iframe.src = 'Events_Management.html'; // 이벤트 관리
+      iframe.style.display = 'block';
+      setActiveMenu('loadEventsManagement');
+    }
+
+    function loadInquiriesManagement() {
+      var iframe = document.getElementById('content-frame');
+      iframe.src = 'Inquiries_Management.html'; // 문의하기 관리
+      iframe.style.display = 'block';
+      setActiveMenu('loadInquiriesManagement');
+    }
+
+    function loadReviewManagement() {
+      var iframe = document.getElementById('content-frame');
+      iframe.src = 'Review_Management'; // 리뷰평점 관리
+      iframe.style.display = 'block';
+      setActiveMenu('loadReviewManagement');
     }
 
 
