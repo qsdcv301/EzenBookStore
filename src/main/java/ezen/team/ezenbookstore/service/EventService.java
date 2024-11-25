@@ -72,5 +72,19 @@ public class EventService{
     public Page<Event> searchByContent(String keyword, Pageable pageable) {
         return eventRepository.findByContentContaining(keyword, pageable);
     }
+    public String calculateEventStatus(LocalDateTime startDate, LocalDateTime endDate) {
+        LocalDateTime now = LocalDateTime.now();
 
+        if (now.isBefore(startDate)) {
+            return "시작 전";
+        } else if (now.isAfter(endDate)) {
+            return "종료";
+        } else {
+            return "진행 중";
+        }
+    }
+
+//    public Page<Event> calculateEventStatus() {
+//        return eventRepository.;
+//    }
 }
