@@ -1,24 +1,22 @@
 package ezen.team.ezenbookstore.controller.admin;
 
 import ezen.team.ezenbookstore.entity.Book;
+import ezen.team.ezenbookstore.entity.Category;
 import ezen.team.ezenbookstore.entity.SubCategory;
 import ezen.team.ezenbookstore.service.BookService;
 import ezen.team.ezenbookstore.service.CategoryService;
 import ezen.team.ezenbookstore.service.FileUploadService;
 import ezen.team.ezenbookstore.service.SubCategoryService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.Timestamp;
-import java.util.List;
+import java.util.*;
 
 
 @RequiredArgsConstructor
@@ -32,20 +30,87 @@ public class AdminBookApiController {
     private final SubCategoryService subCategoryService;
 
     @GetMapping("")
-    public String bookControl(Model model,
-                              @RequestParam(defaultValue = "0") int page,  // 페이지 번호 (기본값 0)
-                              @RequestParam(defaultValue = "10") int size) { // 페이지 크기 (기본값 10)
-        Pageable pageable = PageRequest.of(page, size);  // Pageable 생성
-        Page<Book> bookList = bookService.findAll(pageable);  // bookService에 Pageable 전달
+    public String bookControl(
+            @RequestParam(name = "keyword", defaultValue = "", required = false) String keyword,
+            @RequestParam(name = "ifkr", defaultValue = "", required = false) String ifkr,
+            @RequestParam(name = "category", defaultValue = "", required = false) String category,
+            @RequestParam(name = "subcategory", defaultValue = "", required = false) String subcategory,
+            Pageable pageable,
+            Model model) {
+
+        List<Book> filteredBooks = bookService.findAll(); // 기본적으로 전체 책 조회
+
+        // 키워드로 필터링
+        if (!keyword.isEmpty()) {
+            filteredBooks = bookService.findByTitleContaining(keyword);
+        }
+
+        // 국내/국외 필터링
+        if (!ifkr.isEmpty()) {
+            byte ifkrValue = Byte.parseByte(ifkr);
+            filteredBooks.retainAll(bookService.findAllByIfkr(ifkrValue));
+        }
+
+        // 카테고리 필터링
+        if (!category.isEmpty()) {
+            try {
+                Long categoryId = Long.parseLong(category); // 숫자인 경우 ID로 처리
+                Category selectedCategory = categoryService.findById(categoryId);
+                if (selectedCategory != null) {
+                    filteredBooks.retainAll(bookService.findAllByCategoryId(selectedCategory.getId()));
+                } else {
+                    System.out.println("Category not found for ID: " + categoryId);
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Category is not an ID, attempting to find by name: " + category);
+                Category selectedCategory = categoryService.findByName(category); // 이름으로 조회
+                if (selectedCategory != null) {
+                    filteredBooks.retainAll(bookService.findAllByCategoryId(selectedCategory.getId()));
+                } else {
+                    System.out.println("Category not found for name: " + category);
+                }
+            }
+        }
+
+// 서브카테고리 필터링
+        if (!subcategory.isEmpty()) {
+            try {
+                Long subcategoryId = Long.parseLong(subcategory);
+                SubCategory selectedSubCategory = subCategoryService.findById(subcategoryId);
+                if (selectedSubCategory != null) {
+                    filteredBooks.retainAll(bookService.findAllBySubcategoryId(selectedSubCategory.getId()));
+                } else {
+                    System.out.println("SubCategory not found for ID: " + subcategoryId);
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("SubCategory is not an ID, attempting to find by name: " + subcategory);
+                SubCategory selectedSubCategory = subCategoryService.findByName(subcategory);
+                if (selectedSubCategory != null) {
+                    filteredBooks.retainAll(bookService.findAllBySubcategoryId(selectedSubCategory.getId()));
+                } else {
+                    System.out.println("SubCategory not found for name: " + subcategory);
+                }
+            }
+        }
 
 
-        model.addAttribute("bookList", bookList);
-        model.addAttribute("categoryList", categoryService.findAll());
-        model.addAttribute("subCategoryList", subCategoryService.findAll());
+        System.out.println("Received category: " + category);
+        Category selectedCategory = categoryService.findByName(category);
+        System.out.println("Found category: " + (selectedCategory != null ? selectedCategory.getName() : "null"));
 
 
-        return "/admin/bookControl";
+
+        // 페이지네이션 적용
+        int start = Math.min((int) pageable.getOffset(), filteredBooks.size());
+        int end = Math.min((start + pageable.getPageSize()), filteredBooks.size());
+        List<Book> pagedBooks = filteredBooks.subList(start, end);
+        Page<Book> bookPage = new PageImpl<>(pagedBooks, pageable, filteredBooks.size());
+
+        model.addAttribute("bookList", bookPage.getContent());
+        model.addAttribute("page", bookPage);
+        return "admin/bookControl";
     }
+
 
     // ID로 책 조회
     @GetMapping("/{id}")

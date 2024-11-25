@@ -83,7 +83,7 @@ $(document).ready(function () {
                 window.location.href = `/book/search?keyword=${encodedKeyword}&val=${searchInput}`;
                 break;
             default :
-                 encodedKeyword = encodeURIComponent("[title,author,isbn,publisher]");
+                encodedKeyword = encodeURIComponent("[title,author,isbn,publisher]");
                 window.location.href = `/book/search?keyword=${encodedKeyword}&val=${searchInput}`;
                 break;
         }

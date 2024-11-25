@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Controller
@@ -40,31 +41,59 @@ public class AdminQnAApiController {
         model.addAttribute("endPage", endPage);
         return "/admin/qnaControl";
     }
-// 구현중
-//    @PostMapping("/filter")
-//    public  ResponseEntity<Page<QnA>> filterQnAList(
-//                @RequestBody Map<String, String> filterData,
-//                @PageableDefault(size = 15, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
-//        Byte category = Byte.valueOf(filterData.getOrDefault("category", "all"));
-//        String status = filterData.getOrDefault("status", "all");
-//
-//        Page<QnA> qnaPage;
-//        // 필터 조건 처리
-//        if ("answered".equals(status)) {
-//            // 답변 완료 필터
-//            qnaPage = qnaService.findAnsweredQnA(pageable,category);
-//        } else if ("pending".equals(status)) {
-//            // 답변 대기중 필터
-//            qnaPage = qnaService.findPendingQnA(parseCategory(category), pageable);
-//        } else if (!"all".equals(category)) {
-//            // 카테고리 필터
-//            qnaPage = qnaService.findByCategory(parseCategory(category), pageable);
-//        } else {
-//            // 전체 조회
-//            qnaPage = qnaService.findAll(pageable);
-//        }
-//        return ResponseEntity.ok(qnaPage);
-//    }
+    @PostMapping("/filter")
+    public ResponseEntity<List<QnA>> filterQnAList(
+            @RequestBody Map<String, String> filterData,
+            @PageableDefault(size = 15, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+
+        String category = filterData.getOrDefault("category", "all");
+        String status = filterData.getOrDefault("status", "all");
+
+        List<QnA> qnaList;
+
+        if ("all".equals(category) && "all".equals(status)) {
+            // 카테고리와 상태 필터 없이 모든 QnA 조회
+            qnaList = qnaService.findAll(pageable).getContent();
+        } else if (!"all".equals(category) && "all".equals(status)) {
+            // 카테고리로만 필터링
+            byte categoryByte = Byte.parseByte(category);
+            qnaList = qnaService.findByCategory(categoryByte, pageable).getContent();
+        } else if ("all".equals(category) && !"all".equals(status)) {
+            // 상태로만 필터링
+            boolean isAnswered = "answered".equals(status); // 답변 여부
+            qnaList = qnaService.findAll(pageable).getContent()
+                    .stream()
+                    .filter(qna -> {
+                        if (isAnswered) {
+                            return qna.getAnswer() != null && !qna.getAnswer().trim().isEmpty();
+                        } else {
+                            return qna.getAnswer() == null || qna.getAnswer().trim().isEmpty();
+                        }
+                    })
+                    .collect(Collectors.toList());
+        } else {
+            // 카테고리와 상태 모두 필터링
+            byte categoryByte = Byte.parseByte(category);
+            boolean isAnswered = "answered".equals(status);
+            qnaList = qnaService.findByCategory(categoryByte, pageable).getContent()
+                    .stream()
+                    .filter(qna -> {
+                        if (isAnswered) {
+                            return qna.getAnswer() != null && !qna.getAnswer().trim().isEmpty();
+                        } else {
+                            return qna.getAnswer() == null || qna.getAnswer().trim().isEmpty();
+                        }
+                    })
+                    .collect(Collectors.toList());
+        }
+
+        return ResponseEntity.ok(qnaList); // 필터링된 결과 반환
+    }
+
+
+
+
+
 
     // QnA 상세 조회
     @GetMapping("/{id}")

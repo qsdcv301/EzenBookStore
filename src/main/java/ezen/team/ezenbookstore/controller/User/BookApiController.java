@@ -89,6 +89,7 @@ public class BookApiController {
         Sort.Direction sortDirection = direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, sort));
         List<Book> filteredBooks = new ArrayList<>();
+
         // 아무런 검색 조건이 없는 경우 모든 책을 조회
         if (keyword.isEmpty() && val.isEmpty() && category.isEmpty() && subcategory.isEmpty() && ifkr.isEmpty()) {
             List<Book> allBooks = bookService.findAll();  // 전체 데이터를 한 번 가져옴
@@ -133,60 +134,62 @@ public class BookApiController {
             }
 
             // 키워드와 값을 쉼표로 나누기
-            if (!keyword.isEmpty() || !val.isEmpty()) {
-                String[] keywordGroups = keyword.split("\\],\\[");
-                String[] valueGroups = val != null ? val.split(",") : new String[0];
+            String[] keywordGroups = keyword.split("\\],\\[");
+            String[] valueGroups = val != null ? val.split(",") : new String[0];
 
-                // 각 그룹을 순회하며 검색 수행
-                for (int groupIndex = 0; groupIndex < keywordGroups.length; groupIndex++) {
-                    String[] keywords = keywordGroups[groupIndex].replaceAll("[\\[\\]]", "").split(",");
-                    String searchValue = groupIndex < valueGroups.length ? valueGroups[groupIndex].trim() : "";
+            // 그룹 길이 맞추기
+            int maxGroupSize = Math.max(keywordGroups.length, valueGroups.length);
 
-                    // 현재 그룹 검색 결과를 저장할 임시 리스트
-                    List<Book> groupBooks = new ArrayList<>();
+            for (int groupIndex = 0; groupIndex < maxGroupSize; groupIndex++) {
+                String[] keywords = groupIndex < keywordGroups.length
+                        ? keywordGroups[groupIndex].replaceAll("[\\[\\]]", "").split(",")
+                        : new String[0];
+                String searchValue = groupIndex < valueGroups.length
+                        ? valueGroups[groupIndex].trim()
+                        : "";
 
-                    // 각 키워드로 검색 수행
-                    for (String currentKeyword : keywords) {
-                        List<Book> books = switch (currentKeyword.trim()) {
-                            case "title" -> bookService.findByTitleContaining(searchValue);
-                            case "author" -> bookService.findByAuthorContaining(searchValue);
-                            case "publisher" -> bookService.findByPublisherContaining(searchValue);
-                            case "isbn" -> bookService.findByIsbnContaining(searchValue);
-                            default -> List.of();  // 잘못된 키워드의 경우 빈 리스트 반환
-                        };
+                // 현재 그룹 검색 결과를 저장할 임시 리스트
+                List<Book> groupBooks = new ArrayList<>();
 
-                        // 그룹별 검색 조건에 따라 합집합 추가
-                        if (groupBooks.isEmpty()) {
-                            groupBooks.addAll(books);  // 처음에는 모두 추가
-                        } else {
-                            groupBooks.retainAll(books); // 조건에 맞게 필터링
-                        }
-                    }
+                // 각 키워드로 검색 수행
+                for (String currentKeyword : keywords) {
+                    List<Book> books = switch (currentKeyword.trim()) {
+                        case "title" -> bookService.findByTitleContaining(searchValue);
+                        case "author" -> bookService.findByAuthorContaining(searchValue);
+                        case "publisher" -> bookService.findByPublisherContaining(searchValue);
+                        case "isbn" -> bookService.findByIsbnContaining(searchValue);
+                        default -> List.of();  // 잘못된 키워드의 경우 빈 리스트 반환
+                    };
 
-                    // 이전 그룹 결과와 교집합 수행
-                    if (isFirstFilter) {
-                        filteredBooks.addAll(groupBooks);  // 첫 번째 그룹 결과를 초기값으로 사용
-                        isFirstFilter = false;
+                    // 그룹별 검색 조건에 따라 합집합 추가
+                    if (groupBooks.isEmpty()) {
+                        groupBooks.addAll(books);  // 처음에는 모두 추가
                     } else {
-                        filteredBooks.retainAll(groupBooks);  // 이후 그룹별 결과를 재검색
+                        groupBooks.addAll(books); // 조건에 맞게 합집합 수행
                     }
+                }
+
+                // 이전 그룹 결과와 교집합 수행
+                if (isFirstFilter) {
+                    filteredBooks.addAll(groupBooks);  // 첫 번째 그룹 결과를 초기값으로 사용
+                    isFirstFilter = false;
+                } else {
+                    filteredBooks.retainAll(groupBooks);  // 이후 그룹별 결과를 재검색
                 }
             }
 
             // 아무런 필터링 결과가 없는 경우 모든 책을 조회
-            if (filteredBooks.isEmpty()) {
-                List<Book> allBooks = bookService.findAll();  // 전체 데이터를 한 번 가져옴
-                filteredBooks.addAll(allBooks);
+            if (filteredBooks.isEmpty() && !keyword.isEmpty()) {
+                filteredBooks = new ArrayList<>(); // 빈 리스트로 초기화
             }
         }
 
         // 필터링된 리스트를 정렬
         Comparator<Book> comparator = switch (sort) {
-            case "title" -> Comparator.comparing(Book::getTitle);
-            case "author" -> Comparator.comparing(Book::getAuthor);
-            case "publisher" -> Comparator.comparing(Book::getPublisher);
-            case "count" -> Comparator.comparing(Book::getCount);
-            case "price" -> Comparator.comparing(Book::getPrice);
+            case "title" -> Comparator.comparing(Book::getTitle, String.CASE_INSENSITIVE_ORDER);
+            case "author" -> Comparator.comparing(Book::getAuthor, String.CASE_INSENSITIVE_ORDER);
+            case "publisher" -> Comparator.comparing(Book::getPublisher, String.CASE_INSENSITIVE_ORDER);
+            case "price" -> Comparator.comparingDouble(Book::getPrice);
             default -> Comparator.comparing(Book::getId); // 기본적으로 id로 정렬
         };
 
@@ -246,7 +249,6 @@ public class BookApiController {
         model.addAttribute("subcategory", subcategory);
         return "bookSearch";
     }
-
 
     @GetMapping("/detail")
     public String bookDetail(@RequestParam(name = "bookId") Long bookId, Model model) {
