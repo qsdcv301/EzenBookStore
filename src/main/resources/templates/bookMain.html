@@ -37,12 +37,9 @@
             padding: 20px;
         }
 
-        .card {
-            height: 100%;
-        }
-
         .card-img-top {
-            height: 200px;
+            max-width: 100%;
+            height: 340px;
             object-fit: cover;
         }
 
@@ -180,7 +177,7 @@
                     <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-4 g-5">
                         <!-- 상품 카드 -->
                         <div class="col mb-4 cart-Data" th:each="book, index : ${bookList}">
-                            <div class="card h-100">
+                            <div class="card">
                                 <div class="form-check position-absolute top-0 m-2">
                                     <input class="form-check-input cart-checkbox" type="checkbox" id="product1">
                                 </div>

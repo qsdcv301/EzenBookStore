@@ -190,7 +190,8 @@
     gap: 10px;
 }
 
-.navigation-buttons button {
+.navigation-buttons button,
+.navigation-buttons a{
     background-color: #007bff;
     color: white;
     border: none;
@@ -204,9 +205,27 @@
     cursor: pointer;
 }
 
-.navigation-buttons button:hover {
+.navigation-buttons button:hover,
+navigation-buttons a:hover{
     background-color: #007bff;
 }
+
+/* 관리자 버튼 */
+
+.navigation-buttons a.adminDashBoard:hover {
+    background-color: #e92e0e !important;
+}
+
+.navigation-buttons a.adminDashBoard:hover .rotate-icon {
+    transform: rotate(75deg);
+}
+
+.rotate-icon {
+    transition: transform 0.5s ease-in-out;
+    transform-origin: center;
+}
+
+/* 관리자 버튼 끝 */
 
 /* 슬라이드 스타일 */
 .carousel-item img {
