@@ -44,7 +44,7 @@ public class AdminBookApiController {
         model.addAttribute("subCategoryList", subCategoryService.findAll());
 
 
-        return "/admin/bookControl";
+        return "admin/bookControl";
     }
 
     // ID로 책 조회
