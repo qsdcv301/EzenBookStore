@@ -23,6 +23,56 @@ public class BookApiController {
     private final FileUploadService fileUploadService;
     private final ReviewService reviewService;
 
+    @GetMapping
+    public String book(@RequestParam(name = "page", defaultValue = "0", required = false) int page,
+                       @RequestParam(name = "sort", defaultValue = "id", required = false) String sort,
+                       @RequestParam(name = "direction", defaultValue = "asc", required = false) String direction,
+                       @RequestParam(name = "ifkr", defaultValue = "", required = false) String ifkr,
+                       @RequestParam(name = "category", defaultValue = "", required = false) String category,
+                       @RequestParam(name = "subcategory", defaultValue = "", required = false) String subcategory,
+                       Model model) {
+        // 페이지 설정
+        int size = 20;
+        Sort.Direction sortDirection = direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, sort));
+        Page<Book> bookList = null;
+        if (category.isEmpty() && subcategory.isEmpty() && ifkr.isEmpty()) {
+            bookList = bookService.findAll(pageable);  // 전체 데이터를 한 번 가져옴
+        } else {
+            byte ifkrValue = (byte) (ifkr.equals("1") ? 1 : 0);
+            if (!ifkr.isEmpty() && category.isEmpty() && subcategory.isEmpty()) {
+                bookList = bookService.findAllByIfkr(ifkrValue, pageable);
+            } else if (!ifkr.isEmpty() && !category.isEmpty() && subcategory.isEmpty()) {
+                bookList = bookService.findAllByIfkrAndCategoryName(ifkrValue, category, pageable);
+            } else if (!ifkr.isEmpty() && !category.isEmpty() && !subcategory.isEmpty()) {
+                bookList = bookService.findAllByIfkrAndCategoryNameAndSubcategoryName(ifkrValue, category,
+                        subcategory, pageable);
+            }
+        }
+        List<Category> categoryList = categoryService.findAll();
+        List<SubCategory> subCategoryList = subCategoryService.findAll();
+        List<String> ImageList = new ArrayList<>();
+        for (Book book : bookList.getContent()) {
+            String imagePath = fileUploadService.findImageFilePath(book.getId(), "book");
+            if (imagePath != null) {
+                ImageList.add(imagePath);
+            } else {
+                ImageList.add("");
+            }
+        }
+        model.addAttribute("imageList", ImageList);
+        model.addAttribute("sort", sort);
+        model.addAttribute("direction", direction);
+        model.addAttribute("bookList", bookList.getContent());
+        model.addAttribute("page", bookList);
+        model.addAttribute("categoryList", categoryList);
+        model.addAttribute("subCategoryList", subCategoryList);
+        model.addAttribute("ifkr", ifkr);
+        model.addAttribute("category", category);
+        model.addAttribute("subcategory", subcategory);
+        return "bookMain";
+    }
+
     @GetMapping("/search")
     public String bookSearch(@RequestParam(name = "keyword", defaultValue = "", required = false) String keyword,
                              @RequestParam(name = "val", defaultValue = "", required = false) String val,
