@@ -76,11 +76,11 @@ public class AdminUserApiController {
         }
 
         // 검색 결과 내 각 등급별 카운트
-        long generalCount = userList.stream().filter(u -> u.getGrade() == 0).count();
-        long silverCount = userList.stream().filter(u -> u.getGrade() == 1).count();
-        long goldCount = userList.stream().filter(u -> u.getGrade() == 2).count();
-        long vipCount = userList.stream().filter(u -> u.getGrade() == 3).count();
-        long adminCount = userList.stream().filter(u -> u.getGrade() == 4).count();
+        long generalCount = userList.stream().filter(u -> u.getGrade() == 1).count();
+        long silverCount = userList.stream().filter(u -> u.getGrade() == 2).count();
+        long goldCount = userList.stream().filter(u -> u.getGrade() == 3).count();
+        long vipCount = userList.stream().filter(u -> u.getGrade() == 4).count();
+        long adminCount = userList.stream().filter(u -> u.getGrade() == 99).count();
 
         // 총 페이지 수 계산
         int totalPages = (int) Math.ceil((double) filteredTotalCount / size);
