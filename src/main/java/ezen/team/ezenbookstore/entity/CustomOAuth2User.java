@@ -23,12 +23,22 @@ public class CustomOAuth2User implements OAuth2User {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // 등급에 따라 권한 설정
+        // 이메일 가져오기
         String email = getEmail();
-        int grade = userService.findByEmail(email).getGrade(); // UserService에서 등급 검색
 
-        // 등급에 따라 권한 설정
-        String role = (grade == 99) ? "ROLE_ADMIN" : "ROLE_USER";
+        // UserService에서 사용자 조회
+        User user = userService.findByEmail(email);
+
+        // 사용자 등급 확인 후 권한 설정 (기본값: ROLE_USER)
+        String role;
+        if (user != null) {
+            int grade = user.getGrade(); // 등급 가져오기
+            role = (grade == 99) ? "ROLE_ADMIN" : "ROLE_USER";
+        } else {
+            // 사용자 정보가 없을 경우 기본 권한 할당
+            role = "ROLE_USER";
+        }
+
         return Collections.singletonList(new SimpleGrantedAuthority(role));
     }
 
