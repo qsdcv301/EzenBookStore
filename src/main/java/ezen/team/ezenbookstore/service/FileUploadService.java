@@ -40,7 +40,7 @@ public class FileUploadService {
 
     public String findImageFilePath(Long id, String type) {
         // 실제 파일 시스템 경로를 사용
-        String folderPath = "C:/ezenBookStore/images/" + type + "/";
+        String folderPath = uploadDir + "/" + type + "/";
         File dir = new File(folderPath);
         File[] matchingFiles = dir.listFiles((dir1, name) -> name.startsWith(id + "_"));
 
