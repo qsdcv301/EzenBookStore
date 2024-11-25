@@ -138,6 +138,7 @@
             <th>제목</th>
             <th>저자</th>
             <th>출판사</th>
+            <th>국내/국외</th>
             <th>카테고리</th>
             <th>서브 카테고리</th>
             <th>할인율</th>
@@ -150,6 +151,7 @@
             <td th:text="${book.title}"></td>
             <td th:text="${book.author}"></td>
             <td th:text="${book.publisher}"></td>
+            <td th:text="${book.ifkr} == 0 ? '국내' : '국외'"></td>
             <td th:text="${book.category.name}"></td>
             <td th:text="${book.subcategory.name}"></td>
             <td th:text="${book.discount + '%'}"></td>

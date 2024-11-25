@@ -53,27 +53,51 @@ public class AdminBookApiController {
 
         // 카테고리 필터링
         if (!category.isEmpty()) {
-            Category selectedCategory = categoryService.findByName(category);
-            if (selectedCategory != null) {
-                filteredBooks.retainAll(bookService.findAllByCategoryId(selectedCategory.getId()));
-            } else {
-                // 카테고리가 존재하지 않는 경우 로그를 출력하고 빈 결과 반환
-                System.out.println("Category not found: " + category);
-                filteredBooks.clear(); // 결과를 비움
+            try {
+                Long categoryId = Long.parseLong(category); // 숫자인 경우 ID로 처리
+                Category selectedCategory = categoryService.findById(categoryId);
+                if (selectedCategory != null) {
+                    filteredBooks.retainAll(bookService.findAllByCategoryId(selectedCategory.getId()));
+                } else {
+                    System.out.println("Category not found for ID: " + categoryId);
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Category is not an ID, attempting to find by name: " + category);
+                Category selectedCategory = categoryService.findByName(category); // 이름으로 조회
+                if (selectedCategory != null) {
+                    filteredBooks.retainAll(bookService.findAllByCategoryId(selectedCategory.getId()));
+                } else {
+                    System.out.println("Category not found for name: " + category);
+                }
             }
         }
 
-// 서브 카테고리 필터링
+// 서브카테고리 필터링
         if (!subcategory.isEmpty()) {
-            SubCategory selectedSubCategory = subCategoryService.findByName(subcategory);
-            if (selectedSubCategory != null) {
-                filteredBooks.retainAll(bookService.findAllBySubcategoryId(selectedSubCategory.getId()));
-            } else {
-                // 서브 카테고리가 존재하지 않는 경우 로그를 출력하고 빈 결과 반환
-                System.out.println("SubCategory not found: " + subcategory);
-                filteredBooks.clear(); // 결과를 비움
+            try {
+                Long subcategoryId = Long.parseLong(subcategory);
+                SubCategory selectedSubCategory = subCategoryService.findById(subcategoryId);
+                if (selectedSubCategory != null) {
+                    filteredBooks.retainAll(bookService.findAllBySubcategoryId(selectedSubCategory.getId()));
+                } else {
+                    System.out.println("SubCategory not found for ID: " + subcategoryId);
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("SubCategory is not an ID, attempting to find by name: " + subcategory);
+                SubCategory selectedSubCategory = subCategoryService.findByName(subcategory);
+                if (selectedSubCategory != null) {
+                    filteredBooks.retainAll(bookService.findAllBySubcategoryId(selectedSubCategory.getId()));
+                } else {
+                    System.out.println("SubCategory not found for name: " + subcategory);
+                }
             }
         }
+
+
+        System.out.println("Received category: " + category);
+        Category selectedCategory = categoryService.findByName(category);
+        System.out.println("Found category: " + (selectedCategory != null ? selectedCategory.getName() : "null"));
+
 
 
         // 페이지네이션 적용
