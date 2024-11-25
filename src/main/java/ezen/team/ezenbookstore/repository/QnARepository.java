@@ -18,11 +18,8 @@ public interface QnARepository extends JpaRepository<QnA, Long> {
 
     Page<QnA> findByCategory(Byte category, Pageable pageable);
 
-    Page<QnA> findByAnswerNot(Pageable pageable, String s);
+    Page<QnA> findByAnswer(String answer, Pageable pageable);
 
-    Page<QnA> findByAnswer(Pageable pageable, String s);
+    Page<QnA> findByCategoryAndAnswer(Byte category, String answer, Pageable pageable);
 
-    Page<QnA> findByCategoryAndAnswerNot(Byte category, String s, Pageable pageable);
-
-    Page<QnA> findByCategoryAndAnswer(Byte category, String s, Pageable pageable);
 }

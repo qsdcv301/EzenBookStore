@@ -103,7 +103,9 @@
           <!-- 상품 관리 -->
           <li><i class="fas fa-book mr-2"></i> <strong>상품 관리</strong>
             <ul>
-              <li>상품 조회 및 관리</li>
+              <li><a href="javascript:void(0)" onclick="loadProductManagement()">상품 조회 및 관리
+                <div class="underline"></div>
+              </a></li>
               <li><a href="javascript:void(0)" onclick="loadProductCategory()">상품별 카테고리 관리
                 <div class="underline"></div>
               </a></li>
@@ -120,10 +122,18 @@
           <!-- 게시판 관리 -->
           <li><i class="fas fa-comments mr-2"></i> <strong>게시판 관리</strong>
             <ul>
-              <li>공지사항 관리</li>
-              <li>이벤트 관리</li>
-              <li>문의하기 관리</li>
-              <li>리뷰 평점 관리</li>
+              <li><a href="javascript:void(0)" onclick="loadNoticeManagements()">공지사항 관리
+                <div class="underline"></div>
+              </a></li>
+              <li><a href="javascript:void(0)" onclick="loadEventsManagement()">이벤트 관리
+                <div class="underline"></div>
+              </a></li>
+              <li><a href="javascript:void(0)" onclick="loadInquiriesManagement()">문의하기 관리
+                <div class="underline"></div>
+              </a></li>
+              <li><a href="javascript:void(0)" onclick="loadReviewManagement()">리뷰 평점 관리
+                <div class="underline"></div>
+              </a></li>
             </ul>
           </li>
         </ul>
@@ -151,29 +161,36 @@
     // 주문 및 배송 관리
     function loadOrderHistory() {
       var iframe = document.getElementById('content-frame');
-      iframe.src = 'Order_History.html';
+      iframe.src = 'Order_History.html'; // 주문 조회 및 상태 관리
       iframe.style.display = 'block';
       setActiveMenu('loadOrderHistory'); // 해당 메뉴 활성화
     }
 
-    // 상품 관리
     function loadRefundExchange() {
       var iframe = document.getElementById('content-frame');
-      iframe.src = 'Refund_Exchange.html';
+      iframe.src = 'Refund_Exchange.html'; // 취소/반품/교환 요청 관리
       iframe.style.display = 'block';
       setActiveMenu('loadRefundExchange');
     }
 
     function loadPaymentManagement() {
       var iframe = document.getElementById('content-frame');
-      iframe.src = 'Payment_Management.html';
+      iframe.src = 'Payment_Management.html'; // 결제 취소/환불 관리
       iframe.style.display = 'block';
       setActiveMenu('loadPaymentManagement');
     }
 
+    // 상품 관리
+    function loadProductManagement() {
+      var iframe = document.getElementById('content-frame');
+      iframe.src = 'Product_Management.html'; // 상품 조회 및 관리
+      iframe.style.display = 'block';
+      setActiveMenu('loadProductManagement');
+    }
+
     function loadProductCategory() {
       var iframe = document.getElementById('content-frame');
-      iframe.src = 'Product_Category.html';
+      iframe.src = 'Product_Category.html'; // 상품 카테고리 관리
       iframe.style.display = 'block';
       setActiveMenu('loadProductCategory');
     }
@@ -181,9 +198,38 @@
     // 회원 관리
     function loadMembershipLevels() {
       var iframe = document.getElementById('content-frame');
-      iframe.src = 'Membership_levels.html';
+      iframe.src = 'Membership_levels.html'; // 회원 정보 관리
       iframe.style.display = 'block';
       setActiveMenu('loadMembershipLevels');
+    }
+
+    // 게시판 관리
+    function loadNoticeManagements() {
+      var iframe = document.getElementById('content-frame');
+      iframe.src = 'Notice_Management.html'; // 공지사항 관리
+      iframe.style.display = 'block';
+      setActiveMenu('loadNoticeManagements');
+    }
+
+    function loadEventsManagement() {
+      var iframe = document.getElementById('content-frame');
+      iframe.src = 'Events_Management.html'; // 이벤트 관리
+      iframe.style.display = 'block';
+      setActiveMenu('loadEventsManagement');
+    }
+
+    function loadInquiriesManagement() {
+      var iframe = document.getElementById('content-frame');
+      iframe.src = 'Inquiries_Management.html'; // 문의하기 관리
+      iframe.style.display = 'block';
+      setActiveMenu('loadInquiriesManagement');
+    }
+
+    function loadReviewManagement() {
+      var iframe = document.getElementById('content-frame');
+      iframe.src = 'Review_Management'; // 리뷰평점 관리
+      iframe.style.display = 'block';
+      setActiveMenu('loadReviewManagement');
     }
 
 

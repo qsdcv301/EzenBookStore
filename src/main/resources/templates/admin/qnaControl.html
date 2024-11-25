@@ -131,46 +131,59 @@
         const category = $('.filter-btn.active').data('filter') || 'all';
         const status = $('#answerStatusFilter').val() || 'all';
 
+        console.log("요청 데이터:", { category, status }); // 요청 데이터 확인
+
         $.ajax({
             url: '/admin/qna/filter',
             type: 'POST',
             contentType: 'application/json',
             data: JSON.stringify({ category, status }),
             success: function (response) {
-                console.log(response);
-                updateTable(response.content); // 필터링된 데이터를 테이블에 업데이트
+                console.log("서버 응답:", response); // 서버에서 반환된 데이터 확인
+                updateTable(response); // 필터링된 데이터를 테이블에 업데이트
             },
-            error: function () {
+            error: function (xhr, status, error) {
+                console.error("필터링 오류:", error);
                 alert('QnA 필터링에 실패했습니다.');
             }
         });
     }
 
+
     function updateTable(data) {
         const tbody = $('table tbody');
-        tbody.empty();
+        tbody.empty(); // 기존 데이터를 지움
 
-        if (data.length === 0) {
+        console.log("테이블 데이터:", data); // 데이터 디버깅용 출력
+
+        if (!data || data.length === 0) {
             tbody.append('<tr><td colspan="7" class="text-center">결과가 없습니다.</td></tr>');
             return;
         }
 
         data.forEach(qna => {
+            const userName = qna.user ? qna.user.name : 'Unknown User'; // 유저 이름 처리
+            const categoryName = getCategoryName(qna.category); // 카테고리 이름 매핑
+            const answerStatus = qna.answer && qna.answer.trim() !== '' ? '답변됨' : '답변 대기중'; // 답변 상태 처리
+
             const row = `
         <tr>
             <td><input type="checkbox" name="checkBoxQnA" value="${qna.id}"></td>
             <td>${qna.id}</td>
-            <td>${qna.user.name}</td>
-            <td>${getCategoryName(qna.category)}</td>
+            <td>${userName}</td>
+            <td>${categoryName}</td>
             <td>${qna.title}</td>
-            <td>${qna.answer ? '답변됨' : '답변 대기중'}</td>
+            <td>${answerStatus}</td>
             <td>
                 <button type="button" class="btn btn-info btn-sm view-btn" data-qna-id="${qna.id}">상세보기</button>
             </td>
         </tr>`;
-            tbody.append(row);
+            tbody.append(row); // 테이블에 행 추가
         });
     }
+
+
+
 
     function getCategoryName(category) {
         const categories = {

@@ -1,333 +1,416 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>회원 정보 관리</title>
-  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<head xmlns:th="http://www.thymeleaf.org">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원 정보 관리</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-  <style>
-    .filter-option {
-      cursor: pointer;
-      padding: 10px 20px;
-      margin-right: 10px;
-      border-radius: 5px;
-      background-color: #f8f9fa;
-      color: #495057;
-      transition: background-color 0.3s;
-    }
+    <style>
+        .filter-option {
+            cursor: pointer;
+            padding: 10px 20px;
+            margin-right: 10px;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+            color: #495057;
+            transition: background-color 0.3s;
+        }
 
-    .filter-option:hover {
-      background-color: #6c757d;
-      color: white;
-    }
+        .filter-option:hover {
+            background-color: #6c757d;
+            color: white;
+        }
 
-    .filter-option.active {
-      background-color: #007bff;
-      color: white;
-    }
+        .filter-option.active {
+            background-color: #007bff;
+            color: white;
+        }
 
-    .user-stats {
-      display: block;
-      text-align: left;
-      margin-bottom: 15px;
-      font-size: 15px;
-    }
-    
-    .user-stats span {
-      display: inline-block;
-      margin-right: 15px;
-    }
-
-    .user-stats span span{
-      margin-left: 10px;
-    }
-
-    .user-stats span:not(:last-child)::after {
-      content: '|';
-      margin-left: 10px;
-      color: #6c757d;
-    }
-  </style>
+    </style>
 </head>
 <body>
 
 <div class="container mt-5">
-  <h3 class="font-weight-bold mb-3">회원 정보 관리</h3>
-  <P>가입된 회원의 정보를 확인하거나 수정할 수 있습니다.</P>
+    <h3 class="font-weight-bold mb-3">회원 정보 관리</h3>
+    <P>가입된 회원 정보를 확인하거나 수정할 수 있는 페이지입니다.</P>
 
-  <!-- 등급 상태별 필터 버튼 
-  >> 클릭 시 해당하는 배송상태 확인가능(버튼 색 활성화 필요-active)-->
-  <div class="d-flex justify-content-start mb-3">
-    <span class="filter-option active" onclick="filterUsers('전체')">전체 <span id="total-count">0</span></span>
-    <span class="filter-option" onclick="filterUsers('일반회원')">일반회원 <span id="general-count">0</span></span>
-    <span class="filter-option" onclick="filterUsers('실버회원')">실버회원 <span id="silver-count">0</span></span>
-    <span class="filter-option" onclick="filterUsers('골드회원')">골드회원 <span id="gold-count">0</span></span>
-    <span class="filter-option" onclick="filterUsers('VIP회원')">VIP회원 <span id="vip-count">0</span></span>
-    <span class="filter-option" onclick="filterUsers('관리자')">관리자 <span id="admin-count">0</span></span>
-  </div>
-  <hr> <!-- 구분선 추가 -->
-
-  <div class="d-flex justify-content-between mb-3">
-    <!-- 검색 섹션 -->
-    <div class="search-section d-flex align-items-center">
-      <select class="form-control mr-2" style="width: 150px;" id="search-type">
-        <option value="email">이메일</option>
-        <option value="name">이름</option>
-      </select>
-      <input type="text" class="form-control mr-2" placeholder="검색어를 입력하세요" style="width: 300px;" id="search-input">
-      <button class="btn btn-secondary" onclick="searchUsers()">조회</button>
+    <!-- 필터 버튼 -->
+    <div class="d-flex justify-content-start mb-3">
+    <span class="filter-option" data-grade="" th:classappend="${grade == null ? 'active' : ''}"
+          onclick="moveToGrade(this)">
+        전체 <span th:text="${totalCount}"></span> <!-- 검색 결과의 총 유저 수 -->
+    </span>
+        <span class="filter-option" data-grade="0" th:classappend="${grade == 1 ? 'active' : ''}"
+              onclick="moveToGrade(this)">
+        일반회원 <span th:text="${generalCount}"></span> <!-- 일반회원 수 -->
+    </span>
+        <span class="filter-option" data-grade="1" th:classappend="${grade == 2 ? 'active' : ''}"
+              onclick="moveToGrade(this)">
+        실버회원 <span th:text="${silverCount}"></span> <!-- 실버회원 수 -->
+    </span>
+        <span class="filter-option" data-grade="2" th:classappend="${grade == 3 ? 'active' : ''}"
+              onclick="moveToGrade(this)">
+        골드회원 <span th:text="${goldCount}"></span> <!-- 골드회원 수 -->
+    </span>
+        <span class="filter-option" data-grade="3" th:classappend="${grade == 4 ? 'active' : ''}"
+              onclick="moveToGrade(this)">
+        VIP 회원 <span th:text="${vipCount}"></span> <!-- VIP 회원 수 -->
+    </span>
+        <span class="filter-option" data-grade="4" th:classappend="${grade == 99 ? 'active' : ''}"
+              onclick="moveToGrade(this)">
+        관리자 <span th:text="${adminCount}"></span> <!-- 관리자 수 -->
+    </span>
     </div>
 
-     <!-- 등급 상태 일괄 변경
-     >> 선택 후 수정 버튼 클릭 시 수정되도록 -->
-     <div class="d-flex align-items-center ml-5">
-      <select class="form-control ml-5" style="width: 300px;" id="bulk-status">
-        <option value="">등급 상태 변경</option>
-        <option value="0">일반회원</option>
-        <option value="1">실버회원</option>
-        <option value="2">골드회원</option>
-        <option value="3">VIP회원</option>
-        <option value="4">관리자</option>
-      </select>
-    </div>
 
-      <!-- 수정/삭제 버튼 -->
-      <div>
-          <button class="btn btn-primary" onclick="updateBulkStatus()">수정</button>
-          <button class="btn btn-danger ml-1" onclick="deleteSelected()">삭제</button>
-      </div>
-    </div>
+    <hr>
 
-  <!-- 회원 목록 테이블 -->
-  <table class="table table-bordered text-center">
-    <thead class="thead-light">
-      <tr>
-        <th><input type="checkbox" id="select-all" onclick="toggleAllCheckboxes(this)"></th>
-        <th>순서</th>
-        <th>가입일</th>
-        <th>아이디</th>
-        <th>이름</th>
-        <th>전화번호</th>
-        <th>주소</th>
-        <th>상세주소</th>
-        <th>회원등급</th>
-        <th>상세보기</th>
-      </tr>
-    </thead>
-    <tbody id="user-list">
-      <!-- 회원 목록 (동적으로 추가됨) -->
-    </tbody>
-  </table>
-
-<!-- 모달 창 -->
-<div class="modal fade" id="userDetailModal" tabindex="-1" role="dialog" aria-labelledby="userDetailModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="userDetailModalLabel">회원 정보 관리</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <p><strong>순서 :</strong> <span id="modal-request-signup"></span></p>
-        <p><strong>가입일 :</strong> <span id="modal-signup-date"></span></p>
-        <p><strong>아이디 :</strong> <span id="modal-user-id"></span></p>
-        <p><strong>이름 :</strong> <span id="modal-user-name"></span></p>
-        <p><strong>전화번호 :</strong> <span id="modal-phone"></span></p>
-        <p><strong>주소 :</strong> <span id="modal-address"></span></p>
-        <p><strong>상세주소 :</strong> <span id="modal-detailed-address"></span></p>
-        <p><strong>회원 등급 :</strong> <span id="modal-user-level"></span></p>
-        <div class="d-flex mt-3">
-          <button class="btn btn-secondary mr-2" data-dismiss="modal">닫기</button>
+    <!-- 검색 및 상태 변경 섹션 -->
+    <div class="d-flex justify-content-between mb-3">
+        <!-- 검색 섹션 -->
+        <div class="search-section d-flex align-items-center">
+            <select class="form-control mr-2" style="width: 150px;" id="search-type">
+                <option value="email" th:selected="${type == 'email'}">이메일</option>
+                <option value="name" th:selected="${type == 'name'}">이름</option>
+            </select>
+            <input type="text" class="form-control mr-2" placeholder="검색어를 입력하세요" style="width: 300px;" id="search-input" th:value="${keyword}">
+            <button class="btn btn-primary" onclick="searchUsers()">조회</button>
+            <button class="btn btn-secondary ml-2" onclick="resetSearch()">초기화</button>
         </div>
-      </div>
+
+        <!-- 등급 상태 변경 -->
+        <div class="d-flex align-items-center">
+            <select class="form-control mr-3" style="width: 200px;" id="bulk-status">
+                <option value="">등급 상태 변경</option>
+                <option value="1">일반회원</option>
+                <option value="2">실버회원</option>
+                <option value="3">골드회원</option>
+                <option value="4">VIP 회원</option>
+                <option value="99">관리자</option>
+            </select>
+            <button class="btn btn-primary" id="update-selected" onclick="initUpdateAction()">수정</button>
+            <button class="btn btn-danger ml-2" id="delete-selected" onclick="initDeleteAction()">삭제</button>
+        </div>
     </div>
-  </div>
+
+    <!-- 회원 목록 테이블 -->
+    <table class="table table-bordered text-center">
+        <thead class="thead-light">
+        <tr>
+            <th><input type="checkbox" id="select-all" onclick="toggleAllCheckboxes(this)"></th>
+            <th>가입순서</th>
+            <th>아이디(이메일형식)</th>
+            <th>이름</th>
+            <th>전화번호</th>
+            <th>주소</th>
+            <th>회원등급</th>
+            <th>상세보기</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="user : ${userList}">
+            <td><input type="checkbox" class="user-checkbox" th:data-id="${user.id}"></td>
+            <td th:text="${user.id}"></td>
+            <td th:text="${user.email}"></td>
+            <td th:text="${user.name}"></td>
+            <td th:text="${user.tel}"></td>
+            <td>
+                <span th:text="${user.addr}"></span>
+                <span th:if="${user.addrextra != null}" th:text="' ' + ${user.addrextra}"></span>
+            </td>
+            <td>
+                <span th:if="${user.grade == 1}" th:text="'일반회원'"></span>
+                <span th:if="${user.grade == 2}" th:text="'실버회원'"></span>
+                <span th:if="${user.grade == 3}" th:text="'골드회원'"></span>
+                <span th:if="${user.grade == 4}" th:text="'VIP 회원'"></span>
+                <span th:if="${user.grade == 99}" th:text="'관리자'"></span>
+            </td>
+
+            <td>
+                <button class="btn btn-primary" th:data-target="'#userDetailModal-' + ${user.id}" data-toggle="modal">상세</button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+
+    <!-- 페이지네이션 -->
+    <nav aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+            <li class="page-item" th:each="i : ${#numbers.sequence(1, totalPages)}"
+                th:classappend="${i == currentPage ? 'active' : ''}">
+                <a class="page-link"
+                   th:href="@{/admin/user(grade=${grade}, type=${type}, keyword=${keyword}, page=${i}, size=${10})}"
+                   th:text="${i}"></a>
+            </li>
+        </ul>
+    </nav>
+
 </div>
+
+
+<!-- 모달 템플릿 -->
+<div th:each="user : ${userList}" class="modal fade" th:id="'userDetailModal-' + ${user.id}" tabindex="-1" role="dialog" aria-labelledby="userDetailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" th:text="'회원 상세 정보 - ' + ${user.name}"></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p><strong>회원 ID:</strong> <span th:text="${user.id}"></span></p>
+                <p><strong>가입경로:</strong> <span th:text="${user.provider}"></span></p>
+                <p><strong>아이디(이메일):</strong> <span th:text="${user.email}"></span></p>
+                <p><strong>이름:</strong> <span th:text="${user.name}"></span></p>
+                <p><strong>전화번호:</strong> <span th:text="${user.tel}"></span></p>
+                <p><strong>주소:</strong>
+                    <span th:text="${user.addr}"></span>
+                    <span th:if="${user.addrextra != null}" th:text="' ' + ${user.addrextra}"></span>
+                </p>
+                <p><strong>생년월일:</strong> <span th:text="${user.birthday}"></span></p>
+                <p><strong>회원 등급:</strong>
+                    <span th:switch="${user.grade}">
+                        <span th:case="2">일반회원</span>
+                        <span th:case="3">실버회원</span>
+                        <span th:case="4">골드회원</span>
+                        <span th:case="5">VIP회원</span>
+                        <span th:case="99">관리자</span>
+                    </span>
+                </p>
+                <p><strong>포인트:</strong> <span th:text="${user.point}"></span></p>
+                <p><strong>가입일:</strong> <span th:text="${#dates.format(user.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></span></p>
+                <div class="d-flex mt-3">
+                    <button class="btn btn-secondary mr-2" data-dismiss="modal">닫기</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+
 
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
 
 <script>
-  let currentUserId;
-  const users = [
-    { signupDate: '2024-01-01', email: 'user1@example.com', name: '홍길동1', level: '일반회원', signupOrder: 1, phone: '010-1111-2222', address: '서울시 강남구', detailedAddress: '청담동 1번지'  },
-    { signupDate: '2024-02-01', email: 'user2@example.com', name: '홍길동2', level: '실버회원', signupOrder: 2, phone: '010-3333-4444', address: '서울시 종로구', detailedAddress: '세종대로 10번길' },
-    { signupDate: '2024-03-01', email: 'user3@example.com', name: '홍길동3', level: 'VIP회원', signupOrder: 3, phone: '010-5555-6666', address: '서울시 중구', detailedAddress: '청담동 1번지'  },
-    { signupDate: '2024-04-01', email: 'user4@example.com', name: '홍길동4', level: '일반회원', signupOrder: 4, phone: '010-7777-8888', address: '서울시 송파구', detailedAddress: '청담동 1번지'  },
-    { signupDate: '2024-05-01', email: 'user5@example.com', name: '홍길동5', level: '골드회원', signupOrder: 5, phone: '010-9999-0000', address: '서울시 구로구', detailedAddress: '청담동 1번지'  },
-    { signupDate: '2024-06-01', email: 'user6@example.com', name: '홍길동6', level: '일반회원', signupOrder: 6, phone: '010-1234-5678', address: '서울시 양천구', detailedAddress: '청담동 1번지'  },
-    { signupDate: '2024-07-01', email: 'admin1@example.com', name: '관리자1', level: '관리자', signupOrder: 7, phone: '010-2345-6789', address: '서울시 성동구', detailedAddress: '청담동 1번지'  },
-    { signupDate: '2024-08-01', email: 'admin2@example.com', name: '관리자2', level: '관리자', signupOrder: 8, phone: '010-3456-7890', address: '서울시 강동구', detailedAddress: '청담동 1번지'  },
-    { signupDate: '2024-09-01', email: 'user9@example.com', name: '홍길동9', level: '일반회원', signupOrder: 9, phone: '010-4567-8901', address: '서울시 서초구', detailedAddress: '청담동 1번지'  }
-  ];
+    document.addEventListener("DOMContentLoaded", () => {
+        // 초기화
+        initFilterButtons();
+        initBulkActions();
+        initSearch();
+        initSelectAll();
 
-  function filterUsers(level) {
-    // 필터된 사용자 리스트
-    const filteredUsers = level === '전체' ? users : users.filter(user => user.level === level);
-
-    // 필터링된 사용자 목록 업데이트
-    const userListElement = document.getElementById('user-list');
-    userListElement.innerHTML = ''; // 기존 목록 제거
-
-    filteredUsers.forEach(user => {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${user.signupOrder}</td>
-        <td>${user.signupDate}</td>
-        <td>${user.email}</td>
-        <td>${user.name}</td>
-        <td>${user.phone}</td>
-        <td>${user.address}</td>
-        <td>${user.detailedAddress}</td>
-        <td>${user.level}</td>
-        <td><button class="btn btn-primary" onclick="openEditModal(${user.signupOrder})">상세</button></td>
-      `;
-      userListElement.appendChild(tr);
+        // 전체 필터로 초기화
+        renderUserList("전체");
     });
 
-    updateFilterCounts(level);
-
-    // 필터 버튼의 active 클래스 처리
-    const filterButtons = document.querySelectorAll('.filter-option');
-    filterButtons.forEach(button => {
-      button.classList.remove('active');  // 기존 active 클래스 제거
-    });
-
-    // 클릭한 버튼에 active 클래스 추가
-    const activeButton = Array.from(filterButtons).find(button => button.textContent.includes(level));
-    if (activeButton) {
-      activeButton.classList.add('active');
+    //등급 이름 매칭
+    function getGradeName(grade) {
+        const gradeMap = {
+            1: "일반회원",
+            2: "실버회원",
+            3: "골드회원",
+            4: "VIP 회원",
+            99: "관리자"
+        };
+        return gradeMap[grade] || "알 수 없음"; // 매칭되지 않으면 기본값 반환
     }
-  }
 
-  function filterUsers(level) {
-  const filteredUsers = level === '전체' ? users : users.filter(user => user.level === level);
-  const userListElement = document.getElementById('user-list');
-  userListElement.innerHTML = ''; // 기존 목록 제거
+    // 사용자 목록 렌더링
+    function renderUserList(filterLevel = "전체", searchType = null, searchText = null) {
+        const filteredUsers = users.filter(user => {
+            if (filterLevel !== "전체" && user.level !== filterLevel) return false;
+            if (searchType && searchText) {
+                return user[searchType]?.toLowerCase().includes(searchText);
+            }
+            return true;
+        });
 
-  filteredUsers.forEach(user => {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td><input type="checkbox" class="user-checkbox" data-signup-order="${user.signupOrder}"></td>
-      <td>${user.signupOrder}</td>
-      <td>${user.signupDate}</td>
-      <td>${user.email}</td>
-      <td>${user.name}</td>
-      <td>${user.phone}</td>
-      <td>${user.address}</td>
-      <td>${user.detailedAddress}</td>
-      <td>
-        <select class="form-control user-level-select" data-signup-order="${user.signupOrder}" onchange="updateUserLevel(${user.signupOrder}, this.value)">
-          <option value="일반회원" ${user.level === '일반회원' ? 'selected' : ''}>일반회원</option>
-          <option value="실버회원" ${user.level === '실버회원' ? 'selected' : ''}>실버회원</option>
-          <option value="골드회원" ${user.level === '골드회원' ? 'selected' : ''}>골드회원</option>
-          <option value="VIP회원" ${user.level === 'VIP회원' ? 'selected' : ''}>VIP회원</option>
-          <option value="관리자" ${user.level === '관리자' ? 'selected' : ''}>관리자</option>
-        </select>
-      </td>
-      <td><button class="btn btn-primary" onclick="openEditModal(${user.signupOrder})">상세</button></td>
-    `;
-    userListElement.appendChild(tr);
-  });
+        const userListElement = document.getElementById("user-list");
+        userListElement.innerHTML = ""; // 기존 목록 초기화
 
-  updateFilterCounts(level);
+        filteredUsers.forEach(user => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+            <td><input type="checkbox" class="user-checkbox" data-id="${user.id}"></td>
+            <td>${user.signupOrder}</td>
+            <td>${user.email}</td>
+            <td>${user.name}</td>
+            <td>${user.phone}</td>
+            <td>${user.address}</td>
+            <td>${user.level}</td>
+            <td><button class="btn btn-primary" onclick="openEditModal(${user.id})">상세</button></td>
+        `;
+            userListElement.appendChild(tr);
+        });
 
-  const filterButtons = document.querySelectorAll('.filter-option');
-  filterButtons.forEach(button => button.classList.remove('active'));
-  const activeButton = Array.from(filterButtons).find(button => button.textContent.includes(level));
-  if (activeButton) activeButton.classList.add('active');
-}
+        updateFilterButtons(filterLevel);
+    }
 
-function updateUserLevel(signupOrder, newLevel) {
-  // 사용자 데이터 업데이트
-  const user = users.find(user => user.signupOrder === signupOrder);
-  if (user) {
-    user.level = newLevel;
-  }
-  // 등급 상태 변경 후 테이블 필터 재적용
-  filterUsers(document.querySelector('.filter-option.active').textContent);
-}
+    // 필터 버튼 초기화
+    function initFilterButtons() {
+        document.querySelector(".filter-option").addEventListener("click", event => {
+            const level = event.target.getAttribute("data-level");
+            renderUserList(level);
+        });
+    }
 
-  function updateFilterCounts(level) {
-    const totalCount = users.length;
-    const generalCount = users.filter(user => user.level === '일반회원').length;
-    const silverCount = users.filter(user => user.level === '실버회원').length;
-    const goldCount = users.filter(user => user.level === '골드회원').length;
-    const vipCount = users.filter(user => user.level === 'VIP회원').length;
-    const adminCount = users.filter(user => user.level === '관리자').length;
+    // 필터 버튼 스타일 업데이트
+    function updateFilterButtons(activeLevel) {
+        document.querySelectorAll(".filter-option").forEach(button => {
+            button.classList.toggle("active", button.getAttribute("data-level") === activeLevel);
+        });
+    }
 
-    document.getElementById('total-count').textContent = `(${totalCount}명)`;
-    document.getElementById('general-count').textContent = `(${generalCount}명)`;
-    document.getElementById('silver-count').textContent = `(${silverCount}명)`;
-    document.getElementById('gold-count').textContent = `(${goldCount}명)`;
-    document.getElementById('vip-count').textContent = `(${vipCount}명)`;
-    document.getElementById('admin-count').textContent = `(${adminCount}명)`;
-  }
+    //등급에 따른 파라미터값 변경
+    function moveToGrade(element) {
+        const grade = element.getAttribute("data-grade"); // 선택한 span의 data-grade 값 가져오기
+        const currentURL = new URL(window.location.href); // 현재 URL 가져오기
+        const params = currentURL.searchParams; // URLSearchParams 객체
 
-  function openEditModal(signupOrder) {
-  currentUserId = signupOrder;
-  const user = users.find(user => user.signupOrder === signupOrder);
+        if (grade !== null) {
+            params.set("grade", grade); // grade 파라미터 설정
+        } else {
+            params.delete("grade"); // grade 파라미터 제거 (전체 필터)
+        }
 
-  // 모달에 사용자 정보 표시
-  document.getElementById('modal-request-signup').textContent = user.signupOrder;
-  document.getElementById('modal-signup-date').textContent = user.signupDate;
-  document.getElementById('modal-user-id').textContent = user.email;
-  document.getElementById('modal-user-name').textContent = user.name;
-  document.getElementById('modal-phone').textContent = user.phone;
-  document.getElementById('modal-address').textContent = user.address;
-  document.getElementById('modal-detailed-address').textContent = user.detailedAddress;
-  document.getElementById('modal-user-level').textContent = user.level; // 회원등급을 텍스트로 설정
+        params.set("page", 1); // 항상 첫 페이지로 이동
+        window.location.href = `${currentURL.pathname}?${params.toString()}`; // 새 URL로 이동
+    }
 
-  // 모달 열기
-  $('#userDetailModal').modal('show');
-}
 
-  function saveLevel() {
-    const user = users.find(user => user.signupOrder === currentUserId);
-    const newLevel = document.getElementById('modal-user-level').value;
+    // 일괄 변경 초기화
+    function initBulkActions() {
+        initUpdateAction(); // 등급 상태 변경 초기화
+        initDeleteAction(); // 선택 항목 삭제 초기화
+    }
 
-    user.level = newLevel;
-    filterUsers(document.querySelector('.filter-option.active').textContent);
-    $('#userDetailModal').modal('hide');
-  }
+    // 등급 상태 변경 초기화
+    function initUpdateAction() {
+        document.getElementById("update-selected").addEventListener("click", () => {
+            const newStatus = document.getElementById("bulk-status").value; // 선택된 등급 값
+            const selectedIds = Array.from(document.querySelectorAll(".user-checkbox:checked"))
+                .map(cb => cb.dataset.id); // 선택된 사용자 ID 목록
 
-  function searchUsers() {
-    const searchType = document.getElementById('search-type').value;
-    const searchText = document.getElementById('search-input').value.trim().toLowerCase();
+            if (!newStatus) {
+                alert("변경할 등급을 선택하세요.");
+                return;
+            }
 
-    const filteredUsers = users.filter(user => {
-      return user[searchType].toLowerCase().includes(searchText);
-    });
+            if (selectedIds.length === 0) {
+                alert("수정할 사용자를 선택하세요.");
+                return;
+            }
 
-    // 필터링된 사용자 목록 업데이트
-    const userListElement = document.getElementById('user-list');
-    userListElement.innerHTML = ''; // 기존 목록 제거
+            // 서버에 등급 상태 변경 요청
+            fetch('/admin/user/update', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({
+                    userId: [selectedIds],
+                    grade: newStatus
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(`선택된 사용자들의 등급이 '${getGradeName(newStatus)}'로 성공적으로 변경되었습니다.`);
+                        location.reload(); // 페이지 새로고침
+                    } else {
+                        alert("등급 변경에 실패했습니다.");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    alert("서버와 통신 중 오류가 발생했습니다.");
+                });
+        });
+    }
 
-    filteredUsers.forEach(user => {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${user.signupOrder}</td>
-        <td>${user.signupDate}</td>
-        <td>${user.email}</td>
-        <td>${user.name}</td>
-        <td>${user.phone}</td>
-        <td>${user.address}</td>
-        <td>${user.detailedAddress}</td>
-        <td>${user.level}</td>
-        <td><button class="btn btn-primary" onclick="openEditModal(${user.signupOrder})">수정</button></td>
-      `;
-      userListElement.appendChild(tr);
-    });
-  }
+    // 선택 항목 삭제 초기화
+    function initDeleteAction() {
+        document.getElementById("delete-selected").addEventListener("click", () => {
+            const selectedIds = Array.from(document.querySelectorAll(".user-checkbox:checked"))
+                .map(cb => cb.dataset.id); // 선택된 사용자 ID 목록
 
-  // 페이지 로드 시, 초기화
-  window.onload = () => {
-    filterUsers('전체');
-  };
+            if (selectedIds.length === 0) {
+                alert("삭제할 사용자를 선택하세요.");
+                return;
+            }
+
+            // 서버에 삭제 요청
+            fetch('/admin/user/delete', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(selectedIds)// 선택된 사용자 ID 배열
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert("선택된 사용자들이 성공적으로 삭제되었습니다.");
+                        location.reload(); // 페이지 새로고침
+                    } else {
+                        alert("삭제에 실패했습니다.");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    alert("서버와 통신 중 오류가 발생했습니다.");
+                });
+        });
+    }
+
+
+    // 검색 초기화
+    function initSearch() {
+        document.getElementById("search-button").addEventListener("click", () => {
+            const searchType = document.getElementById("search-type").value;
+            const searchText = document.getElementById("search-input").value.trim().toLowerCase();
+
+            renderUserList("전체", searchType, searchText);
+        });
+    }
+
+    // 전체 선택 체크박스 초기화
+    function initSelectAll() {
+        document.getElementById("select-all").addEventListener("change", event => {
+            const isChecked = event.target.checked;
+            document.querySelectorAll(".user-checkbox").forEach(cb => {
+                cb.checked = isChecked;
+            });
+        });
+    }
+    //체크박스 일괄체크/해제
+    function toggleAllCheckboxes(checkbox) {
+        const checkboxes = document.querySelectorAll('.user-checkbox');
+        checkboxes.forEach(cb => cb.checked = checkbox.checked);
+    }
+
+    //검색 기능 스크립트
+    function searchUsers(){
+        const type = document.getElementById("search-type").value;
+        const keyword = document.getElementById("search-input").value;
+
+        if(!keyword){
+            alert("검색어를 입력하세요.");
+            return;
+        }
+
+        location.href  = `/admin/user?type=${type}&keyword=${encodeURIComponent(keyword)}&page=1`;
+
+    }
+
+    //페이지 초기화
+    function resetSearch() {
+        location.href = "/admin/user"; // 초기화 URL
+    }
 </script>
 
 </body>

@@ -42,4 +42,7 @@ public class QnA {
     @CreationTimestamp
     private Timestamp createAt;
 
+    public boolean isAnswered() {
+        return this.answer != null && !this.answer.trim().isEmpty();
+    }
 }

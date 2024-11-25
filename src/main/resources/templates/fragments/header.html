@@ -1,4 +1,3 @@
-<html xmlns:th="http://www.thymeleaf.org" lang="ko">
 <header th:fragment="header">
     <!-- 상단 바 -->
     <div class="top-bar d-flex justify-content-end">
@@ -69,47 +68,51 @@
                 <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
                     <ul class="navbar-nav mb-2 mb-lg-0">
                         <li class="nav-item dropdown">
-                            <a class="nav-link active dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="fas fa-bars"></i> 카테고리
+                            <a class="nav-link dropdown-toggle" href="#" id="categoryDropdown" role="button"
+                               data-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-list"></i> 카테고리
                             </a>
-                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <!-- 카테고리 반복 -->
-                                <div class="d-flex flex-column flex-wrap"
-                                     style="width: 650px; height: 400px;">
-                                    <div th:each="categoryItem, index : ${categoryList}" style="width: 200px;">
-                                        <div class="d-flex align-items-center">
-                                            <!-- 카테고리 링크 -->
-                                            <a class="dropdown-item flex-grow-1"
-                                               th:href="@{/book(page=0, sort=${sort}, direction=${direction}, ifkr='0', category=${categoryItem.name}, subcategory='')}"
-                                               th:text="${categoryItem.name}"></a>
-                                            <!-- 넉넉한 화살표 영역 -->
-                                            <a href="#"
-                                               class="dropdown-arrow d-flex align-items-center justify-content-center text-decoration-none"
-                                               data-toggle="collapse"
-                                               th:data-target="'#categoryDropdown' + ${index.index}"
-                                               aria-expanded="false" onclick="event.preventDefault();">
-                                                <span class="arrow-icon text-black-50">&#9662;</span>
-                                            </a>
-                                        </div>
-                                        <div class="dropdown-divider"></div>
-                                        <!-- 서브 카테고리 반복 -->
-                                        <div class="collapse" th:id="'categoryDropdown' + ${index.index}">
-                                            <ul class="nav flex-column">
-                                                <li class="nav-item"
-                                                    th:each="subCategoryItem, subIndex : ${categoryItem.subCategory}">
+                            <div class="dropdown-menu" aria-labelledby="categoryDropdown">
+                                <div class="submenu-container">
+                                    <!-- 국내도서 카테고리 메뉴 -->
+                                    <div class="category-item" data-submenu="domestic">
+                                        <a th:href="@{/book(ifkr='0', category='', subcategory='')}" class="dropdown-item d-flex justify-content-between align-items-center">
+                                            국내도서
+                                            <i class="bi bi-chevron-right"></i>
+                                        </a>
+                                        <div class="submenu domestic-menu">
+                                            <div class="row">
+                                                <div class="col-3" th:each="category : ${categoryList}">
                                                     <a class="dropdown-item"
-                                                       th:href="@{/book(page=0, sort=${sort}, direction=${direction}, ifkr='0', category=${categoryItem.name}, subcategory=${subCategoryItem.name})}"
-                                                       th:text="${subCategoryItem.name}"></a>
-                                                </li>
-                                            </ul>
+                                                       th:href="@{/book(page=0, sort=${sort}, direction=${direction}, ifkr='0', category=${category.name}, subcategory='')}"
+                                                       th:text="${category.name}"></a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- 해외도서 카테고리 메뉴 -->
+                                    <div class="category-item" data-submenu="foreign">
+                                        <a th:href="@{/book(ifkr='1', category='', subcategory='')}" class="dropdown-item d-flex justify-content-between align-items-center">
+                                            해외도서
+                                            <i class="bi bi-chevron-right"></i>
+                                        </a>
+                                        <div class="submenu foreign-menu">
+                                            <div class="row">
+                                                <div class="col-3" th:each="category : ${categoryList}">
+                                                    <a class="dropdown-item"
+                                                       th:href="@{/book(page=0, sort=${sort}, direction=${direction}, ifkr='1', category=${category.name}, subcategory='')}"
+                                                       th:text="${category.name}"></a>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </li>
                         <li class="nav-item"><a class="nav-link" href="/book?sort=count&direction=desc">베스트셀러</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/book?sort=publishDate&direction=asc">신상품</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/book?sort=publishDate&direction=asc">신상품</a>
+                        </li>
                         <li class="nav-item"><a class="nav-link" href="/book?ifkr=0">국내도서</a></li>
                         <li class="nav-item"><a class="nav-link" href="/book?ifkr=1">해외도서</a></li>
                         <li class="nav-item"><a class="nav-link" href="/event">이벤트</a></li>

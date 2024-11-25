@@ -34,5 +34,4 @@ public class Event {
 
     @Column(name = "end_date")
     private Timestamp endDate;
-
 }

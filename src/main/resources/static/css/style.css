@@ -66,6 +66,47 @@
     margin-left: 10px;
 }
 
+/* 카테고리 스타일 */
+.dropdown-menu {
+    padding: 0;
+    border: 1px solid #ddd;
+    min-width: 200px;
+}
+
+.submenu-container {
+    position: relative;
+}
+
+.category-item {
+    position: relative;
+}
+
+.category-item .dropdown-item {
+    padding: 10px 15px;
+}
+
+.submenu {
+    display: none;
+    position: absolute;
+    left: 100%;
+    top: 0;
+    width: 600px;
+    background: white;
+    border: 1px solid #ddd;
+    padding: 15px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.category-item:hover .submenu {
+    display: block;
+}
+
+.category-item:hover {
+    background-color: #f8f9fa;
+}
+
+/* 카테고리 스타일 끝 */
+
 .dropdown-arrow {
     width: 40px; /* 화살표 클릭 영역 넓히기 */
     height: 40px;

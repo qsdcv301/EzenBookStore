@@ -84,24 +84,10 @@ public class QnAService {
         }
         qnARepository.saveAll(qnaList); // 모든 QnA 저장
     }
-    // 답변 완료된 QnA 조회
-    public Page<QnA> findAnsweredQnA(Pageable pageable) {
-        return qnARepository.findByAnswerNot(pageable, "");
+    public Page<QnA> findByAnswerStatus(String answer, Pageable pageable){
+        return qnARepository.findByAnswer(answer, pageable);
     }
-
-    // 답변 대기 중인 QnA 조회
-    public Page<QnA> findPendingQnA(Pageable pageable) {
-        return qnARepository.findByAnswer(pageable, "");
+    public Page<QnA> findByCategoryAndAnswerStatus(byte category, String answer, Pageable pageable){
+        return qnARepository.findByCategoryAndAnswer(category, answer, pageable);
     }
-
-    // 특정 카테고리에서 답변 완료된 QnA 조회
-    public Page<QnA> findAnsweredQnAByCategory(Byte category, Pageable pageable) {
-        return qnARepository.findByCategoryAndAnswerNot(category, "", pageable);
-    }
-
-    // 특정 카테고리에서 답변 대기 중인 QnA 조회
-    public Page<QnA> findPendingQnAByCategory(Byte category, Pageable pageable) {
-        return qnARepository.findByCategoryAndAnswer(category, "", pageable);
-    }
-
 }
