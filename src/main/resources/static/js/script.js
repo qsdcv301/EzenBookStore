@@ -44,6 +44,61 @@ $(document).ready(function () {
         });
     });
 
+    //header
+
+    // 서브메뉴 호버 효과
+    $('.category-item').hover(
+        function () {
+            $(this).find('.submenu').stop(true, true).show();
+        },
+        function () {
+            $(this).find('.submenu').stop(true, true).hide();
+        }
+    );
+
+    $(".searchBtn").click(function (e) {
+        e.preventDefault();
+        const searchSelect = $(".searchSelect").select().val();
+        const searchInput = $(".searchInput").val().trim();
+        let encodedKeyword;
+        switch (searchSelect){
+            case "0":
+                 encodedKeyword = encodeURIComponent("[title,author,isbn,publisher]");
+                window.location.href = `/book/search?keyword=${encodedKeyword}&val=${searchInput}`;
+                break;
+            case "1":
+                 encodedKeyword = encodeURIComponent("[title]");
+                window.location.href = `/book/search?keyword=${encodedKeyword}&val=${searchInput}`;
+                break;
+            case "2":
+                 encodedKeyword = encodeURIComponent("[author]");
+                window.location.href = `/book/search?keyword=${encodedKeyword}&val=${searchInput}`;
+                break;
+            case "3":
+                 encodedKeyword = encodeURIComponent("isbn]");
+                window.location.href = `/book/search?keyword=${encodedKeyword}&val=${searchInput}`;
+                break;
+            case "4":
+                 encodedKeyword = encodeURIComponent("[publisher]");
+                window.location.href = `/book/search?keyword=${encodedKeyword}&val=${searchInput}`;
+                break;
+            default :
+                 encodedKeyword = encodeURIComponent("[title,author,isbn,publisher]");
+                window.location.href = `/book/search?keyword=${encodedKeyword}&val=${searchInput}`;
+                break;
+        }
+    });
+
+    //footer
+
+    $("#scrollTopBtn").on("click", function () {
+        $("html, body").animate({ scrollTop: 0 }, "slow");
+    });
+
+    $("#goHomeBtn").on("click", function () {
+        window.location.href = "/";
+    });
+
     // signup
     let currentStep = 1;
     const totalSteps = 3;
@@ -272,6 +327,40 @@ $(document).ready(function () {
     });
 
     // customerService
+    $(window).on('load', function () {
+        // URL의 쿼리 파라미터를 확인
+        let customerUrlParams = new URLSearchParams(window.location.search);
+        const tab = customerUrlParams.get("tab");
+
+        if (tab) {
+            switch (tab) {
+                case "faq":
+                    $("#faqTabLink").click();
+                    break;
+                case "inquiry":
+                    $("#inquiryTabLink").click();
+                    break;
+                case "terms":
+                    $("#termsTabLink").click();
+                    break;
+                case "terms-of-service-tab":
+                    $("#termsTabLink").click();
+                    $("#terms-of-service-tab").click();
+                    break;
+                case "privacy-policy-tab":
+                    $("#termsTabLink").click();
+                    $("#privacy-policy-tab").click();
+                    break;
+                case "youth-protection-tab":
+                    $("#termsTabLink").click();
+                    $("#youth-protection-tab").click();
+                    break;
+                default:
+                    $("#noticeTabLink").click();
+            }
+        }
+    });
+
     $('#userQnASelect').change(function () {
         const sort = $('#userQnASelect option:selected').val();
 
@@ -851,7 +940,6 @@ $(document).ready(function () {
         );
     });
 
-
     //     book
     $('#bookSortOptions').change(function () {
         // 선택된 <option> 요소의 data 속성 값을 가져옴
@@ -1364,7 +1452,7 @@ $(document).ready(function () {
                         <td class="align-middle">1</td>
                         <td class="align-middle">${response.priceList[i]}원</td>
                         <td class="align-middle">
-                            <button class="btn btn-sm btn-warning text-white orderExchangeNreturnBtn" data-toggle="modal" data-target="#exchangeNreturn" ${orderExchangeNreturnBtnDisabled}>교환/반품</button>
+                            <button class="btn btn-sm btn-warning text-white orderExchangeNreturnBtn" data-toggle="modal" data-target="#exchangeNreturn" data-id="${response.orderItemList[i]}" ${orderExchangeNreturnBtnDisabled}>교환/반품</button>
                         </td>
                         <td class="align-middle">
                             <button class="btn btn-sm btn-success orderSuccessBtn" data-toggle="modal" data-target="#orderConfirmation" data-id="${response.orderItemList[i]}" ${orderSuccessBtnDisabled}>구매확정</button>
@@ -1419,6 +1507,7 @@ $(document).ready(function () {
                 if (response.success) {
                     alert("주문 취소 요청을 했습니다.");
                     updateMainModalData(orderId);
+                    $(".closeDetailBtn").click();
                 } else {
                     alert("주문 취소 요청중 오류가 발생했습니다.");
                     updateMainModalData(orderId);
@@ -1433,7 +1522,9 @@ $(document).ready(function () {
     // 반품/교환 요청 모달
     $(document).on('click', '.orderExchangeNreturnBtn', function (e) {
         const bookTitle = $(this).closest('.orderItemsTable').find('.orderTitle').text();
+        const orderItemId = $(this).attr("data-id");
         $('#exchangeReturnTitle').val(bookTitle);
+        $('#submitExchangeReturn').attr("data-id", orderItemId);
     });
 
     $(document).on('click', '#submitExchangeReturn', function (e) {
@@ -1442,6 +1533,7 @@ $(document).ready(function () {
         const category = form.find('#exchangeReturnCategory option:selected').val(); // 선택된 값
         const question = form.find('#exchangeReturnReason').val(); // 사유
         const file = form.find('.exchangeReturnFile')[0]?.files[0]; // 파일 선택
+        const orderItemId = $(this).attr("data-id");
         if (category === "0") {
             alert("교환/환불 유형을 선택해주세요.");
             return;
@@ -1454,9 +1546,9 @@ $(document).ready(function () {
             alert("교환/환불 사유 사진을 포함시켜주세요.");
             return;
         }
-
         // FormData 객체 생성 및 데이터 추가
         const formData = new FormData();
+        formData.append('orderItemId', orderItemId);
         formData.append('category', category);
         formData.append('question', question);
         formData.append('file', file);
@@ -1481,10 +1573,10 @@ $(document).ready(function () {
         });
     });
 
-    $(document).on('change', '#exchangeReturnFile', function (e) {
+    $(document).on('change', '.exchangeReturnFile', function (e) {
         // 파일 이름을 레이블에 표시
         const fileName = $(this).val().split('\\').pop();
-        $(this).next('.custom-file-label').html(fileName);
+        $('#exchangeReturnFile-label').html(fileName);
     });
 
     // 파일 유효성 검사 및 파일명 표시 (교환/반품 모달)
@@ -1583,8 +1675,7 @@ $(document).ready(function () {
                     // 메인 모달 데이터 갱신
                     const ordersId = $('.orderId').text(); // 현재 모달에 표시된 주문 ID 가져오기
                     updateMainModalData(ordersId);
-                    // 모달 닫기
-                    $('#orderConfirmation').modal('hide');
+                    $(".closeBtn").click();
                 } else {
                     alert("구매 확정중 오류가 발생했습니다.");
                 }
@@ -1690,8 +1781,7 @@ $(document).ready(function () {
                     // 메인 모달 데이터 갱신
                     const ordersId = $('.orderId').text(); // 현재 모달에 표시된 주문 ID 가져오기
                     updateMainModalData(ordersId);
-                    // 모달 닫기
-                    $('#reviewModal').modal('hide');
+                    $(".closeBtn").click();
                 } else {
                     alert("리뷰 작성중 오류가 발생했습니다.");
                 }
@@ -1700,6 +1790,30 @@ $(document).ready(function () {
                 alert("서버 오류가 발생했습니다.");
             }
         });
+    });
+
+    //event
+
+    const activeTab = urlParams.get('tab');
+
+    // 탭 상태 설정
+    if (activeTab) {
+        $('#eventTabs a[href="#' + activeTab + '"]').tab('show');
+    }
+
+    // 탭 클릭 시 URL에 탭 정보 추가
+    $('#eventTabs a').on('click', function (e) {
+        const tabId = $(this).attr('href').substring(1);
+        const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?tab=' + tabId;
+        window.history.pushState({path: newUrl}, '', newUrl);
+    });
+
+    // 카드 클릭 시 상세 페이지로 이동
+    $(".event-card").click(function () {
+        if (!$(this).hasClass('disabled-card')) {
+            const url = $(this).data("url");
+            window.location.href = url;
+        }
     });
 
 });

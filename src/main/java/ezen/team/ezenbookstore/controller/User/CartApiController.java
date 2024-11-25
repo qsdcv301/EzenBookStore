@@ -1,6 +1,5 @@
 package ezen.team.ezenbookstore.controller.User;
 
-import ezen.team.ezenbookstore.entity.Book;
 import ezen.team.ezenbookstore.entity.Cart;
 import ezen.team.ezenbookstore.entity.User;
 import ezen.team.ezenbookstore.service.BookService;

@@ -132,13 +132,16 @@
                     <span th:case="1">배송 준비중</span>
                     <span th:case="2">배송중</span>
                     <span th:case="3">배송 완료</span>
+                    <span th:case="1">반송 준비중</span>
+                    <span th:case="2">반송중</span>
+                    <span th:case="3">반송 완료</span>
                 </div>
             </td>
             <td>
                 <div th:switch="${order.status}">
-                    <span th:case="1">주문 취소</span>
-                    <span th:case="2">교환/반품 신청</span>
-                    <span th:case="3">결제 완료</span>
+                    <span th:case="1">주문 완료</span>
+                    <span th:case="2">주문 취소</span>
+                    <span th:case="3">교환/반품 신청</span>
                 </div>
             </td>
             <td>

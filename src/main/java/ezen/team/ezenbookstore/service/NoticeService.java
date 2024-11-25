@@ -50,4 +50,9 @@ public class NoticeService {
     public Page<Notice> searchByTitleAndContent(String keyword, Pageable pageable){
         return noticeRepository.findByTitleContainingOrContentContaining(keyword, keyword, pageable);
     };
+
+    public List<Notice> findTop5ByOrderByIdDesc(){
+        return noticeRepository.findTop5ByOrderByIdDesc();
+    }
+
 }

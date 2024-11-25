@@ -33,7 +33,7 @@ public class WebSecurityConfig {
         http
                 // 인증 인가 설정
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/admin/payment/").authenticated() // OAuth2 로그인 경로 허용
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().permitAll()
                 )
                 // 폼 기반 로그인 설정

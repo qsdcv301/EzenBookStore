@@ -1,3 +1,141 @@
+/* Custom styles for the header */
+.header {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    /* background-color: #f8f9fa; */
+}
+
+/* 최상단바 */
+.top-bar {
+    background-color: #007bff;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 500;
+    padding: 12px 405px;
+}
+
+.navbar-brand {
+    font-size: 30px;
+    font-weight: bold;
+    margin-right: -45px;
+}
+
+.search-bar {
+    display: flex;
+    align-items: center;
+    max-width: 500px;
+    width: 100%;
+    border: 2px solid #007bff;
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.search-bar select,
+.search-bar input,
+.search-bar button {
+    border: none;
+    border-radius: 0;
+    outline: none;
+    color: #007bff;
+}
+
+.search-bar select {
+    padding-left: 15px;
+    background-color: transparent;
+    font-weight: bold;
+}
+
+.user-menu a {
+    margin-left: 1rem;
+    font-size: 18px;
+}
+
+.nav-item .nav-link {
+    color: #555;
+    transition: color 0.3s ease;
+}
+
+.nav-item .nav-link:hover {
+    color: #007bff;
+}
+
+.badge {
+    font-size: 0.8rem;
+}
+
+.nav-item {
+    margin-left: 10px;
+}
+
+/* 카테고리 스타일 */
+.dropdown-menu {
+    padding: 0;
+    border: 1px solid #ddd;
+    min-width: 200px;
+}
+
+.submenu-container {
+    position: relative;
+}
+
+.category-item {
+    position: relative;
+}
+
+.category-item .dropdown-item {
+    padding: 10px 15px;
+}
+
+.submenu {
+    display: none;
+    position: absolute;
+    left: 100%;
+    top: 0;
+    width: 600px;
+    background: white;
+    border: 1px solid #ddd;
+    padding: 15px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.category-item:hover .submenu {
+    display: block;
+}
+
+.category-item:hover {
+    background-color: #f8f9fa;
+}
+
+/* 카테고리 스타일 끝 */
+
+.dropdown-arrow {
+    width: 40px; /* 화살표 클릭 영역 넓히기 */
+    height: 40px;
+    cursor: pointer;
+    text-align: center;
+}
+.arrow-icon {
+    font-size: 16px;
+}
+
+.event-card img {
+    height: 200px;
+    object-fit: cover;
+    width: 100%;
+}
+
+.event-card {
+    cursor: pointer;
+}
+
+.event-card:hover {
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* 종료된 이벤트 */
+.disabled-card {
+    opacity: 0.5;
+}
+
 #bank-transfer,
 #credit-card
 {
@@ -33,4 +171,158 @@
 .progress-bar {
     font-size: 1rem;
     line-height: 30px;
+}
+
+.quantity-input {
+    width: 70px;
+}
+
+.cart-item {
+    margin-bottom: 1rem;
+}
+
+.navigation-buttons {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.navigation-buttons button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    width: 50px; /* 버튼의 가로 크기 */
+    height: 50px; /* 버튼의 세로 크기 */
+    border-radius: 50%; /* 동그라미 모양 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px; /* 아이콘 크기 */
+    cursor: pointer;
+}
+
+.navigation-buttons button:hover {
+    background-color: #007bff;
+}
+
+/* 슬라이드 스타일 */
+.carousel-item img {
+    height: 400px;
+    object-fit: cover;
+}
+
+.carousel-control-prev,
+.carousel-control-next {
+    width: 5%;
+    opacity: 0.8;
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    width: 30px;
+    height: 30px;
+}
+
+.carousel-control-prev {
+    left: 10px;
+}
+
+.carousel-control-next {
+    right: 10px;
+}
+
+.carousel-control-prev,
+.carousel-control-next {
+    width: 5%;
+    opacity: 0.8;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 50%;
+    height: 40px;
+    width: 40px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.carousel-control-prev:hover,
+.carousel-control-next:hover {
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+.carousel-control-prev i,
+.carousel-control-next i {
+    font-size: 1.5rem;
+    color: #fff;
+}
+
+/* 슬라이드 스타일 끝 */
+
+/* 공지사항 */
+/* 수직 슬라이드를 위한 스타일 */
+#noticeCarousel.vertical .carousel-inner {
+    height: 100%;
+}
+
+#noticeCarousel.vertical .carousel-item {
+    transition: transform 0.6s ease;
+    transform: translate3d(0, 100%, 0);
+}
+
+#noticeCarousel.vertical .carousel-item.active,
+#noticeCarousel.vertical .carousel-item-next.carousel-item-left,
+#noticeCarousel.vertical .carousel-item-prev.carousel-item-right {
+    transform: translate3d(0, 0, 0);
+}
+
+#noticeCarousel.vertical .carousel-item-next,
+#noticeCarousel.vertical .active.carousel-item-right {
+    transform: translate3d(0, 100%, 0);
+}
+
+#noticeCarousel.vertical .carousel-item-prev,
+#noticeCarousel.vertical .active.carousel-item-left {
+    transform: translate3d(0, -100%, 0);
+}
+
+#noticeCarousel .carousel-item a {
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+/* 공지사항끝 */
+
+
+/* 섹션 제목 스타일 */
+.section-title {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+}
+
+/* 상품 스타일 */
+.book-item img {
+    border-radius: 5px;
+}
+
+.book-item {
+    position: relative;
+    overflow: hidden;
+    border-radius: 5px;
+
+}
+
+.book-info {
+    position: absolute;
+    bottom: -100%;
+    left: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 10px;
+    transition: bottom 0.3s ease-in-out;
+}
+
+.book-item:hover .book-info {
+    bottom: 0;
 }

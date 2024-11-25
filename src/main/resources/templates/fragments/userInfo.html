@@ -86,11 +86,12 @@
                         <div class="form-group">
                             <label>현재 등급</label>
                             <input type="text" class="form-control" th:value="
-                                                    ${user.grade == 0 ? '일반' :
-                                                    user.grade == 1 ? '실버' :
-                                                    user.grade == 2 ? '골드' :
-                                                    user.grade == 3 ? 'Vip' :
-                                                    '관리자'}" readonly>
+                                                    ${user.grade == 1 ? '일반' :
+                                                    user.grade == 2 ? '실버' :
+                                                    user.grade == 3 ? '골드' :
+                                                    user.grade == 4 ? 'Vip' :
+                                                    user.grade == 99 ? '관리자' :
+                                                    '오류'}" readonly>
                         </div>
                         <div class="form-group">
                             <label>다음 등급까지</label>
