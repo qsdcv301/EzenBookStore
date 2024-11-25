@@ -93,15 +93,15 @@
                             </select>
                         </div>
                         <div class="col-md-4 mb-3">
-                            <label for="deliveryStatus">카테고리</label>
-                            <select class="form-control" id="deliveryStatus">
-                                <option th:each="category : ${categoryList}" th:value="${category.id}" th:text="${category.name}"></option>
+                            <label for="searchCategory">카테고리</label>
+                            <select id="searchCategory" name="searchCategory" class="form-control">
+                                <option value="">카테고리를 선택하세요</option>
                             </select>
                         </div>
                         <div class="col-md-4 mb-3">
-                            <label for="orderStatus">서브 카테고리</label>
-                            <select class="form-control" id="orderStatus">
-                                <option th:each="subcategory : ${subCategoryList}" th:value="${subcategory.id}" th:text="${subcategory.name}"></option>
+                            <label for="searchSubCategory">서브 카테고리</label>
+                            <select id="searchSubCategory" name="searchSubCategory" class="form-control">
+                                <option value="">카테고리를 선택하세요</option>
                             </select>
                         </div>
                     </div>
@@ -164,27 +164,37 @@
     <!-- 페이지네이션 -->
     <nav>
         <ul class="pagination">
-            <li class="page-item" th:classappend="${bookList.first} ? 'disabled' : ''">
-                <a class="page-link" th:if="${!bookList.first}" th:href="@{/admin/book(page=0)}">처음</a>
-                <span class="page-link" th:if="${bookList.first}">처음</span>
+            <!-- 처음 -->
+            <li class="page-item" th:classappend="${page.first} ? 'disabled' : ''">
+                <a class="page-link" th:if="${!page.first}" th:href="@{/admin/book(page=0)}">처음</a>
+                <span class="page-link" th:if="${page.first}">처음</span>
             </li>
-            <li class="page-item" th:classappend="${bookList.hasPrevious()} ? '' : 'disabled'">
-                <a class="page-link" th:if="${bookList.hasPrevious()}" th:href="@{/admin/book(page=${bookList.number - 1})}">이전</a>
-                <span class="page-link" th:if="${!bookList.hasPrevious()}">이전</span>
+
+            <!-- 이전 -->
+            <li class="page-item" th:classappend="${page.hasPrevious()} ? '' : 'disabled'">
+                <a class="page-link" th:if="${page.hasPrevious()}" th:href="@{/admin/book(page=${page.number - 1})}">이전</a>
+                <span class="page-link" th:if="${!page.hasPrevious()}">이전</span>
             </li>
-            <li class="page-item" th:each="i : ${#numbers.sequence(0, bookList.totalPages - 1)}" th:classappend="${i == bookList.number} ? 'active'">
+
+            <!-- 페이지 번호 -->
+            <li class="page-item" th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}" th:classappend="${i == page.number} ? 'active' : ''">
                 <a class="page-link" th:href="@{/admin/book(page=${i})}" th:text="${i + 1}"></a>
             </li>
-            <li class="page-item" th:classappend="${bookList.hasNext()} ? '' : 'disabled'">
-                <a class="page-link" th:if="${bookList.hasNext()}" th:href="@{/admin/book(page=${bookList.number + 1})}">다음</a>
-                <span class="page-link" th:if="${!bookList.hasNext()}">다음</span>
+
+            <!-- 다음 -->
+            <li class="page-item" th:classappend="${page.hasNext()} ? '' : 'disabled'">
+                <a class="page-link" th:if="${page.hasNext()}" th:href="@{/admin/book(page=${page.number + 1})}">다음</a>
+                <span class="page-link" th:if="${!page.hasNext()}">다음</span>
             </li>
-            <li class="page-item" th:classappend="${bookList.last} ? 'disabled' : ''">
-                <a class="page-link" th:if="${!bookList.last}" th:href="@{/admin/book(page=${bookList.totalPages - 1})}">마지막</a>
-                <span class="page-link" th:if="${bookList.last}">마지막</span>
+
+            <!-- 마지막 -->
+            <li class="page-item" th:classappend="${page.last} ? 'disabled' : ''">
+                <a class="page-link" th:if="${!page.last}" th:href="@{/admin/book(page=${page.totalPages - 1})}">마지막</a>
+                <span class="page-link" th:if="${page.last}">마지막</span>
             </li>
         </ul>
     </nav>
+
 </div>
 
 <!-- 수정 모달 -->
@@ -401,6 +411,55 @@
         checkboxes.forEach(cb => cb.checked = checkbox.checked);
     }
 
+
+    //검색창 카테고리와 서브카테고리
+    $(document).ready(function () {
+        // 카테고리 목록 로드
+        $.ajax({
+            url: '/admin/categories/category',
+            method: 'GET',
+            success: function (categories) {
+                console.log('카테고리 데이터:', categories); // 카테고리 데이터 확인용 로그
+                $('#searchCategory').empty();
+                $('#searchCategory').append(new Option("카테고리를 선택하세요", "")); // 기본 옵션 추가
+                categories.forEach(function (category) {
+                    $('#searchCategory').append(new Option(`${category.id}: ${category.name}`, category.id));
+                });
+            },
+            error: function (xhr, status, error) {
+                console.error('카테고리 로드 실패:', error);
+            }
+        });
+
+// 카테고리 선택 변경 시 관련 서브카테고리 로드
+        $('#searchCategory').on('change', function () {
+            const selectedCategoryId = $(this).val();
+            console.log('선택된 카테고리 ID:', selectedCategoryId); // 선택된 카테고리 확인용 로그
+
+            if (selectedCategoryId) {
+                $.ajax({
+                    url: `/admin/subcategories/${selectedCategoryId}`,
+                    method: 'GET',
+                    success: function (subcategories) {
+                        console.log('서브카테고리 데이터:', subcategories); // 서브카테고리 데이터 확인용 로그
+                        $('#searchSubCategory').empty();
+                        $('#searchSubCategory').append(new Option("서브카테고리를 선택하세요", ""));
+                        subcategories.forEach(function (subcategory) {
+                            $('#searchSubCategory').append(new Option(`${subcategory.id}: ${subcategory.name}`, subcategory.id));
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('서브카테고리 로드 실패:', error);
+                    }
+                });
+            } else {
+                $('#searchSubCategory').empty();
+                $('#searchSubCategory').append(new Option("서브카테고리를 선택하세요", ""));
+            }
+        });
+    });
+
+    //수정모달 카테고리와 서브카테고리
     $(document).ready(function () {
         // 카테고리 목록 로드
         $.ajax({
