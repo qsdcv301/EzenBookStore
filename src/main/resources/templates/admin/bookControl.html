@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<html lang="ko">
-<head xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>상품 관리</title>
@@ -402,7 +402,6 @@
     }
 
     $(document).ready(function () {
-
         // 카테고리 목록 로드
         $.ajax({
             url: '/admin/categories/category',
