@@ -2,6 +2,7 @@ package ezen.team.ezenbookstore.controller.admin;
 
 import ezen.team.ezenbookstore.entity.Review;
 import ezen.team.ezenbookstore.service.BookService;
+import ezen.team.ezenbookstore.service.FileUploadService;
 import ezen.team.ezenbookstore.service.ReviewService;
 import ezen.team.ezenbookstore.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,8 @@ import java.util.stream.Collectors;
 public class AdminReviewApiController {
 
     private final ReviewService reviewService;
+    private final FileUploadService fileUploadService;
+
     @GetMapping("")
     public String getAllReviews(Model model) {
         List<Review> reviewList = reviewService.findAll();
