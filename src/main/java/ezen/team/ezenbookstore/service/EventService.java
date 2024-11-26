@@ -60,18 +60,31 @@ public class EventService{
     public Page<Event> findEndedEvents(Pageable pageable) {
         return eventRepository.findByEndDateBefore(new Timestamp(System.currentTimeMillis()).toLocalDateTime(), pageable);
     }
-
-    public Page<Event> searchByContent(String keyword, Pageable pageable) {
-        return eventRepository.findByContentContaining(keyword, pageable);
-    }
-
-    public Page<Event> searchByTitle(String keyword, Pageable pageable) {
-        return eventRepository.findByTitleContaining(keyword, pageable);
-    }
-
     public List<Event> findOngoingEventList(){
         Timestamp now = new Timestamp(System.currentTimeMillis());
         return eventRepository.findByStartDateBeforeAndEndDateAfter(now.toLocalDateTime(), now.toLocalDateTime());
 
     }
+    public Page<Event> searchByTitle(String keyword, Pageable pageable) {
+        return eventRepository.findByTitleContaining(keyword, pageable);
+    }
+
+    public Page<Event> searchByContent(String keyword, Pageable pageable) {
+        return eventRepository.findByContentContaining(keyword, pageable);
+    }
+    public String calculateEventStatus(LocalDateTime startDate, LocalDateTime endDate) {
+        LocalDateTime now = LocalDateTime.now();
+
+        if (now.isBefore(startDate)) {
+            return "시작 전";
+        } else if (now.isAfter(endDate)) {
+            return "종료";
+        } else {
+            return "진행 중";
+        }
+    }
+
+//    public Page<Event> calculateEventStatus() {
+//        return eventRepository.;
+//    }
 }

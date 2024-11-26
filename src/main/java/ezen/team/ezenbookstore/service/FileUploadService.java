@@ -49,5 +49,12 @@ public class FileUploadService {
                 ? "/images/" + type + "/" + matchingFiles[0].getName()
                 : null;
     }
+    public int getImageCount(Long id, String type) {
+        String folderPath = uploadDir + "/" + type + "/";
+        File dir = new File(folderPath);
+        File[] matchingFiles = dir.listFiles((dir1, name) -> name.startsWith(id + "_"));
+
+        return matchingFiles != null ? matchingFiles.length : 0;
+    }
 
 }

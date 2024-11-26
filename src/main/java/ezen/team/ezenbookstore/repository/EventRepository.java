@@ -14,9 +14,8 @@ import java.util.List;
 public interface EventRepository extends JpaRepository<Event, Long> {
     Page<Event> findAll(Pageable pageable);
 
-    Page<Event> findByTitleContaining(String keyword,Pageable pageable);
-
-    Page<Event> findByContentContaining(String keyword,Pageable pageable);
+    Page<Event> findByTitleContaining(String title, Pageable pageable);
+    Page<Event> findByContentContaining(String content, Pageable pageable);
     // 시작 전 이벤트 조회
     Page<Event> findByStartDateAfter(LocalDateTime now, Pageable pageable);
 

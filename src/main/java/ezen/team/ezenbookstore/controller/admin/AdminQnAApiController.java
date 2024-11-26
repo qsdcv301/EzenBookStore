@@ -1,6 +1,7 @@
 package ezen.team.ezenbookstore.controller.admin;
 
 import ezen.team.ezenbookstore.entity.QnA;
+import ezen.team.ezenbookstore.service.FileUploadService;
 import ezen.team.ezenbookstore.service.QnAService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
 public class AdminQnAApiController {
 
     private final QnAService qnaService;
+    private final FileUploadService fileUploadService;
 
     // QnA 목록 조회 및 카테고리 필터링
     @GetMapping
