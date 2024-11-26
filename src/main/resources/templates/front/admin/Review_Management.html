@@ -2,16 +2,175 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>리뷰 평점 관리</title>
-    <!-- 공통 Bootstrap 및 스타일 추가 -->
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .reviewTable {
+            width: 90%;
+            border-collapse: collapse;
+            margin: 20px auto;
+        }
+        .reviewTable th, .reviewTable td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+        .reviewTable th {
+            background-color: #f4f4f4;
+        }
+    </style>
 </head>
 <body>
-    
+<div class="container">
+    <h2>리뷰 관리</h2>
+    <p>작성된 리뷰를 확인하고 관리할 수 있습니다.</p>
+
+    <!-- 검색 폼 -->
+    <form id="searchForm">
+        <select id="searchType" class="form-select" style="width: 150px; display: inline-block;">
+            <option value="book">책 제목</option>
+            <option value="user">작성자</option>
+        </select>
+        <input type="text" id="keyword" class="form-control" placeholder="검색어를 입력하세요" style="display: inline-block; width: 300px;">
+        <button type="button" id="btnSearch" class="btn btn-primary">검색</button>
+    </form>
+
+    <!-- 리뷰 테이블 -->
+    <table class="reviewTable">
+        <thead>
+        <tr>
+            <th>체크박스</th>
+            <th>리뷰 ID</th>
+            <th>책 제목</th>
+            <th>작성자</th>
+            <th>평점</th>
+            <th>리뷰 제목</th>
+            <th>리뷰 내용</th>
+            <th>상세보기</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="review : ${reviewList}">
+            <td><input type="checkbox" name="checkBoxReview"></td>
+            <td class="reviewId" th:text="${review.id}"></td>
+            <td th:text="${review.book.title}"></td>
+            <td th:text="${review.user.name}"></td>
+            <td th:text="${review.rating}"></td>
+            <td th:text="${review.title}"></td>
+            <td th:text="${review.comment}"></td>
+            <td>
+                <button type="button" class="btn btn-info btn-sm view-btn" th:attr="data-review-id=${review.id}">조회</button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <button type="button" id="selectAllReview" class="btn btn-secondary">일괄 선택</button>
+    <button type="button" id="deleteReview" class="btn btn-danger">선택 삭제</button>
+</div>
+
+<!-- 리뷰 상세보기 모달 -->
+<div class="modal fade" id="reviewDetailModal" tabindex="-1" aria-labelledby="reviewDetailModalLabel" aria-hidden="true" insert>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="reviewDetailModalLabel">리뷰 상세보기</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>리뷰 ID:</strong> <span id="detailReviewId"></span></p>
+                <p><strong>책 제목:</strong> <span id="detailBookTitle"></span></p>
+                <p><strong>작성자:</strong> <span id="detailUser"></span></p>
+                <p><strong>평점:</strong> <span id="detailRating"></span></p>
+                <p><strong>리뷰 제목:</strong> <span id="detailTitle"></span></p>
+                <p><strong>리뷰 내용:</strong></p>
+                <p id="detailComment"></p>
+                <p><strong>작성일:</strong> <span id="detailCreateAt"></span></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 조회 버튼 클릭 시 AJAX로 상세 데이터 로드
+    $(document).on('click', '.view-btn', function () {
+        const reviewId = $(this).data('review-id'); // 리뷰 ID 가져오기
+        //console.log(reviewId);
+        $.ajax({
+            url: `/admin/review/${reviewId}`, // 상세보기 API 호출
+            type: 'GET',
+            success: function (response) {
+                // 모달에 데이터 채우기
+                $('#detailReviewId').text(response.id);
+                $('#detailBookTitle').text(response.book.title);
+                $('#detailUser').text(response.user.name);
+                $('#detailRating').text(response.rating);
+                $('#detailTitle').text(response.title);
+                $('#detailComment').text(response.comment);
+                $('#detailCreateAt').text(formatDate(response.createAt));
+
+                // 날짜 포맷 함수
+                function formatDate(dateString) {
+                    const date = new Date(dateString);
+                    const year = date.getFullYear();
+                    const month = String(date.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작하므로 +1
+                    const day = String(date.getDate()).padStart(2, '0');
+                    const hours = String(date.getHours()).padStart(2, '0');
+                    const minutes = String(date.getMinutes()).padStart(2, '0');
+                    return `${year}-${month}-${day} ${hours}:${minutes}`;
+                }
+
+
+                // 모달 표시
+                $('#reviewDetailModal').modal('show');
+            },
+            error: function () {
+                alert('리뷰 상세보기를 불러오는 데 실패했습니다.');
+            }
+        });
+    });
+
+    // 일괄 선택
+    $('#selectAllReview').click(function () {
+        const isAllChecked = $('input[name="checkBoxReview"]:checked').length === $('input[name="checkBoxReview"]').length;
+        $('input[name="checkBoxReview"]').prop('checked', !isAllChecked);
+        $(this).text(isAllChecked ? '일괄 선택' : '선택 해제');
+    });
+
+    // 선택 삭제
+    $('#deleteReview').click(function () {
+        const selectedIds = [];
+        $('input[name="checkBoxReview"]:checked').each(function () {
+            const reviewId = $(this).closest('tr').find('.reviewId').text();
+            selectedIds.push(reviewId);
+        });
+
+        if (selectedIds.length > 0) {
+            if (confirm('선택한 리뷰를 삭제하시겠습니까?')) {
+                $.ajax({
+                    url: '/admin/review/delete',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(selectedIds),
+                    success: function () {
+                        alert('선택한 리뷰가 삭제되었습니다.');
+                        location.reload();
+                    },
+                    error: function () {
+                        alert('리뷰 삭제에 실패했습니다.');
+                    }
+                });
+            }
+        } else {
+            alert('삭제할 리뷰를 선택해주세요.');
+        }
+    });
+</script>
 </body>
 </html>
