@@ -31,15 +31,15 @@
 <body>
 <header th:replace="~{fragments/header :: header}"></header>
 <div class="container mt-5">
-    <div class="row">
+    <div class="row paymentModal-Data cart-Data">
         <!-- 상품 이미지 -->
         <div class="col-md-7 mb-4 text-center">
             <img th:src="${imagePath != '' ? imagePath : 'https://via.placeholder.com/100'}" th:alt="${book.id}+'상품 사진'"
-                 style="width: 300px;height: 400px; object-fit: cover">
+                 style="width: 300px;height: 400px; object-fit: cover" class="bookImage">
         </div>
 
         <!-- 상품 정보 -->
-        <div class="col-md-4 ms-5 paymentModal-Data cart-Data">
+        <div class="col-md-4 ms-5">
             <input class="form-check-input cart-checkbox d-none" type="checkbox" checked>
             <h1 class="mb-3" th:class="title" th:text="${book.title}"></h1>
             <p><strong>저자:</strong> <span th:text="${book.author}"></span></p>
