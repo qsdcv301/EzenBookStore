@@ -300,6 +300,10 @@
                         <label for="contents">목차</label>
                         <input type="text" class="form-control" id="contents" name="contents">
                     </div>
+                    <div class="form-group">
+                        <label for="updateFile">책 이미지</label>
+                        <input type="file" name="file" id="updateFile">
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
@@ -654,8 +658,6 @@
     $('#productForm').on('submit', function (event) {
         event.preventDefault();
         const bookId = $('#bookId').val();
-        const publishDateISO = formatDateToISOString($('#publishDate').val());
-
         console.log("BookDescription ID:", $('#bookdescriptionId').val());
         const title = $('#title').val();
         const author = $('#author').val();
@@ -668,7 +670,7 @@
         const count = $('#count').val() || 0;
         const category = {id: $('#category').val()};
         const subcategory = {id: $('#subcategory').val()};
-        const publishDate = publishDateISO;
+        const publishDate = $('#publishDate').val();
         const bookdescription = {id: $('#bookdescriptionId').val()};
         const fileInputs = $("#file")[0].files;
         // FormData 객체 생성 및 데이터 추가
@@ -683,7 +685,7 @@
         formData.append('price', price);
         formData.append('discount', discount);
         formData.append('count', count);
-        formData.append('publishDate', publishDate);
+        formData.append('publish_Date', publishDate);
         // 파일 배열을 반복하여 추가
         for (let i = 0; i < fileInputs.length; i++) {
             formData.append('files', fileInputs[i]);

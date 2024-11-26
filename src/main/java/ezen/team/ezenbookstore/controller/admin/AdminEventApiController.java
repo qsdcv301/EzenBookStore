@@ -88,10 +88,10 @@ public class AdminEventApiController {
             model.addAttribute("searchType", searchType);
             model.addAttribute("filter", filter);
 
-            return "/admin/eventControl";
+            return "admin/eventControl";
         } catch (Exception e) {
             model.addAttribute("error", "데이터를 불러오는 중 오류가 발생했습니다.");
-            return "/admin/eventControl";
+            return "admin/eventControl";
         }
     }
 

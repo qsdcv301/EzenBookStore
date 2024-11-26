@@ -28,7 +28,15 @@ public class FileUploadService {
                 directory.mkdirs();
             }
 
-            // 파일 이름을 사용자 아이디와 기존파일 이름 값으로 구성
+            // 기존 동일한 ID로 시작하는 파일 삭제
+            File[] existingFiles = directory.listFiles((dir1, name) -> name.startsWith(id + "_"));
+            if (existingFiles != null && existingFiles.length > 0) {
+                for (File existingFile : existingFiles) {
+                    existingFile.delete();
+                }
+            }
+
+            // 새로운 파일 생성
             String fileName = id + '_' + file.getOriginalFilename();
             File destinationFile = new File(directory + File.separator + fileName);
             file.transferTo(destinationFile);
@@ -49,6 +57,7 @@ public class FileUploadService {
                 ? "/images/" + type + "/" + matchingFiles[0].getName()
                 : null;
     }
+
     public int getImageCount(Long id, String type) {
         String folderPath = uploadDir + "/" + type + "/";
         File dir = new File(folderPath);
