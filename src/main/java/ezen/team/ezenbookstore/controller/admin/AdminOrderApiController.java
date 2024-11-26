@@ -25,7 +25,7 @@ public class AdminOrderApiController {
     public String ordersControl(Model model) {
         List<Orders> ordersList = ordersService.findAll();
         model.addAttribute("ordersList", ordersList);
-        return "/admin/orderControl";
+        return "admin/orderControl";
     }
 
     // 주문 목록 조회

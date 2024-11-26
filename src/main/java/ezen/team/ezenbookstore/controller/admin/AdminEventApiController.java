@@ -54,7 +54,7 @@ public class AdminEventApiController {
         model.addAttribute("currentPage", currentPage);
         model.addAttribute("totalPages", totalPages);
 
-        return "/admin/eventControl";
+        return "admin/eventControl";
     }
 
     @PostMapping("/add")
