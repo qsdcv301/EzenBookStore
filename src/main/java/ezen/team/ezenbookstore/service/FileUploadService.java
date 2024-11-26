@@ -15,10 +15,10 @@ public class FileUploadService {
     @Value("${file.upload-dir}")
     private String uploadDir;
 
-    public void uploadFile(MultipartFile file, String id, String type) {
+    public boolean uploadFile(MultipartFile file, String id, String type) {
         // 선택된 파일이 있는지 확인
         if (file.isEmpty()) {
-            return;
+            return false;
         }
         try {
             // 저장 타입 이용해 하위 디렉토리 경로 생성
@@ -40,8 +40,9 @@ public class FileUploadService {
             String fileName = id + '_' + file.getOriginalFilename();
             File destinationFile = new File(directory + File.separator + fileName);
             file.transferTo(destinationFile);
+            return true;
         } catch (IOException e) {
-            return;
+            return false;
         }
     }
 
