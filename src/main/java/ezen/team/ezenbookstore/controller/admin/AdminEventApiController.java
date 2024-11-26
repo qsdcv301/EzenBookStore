@@ -8,6 +8,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,6 +17,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,45 +37,44 @@ public class AdminEventApiController {
     public String eventControl(
             @RequestParam(required = false) String searchType,
             @RequestParam(required = false) String keyword,
+            @RequestParam(required = false, defaultValue = "all") String filter,
             @PageableDefault(size = 15, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
             Model model) {
-
         try {
-            // 기본 검색 조건 설정
-            if (searchType == null || searchType.trim().isEmpty()) {
-                searchType = "all"; // 기본 검색 타입 설정
-            }
-
             Page<Event> eventPage;
 
-            // 검색 조건에 따른 데이터 조회
             if ("title".equalsIgnoreCase(searchType)) {
                 eventPage = eventService.searchByTitle(keyword, pageable);
             } else if ("content".equalsIgnoreCase(searchType)) {
                 eventPage = eventService.searchByContent(keyword, pageable);
             } else {
-                eventPage = eventService.findAll(pageable); // 전체 조회
+                eventPage = eventService.findAll(pageable);
             }
 
-            // 페이징 관련 데이터 계산
+            if ("upcoming".equalsIgnoreCase(filter)) {
+                eventPage = eventService.findUpcomingEvents(pageable);
+            } else if ("ongoing".equalsIgnoreCase(filter)) {
+                eventPage = eventService.findOngoingEvents(pageable);
+            } else if ("ended".equalsIgnoreCase(filter)) {
+                eventPage = eventService.findEndedEvents(pageable);
+            }
+
             int totalPages = eventPage.getTotalPages();
             int currentPage = eventPage.getNumber();
-            int pageGroupSize = 10; // 페이지 그룹 크기
+            int pageGroupSize = 10;
 
-            int startPage = Math.max(0, (currentPage / pageGroupSize) * pageGroupSize); // 시작 페이지 번호
-            int endPage = Math.min(startPage + pageGroupSize, totalPages); // 끝 페이지 번호
+            int startPage = Math.max(0, (currentPage / pageGroupSize) * pageGroupSize);
+            int endPage = Math.min(startPage + pageGroupSize, totalPages);
 
-            // 이미지 관련 데이터 수집
             List<Integer> imageCounts = eventPage.getContent().stream()
                     .map(event -> fileUploadService.getImageCount(event.getId(), "event"))
                     .collect(Collectors.toList());
 
             List<String> imagePaths = eventPage.getContent().stream()
                     .map(event -> fileUploadService.findImageFilePath(event.getId(), "event"))
-                    .map(path -> path != null ? path : "/images/default.png") // 기본 이미지 경로
+                    .map(path -> path != null ? path : "/images/default.png")
                     .collect(Collectors.toList());
 
-            // 모델에 데이터 추가
             model.addAttribute("eventPage", eventPage);
             model.addAttribute("imageCounts", imageCounts);
             model.addAttribute("imagePaths", imagePaths);
@@ -83,16 +86,14 @@ public class AdminEventApiController {
             model.addAttribute("hasPrevious", currentPage > 0);
             model.addAttribute("keyword", keyword);
             model.addAttribute("searchType", searchType);
+            model.addAttribute("filter", filter);
 
-            // View 경로 반환
-            return "/admin/eventControl"; // Thymeleaf 또는 JSP 경로
+            return "admin/eventControl";
         } catch (Exception e) {
             model.addAttribute("error", "데이터를 불러오는 중 오류가 발생했습니다.");
-            return "/admin/eventControl";
+            return "admin/eventControl";
         }
     }
-
-
 
     @PostMapping("/add")
     public ResponseEntity<String> addEvent(@ModelAttribute Event event,
@@ -112,9 +113,34 @@ public class AdminEventApiController {
         }
     }
 
-    @PostMapping("/update")
-    public ResponseEntity<String> updateEvent(@RequestBody Event event) {
+    @PostMapping(value = "/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> updateEvent(
+            @RequestParam("id") Long id,
+            @RequestParam("title") String title,
+            @RequestParam("content") String content,
+            @RequestParam("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDate,
+            @RequestParam("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDate,
+            @RequestPart(value = "file", required = false) MultipartFile file) {
         try {
+            Event event = eventService.findById(id);
+            if (event == null) {
+                return ResponseEntity.status(404).body("이벤트를 찾을 수 없습니다.");
+            }
+
+            event.setTitle(title);
+            event.setContent(content);
+            event.setStartDate(Timestamp.valueOf(startDate));
+            event.setEndDate(Timestamp.valueOf(endDate));
+
+            if (file != null && !file.isEmpty()) {
+                boolean uploadSuccess = fileUploadService.uploadFile(file, id.toString(), "event");
+                fileUploadService.findImageFilePath(id, "event");
+                if (!uploadSuccess) {
+                    return ResponseEntity.status(500).body("파일 업로드 실패");
+                }
+            }
+
+
             eventService.update(event);
             return ResponseEntity.ok("이벤트가 수정되었습니다.");
         } catch (Exception e) {
@@ -131,7 +157,6 @@ public class AdminEventApiController {
                 return ResponseEntity.status(404).body(null);
             }
 
-            // 이벤트 데이터를 Map 으로 변환
             Map<String, Object> eventData = new HashMap<>();
             eventData.put("id", event.getId());
             eventData.put("title", event.getTitle());
@@ -139,7 +164,6 @@ public class AdminEventApiController {
             eventData.put("startDate", event.getStartDate().toString());
             eventData.put("endDate", event.getEndDate().toString());
 
-            // 이미지 경로 추가
             String imagePath = fileUploadService.findImageFilePath(event.getId(), "event");
             eventData.put("imagePath", imagePath != null ? imagePath : "/images/default.png");
 
@@ -148,7 +172,6 @@ public class AdminEventApiController {
             return ResponseEntity.status(500).body(null);
         }
     }
-
 
     @PostMapping("/delete")
     public ResponseEntity<String> deleteEvents(@RequestBody List<Long> ids) {
@@ -159,23 +182,6 @@ public class AdminEventApiController {
             return ResponseEntity.ok("선택된 이벤트가 삭제되었습니다.");
         } catch (Exception e) {
             return ResponseEntity.status(500).body("이벤트 삭제 실패: " + e.getMessage());
-        }
-    }
-
-    @GetMapping("/filter")
-    public ResponseEntity<Page<Event>> filterEvents(
-            @RequestParam String filter,
-            @PageableDefault(size = 15, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
-        try {
-            Page<Event> filteredEvents = switch (filter.toLowerCase()) {
-                case "upcoming" -> eventService.findUpcomingEvents(pageable);
-                case "ongoing" -> eventService.findOngoingEvents(pageable);
-                case "ended" -> eventService.findEndedEvents(pageable);
-                default -> eventService.findAll(pageable);
-            };
-            return ResponseEntity.ok(filteredEvents);
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body(null);
         }
     }
 }

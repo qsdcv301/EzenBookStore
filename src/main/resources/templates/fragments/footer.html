@@ -60,6 +60,10 @@
         </div>
     </div>
     <div class="navigation-buttons">
+        <!-- 관리자 버튼 초기설정 display none-->
+        <a th:if="${admin}" href="/admin/book" id="adminBtn" class="adminDashBoard">
+            <i class="bi bi-gear-fill rotate-icon"></i>
+        </a>
         <button id="scrollTopBtn"><i class="bi bi-arrow-up"></i></button>
         <button id="goHomeBtn"><i class="bi bi-house-fill"></i></button>
     </div>

@@ -33,12 +33,18 @@ public class GlobalControllerAdvice {
                 model.addAttribute("userData", true);
                 Integer cartSize =  cartService.findAllByUserId(user.getId()).size();
                 model.addAttribute("cartSize", cartSize);
+                if(user.getGrade()==99){
+                    model.addAttribute("admin", true);
+                }
             } else if (userData instanceof CustomOAuth2User customOAuth2User) {
                 User customUser = userService.findByEmail(customOAuth2User.getEmail());
                 model.addAttribute("user", customUser);
                 model.addAttribute("userData", true);
                 Integer cartSize =  cartService.findAllByUserId(customUser.getId()).size();
                 model.addAttribute("cartSize", cartSize);
+                if(customUser.getGrade()==99){
+                    model.addAttribute("admin", true);
+                }
             } else {
                 model.addAttribute("userData", false);
             }

@@ -58,7 +58,7 @@ public class AdminNoticeApiController {
         model.addAttribute("startPage", startPage);
         model.addAttribute("endPage", endPage);
 
-        return "/admin/noticeControl"; // View 경로
+        return "admin/noticeControl"; // View 경로
     }
 
     // 공지사항 생성 - AJAX 요청 처리

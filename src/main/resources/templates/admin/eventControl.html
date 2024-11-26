@@ -13,29 +13,27 @@
     </style>
 </head>
 <body>
-<div>이벤트 추가시 formdata ->startdate 가 초까지 받아와서 초를 지우지않으면 수정작업이 불가능함. 검색기능 날라감 다시 구현해야함 파일 업로드구현할때 json타입으로 불가능하여 form enctype="multipart/form-data"로 바꾸는 와중에 오류 다수 출현 </div>
-<div>이미지를 추가한 이벤트는 홈페이지에서 정상적으로 출력됨</div>
 <div class="container">
     <h2>이벤트 관리</h2>
     <p>이곳은 이벤트 추가, 삭제, 수정을 위한 관리 페이지입니다.</p>
 
     <!-- 필터 영역 -->
     <div class="filter mb-3">
-        <span class="filter-btn active" data-filter="all">전체</span>
-        <span class="filter-btn" data-filter="upcoming">시작 전</span>
-        <span class="filter-btn" data-filter="ongoing">진행 중</span>
-        <span class="filter-btn" data-filter="ended">종료</span>
+        <span class="filter-btn" th:classappend="${filter == 'all' ? 'active' : ''}" data-filter="all">전체</span>
+        <span class="filter-btn" th:classappend="${filter == 'upcoming' ? 'active' : ''}" data-filter="upcoming">시작 전</span>
+        <span class="filter-btn" th:classappend="${filter == 'ongoing' ? 'active' : ''}" data-filter="ongoing">진행 중</span>
+        <span class="filter-btn" th:classappend="${filter == 'ended' ? 'active' : ''}" data-filter="ended">종료</span>
     </div>
-
     <!-- 검색 및 추가 버튼 -->
     <div class="d-flex justify-content-between mb-3">
         <form id="searchForm" class="d-flex">
-            <select id="searchType" class="form-select me-2" style="width: 150px;">
-                <option value="title">제목</option>
-                <option value="content">내용</option>
+            <select id="searchType" class="form-select me-2" style="width: 150px;" th:value="${searchType}">
+                <option th:value="title" th:selected="${searchType == 'title'}">제목</option>
+                <option th:value="content" th:selected="${searchType == 'content'}">내용</option>
             </select>
-            <input type="text" id="keyword" class="form-control me-2" placeholder="검색어를 입력하세요">
+            <input type="text" id="keyword" class="form-control me-2" placeholder="검색어를 입력하세요" th:value="${keyword}">
             <button type="button" id="btnSearch" class="btn btn-primary">검색</button>
+            <button type="button" id="btnReset" class="btn btn-secondary">초기화</button>
         </form>
         <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addModal">이벤트 추가</button>
     </div>
@@ -47,26 +45,28 @@
             <th>체크박스</th>
             <th>이벤트 번호</th>
             <th>제목</th>
-            <th>내용</th>
+            <th>이벤트진행상태</th>
             <th>시작일</th>
             <th>종료일</th>
             <th>이미지 개수</th>
             <th>수정</th>
         </tr>
         </thead>
-        <tbody>
+        <tbody id="eventTableBody">
         <tr th:each="event, iterStat : ${eventPage}">
             <td><input type="checkbox" name="checkBox"></td>
             <td th:text="${event.id}">1</td>
-            <td th:text="${event.title}">이벤트 제목</td>
-            <td th:text="${event.content}">이벤트 내용</td>
+            <td th:text="${event.title}"></td>
+            <td>
+                <span class="event-status" th:data-start-date="${#dates.format(event.startDate, 'yyyy-MM-dd HH:mm:ss')}" th:data-end-date="${#dates.format(event.endDate, 'yyyy-MM-dd HH:mm:ss')}">종료</span>
+            </td>
             <td th:text="${#dates.format(event.startDate, 'yyyy-MM-dd HH:mm')}">2024-11-19</td>
             <td th:text="${#dates.format(event.endDate, 'yyyy-MM-dd HH:mm')}">2024-11-20</td>
             <td th:text="${imageCounts[iterStat.index]}">0</td> <!-- 이미지 개수 -->
             <td>
                 <button type="button" class="btn btn-warning btn-sm edit-btn" data-bs-toggle="modal" data-bs-target="#editModal" th:data-id="${event.id}">수정</button>
             </td>
-
+            <input type="hidden" th:id="'eventContent-' + ${event.id}" th:value="${event.content}">
         </tr>
         </tbody>
     </table>
@@ -177,198 +177,280 @@
 
 <script>
     $(document).ready(function () {
-        // 검색 기능
+        function calculateEventStatus(startDate, endDate) {
+            const currentDate = new Date();
+            const eventStartDate = new Date(startDate);
+            const eventEndDate = new Date(endDate);
+
+            if (currentDate < eventStartDate) {
+                return '시작 전';
+            } else if (currentDate >= eventStartDate && currentDate <= eventEndDate) {
+                return '진행 중';
+            } else {
+                return '종료';
+            }
+        }
+
+        // 페이지 로드 시 상태 업데이트
+        $('.event-status').each(function () {
+            const startDate = $(this).data('start-date');
+            const endDate = $(this).data('end-date');
+            const status = calculateEventStatus(startDate, endDate);
+            $(this).text(status);
+        });
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const filterFromUrl = urlParams.get('filter');  // URL에서 'filter' 파라미터를 추출
+
+        if (filterFromUrl) {
+            // URL에 필터가 있으면 해당 필터 버튼에 active 클래스를 추가
+            $('.filter-btn').removeClass('active');  // 기존의 active 클래스 제거
+            $(`.filter-btn[data-filter="${filterFromUrl}"]`).addClass('active');  // 해당 버튼에 active 추가
+        }
+
         $('#btnSearch').click(function (event) {
             event.preventDefault();
-            const searchType = $('#searchType').val();
-            const keyword = $('#keyword').val().trim();
 
-            if (!keyword) {
-                alert('검색어를 입력해주세요.');
-                return;
-            }
+            const searchType = $('#searchType').val();  // 검색 타입
+            const keyword = $('#keyword').val().trim();  // 검색어
+            const filter = $('.filter-btn.active').data('filter') || 'all';  // 필터 값
 
-            $.ajax({
-                url: '/admin/event',
-                type: 'GET',
-                data: { searchType, keyword },
-                success: function (response) {
-                    updateTable(response.content || response);
-                },
-                error: function (xhr) {
-                    alert('검색 중 문제가 발생했습니다.');
-                }
-            });
+            // 쿼리 파라미터 생성
+            let query = `?searchType=${searchType}&keyword=${encodeURIComponent(keyword)}&filter=${filter}`;
+
+            // 페이지 리다이렉트
+            location.href = '/admin/event' + query;
         });
 
-        // 필터 기능
-        $('.filter-btn').click(function () {
+        // 필터 버튼 클릭 시 동작
+        $(document).on('click', '.filter-btn', function () {
+            // 필터 활성화
             $('.filter-btn').removeClass('active');
             $(this).addClass('active');
+
+            // 검색어와 필터 값 유지
+            const searchType = $('#searchType').val();
+            const keyword = $('#keyword').val().trim();
             const filter = $(this).data('filter');
 
-            $.ajax({
-                url: '/admin/event/filter',
-                type: 'GET',
-                data: { filter },
-                success: function (data) {
-                    updateTable(data.content);
-                },
-                error: function () {
-                    alert('필터 적용 실패');
-                }
-            });
+            // 쿼리 파라미터 생성
+            let query = `?searchType=${searchType}&keyword=${encodeURIComponent(keyword)}&filter=${filter}`;
+
+            // 페이지 리다이렉트
+            location.href = '/admin/event' + query;
+        });
+        // 필터 버튼 클릭 시 동작
+        $(document).on('click', '.filter-btn', function () {
+            // 선택된 필터 버튼 활성화
+            $('.filter-btn').removeClass('active');
+            $(this).addClass('active');
+
+            // 필터 값을 가져오기
+            const filter = $(this).data('filter');
+
+            // 검색어와 필터 값을 가져오기
+            const searchType = $('#searchType').val();  // 검색 타입
+            const keyword = $('#keyword').val().trim();  // 검색어
+
+            // 쿼리 파라미터 생성 (필터만 변경)
+            let query = generateQuery(searchType, keyword, filter);
+
+            // 페이지를 쿼리 파라미터와 함께 리다이렉트 (필터만 반영된 상태)
+            location.href = '/admin/event' + query;
         });
 
-        // 테이블 업데이트
+        // 검색어와 필터 상태에 따라 쿼리 파라미터 생성
+        function generateQuery(searchType, keyword, filter) {
+            if (keyword && !filter) {
+                return `?searchType=${searchType}&keyword=${encodeURIComponent(keyword)}&filter=`;
+            } else if (!keyword && filter) {
+                return `?searchType=${searchType}&keyword=&filter=${encodeURIComponent(filter)}`;
+            } else if (keyword && filter) {
+                return `?searchType=${searchType}&keyword=${encodeURIComponent(keyword)}&filter=${encodeURIComponent(filter)}`;
+            } else {
+                return `?searchType=${searchType}&keyword=&filter=`;
+            }
+        }
+
+        // 테이블 업데이트 함수
         function updateTable(events) {
             const tableBody = $('#eventTableBody');
-            tableBody.empty();
+            tableBody.empty();  // 기존 테이블 내용 비우기
 
             if (!events || events.length === 0) {
                 tableBody.append('<tr><td colspan="8" class="text-center">검색 결과가 없습니다.</td></tr>');
                 return;
             }
 
+            // 이벤트 목록을 테이블에 추가
             events.forEach(event => {
+                const status = calculateEventStatus(event.startDate, event.endDate);  // 이벤트 상태 계산
                 const row = `
-            <tr>
-                <td><input type="checkbox" name="checkBox"></td>
-                <td>${event.id}</td>
-                <td>${event.title}</td>
-                <td>${event.content}</td>
-                <td>${formatDate(event.startDate, false)}</td>
-                <td>${formatDate(event.endDate, false)}</td>
-                <td>${event.imageCount || 0}</td>
-                <td>
-                    <button type="button" class="btn btn-warning btn-sm edit-btn" data-id="${event.id}" data-bs-toggle="modal" data-bs-target="#editModal">수정</button>
-                </td>
-            </tr>`;
+                <tr>
+                    <td><input type="checkbox" name="checkBox"></td>
+                    <td>${event.id}</td>
+                    <td>${event.title}</td>
+                    <td>${status}</td>
+                    <td>${formatDate(event.startDate)}</td>
+                    <td>${formatDate(event.endDate)}</td>
+                    <td>${event.imageCount || 0}</td>
+                    <td>
+                        <button type="button" class="btn btn-warning btn-sm edit-btn" data-id="${event.id}" data-bs-toggle="modal" data-bs-target="#editModal">수정</button>
+                    </td>
+                </tr>
+            `;
                 tableBody.append(row);
             });
         }
+        function formatDate(value, toFormat) {
+            if (!value) return null;
 
-        // 날짜 변환 함수
-        function formatDate(dateTime, toServerFormat = true) {
-            if (!dateTime) return null;
-            if (toServerFormat) {
-                return dateTime.replace('T', ' ') + ':00'; // 서버 형식으로 변환
+            if (toFormat === 'timestamp') {
+                // 'datetime-local' -> 'YYYY-MM-DD HH:mm:ss'
+                return value.replace('T', ' ') + ':00';
+            } else if (toFormat === 'datetime-local') {
+                // 'YYYY-MM-DD HH:mm:ss' -> 'datetime-local'
+                return value.replace(' ', 'T').slice(0, 16); // 'YYYY-MM-DDTHH:mm'
+            } else {
+                console.error("Invalid format type. Use 'timestamp' or 'datetime-local'.");
+                return null;
             }
-            return dateTime.substring(0, 16); // 클라이언트 형식으로 변환
+        }
+        // 검색 및 필터 기능
+        $('#btnReset').click(function (event) {
+            event.preventDefault();
+            $('#searchType').val('title');
+            $('#keyword').val('');
+            location.href = '/admin/event';
+        });
+    /*****************************************************************************************
+     *******************************************모달창*****************************************
+     ****************************************************************************************/
+    // 이벤트 추가
+    $('#saveAdd').click(function () {
+        const formData = new FormData();
+        formData.append('title', $('#addTitle').val());
+        formData.append('content', $('#addContent').val());
+        formData.append('startDate', formatDate($('#addStartDate').val(), 'timestamp'));
+        formData.append('endDate', formatDate($('#addEndDate').val(), 'timestamp'));
+
+        const fileInput = $('#addFile')[0].files[0];
+        if (fileInput) {
+            formData.append('file', fileInput);
         }
 
-        // 이벤트 추가
-        $('#saveAdd').click(function () {
-            const formData = new FormData();
-            formData.append('title', $('#addTitle').val());
-            formData.append('content', $('#addContent').val());
-            formData.append('startDate', formatDate($('#addStartDate').val()));
-            formData.append('endDate', formatDate($('#addEndDate').val()));
-            formData.append('file', $('#addFile')[0].files[0] || new Blob());
-
-            $.ajax({
-                url: '/admin/event/add',
-                type: 'POST',
-                enctype: 'multipart/form-data',
-                processData: false,
-                contentType: false,
-                data: formData,
-                success: function () {
-                    alert('이벤트가 추가되었습니다.');
-                    location.reload();
-                },
-                error: function (xhr) {
-                    alert('이벤트 추가 실패');
-                }
-            });
+        $.ajax({
+            url: '/admin/event/add',
+            type: 'POST',
+            enctype: 'multipart/form-data',
+            processData: false,
+            contentType: false,
+            data: formData,
+            success: function () {
+                alert('이벤트가 추가되었습니다.');
+                location.reload();
+            },
+            error: function (xhr) {
+                alert('이벤트 추가 실패: ' + xhr.responseText);
+            }
         });
+    });
 
-        // 이벤트 수정
-        $('#saveEdit').click(function () {
-            const data = {
-                id: $('#editEventId').val(),
-                title: $('#editTitle').val(),
-                content: $('#editContent').val(),
-                startDate: formatDate($('#editStartDate').val()),
-                endDate: formatDate($('#editEndDate').val())
-            };
+    // 수정 모달 열기
+    $(document).on('click', '.edit-btn', function () {
+        const eventId = $(this).data('id');
 
+        $.ajax({
+            url: `/admin/event/${eventId}`,
+            type: 'GET',
+            success: function (event) {
+                $('#editEventId').val(event.id);
+                $('#editTitle').val(event.title);
+                $('#editContent').val(event.content);
+                $('#editStartDate').val(formatDate(event.startDate, 'datetime-local'));
+                $('#editEndDate').val(formatDate(event.endDate, 'datetime-local'));
+
+                const currentImagesContainer = $('#currentImages');
+                currentImagesContainer.empty();
+                if (event.imagePath) {
+                    currentImagesContainer.append(`<img src="${event.imagePath}" style="width: 100px; height: auto;">`);
+                } else {
+                    currentImagesContainer.append('<p>이미지가 없습니다.</p>');
+                }
+            },
+            error: function () {
+                alert('이벤트 정보를 불러오지 못했습니다.');
+            }
+        });
+    });
+
+    // 이벤트 수정
+    $('#saveEdit').click(function () {
+        const formData = new FormData();
+        formData.append('id', $('#editEventId').val());
+        formData.append('title', $('#editTitle').val());
+        formData.append('content', $('#editContent').val());
+        formData.append('startDate', formatDate($('#editStartDate').val(), 'timestamp'));
+        formData.append('endDate', formatDate($('#editEndDate').val(), 'timestamp'));
+
+        const fileInput = $('#editFile')[0].files[0];
+        if (fileInput) {
+            formData.append('file', fileInput);
+        }
+
+        $.ajax({
+            url: '/admin/event/update',
+            type: 'POST',
+            enctype: 'multipart/form-data',
+            processData: false,
+            contentType: false,
+            data: formData,
+            success: function () {
+                alert('이벤트가 수정되었습니다.');
+                location.reload();
+            },
+            error: function (xhr,error) {
+                console.log(error)
+                alert('이벤트 수정 실패: ' + xhr.responseText);
+            }
+        });
+    });
+
+    // 일괄 선택 및 삭제
+    $('#selectAllEvent').click(function () {
+        const allChecked = $('input[name="checkBox"]:checked').length === $('input[name="checkBox"]').length;
+        $('input[name="checkBox"]').prop('checked', !allChecked);
+        $(this).text(allChecked ? '일괄선택' : '선택해제');
+    });
+
+    $('#deleteEvent').click(function () {
+        const selectedIds = $('input[name="checkBox"]:checked')
+            .map(function () {
+                return $(this).closest('tr').find('td:nth-child(2)').text();
+            })
+            .get();
+
+        if (selectedIds.length === 0) {
+            alert('삭제할 이벤트를 선택해주세요.');
+            return;
+        }
+
+        if (confirm('선택된 이벤트를 삭제하시겠습니까?')) {
             $.ajax({
-                url: '/admin/event/update',
+                url: '/admin/event/delete',
                 type: 'POST',
                 contentType: 'application/json',
-                data: JSON.stringify(data),
+                data: JSON.stringify(selectedIds),
                 success: function () {
-                    alert('이벤트가 수정되었습니다.');
+                    alert('선택된 이벤트가 삭제되었습니다.');
                     location.reload();
                 },
                 error: function () {
-                    alert('이벤트 수정 실패');
+                    alert('이벤트 삭제 실패');
                 }
             });
-        });
-
-        // 수정 모달 데이터 로드
-        $(document).on('click', '.edit-btn', function () {
-            const eventId = $(this).data('id');
-
-            $.ajax({
-                url: `/admin/event/${eventId}`,
-                type: 'GET',
-                success: function (response) {
-                    $('#editEventId').val(response.id);
-                    $('#editTitle').val(response.title);
-                    $('#editContent').val(response.content);
-                    $('#editStartDate').val(formatDate(response.startDate, false));
-                    $('#editEndDate').val(formatDate(response.endDate, false));
-
-                    const currentImagesContainer = $('#currentImages');
-                    currentImagesContainer.empty();
-                    if (response.imagePath) {
-                        currentImagesContainer.append(`<img src="${response.imagePath}" style="width: 100px; height: auto;">`);
-                    } else {
-                        currentImagesContainer.append('<p>이미지가 없습니다.</p>');
-                    }
-                },
-                error: function () {
-                    alert('이벤트 데이터를 불러오는 데 실패했습니다.');
-                }
-            });
-        });
-
-        // 일괄 선택 및 삭제
-        $('#selectAllEvent').click(function () {
-            const allChecked = $('input[name="checkBox"]:checked').length === $('input[name="checkBox"]').length;
-            $('input[name="checkBox"]').prop('checked', !allChecked);
-            $(this).text(allChecked ? '일괄선택' : '선택해제');
-        });
-
-        $('#deleteEvent').click(function () {
-            const selectedIds = $('input[name="checkBox"]:checked')
-                .map(function () { return $(this).closest('tr').find('td:nth-child(2)').text(); })
-                .get();
-
-            if (selectedIds.length === 0) {
-                alert('삭제할 이벤트를 선택해주세요.');
-                return;
-            }
-
-            if (confirm('선택된 이벤트를 삭제하시겠습니까?')) {
-                $.ajax({
-                    url: '/admin/event/delete',
-                    type: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify(selectedIds),
-                    success: function () {
-                        alert('선택된 이벤트가 삭제되었습니다.');
-                        location.reload();
-                    },
-                    error: function () {
-                        alert('이벤트 삭제 실패');
-                    }
-                });
-            }
-        });
+        }
+    });
     });
 </script>
 </body>
