@@ -35,11 +35,12 @@ public class AdminBookApiController {
             @RequestParam(name = "ifkr", defaultValue = "", required = false) String ifkr,
             @RequestParam(name = "category", defaultValue = "", required = false) String category,
             @RequestParam(name = "subcategory", defaultValue = "", required = false) String subcategory,
-            Pageable pageable,
+            @RequestParam(name = "page", defaultValue = "0", required = false) int page,
             Model model) {
 
         List<Book> filteredBooks = bookService.findAll(); // 기본적으로 전체 책 조회
-
+        int size = 10;
+        Pageable pageable = PageRequest.of(page, size);
         // 키워드로 필터링
         if (!keyword.isEmpty()) {
             filteredBooks = bookService.findByTitleContaining(keyword);
