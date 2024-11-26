@@ -129,8 +129,24 @@ public class AdminBookApiController {
     //책 수정 메서드
     @PutMapping("/update")
     @ResponseBody
-    public ResponseEntity<Book> updateBook(@RequestBody Book book) {
+    public ResponseEntity<Book> updateBook(@RequestBody Book book,
+                                           @RequestParam(name = "publish_Date", required = false) String publishDate,
+                                           @RequestParam(name = "files", required = false) List<MultipartFile> files) {
         Book updatedBook = bookService.update(book);
+        // publishDate를 수동 변환
+        if (publishDate != null && !publishDate.isEmpty()) {
+            System.out.println("Received publishDate: " + publishDate); // 디버깅용 로그
+            String fullDateTime = publishDate + " 00:00:00";
+            Timestamp convertedTimestamp = Timestamp.valueOf(fullDateTime);
+            book.setPublishDate(convertedTimestamp); // 수동으로 변환된 값 설정
+            System.out.println("Converted publishDate to Timestamp: " + book.getPublishDate());
+        }
+        // 파일 업로드 처리
+        if (files != null && !files.isEmpty()) {
+            for (MultipartFile file : files) {
+                fileUploadService.uploadFile(file, updatedBook.getId().toString(), "book");
+            }
+        }
         return ResponseEntity.ok(updatedBook);
     }
 
