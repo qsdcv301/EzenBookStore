@@ -66,7 +66,6 @@ public class ReviewApiController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response); // 예외 발생 시 500 오류 반환
         }
     }
-
     //업데이트 리뷰(리뷰 수정)
     @PostMapping("update")
     public String updateReview(@ModelAttribute Review review) {

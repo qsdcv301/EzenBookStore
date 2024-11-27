@@ -114,5 +114,14 @@ public class AdminNoticeApiController {
 
         return ResponseEntity.ok(noticePage);
     }
+    @GetMapping("/all")
+    public ResponseEntity<Page<Notice>> allNotices(
+            @RequestParam(required = false)String searchType,
+            @RequestParam(required = false)String keyword,
+            @PageableDefault(size = 10,sort = "id",direction = Sort.Direction.DESC) Pageable pageable){
+        Page<Notice> noticePage;
+        noticePage = noticeService.findAll(pageable);
+        return ResponseEntity.ok(noticePage);
+    }
 
 }

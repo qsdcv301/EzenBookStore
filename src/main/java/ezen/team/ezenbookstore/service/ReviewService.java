@@ -55,8 +55,16 @@ public class ReviewService {
     public Page<Review> findAll(Pageable pageable) {
         return reviewRepository.findAll(pageable);
     }
-    public List<Review> findAllByBookIdAndUserId(Long bookId, Long userId) {
-        return reviewRepository.findAllByBookIdAndUserId(bookId, userId);
+
+    public Page<Review> searchByKeyword(String keyword, Pageable pageable) {
+        return reviewRepository.findAllByTitleContaining(keyword, pageable);
     }
 
+    public Page<Review> findAllByUserName(String name, Pageable pageable) {
+        return reviewRepository.findAllByUser_NameContaining(name, pageable);
+    }
+
+    public Page<Review> findAllByBookTitle(String title, Pageable pageable) {
+        return reviewRepository.findAllByBook_TitleContaining(title, pageable);
+    }
 }
