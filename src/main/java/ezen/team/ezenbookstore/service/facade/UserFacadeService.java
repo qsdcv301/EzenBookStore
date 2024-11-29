@@ -161,6 +161,7 @@ public class UserFacadeService implements UserFacadeServiceInterface {
     }
 
     // 주문 및 QnA 정보 조회 및 필터링
+    @Override
     public Map<String, Object> getUserInfo(Long userId, String keyword, String dateRange, String deliveryStatusParam, String orderStatusParam,
                                            int oPage, byte sort, String direction, LocalDate startDate, LocalDate endDate, int qPage) {
         Map<String, Object> modelAttributes = new HashMap<>();

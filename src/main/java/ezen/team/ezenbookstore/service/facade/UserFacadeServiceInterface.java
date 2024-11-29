@@ -4,6 +4,7 @@ import ezen.team.ezenbookstore.entity.CustomOAuth2User;
 import ezen.team.ezenbookstore.entity.User;
 import jakarta.servlet.http.HttpSession;
 
+import java.time.LocalDate;
 import java.util.Map;
 
 public interface UserFacadeServiceInterface {
@@ -25,5 +26,8 @@ public interface UserFacadeServiceInterface {
     boolean sendEmailVerification(String email, HttpSession session);
 
     String generateVerificationCode();
+
+    Map<String, Object> getUserInfo(Long userId, String keyword, String dateRange, String deliveryStatusParam, String orderStatusParam,
+                                    int oPage, byte sort, String direction, LocalDate startDate, LocalDate endDate, int qPage);
 
 }
