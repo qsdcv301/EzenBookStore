@@ -38,6 +38,7 @@ public class Orders {
     private Payment payment;
 
     @Column(name = "orders_date")
+    @CreationTimestamp
     @UpdateTimestamp
     private Timestamp orderDate;
 

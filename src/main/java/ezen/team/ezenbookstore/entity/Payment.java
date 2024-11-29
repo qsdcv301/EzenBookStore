@@ -27,6 +27,7 @@ public class Payment {
     private User user;
 
     @Column(name = "payment_date")
+    @CreationTimestamp
     private Timestamp paymentDate;
 
     @Column(name = "amount")
