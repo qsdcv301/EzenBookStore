@@ -14,7 +14,7 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 @DynamicInsert
 @DynamicUpdate
-@Builder
+@Builder(toBuilder = true)
 @Table(name = "bookdescription")
 public class BookDescription {
 

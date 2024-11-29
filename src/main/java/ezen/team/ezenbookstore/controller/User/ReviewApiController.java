@@ -18,12 +18,6 @@ public class ReviewApiController {
 
     private final ReviewService reviewService;
 
-    @GetMapping
-    public String viewReview() {
-        return "/review";
-    }
-
-    // 리뷰 추가
     @PostMapping("/add")
     public ResponseEntity<Map<String, String>> addReview(@RequestParam(name = "title") String title,
                                                          @RequestParam(name = "comment") String comment,
