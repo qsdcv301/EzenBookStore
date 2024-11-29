@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .status-card {
+            cursor: pointer;
+            transition: transform 0.2s ease-in-out;
+            background-color: #007bff !important;
+        }
+        .status-card:hover {
+            transform: scale(1.05);
+        }
+        .status-card h5, .status-card p {
+            color: #ffffff !important;
+        }
+        .sales-summary-card {
+            border: 2px solid #007bff;
+            border-radius: 10px;
+        }
+        .sales-summary-card .card-header {
+            background-color: #007bff;
+            color: #ffffff;
+            font-weight: bold;
+        }
+        .sales-summary-card .card-body {
+            text-align: center;
+        }
+        .sales-summary-card .card-body h4 {
+            color: #007bff;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid mt-3">
+        <!-- Header -->
+        <header class="mb-3">
+            <!-- <h3 class="font-weight-bold mb-3">관리자 대시보드</h3> -->
+        </header>
+
+        <!-- Statistics Cards -->
+        <div class="row">
+            <div class="col-md-3">
+                <div class="card text-white bg-primary mb-3">
+                    <div class="card-header">총 회원 수</div>
+                    <div class="card-body">
+                        <h5 class="card-title">1,245명</h5>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-white bg-primary mb-3">
+                    <div class="card-header">총 주문 수</div>
+                    <div class="card-body">
+                        <h5 class="card-title">3,678건</h5>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-white bg-primary mb-3">
+                    <div class="card-header">총 매출</div>
+                    <div class="card-body">
+                        <h5 class="card-title">₩12,345,000</h5>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-white bg-primary mb-3">
+                    <div class="card-header">문의 처리</div>
+                    <div class="card-body">
+                        <h5 class="card-title">85건</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 판매 실적 & 판매 진행 현황 -->
+        <div class="row mb-4">
+            <!-- 판매 실적 -->
+            <div class="col-md-4">
+                <div class="sales-summary-card mb-4">
+                    <div class="card-header">
+                        판매 실적 & 판매 현황
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5>TODAY</h5>
+                                <h4>85,000원</h4>
+                                <p>주문: 1건</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>MONTH</h5>
+                                <h4>224,215원</h4>
+                                <p>주문: 6건</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 판매 진행 현황 -->
+            <div class="col-md-8">
+                <h3 class="mb-3">판매 진행 현황</h3>
+                <div class="row">
+                    <!-- 각 버튼 -->
+                    <div class="col-md-2 mb-4">
+                        <div class="card text-white status-card">
+                            <div class="card-body text-center">
+                                <h5>신규 주문</h5>
+                                <p class="display-6">5 건</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2 mb-4">
+                        <div class="card text-white status-card">
+                            <div class="card-body text-center">
+                                <h5>취소 관리</h5>
+                                <p class="display-6">2 건</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2 mb-4">
+                        <div class="card text-white status-card">
+                            <div class="card-body text-center">
+                                <h5>반품 관리</h5>
+                                <p class="display-6">1 건</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2 mb-4">
+                        <div class="card text-white status-card">
+                            <div class="card-body text-center">
+                                <h5>교환 관리</h5>
+                                <p class="display-6">0 건</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2 mb-4">
+                        <div class="card text-white status-card">
+                            <div class="card-body text-center">
+                                <h5>입금 대기</h5>
+                                <p class="display-6">3 건</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2 mb-4">
+                        <div class="card text-white status-card">
+                            <div class="card-body text-center">
+                                <h5>입금 완료</h5>
+                                <p class="display-6">8 건</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2 mb-4">
+                        <div class="card text-white status-card">
+                            <div class="card-body text-center">
+                                <h5>주문 접수</h5>
+                                <p class="display-6">6 건</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2 mb-4">
+                        <div class="card text-white status-card">
+                            <div class="card-body text-center">
+                                <h5>출고 중</h5>
+                                <p class="display-6">4 건</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2 mb-4">
+                        <div class="card text-white status-card">
+                            <div class="card-body text-center">
+                                <h5>출고 완료</h5>
+                                <p class="display-6">9 건</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2 mb-4">
+                        <div class="card text-white status-card">
+                            <div class="card-body text-center">
+                                <h5>보류 중</h5>
+                                <p class="display-6">2 건</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chart Section -->
+        <div class="row">
+            <div class="col-md-8 mx-auto">
+                <div class="card mb-4">
+                    <div class="card-header">매출 통계</div>
+                    <div class="card-body">
+                        <canvas id="salesChart" style="max-height: 200px;"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Chart.js for 매출 통계
+        var ctx = document.getElementById('salesChart').getContext('2d');
+        var salesChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+                datasets: [{
+                    label: '매출 (₩)',
+                    data: [1200000, 1500000, 1000000, 2300000, 1800000, 3800000, 3200000, 4500000, 5000000, 5900000, 6800000, 7900000],
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
