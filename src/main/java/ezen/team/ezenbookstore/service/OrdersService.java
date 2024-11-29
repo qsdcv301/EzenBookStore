@@ -32,6 +32,10 @@ public class OrdersService {
         return orderRepository.findAllByUserId(orderId);
     }
 
+    public List<Orders> findAllByUserId(Long userId) {
+        return orderRepository.findAllByUserId(userId);
+    }
+
     public Orders update(Orders order) {
         Orders newOrder = Orders.builder()
                 .id(order.getId())
