@@ -17,7 +17,7 @@ import java.util.List;
 @AllArgsConstructor
 @DynamicInsert
 @DynamicUpdate
-@Builder
+@Builder(toBuilder = true)
 @Table(name = "orders")
 public class Orders {
 

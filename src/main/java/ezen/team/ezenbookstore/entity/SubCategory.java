@@ -11,7 +11,7 @@ import org.hibernate.annotations.DynamicUpdate;
 @AllArgsConstructor
 @DynamicInsert
 @DynamicUpdate
-@Builder
+@Builder(toBuilder = true)
 @ToString
 @Table(name = "subcategory")
 public class SubCategory {

@@ -13,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @DynamicInsert
 @DynamicUpdate
-@Builder
+@Builder(toBuilder = true)
 @Table(name = "cart")
 public class Cart {
 
