@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,25 +31,25 @@ public class CartApiController {
 
     @GetMapping
     public String cart(Model model) {
-        String userEmail = userService.getUserEmail();
-        User user = userService.findByEmail(userEmail);
-        List<Cart> cartList = cartService.findAllByUserId(user.getId());
-        List<String> ImageList = new ArrayList<>();
-        for (Cart cart : cartList) {
-            String imagePath = fileUploadService.findImageFilePath(cart.getBook().getId(), "book");
-            if (imagePath != null) {
-                ImageList.add(imagePath);
-            } else {
-                ImageList.add("");
+        try {
+            String userEmail = userService.getUserEmail();
+            User user = userService.findByEmail(userEmail);
+            List<Cart> cartList = cartService.findAllByUserId(user.getId());
+            List<String> imageList = new ArrayList<>();
+            for (Cart cart : cartList) {
+                String imagePath = fileUploadService.findImageFilePath(cart.getBook().getId(), "book");
+                imageList.add(imagePath != null ? imagePath : "");
             }
+            model.addAttribute("imageList", imageList);
+            model.addAttribute("user", user);
+            model.addAttribute("cartList", cartList);
+        } catch (Exception e) {
+            model.addAttribute("error", "An error occurred while retrieving the cart.");
         }
-        model.addAttribute("imageList", ImageList);
-        model.addAttribute("user", user);
-        model.addAttribute("cartList", cartList);
         return "cart";
     }
 
-    // 추가
+    @Transactional
     @PostMapping("/add")
     public ResponseEntity<Map<String, Boolean>> addCart(@RequestParam List<String> bookId,
                                                         @RequestParam List<String> quantity) {
@@ -56,7 +57,7 @@ public class CartApiController {
         // bookId와 quantity 리스트가 일치하지 않거나 비어 있는 경우에 대한 검증
         if (bookId == null || bookId.isEmpty() || quantity == null || quantity.isEmpty() || bookId.size() != quantity.size()) {
             response.put("success", false);
-            return ResponseEntity.ok(response); // 추가 실패 반환
+            return ResponseEntity.badRequest().body(response); // 잘못된 요청 반환
         }
         try {
             // 현재 사용자 이메일을 가져와 User 객체 조회
@@ -84,7 +85,7 @@ public class CartApiController {
         }
     }
 
-    // 업데이트
+    @Transactional
     @PostMapping("/update")
     public ResponseEntity<Map<String, Boolean>> updateCart(@RequestParam List<String> cartId,
                                                            @RequestParam List<String> quantity) {
@@ -92,25 +93,24 @@ public class CartApiController {
         // cartId가 일치하지 않거나 비어 있는 경우에 대한 검증
         if (cartId == null || cartId.isEmpty() || quantity == null || quantity.isEmpty() || cartId.size() != quantity.size()) {
             response.put("success", false);
-            return ResponseEntity.ok(response); // 추가 실패 반환
+            return ResponseEntity.badRequest().body(response); // 잘못된 요청 반환
         }
         try {
             // 현재 사용자 이메일을 가져와 User 객체 조회
             String userEmail = userService.getUserEmail();
             User user = userService.findByEmail(userEmail);
-            // bookId와 quantity를 인덱스를 기준으로 순환
+            // cartId와 quantity를 인덱스를 기준으로 순환
             for (int i = 0; i < cartId.size(); i++) {
                 Long cartIdValue = Long.parseLong(cartId.get(i)); // String을 Long으로 변환
                 Integer quantityValue = Integer.parseInt(quantity.get(i)); // String을 Integer로 변환
                 Cart cart = cartService.findById(cartIdValue);
-                Cart newCart = Cart.builder()
-                        .id(cartIdValue)
-                        .user(user)
-                        .book(cart.getBook())
-                        .quantity(quantityValue)
-                        .build();
-                // Cart 저장 처리
-                cartService.update(newCart);
+                if (cart != null && cart.getUser().getId().equals(user.getId())) {
+                    cart.setQuantity(quantityValue);
+                    cartService.update(cart);
+                } else {
+                    response.put("success", false);
+                    return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response); // 권한 없음 반환
+                }
             }
             response.put("success", true);
             return ResponseEntity.ok(response); // 성공 시 200 OK와 함께 반환
@@ -120,20 +120,28 @@ public class CartApiController {
         }
     }
 
-    // 삭제
+    @Transactional
     @PostMapping("/delete")
     public ResponseEntity<Map<String, Boolean>> deleteCart(@RequestParam List<String> cartId) {
         Map<String, Boolean> response = new HashMap<>();
 
         if (cartId == null || cartId.isEmpty()) {
             response.put("success", false);
-            return ResponseEntity.ok(response); // 삭제 실패 반환
+            return ResponseEntity.badRequest().body(response); // 잘못된 요청 반환
         }
 
         try {
+            String userEmail = userService.getUserEmail();
+            User user = userService.findByEmail(userEmail);
             for (String cartIdStr : cartId) {
                 Long cartIdValue = Long.parseLong(cartIdStr); // String을 Long으로 변환
-                cartService.deleteById(cartIdValue); // 개별 Cart 삭제 처리
+                Cart cart = cartService.findById(cartIdValue);
+                if (cart != null && cart.getUser().getId().equals(user.getId())) {
+                    cartService.deleteById(cartIdValue); // 개별 Cart 삭제 처리
+                } else {
+                    response.put("success", false);
+                    return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response); // 권한 없음 반환
+                }
             }
             response.put("success", true);
             return ResponseEntity.ok(response); // 성공 시 200 OK와 함께 반환
@@ -142,5 +150,4 @@ public class CartApiController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response); // 예외 발생 시 500 오류 반환
         }
     }
-
 }

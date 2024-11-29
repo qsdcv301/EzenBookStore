@@ -45,6 +45,32 @@
     </div>
     <hr>
 
+    <div class="card mt-3" id="advancedSearch">
+        <div class="card-body row">
+            <div class="col-md-1"></div>
+            <div class="col-md-4">
+                <select id="deliveryStatus" name="deliveryStatus" class="form-control">
+                    <option value="">배송 상태를 선택하세요</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <select id="paymentStatus" name="paymentStatus" class="form-control">
+                    <option value="">결제 상태를 선택하세요</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <button class="btn btn-primary" type="button" id="applyFilters">필터
+                    적용
+                </button>
+                <button class="btn btn-secondary" type="button"
+                        id="resetFilters">초기화
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <hr>
     <!-- 수정/삭제 버튼 및 검색 섹션 -->
     <div class="d-flex justify-content-between mb-3">
         <div>
@@ -91,7 +117,7 @@
             <td th:text="${order.user.email}">이메일</td>
             <td th:text="${order.orderItems.get(0).book.title}">상품명</td> <!-- 예시로 첫번째 상품 표시 -->
             <td th:text="${order.orderItems.size()}">수량</td>
-            <td th:text="${order.totalPrice}">총 결제 금액</td>
+            <td th:text="${order.payment.amount}">총 결제 금액</td>
             <td>
                 <select class="form-control" name="status" th:value="${order.status}">
                     <option value="0" th:selected="${order.status == 0}">상품준비중</option>
@@ -135,7 +161,7 @@
                     <p><strong>주문번호:</strong> <span th:text="${order.id}"></span></p>
                     <p><strong>주문일:</strong> <span th:text="${#dates.format(order.orderDate, 'yyyy.MM.dd HH:mm')}"></span></p>
                     <p><strong>회원 이메일:</strong> <span th:text="${order.user.email}"></span></p>
-                    <p><strong>총 결제 금액:</strong> <span th:text="${order.totalPrice}"></span></p>
+                    <p><strong>총 결제 금액:</strong> <span th:text="${order.payment.amount}"></span></p>
                     <p><strong>배송 상태:</strong>
                         <span th:switch="${order.status}">
                         <span th:case="0">상품준비중</span>
@@ -207,7 +233,22 @@
         location.href = `/admin/order/search?searchType=${searchType}&keyword=${searchInput}`;
     }
 
+    //필터적용 스크립트 (수정중)
+    $('#applyFilters').on('click', function () {
+        const deliveryStatus = $('#deliveryStatus').val();
+        const paymentStatus = $('#paymentStatus').val();
+        const queryParams = [];
 
+        if (deliveryStatus) queryParams.push(`deliveryStatus=${order.delivery.status}`);
+        if (paymentStatus) queryParams.push(`paymentStatus=${order.payment.status}`);
+
+        const query = queryParams.length > 0 ? `?${queryParams.join('&')}` : '';
+        location.href = `/admin/book${query}`;
+    });
+    //초기화
+    $('#resetFilters').on('click', function () {
+        location.href = '/admin/book';
+    });
 
 
 </script>
