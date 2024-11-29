@@ -5,12 +5,15 @@ import ezen.team.ezenbookstore.service.*;
 import ezen.team.ezenbookstore.service.facade.UserFacadeService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.*;
 
 @RequiredArgsConstructor
@@ -88,6 +91,30 @@ public class UserApiController {
         Map<String, Boolean> response = new HashMap<>();
         response.put("isEmail", isEmailSent);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/info")
+    public String infoUser(@RequestParam(name = "keyword", defaultValue = "", required = false) String keyword,
+                           @RequestParam(name = "dateRange", defaultValue = "", required = false) String dateRange,
+                           @RequestParam(name = "deliveryStatus", defaultValue = "", required = false) String deliveryStatusParam,
+                           @RequestParam(name = "orderStatus", defaultValue = "", required = false) String orderStatusParam,
+                           @RequestParam(name = "oPage", defaultValue = "0", required = false) int oPage,
+                           @RequestParam(name = "sort", defaultValue = "0", required = false) byte sort,
+                           @RequestParam(name = "direction", defaultValue = "desc", required = false) String direction,
+                           @RequestParam(name = "startDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
+                           @RequestParam(name = "endDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate,
+                           @RequestParam(name = "qPage", defaultValue = "0", required = false) int qPage,
+                           @ModelAttribute("user") User user,
+                           Model model) {
+
+        // Facade를 통해 사용자 정보 관련 데이터를 조회
+        Map<String, Object> userInfo = userFacadeService.getUserInfo(user.getId(), keyword, dateRange, deliveryStatusParam, orderStatusParam,
+                oPage, sort, direction, startDate, endDate, qPage);
+
+        // 모델에 조회된 데이터 추가
+        model.addAllAttributes(userInfo);
+
+        return "info";
     }
 
 }

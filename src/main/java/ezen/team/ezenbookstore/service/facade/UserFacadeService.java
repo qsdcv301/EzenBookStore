@@ -4,9 +4,12 @@ import ezen.team.ezenbookstore.entity.*;
 import ezen.team.ezenbookstore.service.*;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -155,6 +158,100 @@ public class UserFacadeService implements UserFacadeServiceInterface {
         Random random = new Random();
         int code = random.nextInt(999999);
         return String.format("%06d", code);
+    }
+
+    // 주문 및 QnA 정보 조회 및 필터링
+    public Map<String, Object> getUserInfo(Long userId, String keyword, String dateRange, String deliveryStatusParam, String orderStatusParam,
+                                           int oPage, byte sort, String direction, LocalDate startDate, LocalDate endDate, int qPage) {
+        Map<String, Object> modelAttributes = new HashMap<>();
+
+        int size = 10;
+        Sort.Direction sortDirection = direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+
+        // QnA 페이징 처리
+        Pageable qPageable = PageRequest.of(qPage, size, Sort.by(sortDirection, "id"));
+        Page<QnA> qPaging;
+        if (sort == 0) {
+            qPaging = qnAService.findAllByUserId(userId, qPageable);
+        } else {
+            qPaging = qnAService.findAllByUserIdAndCategory(userId, sort, qPageable);
+        }
+
+        // 배송 상태 및 주문 상태 값 변환
+        Byte deliveryStatus = null;
+        if (deliveryStatusParam != null && !deliveryStatusParam.isEmpty()) {
+            switch (deliveryStatusParam) {
+                case "preparing":
+                    deliveryStatus = 1;
+                    break;
+                case "shipping":
+                    deliveryStatus = 2;
+                    break;
+                case "delivered":
+                    deliveryStatus = 3;
+                    break;
+                case "preparingReturn":
+                    deliveryStatus = 4;
+                    break;
+                case "Returning":
+                    deliveryStatus = 5;
+                    break;
+                case "Returned":
+                    deliveryStatus = 6;
+                    break;
+                default:
+                    deliveryStatus = 0;
+                    break;
+            }
+        }
+
+        Byte orderStatus = null;
+        if (orderStatusParam != null && !orderStatusParam.isEmpty()) {
+            switch (orderStatusParam) {
+                case "completed":
+                    orderStatus = 1;
+                    break;
+                case "cancelled":
+                    orderStatus = 2;
+                    break;
+                case "exchange":
+                    orderStatus = 3;
+                    break;
+            }
+        }
+
+        // 날짜 범위 설정
+        if (dateRange != null && !dateRange.isEmpty()) {
+            int monthsAgo = Integer.parseInt(dateRange);
+            endDate = LocalDate.now();
+            startDate = endDate.minusMonths(monthsAgo);
+        }
+
+        // 주문 필터링 처리
+        List<Orders> filteredOrders = ordersService.filterOrders(startDate, endDate, deliveryStatus, orderStatus, keyword, userId);
+
+        // 페이징 적용
+        Pageable oPageable = PageRequest.of(oPage, size, Sort.by(sortDirection, "orderDate"));
+        int start = Math.min((int) oPageable.getOffset(), filteredOrders.size());
+        int end = Math.min((start + oPageable.getPageSize()), filteredOrders.size());
+        List<Orders> pagedOrders = filteredOrders.subList(start, end);
+        Page<Orders> orderPage = new PageImpl<>(pagedOrders, oPageable, filteredOrders.size());
+
+        // 모델에 필요한 속성 추가
+        modelAttributes.put("orderList", orderPage.getContent());
+        modelAttributes.put("orderPage", orderPage);
+        modelAttributes.put("keyword", keyword);
+        modelAttributes.put("dateRange", dateRange);
+        modelAttributes.put("deliveryStatus", deliveryStatusParam);
+        modelAttributes.put("orderStatus", orderStatusParam);
+        modelAttributes.put("startDate", startDate);
+        modelAttributes.put("endDate", endDate);
+        modelAttributes.put("sort", sort);
+        modelAttributes.put("direction", direction);
+        modelAttributes.put("questionList", qPaging.getContent());
+        modelAttributes.put("qnaPage", qPaging);
+
+        return modelAttributes;
     }
 
 }
