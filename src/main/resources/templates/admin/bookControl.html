@@ -489,11 +489,24 @@
 
     //필터적용 스크립트
     $('#applyFilters').on('click', function () {
+        const keyword = $('.searchKeyword').val();
         const ifkr = $('#dateRange').val();
         const category = $('#searchCategory').val();
         const subcategory = $('#searchSubCategory').val();
         const queryParams = [];
 
+        // 현재 URL에서 파라미터 확인
+        const urlParams = new URLSearchParams(window.location.search);
+        const existingKeyword = urlParams.get('keyword');
+
+        // 키워드 확인 후 추가
+        if (keyword || existingKeyword) {
+            if (keyword) {
+                queryParams.push(`keyword=${keyword}`);
+            } else if (existingKeyword) {
+                queryParams.push(`keyword=${existingKeyword}`);
+            }
+        }
         if (ifkr) queryParams.push(`ifkr=${ifkr}`);
         if (category) queryParams.push(`category=${category}`);
         if (subcategory) queryParams.push(`subcategory=${subcategory}`);
