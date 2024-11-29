@@ -13,8 +13,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @Controller
@@ -31,6 +34,7 @@ public class AdminNoticeApiController {
                                 @PageableDefault(size = 15, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
                                 Model model) {
         Page<Notice> noticePage;
+        List<Long> noticeIds= noticeService.noticeIds();
         // 검색 조건에 따라 데이터를 조회
         if ("title".equals(searchType)) {
             noticePage = noticeService.searchByTitle(keyword, pageable);
@@ -39,7 +43,19 @@ public class AdminNoticeApiController {
         }else {
             noticePage = noticeService.findAll(pageable); // 전체 조회
         }
-
+        //이미지가 한개이상일때 확장성을위해 int로 받아옴 만약 2개이상이면 id 값을 바꿔주는 행동이 필요함
+//        for(Long imgId : noticeIds){
+//            noticeService.findById(imgId,pageable);
+//        }
+//        int intGetImg = fileUploadService.getImageCount(imgId,"notice");
+//        if (intGetImg > 0) {
+//            String imagePath =fileUploadService.findImageFilePath(imgId,"notice");
+//            if(imagePath != null && !imagePath.isEmpty()) {
+//                model.addAttribute("imagePath", imagePath);
+//            }
+//        }else{
+//            model.addAttribute("imagePath", "isNullImg");
+//        }
         int totalPages = noticePage.getTotalPages(); // 총 페이지 수
         int currentPage = noticePage.getNumber();
         int pageGroupSize = 10; // 페이지 그룹 크기
@@ -63,12 +79,22 @@ public class AdminNoticeApiController {
 
     // 공지사항 생성 - AJAX 요청 처리
     @PostMapping("/add")
-    public ResponseEntity<String> addNotice(@RequestBody Notice notice) {
-        try {
-            noticeService.create(notice);
-            return ResponseEntity.ok("공지사항이 추가되었습니다.");
+    public ResponseEntity< Map<String, String>> addNotice(@RequestParam("title") String title,
+                                            @RequestParam("content") String content,
+                                            @RequestPart(value="imageAdd",required=false)MultipartFile image) {
+        Map<String, String> response = new HashMap<>();
+        try{
+            Notice newNotice = Notice.builder()
+                            .title(title).content(content).build();
+            Notice createNotice = noticeService.create(newNotice);
+            if(image != null && image.getSize() > 0) {
+                fileUploadService.uploadFile(image,createNotice.getId().toString(),"notice");
+            }
+            response.put("success", "true");
+            return ResponseEntity.ok(response); // 성공 시 200 OK와 함께 반환
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("공지사항 추가 실패");
+            response.put("success", "false");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 

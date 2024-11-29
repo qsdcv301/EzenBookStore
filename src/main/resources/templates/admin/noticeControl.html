@@ -44,6 +44,7 @@
             <th>공지사항 번호</th>
             <th>제목</th>
             <th>내용</th>
+            <!-- 만약 이미지가 있는지 없는 지 확인할것이 필요할까? -->
             <th>수정</th>
         </tr>
         </thead>
@@ -54,8 +55,9 @@
             <td th:text="${notice.title}">공지사항 제목</td>
             <td th:text="${notice.content}">공지사항 내용</td>
             <td>
-                <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editNoticeModal">수정</button>
+                <button type="button" class="btn btn-warning edit-btn" data-bs-toggle="modal" data-bs-target="#editNoticeModal">수정</button>
             </td>
+            <input type="hidden" class="imagePath" th:value="${imagePath}">
         </tr>
         </tbody>
     </table>
@@ -103,6 +105,10 @@
                         <label for="addContent" class="form-label">내용</label>
                         <textarea class="form-control" id="addContent" rows="5" placeholder="공지사항 내용을 입력하세요" required></textarea>
                     </div>
+                    <div>
+                        <input type="file" class="" id="addImage"/>
+                        <label for="addImage" class="form-label">이미지 첨부 영역</label>
+                    </div>
                 </form>
             </div>
             <div class="modal-footer">
@@ -130,6 +136,14 @@
                     <div class="mb-3">
                         <label for="editContent" class="form-label">내용</label>
                         <textarea class="form-control" id="editContent" rows="5" required></textarea>
+                    </div>
+                    <div>
+                        기존 이미지 표시 영역
+                    </div>
+                    <div>
+                        <!-- 이미지 첨부를 하면 기존이미지에 덮어 씌워짐-->
+                        <input type="file" class="" id="editImage"/>
+                        <label for="editImage" class="form-label">이미지 첨부 영역</label>
                     </div>
                 </form>
             </div>
@@ -163,9 +177,17 @@
     });
     // 공지사항 추가 처리
     $('#saveAddNotice').click(function () {
+        const formData = new FormData();
         const title = $('#addTitle').val().trim();
         const content = $('#addContent').val().trim();
+        const imageAdd = $('#addImage')[0].files[0];
 
+        formData.append('title',title);
+        formData.append('content',content);
+        if (imageAdd) {
+            //alert('이미지가 있어요');
+            formData.append('imageAdd', imageAdd);
+        }
         if (!title || !content) {
             alert('제목과 내용을 입력해주세요.');
             return;
@@ -174,8 +196,9 @@
         $.ajax({
             url: '/admin/notice/add',
             type: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify({ title: title, content: content }),
+            data: formData,              // 전송할 데이터
+            processData: false,          // 데이터를 querystring으로 변환하지 않음
+            contentType: false,          // 기본 Content-Type 헤더 설정하지 않음
             success: function () {
                 alert('공지사항이 추가되었습니다.');
                 $('#addNoticeModal').modal('hide');
@@ -201,9 +224,18 @@
 
     // 공지사항 수정 처리
     $('#saveEditNotice').click(function () {
+        const formData = new FormData();
         const id = $('#editNoticeForm').data('id');
         const title = $('#editTitle').val().trim();
         const content = $('#editContent').val().trim();
+        const img = $('#editImage')[0].files[0];
+        formData.append("id",id);
+        formData.append("title",title);
+        formData.append("content",content);
+        if(img){
+            alert("이미지가 있어요");
+            formData.append("img",img);
+        }
 
         if (!title || !content) {
             alert('제목과 내용을 입력해주세요.');
@@ -213,8 +245,9 @@
         $.ajax({
             url: '/admin/notice/update',
             type: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify({ id: id, title: title, content: content }),
+            data: formData,              // 전송할 데이터
+            processData: false,          // 데이터를 querystring으로 변환하지 않음
+            contentType: false,          // 기본 Content-Type 헤더 설정하지 않음
             success: function () {
                 alert('공지사항이 수정되었습니다.');
                 $('#editNoticeModal').modal('hide');
@@ -307,6 +340,7 @@
                 <td>
                     <button type="button" class="btn btn-warning btn-sm edit-btn" data-bs-toggle="modal" data-bs-target="#editNoticeModal">수정</button>
                 </td>
+                <input type="hidden" class="imagePath" value="${imagePath}">
             </tr>
         `;
             tableBody.append(row);
