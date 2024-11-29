@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.Timestamp;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @RequiredArgsConstructor
@@ -74,6 +75,12 @@ public class AdminBookApiController {
         List<Book> pagedBooks = filteredBooks.subList(start, end);
         Page<Book> bookPage = new PageImpl<>(pagedBooks, pageable, filteredBooks.size());
 
+
+        List<String> imagePaths = bookPage.getContent().stream()
+                .map(book -> fileUploadService.findImageFilePath(book.getId(), "book"))
+                .map(path -> path != null ? path : "/images/default.png")
+                .collect(Collectors.toList());
+
         // 필터 값과 페이지 데이터 모델에 추가
         model.addAttribute("bookList", bookPage.getContent());
         model.addAttribute("page", bookPage);
@@ -81,16 +88,29 @@ public class AdminBookApiController {
         model.addAttribute("ifkr", ifkr);
         model.addAttribute("category", category);
         model.addAttribute("subcategory", subcategory);
+        model.addAttribute("imagePaths", imagePaths);
         return "admin/bookControl";
     }
 
-
-    // ID로 책 조회
+    //id로 책 조회
     @GetMapping("/{id}")
-    public ResponseEntity<Book> getBookById(@PathVariable Long id) {
+    public ResponseEntity<Map<String, Object>> getBookById(@PathVariable Long id) {
         Book book = bookService.findById(id);
-        return book != null ? ResponseEntity.ok(book) : ResponseEntity.notFound().build();
+        if (book == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        // 이미지 경로 추가
+        String imagePath = fileUploadService.findImageFilePath(id, "book");
+
+        // 응답 데이터 생성
+        Map<String, Object> response = new HashMap<>();
+        response.put("book", book);
+        response.put("imagePath", imagePath != null ? imagePath : "/images/default.jpg");
+
+        return ResponseEntity.ok(response);
     }
+
 
     // 새 책 추가 메서드
     @PostMapping("/add")
@@ -131,7 +151,8 @@ public class AdminBookApiController {
     @ResponseBody
     public ResponseEntity<Book> updateBook(@RequestBody Book book,
                                            @RequestParam(name = "publish_Date", required = false) String publishDate,
-                                           @RequestParam(name = "files", required = false) List<MultipartFile> files) {
+                                           @RequestParam(name = "files", required = false) List<MultipartFile> files,
+                                           Model model) {
         Book updatedBook = bookService.update(book);
         // publishDate를 수동 변환
         if (publishDate != null && !publishDate.isEmpty()) {
@@ -141,6 +162,8 @@ public class AdminBookApiController {
             book.setPublishDate(convertedTimestamp); // 수동으로 변환된 값 설정
             System.out.println("Converted publishDate to Timestamp: " + book.getPublishDate());
         }
+
+
         // 파일 업로드 처리
         if (files != null && !files.isEmpty()) {
             for (MultipartFile file : files) {
@@ -156,6 +179,5 @@ public class AdminBookApiController {
         bookService.delete(id);
         return ResponseEntity.ok("Book deleted successfully");
     }
-
 
 }

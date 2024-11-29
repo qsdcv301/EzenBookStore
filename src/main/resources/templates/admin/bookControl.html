@@ -300,9 +300,11 @@
                         <label for="contents">목차</label>
                         <input type="text" class="form-control" id="contents" name="contents">
                     </div>
-                    <div class="form-group">
-                        <label for="updateFile">책 이미지</label>
-                        <input type="file" name="file" id="updateFile">
+                    <div class="mb-3">
+                        <label>현재 이미지</label>
+                        <div id="currentImages" class="mb-2"></div> <!-- 이미지 출력 공간 -->
+                        <label for="editFile" class="form-label">이미지 업로드</label>
+                        <input type="file" class="form-control" id="editFile" name="file" accept="image/*">
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -633,6 +635,15 @@
                 $('#description').val(data.bookdescription ? data.bookdescription.description : '');
                 $('#writer').val(data.bookdescription ? data.bookdescription.writer : '');
                 $('#contents').val(data.bookdescription ? data.bookdescription.contents : '');
+                const currentImagesContainer = $('#currentImages');
+                currentImagesContainer.empty();
+
+                console.log(data.imagePath);
+                if (data.imagePath) {
+                    currentImagesContainer.append(`<img src="${data.imagePath}" style="width: 100px; height: auto;">`);
+                } else {
+                    currentImagesContainer.append('<p>이미지가 없습니다.</p>');
+                }
             },
             error: function (xhr, status, error) {
                 console.error('데이터 로드 실패:', error);
