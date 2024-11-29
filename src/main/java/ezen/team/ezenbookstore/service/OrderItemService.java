@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -20,6 +21,19 @@ public class OrderItemService {
     public OrderItem findById(Long id) {
         return orderItemRepository.findById(id).orElse(null);
     }
+
+    public List<OrderItem> findAll() {
+        return orderItemRepository.findAll();
+    }
+
+    public OrderItem create(OrderItem orderItem) {
+        return orderItemRepository.save(orderItem);
+    }
+
+    public void delete(Long id) {
+        orderItemRepository.deleteById(id);
+    }
+
 
     public OrderItem update(OrderItem orderItem) {
         OrderItem newOrderItem = OrderItem.builder()
