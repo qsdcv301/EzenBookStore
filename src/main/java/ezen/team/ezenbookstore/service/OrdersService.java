@@ -20,6 +20,18 @@ public class OrdersService {
         return orderRepository.findById(id).orElse(null);
     }
 
+    public List<Orders> findAll() {
+        return orderRepository.findAll();
+    }
+
+    public List<Orders> findByUserEmail(String email) {
+        return orderRepository.findByUserEmail(email);
+    }
+
+    public List<Orders> findByOrderId(Long orderId) {
+        return orderRepository.findAllByUserId(orderId);
+    }
+
     public Orders update(Orders order) {
         Orders newOrder = Orders.builder()
                 .id(order.getId())
