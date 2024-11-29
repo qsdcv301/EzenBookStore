@@ -5,6 +5,7 @@ import ezen.team.ezenbookstore.repository.OrdersRepository;
 import ezen.team.ezenbookstore.util.FormatUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -37,15 +38,17 @@ public class OrdersService {
         return orderRepository.findAllByUserId(userId);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public void deleteById(Long id) {
         orderRepository.deleteById(id);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public Orders create(Orders order) {
         return orderRepository.save(order);
     }
 
-
+    @Transactional(rollbackFor = Exception.class)
     public Orders update(Orders order) {
         Orders newOrder = Orders.builder()
                 .id(order.getId())
@@ -58,6 +61,7 @@ public class OrdersService {
         return orderRepository.save(newOrder);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public void cancelOrder(Long orderId) {
         Orders orders = findById(orderId);
         Orders newOrders = Orders.builder()
@@ -196,8 +200,6 @@ public class OrdersService {
                 isFirstFilter = false;
             } else {
                 filteredOrders.retainAll(ordersByDeliveryStatus);
-
-
             }
         }
 
@@ -223,4 +225,5 @@ public class OrdersService {
 
         return filteredOrders;
     }
+
 }

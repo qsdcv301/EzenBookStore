@@ -5,7 +5,6 @@ import ezen.team.ezenbookstore.service.CartService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,7 +24,6 @@ public class CartApiController {
         return "cart";
     }
 
-    @Transactional(rollbackFor = Exception.class)
     @PostMapping("/add")
     public ResponseEntity<Map<String, Boolean>> addCart(@RequestParam List<String> bookId,
                                                         @RequestParam List<String> quantity,
@@ -34,7 +32,6 @@ public class CartApiController {
         return ResponseEntity.ok(Map.of("success", true));
     }
 
-    @Transactional(rollbackFor = Exception.class)
     @PostMapping("/update")
     public ResponseEntity<Map<String, Boolean>> updateCart(@RequestParam List<String> cartId,
                                                            @RequestParam List<String> quantity,
@@ -43,11 +40,11 @@ public class CartApiController {
         return ResponseEntity.ok(Map.of("success", true));
     }
 
-    @Transactional(rollbackFor = Exception.class)
     @PostMapping("/delete")
     public ResponseEntity<Map<String, Boolean>> deleteCart(@RequestParam List<String> cartId,
                                                            @ModelAttribute("user") User user) {
         cartService.deleteCartItems(user, cartId);
         return ResponseEntity.ok(Map.of("success", true));
     }
+
 }

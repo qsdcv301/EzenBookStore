@@ -4,6 +4,7 @@ import ezen.team.ezenbookstore.entity.*;
 import ezen.team.ezenbookstore.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -26,10 +27,12 @@ public class PaymentService {
         return paymentRepository.findAll();
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public Payment create(Payment payment) {
         return paymentRepository.save(payment);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public Payment update(Long id, Payment payment) {
         Payment newPayment = Payment.builder()
                 .id(id)
@@ -42,6 +45,7 @@ public class PaymentService {
         return paymentRepository.save(newPayment);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public void deleteById(Long id) {
         paymentRepository.deleteById(id);
     }
@@ -50,6 +54,7 @@ public class PaymentService {
         return paymentRepository.findAllByUserId(userId);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public boolean processPayment(User user, String paymentCode, String userName, String addr, String addrextra, String tel,
                                   Long amount, List<String> titleList, List<Integer> quantityList, List<Long> cartIdList) {
         try {
@@ -121,4 +126,5 @@ public class PaymentService {
             return false;
         }
     }
+
 }

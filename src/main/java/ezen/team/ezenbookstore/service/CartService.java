@@ -6,6 +6,7 @@ import ezen.team.ezenbookstore.repository.CartRepository;
 import ezen.team.ezenbookstore.util.ParseUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 
 import java.util.ArrayList;
@@ -27,10 +28,12 @@ public class CartService {
         return cartRepository.findAll();
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public Cart create(Cart cart) {
         return cartRepository.save(cart);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public Cart update(Cart cart) {
         Cart newCart = Cart.builder()
                 .id(cart.getId())
@@ -41,6 +44,7 @@ public class CartService {
         return cartRepository.save(newCart);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public void deleteById(Long id) {
         cartRepository.deleteById(id);
     }
@@ -60,6 +64,7 @@ public class CartService {
         model.addAttribute("cartList", cartList);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public void addItemsToCart(User user, List<String> bookIdList, List<String> quantityList) {
         if (bookIdList == null || bookIdList.isEmpty() || quantityList == null || quantityList.isEmpty() || bookIdList.size() != quantityList.size()) {
             throw new IllegalArgumentException("요청 데이터가 유효하지 않습니다.");
@@ -79,6 +84,7 @@ public class CartService {
         }
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public void updateCartItems(User user, List<String> cartIdList, List<String> quantityList) {
         if (cartIdList == null || cartIdList.isEmpty() || quantityList == null || quantityList.isEmpty() || cartIdList.size() != quantityList.size()) {
             throw new IllegalArgumentException("요청 데이터가 유효하지 않습니다.");
@@ -97,6 +103,7 @@ public class CartService {
         }
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public void deleteCartItems(User user, List<String> cartIdList) {
         if (cartIdList == null || cartIdList.isEmpty()) {
             throw new IllegalArgumentException("요청 데이터가 유효하지 않습니다.");

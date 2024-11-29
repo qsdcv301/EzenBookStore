@@ -35,8 +35,7 @@ public class PaymentApiController {
                 response.put("success", false);
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
             }
-
-            // PaymentService로 이동하여 관련 비즈니스 로직을 처리
+            
             boolean isPaymentSuccessful = paymentService.processPayment(user, paymentCode, userName, addr, addrextra, tel, amount, titleList, quantityList, cartIdList);
 
             if (isPaymentSuccessful) {

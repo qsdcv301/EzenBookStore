@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
@@ -34,10 +35,12 @@ public class ExchangeReturnService {
         return exchangeReturnRepository.findAll();
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public ExchangeReturn create(ExchangeReturn exchangeReturn) {
         return exchangeReturnRepository.save(exchangeReturn);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public ExchangeReturn update(ExchangeReturn exchangeReturn) {
         ExchangeReturn newExchangeReturn = ExchangeReturn.builder()
                 .id(exchangeReturn.getId())
@@ -51,6 +54,7 @@ public class ExchangeReturnService {
         return exchangeReturnRepository.save(newExchangeReturn);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public void deleteById(Long id) {
         exchangeReturnRepository.deleteById(id);
     }
@@ -105,6 +109,7 @@ public class ExchangeReturnService {
         return response;
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public Map<String, Boolean> addExchangeReturn(ExchangeReturn er, long orderItemId, User user, MultipartFile file) {
         Map<String, Boolean> response = new HashMap<>();
         OrderItem orderItem = orderItemService.findById(orderItemId);

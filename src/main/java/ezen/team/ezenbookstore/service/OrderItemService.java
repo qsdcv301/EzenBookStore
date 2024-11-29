@@ -3,8 +3,10 @@ package ezen.team.ezenbookstore.service;
 import ezen.team.ezenbookstore.entity.OrderItem;
 import ezen.team.ezenbookstore.entity.User;
 import ezen.team.ezenbookstore.repository.OrderItemRepository;
+import ezen.team.ezenbookstore.util.ParseUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
 import java.util.HashMap;
@@ -26,15 +28,17 @@ public class OrderItemService {
         return orderItemRepository.findAll();
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public OrderItem create(OrderItem orderItem) {
         return orderItemRepository.save(orderItem);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public void delete(Long id) {
         orderItemRepository.deleteById(id);
     }
 
-
+    @Transactional(rollbackFor = Exception.class)
     public OrderItem update(OrderItem orderItem) {
         OrderItem newOrderItem = OrderItem.builder()
                 .id(orderItem.getId())
@@ -48,7 +52,7 @@ public class OrderItemService {
 
     public Map<String, String> buildOrderItemResponse(String orderItemId, @ModelAttribute("user") User user) {
         Map<String, String> response = new HashMap<>();
-        Long id = Long.parseLong(orderItemId);
+        Long id = ParseUtils.parseLong(orderItemId);
         OrderItem orderItem = findById(id);
         String title = orderItem.getBook().getTitle();
         String author = orderItem.getBook().getAuthor();
@@ -71,6 +75,7 @@ public class OrderItemService {
         return response;
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public Map<String, String> updateOrderItemAndUserPoint(Long orderItemId, Long point, @ModelAttribute("user") User user) {
         Map<String, String> response = new HashMap<>();
         User newUser = User.builder()

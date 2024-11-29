@@ -2,6 +2,7 @@ package ezen.team.ezenbookstore.controller.User;
 
 import ezen.team.ezenbookstore.entity.*;
 import ezen.team.ezenbookstore.service.*;
+import ezen.team.ezenbookstore.util.ParseUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,7 @@ public class OrderApiController {
     public ResponseEntity<Map<String, Object>> findOrders(@PathVariable(required = false) String ordersId) {
         Map<String, Object> response = new HashMap<>();
         try {
-            Long orderId = Long.parseLong(ordersId);
+            Long orderId = ParseUtils.parseLong(ordersId);
             Orders order = ordersService.findById(orderId);
             response = ordersService.buildOrderResponse(order);
             return ResponseEntity.ok(response); // 성공 시 200 OK와 함께 반환
@@ -70,4 +71,5 @@ public class OrderApiController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
+
 }
