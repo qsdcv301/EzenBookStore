@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.stereotype.Controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -27,133 +28,101 @@ public class AdminNoticeApiController {
     private final NoticeService noticeService;
     private final FileUploadService fileUploadService;
 
-    // 공지사항 페이지 이동 및 목록 조회
     @GetMapping
-    public String noticeControl(@RequestParam(required = false) String searchType,
-                                @RequestParam(required = false) String keyword,
-                                @PageableDefault(size = 15, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
-                                Model model) {
-        Page<Notice> noticePage;
-        List<Long> noticeIds= noticeService.noticeIds();
+    public String noticeControl(
+            @RequestParam(required = false) String searchType,
+            @RequestParam(required = false) String keyword,
+            @PageableDefault(size = 15, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
+            Model model) {
         // 검색 조건에 따라 데이터를 조회
+        Page<Notice> noticePage;
         if ("title".equals(searchType)) {
             noticePage = noticeService.searchByTitle(keyword, pageable);
         } else if ("content".equals(searchType)) {
             noticePage = noticeService.searchByContent(keyword, pageable);
-        }else {
-            noticePage = noticeService.findAll(pageable); // 전체 조회
+        } else {
+            noticePage = noticeService.findAll(pageable);
         }
-//        if(이미지가있으면){
-//            model.addAttribute("imagePath",imagePath);
-//        }else{
-//            이미지가 없을때
-//            model.addAttribute("imagePath","isNullImg");
-//        }
-        //이미지가 한개이상일때 확장성을위해 int로 받아옴 만약 2개이상이면 id 값을 바꿔주는 행동이 필요함
-//        for(Long imgId : noticeIds){
-//            noticeService.findById(imgId,pageable);
-//        }
-//        int intGetImg = fileUploadService.getImageCount(imgId,"notice");
-//        if (intGetImg > 0) {
-//            String imagePath =fileUploadService.findImageFilePath(imgId,"notice");
-//            if(imagePath != null && !imagePath.isEmpty()) {
-//                model.addAttribute("imagePath", imagePath);
-//            }
-//        }else{
-//            model.addAttribute("imagePath", "isNullImg");
-//        }
-        int totalPages = noticePage.getTotalPages(); // 총 페이지 수
+
+        // 각 공지사항의 이미지 경로를 추가
+        noticePage.getContent().forEach(notice -> {
+            String imagePath = fileUploadService.findImageFilePath(notice.getId(), "notice");
+            notice.setImagePath(imagePath != null ? imagePath : "/images/default.png");
+        });
+
+        // 페이징 계산
+        int totalPages = noticePage.getTotalPages();
         int currentPage = noticePage.getNumber();
-        int pageGroupSize = 10; // 페이지 그룹 크기
+        int pageGroupSize = 10;
+        int startPage = Math.max(0, (currentPage / pageGroupSize) * pageGroupSize);
+        int endPage = Math.min(startPage + pageGroupSize, totalPages);
 
-        int startPage = Math.max(0, (currentPage / pageGroupSize) * pageGroupSize); // 시작 페이지 번호
-        int endPage = Math.min(startPage + pageGroupSize, totalPages); // 끝 페이지 번호
-//        System.out.println("currentPage: " + currentPage);
-//        System.out.println("startPage: " + startPage);
-//        System.out.println("endPage: " + endPage);
-//        System.out.println("totalPages: " + totalPages);
-
-        // 페이징 결과 및 검색 조건 추가
+        // 데이터를 모델에 추가
         model.addAttribute("noticePage", noticePage);
         model.addAttribute("keyword", keyword);
         model.addAttribute("searchType", searchType);
         model.addAttribute("startPage", startPage);
         model.addAttribute("endPage", endPage);
 
-        return "admin/noticeControl"; // View 경로
+        return "admin/noticeControl"; 
     }
 
-    // 공지사항 생성 - AJAX 요청 처리
     @PostMapping("/add")
-    public ResponseEntity< Map<String, String>> addNotice(@RequestParam("title") String title,
-                                            @RequestParam("content") String content,
-                                            @RequestPart(value="imageAdd",required=false)MultipartFile image) {
-        Map<String, String> response = new HashMap<>();
-        try{
+    public String addNotice(
+            @RequestParam("title") String title,
+            @RequestParam("content") String content,
+            @RequestPart(value = "imageAdd", required = false) MultipartFile image) {
+        try {
             Notice newNotice = Notice.builder()
-                            .title(title).content(content).build();
-            Notice createNotice = noticeService.create(newNotice);
-            if(image != null && image.getSize() > 0) {
-                fileUploadService.uploadFile(image,createNotice.getId().toString(),"notice");
+                    .title(title)
+                    .content(content)
+                    .build();
+            Notice savedNotice = noticeService.create(newNotice);
+
+            if (image != null && !image.isEmpty()) {
+                fileUploadService.uploadFile(image, savedNotice.getId().toString(), "notice");
             }
-            response.put("success", "true");
-            return ResponseEntity.ok(response); // 성공 시 200 OK와 함께 반환
+
+            return "redirect:/admin/notice";
         } catch (Exception e) {
-            response.put("success", "false");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            return "redirect:/admin/notice?error=true";
         }
     }
 
-    // 공지사항 수정 - AJAX 요청 처리
     @PostMapping("/update")
-    public ResponseEntity<String> updateNotice(@RequestBody Notice notice) {
+    public String updateNotice(
+            @RequestParam("id") Long id,
+            @RequestParam("title") String title,
+            @RequestParam("content") String content,
+            @RequestPart(value = "image", required = false) MultipartFile image) {
         try {
-            noticeService.update(notice);
-            return ResponseEntity.ok("공지사항이 수정되었습니다.");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("공지사항 수정 실패");
-        }
-    }
-
-    //공지사항 삭제
-    @PostMapping("/delete")
-    public ResponseEntity<String> deleteNotices(@RequestBody List<Long> ids) {
-        try {
-            for (Long id : ids) {
-                noticeService.delete(id);
+            Notice notice = noticeService.findById(id);
+            if (notice == null) {
+                return "redirect:/admin/notice?error=not_found";
             }
-            return ResponseEntity.ok("선택된 공지사항이 삭제되었습니다.");
+
+            notice.setTitle(title);
+            notice.setContent(content);
+
+            if (image != null && !image.isEmpty()) {
+                fileUploadService.uploadFile(image, id.toString(), "notice");
+            }
+
+            noticeService.update(notice);
+
+            return "redirect:/admin/notice";
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("공지사항 삭제 실패");
+            return "redirect:/admin/notice?error=true";
         }
     }
 
-    @GetMapping("/search")
-    public ResponseEntity<Page<Notice>> searchNotices(
-            @RequestParam(required = false) String searchType,
-            @RequestParam(required = false) String keyword,
-            @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
-
-        Page<Notice> noticePage;
-
-        if ("title".equals(searchType)) {
-            noticePage = noticeService.searchByTitle(keyword, pageable);
-        } else if ("content".equals(searchType)) {
-            noticePage = noticeService.searchByContent(keyword, pageable);
-        } else {
-            noticePage = noticeService.findAll(pageable); // 전체 조회
+    @PostMapping("/delete")
+    public String deleteNotices(@RequestParam("ids") List<Long> ids) {
+        try {
+            ids.forEach(noticeService::delete);
+            return "redirect:/admin/notice";
+        } catch (Exception e) {
+            return "redirect:/admin/notice?error=true";
         }
-
-        return ResponseEntity.ok(noticePage);
     }
-    @GetMapping("/all")
-    public ResponseEntity<Page<Notice>> allNotices(
-            @RequestParam(required = false)String searchType,
-            @RequestParam(required = false)String keyword,
-            @PageableDefault(size = 10,sort = "id",direction = Sort.Direction.DESC) Pageable pageable){
-        Page<Notice> noticePage;
-        noticePage = noticeService.findAll(pageable);
-        return ResponseEntity.ok(noticePage);
-    }
-
 }
