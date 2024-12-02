@@ -43,6 +43,12 @@ public class AdminNoticeApiController {
         }else {
             noticePage = noticeService.findAll(pageable); // 전체 조회
         }
+//        if(이미지가있으면){
+//            model.addAttribute("imagePath",imagePath);
+//        }else{
+//            이미지가 없을때
+//            model.addAttribute("imagePath","isNullImg");
+//        }
         //이미지가 한개이상일때 확장성을위해 int로 받아옴 만약 2개이상이면 id 값을 바꿔주는 행동이 필요함
 //        for(Long imgId : noticeIds){
 //            noticeService.findById(imgId,pageable);

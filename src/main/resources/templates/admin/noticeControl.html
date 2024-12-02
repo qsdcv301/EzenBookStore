@@ -64,7 +64,6 @@
 
     <!-- 일괄 선택/삭제 -->
     <div class="mt-3">
-        <button id="selectAllNotice" class="btn btn-secondary">일괄 선택</button>
         <button id="deleteNotice" class="btn btn-danger">일괄 삭제</button>
     </div>
 
@@ -137,13 +136,13 @@
                         <label for="editContent" class="form-label">내용</label>
                         <textarea class="form-control" id="editContent" rows="5" required></textarea>
                     </div>
-                    <div>
-                        기존 이미지 표시 영역
+                    <div class="imageBox">
+                        <img class="img" src="" alt="기존이미지 삽입지점">
                     </div>
                     <div>
                         <!-- 이미지 첨부를 하면 기존이미지에 덮어 씌워짐-->
+                        <h6>이미지를 추가하면 기존이미지는 사라집니다.</h6>
                         <input type="file" class="" id="editImage"/>
-                        <label for="editImage" class="form-label">이미지 첨부 영역</label>
                     </div>
                 </form>
             </div>
@@ -216,10 +215,13 @@
         const id = row.find('td:nth-child(2)').text();
         const title = row.find('td:nth-child(3)').text();
         const content = row.find('td:nth-child(4)').text();
+        const imageId= row.find()
+        isImageFile(imageId, imageType);
 
         $('#editTitle').val(title);
         $('#editContent').val(content);
         $('#editNoticeForm').data('id', id);
+
     });
 
     // 공지사항 수정 처리
@@ -345,6 +347,22 @@
         `;
             tableBody.append(row);
         });
+    }
+    function isImageFile(imageId, imageType) {
+        var imageElement = document.querySelector('.img');
+        fetch(`/admin/notice/${imageId}/${imageType}`) // 서버 API 호출
+            .then(response => response.json())
+            .then(data => {
+                if (data.filePath) { // 경로가 반환되면 이미지 표시
+                    imageElement.src = data.filePath;
+                    imageElement.style.visibility = 'visible';
+                } else { // 경로가 없으면 숨김
+                    imageElement.style.visibility = 'hidden';
+                }
+            })
+            .catch(() => {
+                imageElement.style.visibility = 'hidden'; // 오류 발생 시 숨김
+            });
     }
 
 </script>
