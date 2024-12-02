@@ -18,7 +18,8 @@ public class AdminDashBoardDto {
     private String paymentTotalAmount;
     private String qnACount;
     private String totalAmountSinceMidnight;
+    private String totalCountSinceMidnight;
     private String totalAmountSinceStartOfMonth;
+    private String totalCountSinceStartOfMonth;
     private List<Long> findMonthlyAmountsUpToCurrentMonth;
-
 }

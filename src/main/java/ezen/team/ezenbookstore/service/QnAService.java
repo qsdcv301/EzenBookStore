@@ -172,8 +172,8 @@ public class QnAService implements QnAServiceInterface{
     }
 
     @Override
-    public Long qnACount(){
-        return qnARepository.count();
+    public Long countByAnswerIsNullOrEmpty(){
+        return qnARepository.countByAnswerIsNullOrEmpty();
     }
 
 }

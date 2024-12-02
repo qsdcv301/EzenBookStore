@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -101,7 +101,7 @@
           <div class="card text-white mb-4" style="background: linear-gradient(135deg, #007bff, #00bfff);">
             <div class="card-header">총 주문 수</div>
             <div class="card-body">
-              <h5 class="card-title">3,687건</h5>
+              <h5 class="card-title" th:text="${adminDashBoard.ordersCount != null ? adminDashBoard.ordersCount + '건' : '0건'}">3,687건</h5>
               <p class="card-text">전체 기간 동안의 주문 수입니다.</p>
             </div>
           </div>
@@ -110,7 +110,7 @@
           <div class="card text-white mb-4" style="background: linear-gradient(135deg, #28a745, #5cb85c);">
             <div class="card-header">총 회원 수</div>
             <div class="card-body">
-              <h5 class="card-title">1,187명</h5>
+              <h5 class="card-title" th:text="${adminDashBoard.userCount != null ? adminDashBoard.userCount + '명' : '0명'}">1,187명</h5>
               <p class="card-text">사이트에 가입된 회원 수입니다.</p>
             </div>
           </div>
@@ -119,7 +119,7 @@
           <div class="card text-white mb-4" style="background: linear-gradient(135deg, #ffc107, #ffca2c);">
             <div class="card-header">총 매출</div>
             <div class="card-body">
-              <h5 class="card-title">₩2,530,000</h5>
+              <h5 class="card-title" th:text="${adminDashBoard.paymentTotalAmount != null ? adminDashBoard.paymentTotalAmount : '0원'}">₩2,530,000</h5>
               <p class="card-text">총 매출액입니다.</p>
             </div>
           </div>
@@ -128,7 +128,7 @@
           <div class="card text-white mb-4" style="background: linear-gradient(135deg, #fd7e14, #f5a623);">
             <div class="card-header">문의 처리</div>
             <div class="card-body">
-              <h5 class="card-title">85건</h5>
+              <h5 class="card-title" th:text="${adminDashBoard.qnACount != null ? adminDashBoard.qnACount + '건' : '0건'}">85건</h5>
               <p class="card-text">문의가 들어온 수입니다.</p>
             </div>
           </div>
@@ -208,13 +208,13 @@
               <div class="row">
                 <div class="col-md-6">
                   <h5>TODAY</h5>
-                  <h4>85,000원</h4>
-                  <p>주문: 1건</p>
+                  <h4 th:text="${adminDashBoard.totalAmountSinceMidnight != null ? adminDashBoard.totalAmountSinceMidnight : '0원'}">85,000원</h4>
+                  <p th:text="${adminDashBoard.totalCountSinceMidnight != null ? adminDashBoard.totalCountSinceMidnight + '건' : '0건'}">주문: 1건</p>
                 </div>
                 <div class="col-md-6">
                   <h5>MONTH</h5>
-                  <h4>224,215원</h4>
-                  <p>주문: 6건</p>
+                  <h4 th:text="${adminDashBoard.totalAmountSinceStartOfMonth != null ? adminDashBoard.totalAmountSinceStartOfMonth : '0원'}">224,215원</h4>
+                  <p th:text="${adminDashBoard.totalCountSinceStartOfMonth != null ? adminDashBoard.totalCountSinceStartOfMonth + '건' : '0건'}">주문: 1건</p>
                 </div>
               </div>
             </div>

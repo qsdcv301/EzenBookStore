@@ -15,11 +15,13 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
     @Query("SELECT SUM(p.amount) FROM Payment p")
     Double findTotalAmount();
 
-    @Query("SELECT SUM(p.amount) FROM Payment p WHERE p.paymentDate >= CURRENT_DATE")
-    Double findTotalAmountSinceMidnight();
+    // 오늘 자정부터 현재까지의 총 amount 합계와 개수
+    @Query("SELECT SUM(p.amount), COUNT(p) FROM Payment p WHERE p.paymentDate >= :startOfToday")
+    Object[] findTotalAmountAndCountSinceMidnight(LocalDateTime startOfToday);
 
-    @Query("SELECT SUM(p.amount) FROM Payment p WHERE p.paymentDate >= :startOfMonth")
-    Double findTotalAmountSinceStartOfMonth(LocalDateTime startOfMonth);
+    // 이번 달의 시작부터 현재까지의 총 amount 합계와 개수
+    @Query("SELECT SUM(p.amount), COUNT(p) FROM Payment p WHERE p.paymentDate >= :startOfMonth")
+    Object[] findTotalAmountAndCountSinceStartOfMonth(LocalDateTime startOfMonth);
 
     @Query("SELECT MONTH(p.paymentDate), SUM(p.amount) FROM Payment p " +
             "WHERE YEAR(p.paymentDate) = :year AND MONTH(p.paymentDate) <= :month " +

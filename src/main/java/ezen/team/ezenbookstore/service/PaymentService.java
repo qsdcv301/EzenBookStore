@@ -145,14 +145,16 @@ public class PaymentService implements PaymentServiceInterface {
     }
 
     @Override
-    public Double findTotalAmountSinceMidnight(){
-        return paymentRepository.findTotalAmountSinceMidnight();
+    public Object[] findTotalAmountAndCountSinceMidnight(LocalDateTime startOfToday) {
+        // 직접 전달받은 startOfToday 값을 사용하도록 수정
+        return paymentRepository.findTotalAmountAndCountSinceMidnight(startOfToday);
     }
 
     @Override
-    public Double findTotalAmountSinceStartOfMonth() {
+    public Object[] findTotalAmountAndCountSinceStartOfMonth() {
+        // 이번 달의 시작 날짜를 구해서 전달하도록 수정
         LocalDateTime startOfMonth = getStartOfMonth();
-        return paymentRepository.findTotalAmountSinceStartOfMonth(startOfMonth);
+        return paymentRepository.findTotalAmountAndCountSinceStartOfMonth(startOfMonth);
     }
 
     @Override

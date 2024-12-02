@@ -4,6 +4,7 @@ import ezen.team.ezenbookstore.entity.QnA;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -21,5 +22,8 @@ public interface QnARepository extends JpaRepository<QnA, Long> {
     Page<QnA> findByAnswer(String answer, Pageable pageable);
 
     Page<QnA> findByCategoryAndAnswer(Byte category, String answer, Pageable pageable);
+
+    @Query("SELECT COUNT(q) FROM QnA q WHERE q.answer IS NULL OR q.answer = ''")
+    Long countByAnswerIsNullOrEmpty();
 
 }
