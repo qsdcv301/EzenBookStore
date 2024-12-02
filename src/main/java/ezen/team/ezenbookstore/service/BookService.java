@@ -8,9 +8,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -125,4 +128,66 @@ public class BookService {
         return bookRepository.findTop8ByOrderByPublishDateDesc();
     }
 
+    @Transactional
+    public void updateDiscountForBooks(Map<String, Object> payload) {
+        // 데이터 추출 및 변환
+        List<Integer> bookIds = (List<Integer>) payload.get("bookIds");
+        byte discount;
+
+        try {
+            discount = Byte.parseByte(payload.get("discount").toString());
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Invalid discount value. It must be a valid byte.");
+        }
+
+        // 검증
+        if (bookIds == null || bookIds.isEmpty()) {
+            throw new IllegalArgumentException("No book IDs provided.");
+        }
+        if (discount < 0) {
+            throw new IllegalArgumentException("Discount value must be non-negative.");
+        }
+
+        // 각 Book의 할인율 업데이트
+        for (Integer bookId : bookIds) {
+            updateDiscountByBookId(bookId.longValue(), discount);
+        }
+    }
+
+    @Transactional
+    public void updateDiscountByBookId(Long bookId, byte discount) {
+        // 데이터베이스에서 Book을 조회
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new IllegalArgumentException("Book not found with ID: " + bookId));
+
+        // 할인율 설정
+        book.setDiscount(discount);
+
+        // 변경 사항 저장
+        bookRepository.save(book);
+    }
+
+    @Transactional
+    public void deleteBooksByIdsRaw(List<?> bookIdsRaw) {
+        // Integer -> Long 변환
+        List<Long> bookIds = bookIdsRaw.stream()
+                .map(id -> {
+                    if (id instanceof Integer) {
+                        return ((Integer) id).longValue(); // Integer -> Long 변환
+                    } else if (id instanceof Long) {
+                        return (Long) id;
+                    } else {
+                        throw new IllegalArgumentException("Invalid ID type: " + id.getClass());
+                    }
+                })
+                .collect(Collectors.toList());
+
+        // 삭제 로직 수행
+        deleteBooksByIds(bookIds);
+    }
+
+    @Transactional
+    public void deleteBooksByIds(List<Long> bookIds) {
+        bookRepository.deleteAllById(bookIds); // Repository 호출
+    }
 }

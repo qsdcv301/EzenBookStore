@@ -9,6 +9,7 @@ import ezen.team.ezenbookstore.service.FileUploadService;
 import ezen.team.ezenbookstore.service.SubCategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -93,7 +94,7 @@ public class AdminBookApiController {
     }
 
     //id로 책 조회
-    @GetMapping("/{id}")
+    @PostMapping("/{id}")
     public ResponseEntity<Map<String, Object>> getBookById(@PathVariable Long id) {
         Book book = bookService.findById(id);
         if (book == null) {
@@ -147,7 +148,7 @@ public class AdminBookApiController {
 
 
     //책 수정 메서드
-    @PutMapping("/update")
+    @PostMapping("/update")
     @ResponseBody
     public ResponseEntity<Book> updateBook(@RequestBody Book book,
                                            @RequestParam(name = "publish_Date", required = false) String publishDate,
@@ -179,5 +180,31 @@ public class AdminBookApiController {
         bookService.delete(id);
         return ResponseEntity.ok("Book deleted successfully");
     }
+
+    @PostMapping("/discount")
+    public ResponseEntity<String> updateDiscountForBooks(@RequestBody Map<String, Object> payload) {
+        // 서비스에 데이터 전달
+        bookService.updateDiscountForBooks(payload);
+        return ResponseEntity.ok("Discounts updated successfully");
+    }
+
+    @PostMapping("/delete/batch")
+    public ResponseEntity<String> deleteSelectedBooks(@RequestBody Map<String, Object> payload) {
+        List<?> bookIdsRaw = (List<?>) payload.get("bookIds");
+
+        if (bookIdsRaw == null || bookIdsRaw.isEmpty()) {
+            return ResponseEntity.badRequest().body("No valid book IDs provided.");
+        }
+
+        try {
+            bookService.deleteBooksByIdsRaw(bookIdsRaw); // 서비스 호출
+            return ResponseEntity.ok("Books deleted successfully.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+
+
 
 }

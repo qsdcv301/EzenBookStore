@@ -121,8 +121,8 @@
         <!-- 수정/삭제 버튼 -->
         <div class="search-section d-flex align-items-center col-4">
             <input type="number" class="form-control mr-2" placeholder="할인율" id="setDiscount" style="width: 100px;">
-            <button class="btn btn-primary" onclick="updateBulkStatus()">적용</button>
-            <button class="btn btn-danger delete-button">
+            <button class="btn btn-primary" id="discountControl" onclick="updateDiscountStatus()">적용</button>
+            <button class="btn btn-danger" onclick="deleteSelectedBooks()">
                 선택항목 삭제
             </button>
             <button class="btn btn-primary" data-toggle="modal" data-target="#addProductModal">상품 추가</button>
@@ -590,35 +590,35 @@
         // 책 정보 가져오기
         $.ajax({
             url: '/admin/book/' + bookId,
-            method: 'GET',
+            method: 'Post',
             success: function (data) {
-                $('#bookId').val(data.id || '');
-                $('#title').val(data.title || '');
-                $('#author').val(data.author || '');
-                $('#publisher').val(data.publisher || '');
-                $('#isbn').val(data.isbn || '');
-                $('#stock').val(data.stock || '');
-                $('#ifkr').val(data.ifkr);
-                $('#price').val(data.price || '');
-                $('#discount').val(data.discount || '');
+                $('#bookId').val(data.book.id || '');
+                $('#title').val(data.book.title || '');
+                $('#author').val(data.book.author || '');
+                $('#publisher').val(data.book.publisher || '');
+                $('#isbn').val(data.book.isbn || '');
+                $('#stock').val(data.book.stock || '');
+                $('#ifkr').val(data.book.ifkr);
+                $('#price').val(data.book.price || '');
+                $('#discount').val(data.book.discount || '');
 
                 // 날짜를 yyyy-MM-dd 형식으로 설정 (ISO 형식에서 날짜 부분만 추출)
-                $('#publishDate').val(data.publishDate ? data.publishDate.split('T')[0] : '');
+                $('#publishDate').val(data.book.publishDate ? data.book.publishDate.split('T')[0] : '');
 
                 // 카테고리 선택
-                $('#category').val(data.category ? data.category.id : '');
+                $('#category').val(data.book.category ? data.book.category.id : '');
 
                 // 선택된 카테고리 기반으로 서브카테고리 로드
-                if (data.category) {
+                if (data.book.category) {
                     $.ajax({
-                        url: `/admin/subcategories/${data.category.id}`,
+                        url: `/admin/subcategories/${data.book.category.id}`,
                         method: 'GET',
                         success: function (subcategories) {
                             $('#subcategory').empty();
                             $('#subcategory').append(new Option("세부 카테고리를 선택하세요", ""));
                             subcategories.forEach(function (subcategory) {
                                 var option = new Option(`${subcategory.id}: ${subcategory.name}`, subcategory.id);
-                                if (subcategory.id === data.subcategory.id) {
+                                if (subcategory.id === data.book.subcategory.id) {
                                     option.selected = true;
                                 }
                                 $('#subcategory').append(option);
@@ -631,10 +631,10 @@
                 }
 
                 // 책 설명 정보 설정
-                $('#bookdescriptionId').val(data.bookdescription ? data.bookdescription.id : '');
-                $('#description').val(data.bookdescription ? data.bookdescription.description : '');
-                $('#writer').val(data.bookdescription ? data.bookdescription.writer : '');
-                $('#contents').val(data.bookdescription ? data.bookdescription.contents : '');
+                $('#bookdescriptionId').val(data.book.bookdescription ? data.book.bookdescription.id : '');
+                $('#description').val(data.book.bookdescription ? data.book.bookdescription.description : '');
+                $('#writer').val(data.book.bookdescription ? data.book.bookdescription.writer : '');
+                $('#contents').val(data.book.bookdescription ? data.book.bookdescription.contents : '');
                 const currentImagesContainer = $('#currentImages');
                 currentImagesContainer.empty();
 
@@ -911,6 +911,93 @@
             });
         }
     });
+
+
+    //할인율 수정
+    function updateDiscountStatus() {
+        // 입력된 할인율 가져오기
+        const discount = $('#setDiscount').val();
+
+        // 할인율 값 검증
+        if (!discount || discount <= 0) {
+            alert("유효한 할인율을 입력하세요.");
+            return;
+        }
+
+        // 체크된 체크박스의 book-id 가져오기
+        const bookIds = [];
+        $('input[type="checkbox"]:checked').each(function () {
+            const bookId = $(this).data('id'); // data-id 속성 읽기
+            if (bookId) { // bookId가 null이 아니면 추가
+                bookIds.push(bookId);
+            }
+        });
+
+        // 디버깅 로그 추가
+        console.log('Selected book IDs:', bookIds);
+
+
+        // 체크된 항목이 없을 경우 경고
+        if (bookIds.length === 0) {
+            alert("선택된 항목이 없습니다.");
+            return;
+        }
+
+        if (confirm(`선택된 항목에 할인율 ${discount}%을 적용하시겠습니까?`)) {
+            // AJAX 요청
+            $.ajax({
+                url: `/admin/book/discount`,
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ bookIds: bookIds, discount: parseInt(discount) }), // 할인율과 ID 배열 전송
+                success: function () {
+                    alert("할인율이 적용되었습니다.");
+                    location.reload();
+                },
+                error: function (xhr, status, error) {
+                    console.error('변경 실패', error);
+                    alert("변경에 실패했습니다.");
+                }
+            });
+        }
+    }
+
+    //일괄삭제
+    function deleteSelectedBooks() {
+        const bookIds = [];
+        $('input[type="checkbox"]:checked').each(function () {
+            const bookId = $(this).data('id');
+            if (bookId) {
+                bookIds.push(Number(bookId)); // 명시적으로 숫자로 변환
+            }
+        });
+
+        console.log("삭제할 책 ID 목록:", bookIds); // 디버깅용
+
+        if (bookIds.length === 0) {
+            alert("삭제할 항목을 선택하세요.");
+            return;
+        }
+
+        if (confirm("선택된 항목을 삭제하시겠습니까?")) {
+            $.ajax({
+                url: `/admin/book/delete/batch`,
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ bookIds: bookIds }),
+                success: function () {
+                    alert("선택된 항목이 삭제되었습니다.");
+                    location.reload();
+                },
+                error: function (xhr, status, error) {
+                    console.error("삭제 실패:", xhr.responseText);
+                    alert("삭제에 실패했습니다.");
+                }
+            });
+        }
+    }
+
+
 </script>
 
 </body>
