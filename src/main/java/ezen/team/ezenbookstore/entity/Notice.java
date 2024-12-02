@@ -32,4 +32,7 @@ public class Notice {
     @CreationTimestamp
     private Timestamp createAt;
 
+    @Transient //데이터 베이스에는 저장되지않는 이미지 경로
+    private String imagePath;
+
 }
