@@ -15,29 +15,34 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
-public class OrderItemService {
+public class OrderItemService implements OrderItemServiceInterface{
 
     private final OrderItemRepository orderItemRepository;
     private final UserService userService;
 
+    @Override
     public OrderItem findById(Long id) {
         return orderItemRepository.findById(id).orElse(null);
     }
 
+    @Override
     public List<OrderItem> findAll() {
         return orderItemRepository.findAll();
     }
 
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public OrderItem create(OrderItem orderItem) {
         return orderItemRepository.save(orderItem);
     }
 
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public void delete(Long id) {
         orderItemRepository.deleteById(id);
     }
 
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public OrderItem update(OrderItem orderItem) {
         OrderItem newOrderItem = OrderItem.builder()
@@ -50,6 +55,7 @@ public class OrderItemService {
         return orderItemRepository.save(newOrderItem);
     }
 
+    @Override
     public Map<String, String> buildOrderItemResponse(String orderItemId, @ModelAttribute("user") User user) {
         Map<String, String> response = new HashMap<>();
         Long id = ParseUtils.parseLong(orderItemId);
@@ -75,6 +81,7 @@ public class OrderItemService {
         return response;
     }
 
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public Map<String, String> updateOrderItemAndUserPoint(Long orderItemId, Long point, @ModelAttribute("user") User user) {
         Map<String, String> response = new HashMap<>();

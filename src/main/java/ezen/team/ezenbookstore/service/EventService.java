@@ -14,22 +14,26 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class EventService{
+public class EventService implements EventServiceInterface{
 
     private final EventRepository eventRepository;
 
+    @Override
     public Event findById(Long id){
         return eventRepository.findById(id).orElse(null);
     }
 
+    @Override
     public Page<Event> findAll(Pageable pageable){
         return eventRepository.findAll(pageable);
     }
 
+    @Override
     public Event create(Event event){
         return eventRepository.save(event);
     }
 
+    @Override
     public Event update(Event event){
         Event newEvent = Event.builder()
                 .id(event.getId())
@@ -41,37 +45,48 @@ public class EventService{
         return eventRepository.save(newEvent);
     }
 
+    @Override
     public void delete(Long id){
         eventRepository.deleteById(id);
     }
 
     // 시작 전 이벤트 조회
+    @Override
     public Page<Event> findUpcomingEvents(Pageable pageable) {
         return eventRepository.findByStartDateAfter(new Timestamp(System.currentTimeMillis()).toLocalDateTime(), pageable);
     }
 
     // 진행 중 이벤트 조회
+    @Override
     public Page<Event> findOngoingEvents(Pageable pageable) {
         Timestamp now = new Timestamp(System.currentTimeMillis());
         return eventRepository.findByStartDateBeforeAndEndDateAfter(now.toLocalDateTime(), now.toLocalDateTime(), pageable);
     }
 
     // 종료된 이벤트 조회
+    @Override
     public Page<Event> findEndedEvents(Pageable pageable) {
         return eventRepository.findByEndDateBefore(new Timestamp(System.currentTimeMillis()).toLocalDateTime(), pageable);
     }
+
+    @Override
     public List<Event> findOngoingEventList(){
         Timestamp now = new Timestamp(System.currentTimeMillis());
         return eventRepository.findByStartDateBeforeAndEndDateAfter(now.toLocalDateTime(), now.toLocalDateTime());
 
     }
+
+    @Override
     public Page<Event> searchByTitle(String keyword, Pageable pageable) {
         return eventRepository.findByTitleContaining(keyword, pageable);
     }
 
+    @Override
     public Page<Event> searchByContent(String keyword, Pageable pageable) {
         return eventRepository.findByContentContaining(keyword, pageable);
     }
+
+    @Override
     public String calculateEventStatus(LocalDateTime startDate, LocalDateTime endDate) {
         LocalDateTime now = LocalDateTime.now();
 

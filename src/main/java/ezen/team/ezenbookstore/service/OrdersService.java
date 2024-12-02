@@ -13,41 +13,49 @@ import java.util.*;
 
 @Service
 @RequiredArgsConstructor
-public class OrdersService {
+public class OrdersService implements OrdersServiceInterface{
 
     private final OrdersRepository orderRepository;
     private final FileUploadService fileUploadService;
 
+    @Override
     public Orders findById(Long id) {
         return orderRepository.findById(id).orElse(null);
     }
 
+    @Override
     public List<Orders> findAll() {
         return orderRepository.findAll();
     }
 
+    @Override
     public List<Orders> findByUserEmail(String email) {
         return orderRepository.findByUserEmail(email);
     }
 
+    @Override
     public List<Orders> findByOrderId(Long orderId) {
         return orderRepository.findAllByUserId(orderId);
     }
 
+    @Override
     public List<Orders> findAllByUserId(Long userId) {
         return orderRepository.findAllByUserId(userId);
     }
 
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public void deleteById(Long id) {
         orderRepository.deleteById(id);
     }
 
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public Orders create(Orders order) {
         return orderRepository.save(order);
     }
 
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public Orders update(Orders order) {
         Orders newOrder = Orders.builder()
@@ -61,6 +69,7 @@ public class OrdersService {
         return orderRepository.save(newOrder);
     }
 
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public void cancelOrder(Long orderId) {
         Orders orders = findById(orderId);
@@ -76,6 +85,7 @@ public class OrdersService {
         update(newOrders);
     }
 
+    @Override
     public Map<String, Object> buildOrderResponse(Orders order) {
         Map<String, Object> response = new HashMap<>();
 
@@ -161,24 +171,29 @@ public class OrdersService {
         return response;
     }
 
+    @Override
     public List<Orders> findAllByOrderDateBetweenAndUserId(LocalDate startDate, LocalDate endDate, Long userId) {
         Timestamp startTimestamp = Timestamp.valueOf(startDate.atStartOfDay());
         Timestamp endTimestamp = Timestamp.valueOf(endDate.atStartOfDay().plusDays(1).minusNanos(1));
         return orderRepository.findAllByOrderDateBetweenAndUserId(startTimestamp, endTimestamp, userId);
     }
 
+    @Override
     public List<Orders> findAllByDelivery_StatusAndUserId(Byte deliveryStatus, Long userId) {
         return orderRepository.findAllByDelivery_StatusAndUserId(deliveryStatus, userId);
     }
 
+    @Override
     public List<Orders> findAllByStatusAndUserId(Byte orderStatus, Long userId) {
         return orderRepository.findAllByStatusAndUserId(orderStatus, userId);
     }
 
+    @Override
     public List<Orders> findAllByOrderItemsBookTitleContainingAndUserId(String keyword, Long userId) {
         return orderRepository.findAllByOrderItems_Book_TitleContainingAndUserId(keyword, userId);
     }
 
+    @Override
     public List<Orders> filterOrders(LocalDate startDate, LocalDate endDate, Byte deliveryStatus, Byte orderStatus, String keyword, Long userId) {
         List<Orders> filteredOrders = findAllByUserId(userId);
         boolean isFirstFilter = true;

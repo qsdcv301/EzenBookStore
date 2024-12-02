@@ -17,20 +17,23 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class BookService {
+public class BookService implements BookServiceInterface {
 
     private final BookRepository bookRepository;
     private final BookDescriptionRepository bookDescriptionRepository;
 
+    @Override
     public Book findById(Long id) {
         return bookRepository.findById(id).orElse(null);
     }
 
+    @Override
     public Book create(Book book) {
         return bookRepository.save(book);
     }
 
     // 새 책 추가 메서드
+    @Override
     public Book addBook(Book book) {
         // 책 설명이 포함된 경우 처리
         if (book.getBookdescription() != null) {
@@ -43,6 +46,7 @@ public class BookService {
         return bookRepository.save(book);
     }
 
+    @Override
     public Book update(Book book) {
         Book newBook = Book.builder()
                 .id(book.getId())
@@ -64,67 +68,83 @@ public class BookService {
         return bookRepository.save(newBook);
     }
 
+    @Override
     public void delete(Long id) {
         bookRepository.deleteById(id);
     }
 
+    @Override
     public List<Book> findByTitleContaining(String title) {
         return bookRepository.findByTitleContaining(title);
     }
 
+    @Override
     public List<Book> findByAuthorContaining(String author) {
         return bookRepository.findByAuthorContaining(author);
     }
 
+    @Override
     public List<Book> findByPublisherContaining(String publisher) {
         return bookRepository.findByPublisherContaining(publisher);
     }
 
+    @Override
     public List<Book> findByIsbnContaining(String isbn) {
         return bookRepository.findByIsbnContaining(isbn);
     }
 
+    @Override
     public Page<Book> findAll(Pageable pageable) {
         return bookRepository.findAll(pageable);
     }
 
+    @Override
     public List<Book> findAll() {
         return bookRepository.findAll();
     }
 
+    @Override
     public List<Book> findAllByIfkr(Byte ifkr) {
         return bookRepository.findAllByIfkr(ifkr);
     }
 
+    @Override
     public List<Book> findAllByCategoryId(Long categoryId) {
         return bookRepository.findAllByCategoryId(categoryId);
     }
 
+    @Override
     public List<Book> findAllBySubcategoryId(Long subcategoryId) {
         return bookRepository.findAllBySubcategoryId(subcategoryId);
     }
 
+    @Override
     public Page<Book> findAllByIfkrAndCategoryNameAndSubcategoryName(byte ifkr, String categoryName, String subcategoryName, Pageable pageable) {
         return bookRepository.findAllByIfkrAndCategoryNameAndSubcategoryName(ifkr, categoryName, subcategoryName, pageable);
     }
 
+    @Override
     public Page<Book> findAllByIfkrAndCategoryName(byte ifkr, String categoryName, Pageable pageable) {
         return bookRepository.findAllByIfkrAndCategoryName(ifkr, categoryName, pageable);
     }
 
+    @Override
     public Page<Book> findAllByIfkr(byte ifkr, Pageable pageable) {
         return bookRepository.findAllByIfkr(ifkr, pageable);
     }
 
+    @Override
     public Book findByTitle(String title) {
         return bookRepository.findByTitle(title).orElse(null);
     }
 
-    public List<Book> findTop8ByOrderByCountDesc(){
+    @Override
+    public List<Book> findTop8ByOrderByCountDesc() {
         return bookRepository.findTop8ByOrderByCountDesc();
     }
 
-    public List<Book> findTop8ByOrderByPublishDateDesc(){
+    @Override
+    public List<Book> findTop8ByOrderByPublishDateDesc() {
         return bookRepository.findTop8ByOrderByPublishDateDesc();
     }
 

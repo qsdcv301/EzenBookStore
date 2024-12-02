@@ -17,24 +17,29 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
-public class QnAService {
+public class QnAService implements QnAServiceInterface{
 
     private final QnARepository qnARepository;
     private final UserService userService;
     private final FileUploadService fileUploadService;
 
+    @Override
     public QnA findById(Long id) {
         return qnARepository.findById(id).orElse(null);
     }
 
+    @Override
     public Page<QnA> findByCategory(Byte category, Pageable pageable) {
         return qnARepository.findByCategory(category, pageable);
     }
 
+    @Override
     public Page<QnA> findAll(Pageable pageable) {
         return qnARepository.findAll(pageable);
     }
 
+    @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean saveAnswer(Long id, String answer) {
         // 특정 QnA에 답변 저장
         QnA qna = findById(id); // QnA를 조회
@@ -46,6 +51,7 @@ public class QnAService {
         return false;
     }
 
+    @Override
     public void bulkAnswer(List<Long> ids, String answer) {
         // 여러 QnA에 동일한 답변 저장
         List<QnA> qnaList = qnARepository.findAllById(ids); // ID 리스트로 QnA 조회
@@ -54,15 +60,18 @@ public class QnAService {
         }
     }
 
+    @Override
     public List<QnA> findAll() {
         return qnARepository.findAll();
     }
 
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public QnA create(QnA qnA) {
         return qnARepository.save(qnA);
     }
 
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public QnA update(QnA qnA) {
         QnA newQnA = QnA.builder()
@@ -77,23 +86,28 @@ public class QnAService {
         return qnARepository.save(newQnA);
     }
 
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public void deleteById(Long id) {
         qnARepository.deleteById(id);
     }
 
+    @Override
     public List<QnA> findAllByUserId(Long userId) {
         return qnARepository.findAllByUserId(userId);
     }
 
+    @Override
     public Page<QnA> findAllByUserId(Long userId, Pageable pageable) {
         return qnARepository.findAllByUserId(userId, pageable);
     }
 
+    @Override
     public Page<QnA> findAllByUserIdAndCategory(Long userId, Byte category, Pageable pageable) {
         return qnARepository.findAllByUserIdAndCategory(userId, category, pageable);
     }
 
+    @Override
     public Map<String, String> findQnAById(String questionId) {
         Map<String, String> response = new HashMap<>();
         try {
@@ -132,6 +146,7 @@ public class QnAService {
         return response;
     }
 
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public Map<String, Boolean> addQnA(QnA qna, String email, List<MultipartFile> files) {
         Map<String, Boolean> response = new HashMap<>();

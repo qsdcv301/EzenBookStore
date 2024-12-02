@@ -10,7 +10,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class PaymentService {
+public class PaymentService implements PaymentServiceInterface {
 
     private final PaymentRepository paymentRepository;
     private final DeliveryService deliveryService;
@@ -19,19 +19,23 @@ public class PaymentService {
     private final BookService bookService;
     private final CartService cartService;
 
+    @Override
     public Payment findById(Long id) {
         return paymentRepository.findById(id).orElse(null);
     }
 
+    @Override
     public List<Payment> findAll() {
         return paymentRepository.findAll();
     }
 
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public Payment create(Payment payment) {
         return paymentRepository.save(payment);
     }
 
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public Payment update(Long id, Payment payment) {
         Payment newPayment = Payment.builder()
@@ -45,15 +49,18 @@ public class PaymentService {
         return paymentRepository.save(newPayment);
     }
 
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public void deleteById(Long id) {
         paymentRepository.deleteById(id);
     }
 
+    @Override
     public List<Payment> findAllByUserId(Long userId) {
         return paymentRepository.findAllByUserId(userId);
     }
 
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean processPayment(User user, String paymentCode, String userName, String addr, String addrextra, String tel,
                                   Long amount, List<String> titleList, List<Integer> quantityList, List<Long> cartIdList) {

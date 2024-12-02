@@ -18,25 +18,29 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
-public class ReviewService {
+public class ReviewService implements ReviewServiceInterface{
 
     private final ReviewRepository reviewRepository;
     private final FileUploadService fileUploadService;
     private final OrderItemService orderItemService;
 
+    @Override
     public Review findById(Long id) {
         return reviewRepository.findById(id).orElse(null);
     }
 
+    @Override
     public List<Review> findAll() {
         return reviewRepository.findAll();
     }
 
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public Review create(Review review) {
         return reviewRepository.save(review);
     }
 
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public Review update(Long id, Review review) {
         Review newReview = Review.builder()
@@ -51,28 +55,34 @@ public class ReviewService {
         return reviewRepository.save(newReview);
     }
 
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public void deleteById(Long id) {
         reviewRepository.deleteById(id);
     }
 
+    @Override
     public List<Review> findAllByUserId(Long userId) {
         return reviewRepository.findAllByUserId(userId);
     }
 
+    @Override
     public List<Review> findAllByBookId(Long bookId) {
         return reviewRepository.findAllByBookId(bookId);
     }
 
     // 모든 리뷰 조회 (페이지네이션)
+    @Override
     public Page<Review> findAll(Pageable pageable) {
         return reviewRepository.findAll(pageable);
     }
 
+    @Override
     public List<Review> findAllByBookIdAndUserId(Long bookId, Long userId) {
         return reviewRepository.findAllByBookIdAndUserId(bookId, userId);
     }
 
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public Map<String, String> addReview(String title, String comment, byte rating, Long orderItemId, MultipartFile file, Model model) {
         Map<String, String> response = new HashMap<>();
@@ -105,14 +115,18 @@ public class ReviewService {
         }
         return response;
     }
+
+    @Override
     public Page<Review> searchByKeyword(String keyword, Pageable pageable) {
         return reviewRepository.findAllByTitleContaining(keyword, pageable);
     }
 
+    @Override
     public Page<Review> findAllByUserName(String name, Pageable pageable) {
         return reviewRepository.findAllByUser_NameContaining(name, pageable);
     }
 
+    @Override
     public Page<Review> findAllByBookTitle(String title, Pageable pageable) {
         return reviewRepository.findAllByBook_TitleContaining(title, pageable);
     }
