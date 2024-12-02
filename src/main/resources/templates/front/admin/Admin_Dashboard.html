@@ -144,16 +144,12 @@
           <div class="task-card mb-4">
             <div class="card-header" id="today-date">오늘의 할 일</div>
             <div class="card-body">
-              <div class="row">
+              <div class="row pl-5 pr-5">
                 <!-- 상태 박스 -->
-                <div class="col-md-12">
-                  <div class="status-box" style="color: #007bff; background-color: #D7ECFB;">
-                    <a href="#new-orders">신규주문</a>
-                    <p>197건</p>
-                  </div>
+                <div class="col-md-12 pl-3 pr-3">
 
                   <div class="status-box" style="color: #007bff; background-color: #D7ECFB;">
-                    <a href="#pending-payments">상품준비중</a>
+                    <a href="#pending-payments">배송 준비중</a>
                     <p>25건</p>
                   </div>
 
@@ -163,32 +159,27 @@
                   </div>
 
                   <div class="status-box" style="color: #007bff; background-color: #D7ECFB;">
-                    <a href="#shipping">배송완료</a>
+                    <a href="#shipping">배송 완료</a>
                     <p>35건</p>
                   </div>
 
                   <div class="status-box" style="color: #007bff; background-color: #D7ECFB;">
-                    <a href="#on-hold">보류중</a>
+                    <a href="#on-hold">보류건</a>
                     <p>3건</p>
                   </div>
 
                   <div class="status-box" style="color: #ff3265; background-color: #FFDCE5;">
-                    <a href="#on-hold">취소요청</a>
+                    <a href="#on-hold">취소 요청</a>
                     <p>3건</p>
                   </div>
 
                   <div class="status-box" style="color: #ff3265; background-color: #FFDCE5;">
-                    <a href="#on-hold">반품요청</a>
+                    <a href="#on-hold">반품/교환 요청</a>
                     <p>5건</p>
                   </div>
 
                   <div class="status-box" style="color: #ff3265; background-color: #FFDCE5;">
-                    <a href="#on-hold">교환요청</a>
-                    <p>1건</p>
-                  </div>
-
-                  <div class="status-box" style="color: #ff3265; background-color: #FFDCE5;">
-                    <a href="#on-hold">환불전</a>
+                    <a href="#on-hold">환불건</a>
                     <p>2건</p>
                   </div>
                 </div>
@@ -227,7 +218,7 @@
         <div class="col-md-8">
           <div class="sales-statistics-card mb-4">
             <div class="card-header">매출 통계</div>
-            <div class="card-body" style="height: 300px;">
+            <div class="card-body" style="height: 280px;">
               <canvas id="salesChart" width="400" height="300"></canvas>
             </div>
           </div>
