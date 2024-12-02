@@ -14,11 +14,13 @@
       justify-content: center;
       align-items: center;
       height: 100vh;
-      background-color: #f8f9fa;
+      /* background-color: #f8f9fa; */
       margin: 0;
     }
     .card-title {
-      font-size: 1.2rem;
+      font-size: 20px;
+      font-weight: bold;
+      color: #38acff;
     }
     .status-box {
       display: inline-block;
@@ -31,7 +33,7 @@
       border-radius: 5px;
       padding-top: 35px;
       font-weight: bold;
-      font-size: 1.1rem;
+      font-size: 16px;
       cursor: pointer;
     }
     .status-box a {
@@ -42,34 +44,36 @@
       background-color: #f8f9fa;
     }
     .sales-summary-card {
-      border: 2px solid #007bff;
+      border: 1px solid #bdbdbd;
       border-radius: 10px;
     }
     .sales-summary-card .card-header {
-      background-color: #007bff;
-      color: #ffffff;
+      /* background-color: #E9ECEF; */
+      /* color: #ffffff; */
       font-weight: bold;
+      font-size: 18px;
     }
     .sales-summary-card .card-body {
       text-align: center;
     }
     .sales-summary-card .card-body h4 {
-      color: #007bff;
+      color: #38acff;
       margin: 10px 0;
     }
 
     .task-card, .sales-statistics-card {
-      border: 2px solid #007bff;
+      border: 1px solid #bdbdbd;
       border-radius: 10px;
     }
     .task-card .card-header, .sales-statistics-card .card-header {
-      background-color: #007bff;
-      color: #ffffff;
+      /* background-color: #6C757D; */
+      /* color: #ffffff; */
       font-weight: bold;
+      font-size: 18px;
     }
-    .task-card .card-body, .sales-statistics-card .card-body {
+    /* .task-card .card-body, .sales-statistics-card .card-body {
       text-align: center;
-    }
+    } */
     .task-card .status-box, .sales-statistics-card .status-box {
       margin-top: 15px;
       display: inline-block;
@@ -77,15 +81,15 @@
       height: 120px;
       text-align: center;
       vertical-align: top;
-      border: 1px solid #ccc;
+      /* border: 1px solid #ccc; */
       border-radius: 5px;
       padding-top: 35px;
       font-weight: bold;
-      font-size: 1.1rem;
+      font-size: 16px;
       cursor: pointer;
     }
     .task-card .status-box a, .sales-statistics-card .status-box a {
-      color: #ffffff;
+      color: #555;
       text-decoration: none;
     }
   </style>
@@ -98,16 +102,16 @@
       <!-- 판매 현황 카드 -->
       <div class="row" id="sales">
         <div class="col-md-3">
-          <div class="card text-white mb-4" style="background: linear-gradient(135deg, #007bff, #00bfff);">
+          <div class="task-card mb-4">
             <div class="card-header">총 주문 수</div>
             <div class="card-body">
-              <h5 class="card-title">3,687건</h5>
+              <h5 class="card-title" >3,687건</h5>
               <p class="card-text">전체 기간 동안의 주문 수입니다.</p>
             </div>
           </div>
         </div>
         <div class="col-md-3">
-          <div class="card text-white mb-4" style="background: linear-gradient(135deg, #28a745, #5cb85c);">
+          <div class="task-card mb-4">
             <div class="card-header">총 회원 수</div>
             <div class="card-body">
               <h5 class="card-title">1,187명</h5>
@@ -116,7 +120,7 @@
           </div>
         </div>
         <div class="col-md-3">
-          <div class="card text-white mb-4" style="background: linear-gradient(135deg, #ffc107, #ffca2c);">
+          <div class="task-card mb-4">
             <div class="card-header">총 매출</div>
             <div class="card-body">
               <h5 class="card-title">₩2,530,000</h5>
@@ -125,7 +129,7 @@
           </div>
         </div>
         <div class="col-md-3">
-          <div class="card text-white mb-4" style="background: linear-gradient(135deg, #fd7e14, #f5a623);">
+          <div class="task-card mb-4">
             <div class="card-header">문의 처리</div>
             <div class="card-body">
               <h5 class="card-title">85건</h5>
@@ -142,52 +146,43 @@
           <div class="task-card mb-4">
             <div class="card-header" id="today-date">오늘의 할 일</div>
             <div class="card-body">
-              <div class="row">
+              <div class="row pl-5 pr-5">
                 <!-- 상태 박스 -->
-                <div class="col-md-12" style="color: #fff;">
-                  <div class="status-box" style="background-color: #007bff;">
-                    <a href="#new-orders">신규주문</a>
-                    <p>10건</p>
+                <div class="col-md-12 pl-3 pr-3">
+
+                  <div class="status-box" style="color: #007bff; background-color: #D7ECFB;">
+                    <a href="#pending-payments">배송 준비중</a>
+                    <p>25건</p>
                   </div>
 
-                  <div class="status-box" style="background-color: #ffc107;">
-                    <a href="#pending-payments">상품준비중</a>
-                    <p>5건</p>
-                  </div>
-
-                  <div class="status-box" style="background-color: #ffc107;">
+                  <div class="status-box" style="color: #007bff; background-color: #D7ECFB;">
                     <a href="#pending-payments">배송중</a>
+                    <p>53건</p>
+                  </div>
+
+                  <div class="status-box" style="color: #007bff; background-color: #D7ECFB;">
+                    <a href="#shipping">배송 완료</a>
+                    <p>35건</p>
+                  </div>
+
+                  <div class="status-box" style="color: #007bff; background-color: #D7ECFB;">
+                    <a href="#on-hold">보류건</a>
+                    <p>3건</p>
+                  </div>
+
+                  <div class="status-box" style="color: #ff3265; background-color: #FFDCE5;">
+                    <a href="#on-hold">취소 요청</a>
+                    <p>3건</p>
+                  </div>
+
+                  <div class="status-box" style="color: #ff3265; background-color: #FFDCE5;">
+                    <a href="#on-hold">반품/교환 요청</a>
                     <p>5건</p>
                   </div>
 
-                  <div class="status-box" style="background-color: #28a745;">
-                    <a href="#shipping">배송완료</a>
-                    <p>8건</p>
-                  </div>
-
-                  <div class="status-box" style="background-color: #dc3545;">
-                    <a href="#on-hold">보류중</a>
-                    <p>3건</p>
-                  </div>
-
-                  <div class="status-box" style="background-color: #dc3545;">
-                    <a href="#on-hold">취소요청</a>
-                    <p>3건</p>
-                  </div>
-
-                  <div class="status-box" style="background-color: #dc3545;">
-                    <a href="#on-hold">반품요청</a>
-                    <p>3건</p>
-                  </div>
-
-                  <div class="status-box" style="background-color: #dc3545;">
-                    <a href="#on-hold">교환요청</a>
-                    <p>3건</p>
-                  </div>
-
-                  <div class="status-box" style="background-color: #dc3545;">
-                    <a href="#on-hold">환불전</a>
-                    <p>3건</p>
+                  <div class="status-box" style="color: #ff3265; background-color: #FFDCE5;">
+                    <a href="#on-hold">환불건</a>
+                    <p>2건</p>
                   </div>
                 </div>
               </div>
@@ -207,12 +202,12 @@
             <div class="card-body">
               <div class="row">
                 <div class="col-md-6">
-                  <h5>TODAY</h5>
+                  <h5 class="font-weight-bold">TODAY</h5>
                   <h4>85,000원</h4>
                   <p>주문: 1건</p>
                 </div>
                 <div class="col-md-6">
-                  <h5>MONTH</h5>
+                  <h5 class="font-weight-bold">MONTH</h5>
                   <h4>224,215원</h4>
                   <p>주문: 6건</p>
                 </div>
@@ -225,7 +220,7 @@
         <div class="col-md-8">
           <div class="sales-statistics-card mb-4">
             <div class="card-header">매출 통계</div>
-            <div class="card-body" style="height: 300px;">
+            <div class="card-body" style="height: 280px;">
               <canvas id="salesChart" width="400" height="300"></canvas>
             </div>
           </div>
@@ -247,7 +242,7 @@
       const today = new Date();
       const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
       const formattedDate = today.toLocaleDateString('ko-KR', options);
-      document.getElementById("today-date").textContent = `오늘의 할 일 ${formattedDate}`;
+      document.getElementById("today-date").textContent = `오늘의 할 일 [ ${formattedDate} ]`;
 
       // 매출 차트 생성
       var ctx = document.getElementById("salesChart").getContext("2d");
@@ -258,7 +253,7 @@
           datasets: [{
             label: "매출 (₩)",
             data: [1200000, 1500000, 1000000, 2300000, 1800000, 3800000, 3500000, 4000000, 4500000, 3000000, 3200000, 5100000],
-            borderColor: "#007bff",
+            borderColor: "#4eb5ff",
             fill: false
           }]
         },
