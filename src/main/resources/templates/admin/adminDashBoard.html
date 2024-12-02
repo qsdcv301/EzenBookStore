@@ -1,273 +1,284 @@
-<!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>서점 관리자 대시보드</title>
-  <!-- 부트스트랩 4 CSS 링크 -->
-  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-  <!-- FontAwesome 아이콘 -->
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
-  <style>
-    body {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      background-color: #f8f9fa;
-      margin: 0;
-    }
-    .card-title {
-      font-size: 1.2rem;
-    }
-    .status-box {
-      display: inline-block;
-      width: 120px;
-      height: 120px;
-      margin: 10px;
-      text-align: center;
-      vertical-align: top;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      padding-top: 35px;
-      font-weight: bold;
-      font-size: 1.1rem;
-      cursor: pointer;
-    }
-    .status-box a {
-      color: #ffffff;
-      text-decoration: none;
-    }
-    .status-box:hover {
-      background-color: #f8f9fa;
-    }
-    .sales-summary-card {
-      border: 2px solid #007bff;
-      border-radius: 10px;
-    }
-    .sales-summary-card .card-header {
-      background-color: #007bff;
-      color: #ffffff;
-      font-weight: bold;
-    }
-    .sales-summary-card .card-body {
-      text-align: center;
-    }
-    .sales-summary-card .card-body h4 {
-      color: #007bff;
-      margin: 10px 0;
-    }
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>서점 관리자 대시보드</title>
+    <link rel="canonical" href="https://getbootstrap.kr/docs/5.1/examples/blog/">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet">
+    <link href="/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="/css/style.css" rel="stylesheet"/>
+    <script src="/js/jquery-3.7.1.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/popper.min.js"></script>
+    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.iamport.kr/v1/iamport.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/js/script.js"></script>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            /* background-color: #f8f9fa; */
+            margin: 0;
+        }
 
-    .task-card, .sales-statistics-card {
-      border: 2px solid #007bff;
-      border-radius: 10px;
-    }
-    .task-card .card-header, .sales-statistics-card .card-header {
-      background-color: #007bff;
-      color: #ffffff;
-      font-weight: bold;
-    }
-    .task-card .card-body, .sales-statistics-card .card-body {
-      text-align: center;
-    }
-    .task-card .status-box, .sales-statistics-card .status-box {
-      margin-top: 15px;
-      display: inline-block;
-      width: 120px;
-      height: 120px;
-      text-align: center;
-      vertical-align: top;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      padding-top: 35px;
-      font-weight: bold;
-      font-size: 1.1rem;
-      cursor: pointer;
-    }
-    .task-card .status-box a, .sales-statistics-card .status-box a {
-      color: #ffffff;
-      text-decoration: none;
-    }
-  </style>
+        .card-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #38acff;
+        }
+
+        .status-box {
+            display: inline-block;
+            width: 120px;
+            height: 120px;
+            margin: 10px;
+            text-align: center;
+            vertical-align: top;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding-top: 35px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .status-box a {
+            color: #ffffff;
+            text-decoration: none;
+        }
+
+        .status-box:hover {
+            background-color: #f8f9fa;
+        }
+
+        .sales-summary-card {
+            border: 1px solid #bdbdbd;
+            border-radius: 10px;
+        }
+
+        .sales-summary-card .card-header {
+            /* background-color: #E9ECEF; */
+            /* color: #ffffff; */
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .sales-summary-card .card-body {
+            text-align: center;
+        }
+
+        .sales-summary-card .card-body h4 {
+            color: #38acff;
+            margin: 10px 0;
+        }
+
+        .task-card, .sales-statistics-card {
+            border: 1px solid #bdbdbd;
+            border-radius: 10px;
+        }
+
+        .task-card .card-header, .sales-statistics-card .card-header {
+            /* background-color: #6C757D; */
+            /* color: #ffffff; */
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        /* .task-card .card-body, .sales-statistics-card .card-body {
+          text-align: center;
+        } */
+        .task-card .status-box, .sales-statistics-card .status-box {
+            margin-top: 15px;
+            display: inline-block;
+            width: 120px;
+            height: 120px;
+            text-align: center;
+            vertical-align: top;
+            /* border: 1px solid #ccc; */
+            border-radius: 5px;
+            padding-top: 35px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .task-card .status-box a, .sales-statistics-card .status-box a {
+            color: #555;
+            text-decoration: none;
+        }
+    </style>
 </head>
 <body>
 
-  <!-- 메인 콘텐츠 -->
-  <div class="main-content">
+<!-- 메인 콘텐츠 -->
+<div class="main-content">
     <div class="container-fluid mt-3">
-      <!-- 판매 현황 카드 -->
-      <div class="row" id="sales">
-        <div class="col-md-3">
-          <div class="card text-white mb-4" style="background: linear-gradient(135deg, #007bff, #00bfff);">
-            <div class="card-header">총 주문 수</div>
-            <div class="card-body">
-              <h5 class="card-title" th:text="${adminDashBoard.ordersCount != null ? adminDashBoard.ordersCount + '건' : '0건'}">3,687건</h5>
-              <p class="card-text">전체 기간 동안의 주문 수입니다.</p>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-3">
-          <div class="card text-white mb-4" style="background: linear-gradient(135deg, #28a745, #5cb85c);">
-            <div class="card-header">총 회원 수</div>
-            <div class="card-body">
-              <h5 class="card-title" th:text="${adminDashBoard.userCount != null ? adminDashBoard.userCount + '명' : '0명'}">1,187명</h5>
-              <p class="card-text">사이트에 가입된 회원 수입니다.</p>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-3">
-          <div class="card text-white mb-4" style="background: linear-gradient(135deg, #ffc107, #ffca2c);">
-            <div class="card-header">총 매출</div>
-            <div class="card-body">
-              <h5 class="card-title" th:text="${adminDashBoard.paymentTotalAmount != null ? adminDashBoard.paymentTotalAmount : '0원'}">₩2,530,000</h5>
-              <p class="card-text">총 매출액입니다.</p>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-3">
-          <div class="card text-white mb-4" style="background: linear-gradient(135deg, #fd7e14, #f5a623);">
-            <div class="card-header">문의 처리</div>
-            <div class="card-body">
-              <h5 class="card-title" th:text="${adminDashBoard.qnACount != null ? adminDashBoard.qnACount + '건' : '0건'}">85건</h5>
-              <p class="card-text">문의가 들어온 수입니다.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-  
-
-      <!-- 오늘의 할 일 카드 -->
-      <div class="row">
-        <div class="col-md-12">
-          <div class="task-card mb-4">
-            <div class="card-header" id="today-date">오늘의 할 일</div>
-            <div class="card-body">
-              <div class="row">
-                <!-- 상태 박스 -->
-                <div class="col-md-12" style="color: #fff;">
-                  <div class="status-box" style="background-color: #007bff;">
-                    <a href="#new-orders">신규주문</a>
-                    <p>10건</p>
-                  </div>
-
-                  <div class="status-box" style="background-color: #ffc107;">
-                    <a href="#pending-payments">상품준비중</a>
-                    <p>5건</p>
-                  </div>
-
-                  <div class="status-box" style="background-color: #ffc107;">
-                    <a href="#pending-payments">배송중</a>
-                    <p>5건</p>
-                  </div>
-
-                  <div class="status-box" style="background-color: #28a745;">
-                    <a href="#shipping">배송완료</a>
-                    <p>8건</p>
-                  </div>
-
-                  <div class="status-box" style="background-color: #dc3545;">
-                    <a href="#on-hold">보류중</a>
-                    <p>3건</p>
-                  </div>
-
-                  <div class="status-box" style="background-color: #dc3545;">
-                    <a href="#on-hold">취소요청</a>
-                    <p>3건</p>
-                  </div>
-
-                  <div class="status-box" style="background-color: #dc3545;">
-                    <a href="#on-hold">반품요청</a>
-                    <p>3건</p>
-                  </div>
-
-                  <div class="status-box" style="background-color: #dc3545;">
-                    <a href="#on-hold">교환요청</a>
-                    <p>3건</p>
-                  </div>
-
-                  <div class="status-box" style="background-color: #dc3545;">
-                    <a href="#on-hold">환불전</a>
-                    <p>3건</p>
-                  </div>
+        <!-- 판매 현황 카드 -->
+        <div class="row" id="sales">
+            <div class="col-md-3">
+                <div class="task-card mb-4">
+                    <div class="card-header">총 주문 수</div>
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${adminDashBoard.ordersCount} + '건'"></h5>
+                        <p class="card-text">전체 기간 동안의 주문 수</p>
+                    </div>
                 </div>
-              </div>
             </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 재고 관리 및 매출 통계 -->
-      <div class="row">
-        <!-- 판매 실적 -->
-        <div class="col-md-4">
-          <div class="sales-summary-card mb-4">
-            <div class="card-header">
-              판매 실적 & 판매 현황
-            </div>
-            <div class="card-body">
-              <div class="row">
-                <div class="col-md-6">
-                  <h5>TODAY</h5>
-                  <h4 th:text="${adminDashBoard.totalAmountSinceMidnight != null ? adminDashBoard.totalAmountSinceMidnight : '0원'}">85,000원</h4>
-                  <p th:text="${adminDashBoard.totalCountSinceMidnight != null ? adminDashBoard.totalCountSinceMidnight + '건' : '0건'}">주문: 1건</p>
+            <div class="col-md-3">
+                <div class="task-card mb-4">
+                    <div class="card-header">총 회원 수</div>
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${adminDashBoard.userCount} + '명'"></h5>
+                        <p class="card-text">사이트에 가입된 회원 수</p>
+                    </div>
                 </div>
-                <div class="col-md-6">
-                  <h5>MONTH</h5>
-                  <h4 th:text="${adminDashBoard.totalAmountSinceStartOfMonth != null ? adminDashBoard.totalAmountSinceStartOfMonth : '0원'}">224,215원</h4>
-                  <p th:text="${adminDashBoard.totalCountSinceStartOfMonth != null ? adminDashBoard.totalCountSinceStartOfMonth + '건' : '0건'}">주문: 1건</p>
+            </div>
+            <div class="col-md-3">
+                <div class="task-card mb-4">
+                    <div class="card-header">총 매출</div>
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${adminDashBoard.paymentTotalAmount}"></h5>
+                        <p class="card-text">총 매출액</p>
+                    </div>
                 </div>
-              </div>
             </div>
-          </div>
+            <div class="col-md-3">
+                <div class="task-card mb-4">
+                    <div class="card-header">문의 처리</div>
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${adminDashBoard.qnACount} + '건'"></h5>
+                        <p class="card-text">문의가 들어온 수/p>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <!-- 매출 통계 -->
-        <div class="col-md-8">
-          <div class="sales-statistics-card mb-4">
-            <div class="card-header">매출 통계</div>
-            <div class="card-body" style="height: 300px;">
-              <canvas id="salesChart" width="400" height="300"></canvas>
-            </div>
-          </div>
-        </div>
-      </div>
+        <!-- 오늘의 할 일 카드 -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="task-card mb-4">
+                    <div class="card-header" id="today-date">오늘의 할 일</div>
+                    <div class="card-body">
+                        <div class="row pl-5 pr-5">
+                            <!-- 상태 박스 -->
+                            <div class="col-md-12 pl-3 pr-3">
 
+                                <div class="status-box" style="color: #007bff; background-color: #D7ECFB;">
+                                    <a href="#pending-payments">배송 준비중</a>
+                                    <p th:text="${adminDashBoard.delivery1Count} + '건'"></p>
+                                </div>
+
+                                <div class="status-box" style="color: #007bff; background-color: #D7ECFB;">
+                                    <a href="#pending-payments">배송중</a>
+                                    <p th:text="${adminDashBoard.delivery2Count} + '건'"></p>
+                                </div>
+
+                                <div class="status-box" style="color: #007bff; background-color: #D7ECFB;">
+                                    <a href="#shipping">배송 완료</a>
+                                    <p th:text="${adminDashBoard.delivery3Count} + '건'"></p>
+                                </div>
+
+                                <div class="status-box" style="color: #007bff; background-color: #D7ECFB;">
+                                    <a href="#on-hold">보류건</a>
+                                    <p th:text="${adminDashBoard.delivery456Count} + '건'"></p>
+                                </div>
+
+                                <div class="status-box" style="color: #ff3265; background-color: #FFDCE5;">
+                                    <a href="#on-hold">취소 요청</a>
+                                    <p th:text="${adminDashBoard.orders2Count} + '건'"></p>
+                                </div>
+
+                                <div class="status-box" style="color: #ff3265; background-color: #FFDCE5;">
+                                    <a href="#on-hold">반품/교환 요청</a>
+                                    <p th:text="${adminDashBoard.orders3Count} + '건'"></p>
+                                </div>
+
+                                <div class="status-box" style="color: #ff3265; background-color: #FFDCE5;">
+                                    <a href="#on-hold">환불건</a>
+                                    <p th:text="${adminDashBoard.payment2Count} + '건'"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 재고 관리 및 매출 통계 -->
+        <div class="row">
+            <!-- 판매 실적 -->
+            <div class="col-md-4">
+                <div class="sales-summary-card mb-4">
+                    <div class="card-header">
+                        판매 실적 & 판매 현황
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5 class="font-weight-bold">TODAY</h5>
+                                <h4 th:text="${adminDashBoard.totalAmountSinceMidnight}"></h4>
+                                <p>주문: <span th:text="${adminDashBoard.totalCountSinceMidnight}"></span>건</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h5 class="font-weight-bold">MONTH</h5>
+                                <h4 th:text="${adminDashBoard.totalAmountSinceStartOfMonth}"></h4>
+                                <p>주문: <span th:text="${adminDashBoard.totalCountSinceStartOfMonth}"></span>건</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 매출 통계 -->
+            <div class="col-md-8">
+                <div class="sales-statistics-card mb-4">
+                    <div class="card-header">매출 통계</div>
+                    <div class="card-body" style="height: 280px;">
+                        <canvas id="salesChart" width="400" height="300"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
+</div>
+<script>
+    // 현재 날짜를 가져와서 카드 헤더에 표시
+    var today = new Date();
+    var options = {year: 'numeric', month: 'long', day: 'numeric', weekday: 'long'};
+    var formattedDate = today.toLocaleDateString('ko-KR', options);
+    $("#today-date").text(`오늘의 할 일 [ ${formattedDate} ]`);
 
-  <!-- 부트스트랩 4 JS, Popper.js, jQuery JS 링크 -->
-  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    // 매출 차트 생성
+    var ctx = $("#salesChart")[0].getContext("2d");
+    var labels = [];
+    var data = [/*[[${findMonthlyAmountsUpToCurrentMonth}]]*/];
 
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      // 현재 날짜를 가져와서 카드 헤더에 표시
-      const today = new Date();
-      const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
-      const formattedDate = today.toLocaleDateString('ko-KR', options);
-      document.getElementById("today-date").textContent = `오늘의 할 일 ${formattedDate}`;
-
-      // 매출 차트 생성
-      var ctx = document.getElementById("salesChart").getContext("2d");
-      var salesChart = new Chart(ctx, {
+    // 데이터의 개수에 따라 라벨 생성
+    for (var i = 0; i < data.length; i++) {
+        labels.push((i + 1) + "월");
+    }
+    var salesChart = new Chart(ctx, {
         type: "line",
         data: {
-          labels: ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"],
-          datasets: [{
-            label: "매출 (₩)",
-            data: [1200000, 1500000, 1000000, 2300000, 1800000, 3800000, 3500000, 4000000, 4500000, 3000000, 3200000, 5100000],
-            borderColor: "#007bff",
-            fill: false
-          }]
+            labels: labels,
+            datasets: [{
+                label: "매출 (₩)",
+                data: data,
+                borderColor: "#4eb5ff",
+                fill: false
+            }]
         },
         options: {
-          responsive: true,
-          maintainAspectRatio: false
+            responsive: true,
+            maintainAspectRatio: false
         }
-      });
     });
-  </script>
+</script>
 </body>
 </html>

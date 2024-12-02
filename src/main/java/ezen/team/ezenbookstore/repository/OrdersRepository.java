@@ -2,6 +2,7 @@ package ezen.team.ezenbookstore.repository;
 
 import ezen.team.ezenbookstore.entity.Orders;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Timestamp;
@@ -20,5 +21,11 @@ public interface OrdersRepository extends JpaRepository<Orders, Long> {
     List<Orders> findAllByStatusAndUserId(Byte orderStatus, Long userId);
 
     List<Orders> findAllByOrderItems_Book_TitleContainingAndUserId(String keyword, Long userId);
+
+    @Query("SELECT COUNT(d) FROM Delivery d WHERE d.status = 2")
+    Long countByStatus2();
+
+    @Query("SELECT COUNT(d) FROM Delivery d WHERE d.status = 3")
+    Long countByStatus3();
 
 }

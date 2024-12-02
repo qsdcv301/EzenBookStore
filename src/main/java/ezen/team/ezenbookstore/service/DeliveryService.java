@@ -49,4 +49,24 @@ public class DeliveryService implements DeliveryServiceInterface {
         deliveryRepository.deleteById(id);
     }
 
+    @Override
+    public Long countByStatus1() {
+        return deliveryRepository.countByStatus1();
+    }
+
+    @Override
+    public Long countByStatus2() {
+        return deliveryRepository.countByStatus2();
+    }
+
+    @Override
+    public Long countByStatus3() {
+        return deliveryRepository.countByStatus3();
+    }
+
+    @Override
+    public Long countByStatusIn456() {
+        return deliveryRepository.countByStatusIn456();
+    }
+
 }

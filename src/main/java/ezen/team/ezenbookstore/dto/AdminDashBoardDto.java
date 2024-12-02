@@ -21,5 +21,12 @@ public class AdminDashBoardDto {
     private String totalCountSinceMidnight;
     private String totalAmountSinceStartOfMonth;
     private String totalCountSinceStartOfMonth;
+    private String delivery1Count;
+    private String delivery2Count;
+    private String delivery3Count;
+    private String delivery456Count;
+    private String orders2Count;
+    private String orders3Count;
+    private String payment2Count;
     private List<Long> findMonthlyAmountsUpToCurrentMonth;
 }

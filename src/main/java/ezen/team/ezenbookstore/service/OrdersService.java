@@ -246,4 +246,14 @@ public class OrdersService implements OrdersServiceInterface{
         return orderRepository.count();
     }
 
+    @Override
+    public Long countByStatus2() {
+        return orderRepository.countByStatus2();
+    }
+
+    @Override
+    public Long countByStatus3() {
+        return orderRepository.countByStatus3();
+    }
+
 }

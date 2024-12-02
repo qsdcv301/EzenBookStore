@@ -31,4 +31,6 @@ public interface PaymentServiceInterface {
 
     List<Long> findMonthlyAmountsUpToCurrentMonth();
 
+    Long countByStatus2();
+
 }

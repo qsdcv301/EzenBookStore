@@ -171,4 +171,9 @@ public class PaymentService implements PaymentServiceInterface {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public Long countByStatus2() {
+        return paymentRepository.countByStatus2();
+    }
+
 }

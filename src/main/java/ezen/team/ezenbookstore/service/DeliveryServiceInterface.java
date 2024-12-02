@@ -16,4 +16,12 @@ public interface DeliveryServiceInterface {
 
     void delete(Long id);
 
+    Long countByStatus1();
+
+    Long countByStatus2();
+
+    Long countByStatus3();
+
+    Long countByStatusIn456();
+
 }

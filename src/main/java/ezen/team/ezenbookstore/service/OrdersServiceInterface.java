@@ -40,4 +40,8 @@ public interface OrdersServiceInterface {
 
     Long ordersCount();
 
+    Long countByStatus2();
+
+    Long countByStatus3();
+
 }

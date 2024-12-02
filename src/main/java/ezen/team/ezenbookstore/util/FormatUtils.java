@@ -25,6 +25,14 @@ public class FormatUtils {
         return numberFormatter.format(amount) + "원";
     }
 
+    public static String formatKorea(Long amount) {
+        if (amount == null) {
+            return "0";
+        }
+        NumberFormat numberFormatter = NumberFormat.getNumberInstance(Locale.KOREA);
+        return numberFormatter.format(amount);
+    }
+
     public static LocalDateTime getStartOfMonth() {
         LocalDate today = LocalDate.now();
         LocalDate firstDayOfMonth = today.withDayOfMonth(1);

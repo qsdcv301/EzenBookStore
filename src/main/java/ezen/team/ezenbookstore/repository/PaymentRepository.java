@@ -29,4 +29,7 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
             "ORDER BY MONTH(p.paymentDate)")
     List<Object[]> findMonthlyAmountsUpToCurrentMonth(int year, int month);
 
+    @Query("SELECT COUNT(d) FROM Delivery d WHERE d.status = 2")
+    Long countByStatus2();
+
 }
