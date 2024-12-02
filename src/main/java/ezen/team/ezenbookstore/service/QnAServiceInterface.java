@@ -38,4 +38,6 @@ public interface QnAServiceInterface {
 
     Map<String, Boolean> addQnA(QnA qna, String email, List<MultipartFile> files);
 
+    Long qnACount();
+
 }

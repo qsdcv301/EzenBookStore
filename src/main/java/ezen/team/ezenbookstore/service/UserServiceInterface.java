@@ -38,4 +38,6 @@ public interface UserServiceInterface {
 
     List<User> findUsersByName(String name);
 
+    Long userCount();
+
 }

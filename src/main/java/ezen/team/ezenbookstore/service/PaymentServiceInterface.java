@@ -22,4 +22,12 @@ public interface PaymentServiceInterface {
     boolean processPayment(User user, String paymentCode, String userName, String addr, String addrextra, String tel,
                            Long amount, List<String> titleList, List<Integer> quantityList, List<Long> cartIdList);
 
+    Double findTotalAmount();
+
+    Double findTotalAmountSinceMidnight();
+
+    Double findTotalAmountSinceStartOfMonth();
+
+    List<Long> findMonthlyAmountsUpToCurrentMonth();
+
 }

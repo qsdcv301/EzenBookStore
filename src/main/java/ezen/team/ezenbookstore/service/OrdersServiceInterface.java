@@ -37,5 +37,7 @@ public interface OrdersServiceInterface {
     List<Orders> findAllByOrderItemsBookTitleContainingAndUserId(String keyword, Long userId);
 
     List<Orders> filterOrders(LocalDate startDate, LocalDate endDate, Byte deliveryStatus, Byte orderStatus, String keyword, Long userId);
-    
+
+    Long ordersCount();
+
 }

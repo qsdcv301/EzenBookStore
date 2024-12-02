@@ -163,4 +163,9 @@ public class UserService implements UserServiceInterface{
         return userRepository.findByNameContainingIgnoreCase(name);
     }
 
+    @Override
+    public Long userCount(){
+        return userRepository.count();
+    }
+
 }

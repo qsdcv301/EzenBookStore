@@ -6,7 +6,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static ezen.team.ezenbookstore.util.FormatUtils.getStartOfMonth;
 
 @Service
 @RequiredArgsConstructor
@@ -132,6 +137,36 @@ public class PaymentService implements PaymentServiceInterface {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    @Override
+    public Double findTotalAmount(){
+        return paymentRepository.findTotalAmount();
+    }
+
+    @Override
+    public Double findTotalAmountSinceMidnight(){
+        return paymentRepository.findTotalAmountSinceMidnight();
+    }
+
+    @Override
+    public Double findTotalAmountSinceStartOfMonth() {
+        LocalDateTime startOfMonth = getStartOfMonth();
+        return paymentRepository.findTotalAmountSinceStartOfMonth(startOfMonth);
+    }
+
+    @Override
+    public List<Long> findMonthlyAmountsUpToCurrentMonth() {
+        LocalDate today = LocalDate.now();
+        int currentYear = today.getYear();
+        int currentMonth = today.getMonthValue();
+
+        List<Object[]> result = paymentRepository.findMonthlyAmountsUpToCurrentMonth(currentYear, currentMonth);
+
+        // 결과에서 amount 값만 추출하여 List<Long> 형태로 변환
+        return result.stream()
+                .map(row -> (Long) row[1])
+                .collect(Collectors.toList());
     }
 
 }

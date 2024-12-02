@@ -241,4 +241,9 @@ public class OrdersService implements OrdersServiceInterface{
         return filteredOrders;
     }
 
+    @Override
+    public Long ordersCount(){
+        return orderRepository.count();
+    }
+
 }
