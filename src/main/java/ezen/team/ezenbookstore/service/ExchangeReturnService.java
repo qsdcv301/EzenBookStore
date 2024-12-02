@@ -19,7 +19,7 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
-public class ExchangeReturnService {
+public class ExchangeReturnService implements ExchangeReturnServiceInterface{
 
     private final ExchangeReturnRepository exchangeReturnRepository;
     private final UserService userService;
@@ -27,19 +27,23 @@ public class ExchangeReturnService {
     private final OrderItemService orderItemService;
     private final OrdersService ordersService;
 
+    @Override
     public ExchangeReturn findById(Long id) {
         return exchangeReturnRepository.findById(id).orElse(null);
     }
 
+    @Override
     public List<ExchangeReturn> findAll() {
         return exchangeReturnRepository.findAll();
     }
 
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public ExchangeReturn create(ExchangeReturn exchangeReturn) {
         return exchangeReturnRepository.save(exchangeReturn);
     }
 
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public ExchangeReturn update(ExchangeReturn exchangeReturn) {
         ExchangeReturn newExchangeReturn = ExchangeReturn.builder()
@@ -54,27 +58,33 @@ public class ExchangeReturnService {
         return exchangeReturnRepository.save(newExchangeReturn);
     }
 
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public void deleteById(Long id) {
         exchangeReturnRepository.deleteById(id);
     }
 
+    @Override
     public List<ExchangeReturn> findAllByUserId(Long userId) {
         return exchangeReturnRepository.findAllByUserId(userId);
     }
 
+    @Override
     public Page<ExchangeReturn> findAll(Pageable pageable) {
         return exchangeReturnRepository.findAll(pageable);
     }
 
+    @Override
     public Page<ExchangeReturn> findAllByUserId(Long userId, Pageable pageable) {
         return exchangeReturnRepository.findAllByUserId(userId, pageable);
     }
 
+    @Override
     public Page<ExchangeReturn> findAllByUserIdAndCategory(Long userId, Byte category, Pageable pageable) {
         return exchangeReturnRepository.findAllByUserIdAndCategory(userId, category, pageable);
     }
 
+    @Override
     public Map<String, String> findExchangeReturnDetails(String ERId) {
         Map<String, String> response = new HashMap<>();
         Long ErId = ParseUtils.parseLong(ERId);
@@ -109,6 +119,7 @@ public class ExchangeReturnService {
         return response;
     }
 
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public Map<String, Boolean> addExchangeReturn(ExchangeReturn er, long orderItemId, User user, MultipartFile file) {
         Map<String, Boolean> response = new HashMap<>();

@@ -14,25 +14,29 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class CartService {
+public class CartService implements CartServiceInterface{
 
     private final CartRepository cartRepository;
     private final BookService bookService;
     private final FileUploadService fileUploadService;
 
+    @Override
     public Cart findById(Long id) {
         return cartRepository.findById(id).orElse(null);
     }
 
+    @Override
     public List<Cart> findAll() {
         return cartRepository.findAll();
     }
 
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public Cart create(Cart cart) {
         return cartRepository.save(cart);
     }
 
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public Cart update(Cart cart) {
         Cart newCart = Cart.builder()
@@ -44,15 +48,18 @@ public class CartService {
         return cartRepository.save(newCart);
     }
 
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public void deleteById(Long id) {
         cartRepository.deleteById(id);
     }
 
+    @Override
     public List<Cart> findAllByUserId(Long userId) {
         return cartRepository.findAllByUserId(userId);
     }
 
+    @Override
     public void populateCartModel(User user, Model model) {
         List<Cart> cartList = findAllByUserId(user.getId());
         List<String> imageList = new ArrayList<>();
@@ -64,6 +71,7 @@ public class CartService {
         model.addAttribute("cartList", cartList);
     }
 
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public void addItemsToCart(User user, List<String> bookIdList, List<String> quantityList) {
         if (bookIdList == null || bookIdList.isEmpty() || quantityList == null || quantityList.isEmpty() || bookIdList.size() != quantityList.size()) {
@@ -84,6 +92,7 @@ public class CartService {
         }
     }
 
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public void updateCartItems(User user, List<String> cartIdList, List<String> quantityList) {
         if (cartIdList == null || cartIdList.isEmpty() || quantityList == null || quantityList.isEmpty() || cartIdList.size() != quantityList.size()) {
@@ -103,6 +112,7 @@ public class CartService {
         }
     }
 
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public void deleteCartItems(User user, List<String> cartIdList) {
         if (cartIdList == null || cartIdList.isEmpty()) {
@@ -119,4 +129,5 @@ public class CartService {
             }
         }
     }
+
 }

@@ -9,13 +9,14 @@ import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
-public class EmailService {
+public class EmailService implements EmailServiceInterface {
 
     private final JavaMailSender mailSender;
 
     @Value("${spring.mail.username}")
     private String from;
 
+    @Override
     public void sendEmail(String to, String subject, String body) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(from);
@@ -24,4 +25,5 @@ public class EmailService {
         message.setText(body);
         mailSender.send(message);
     }
+
 }
