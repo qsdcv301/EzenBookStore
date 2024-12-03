@@ -171,12 +171,6 @@
         </section>
     </main>
 </div>
-<div th:each="entry : ${recentBookCookie}">
-    <img th:src="${entry.imgPath}" th:alt="${entry.title}">
-    <p th:text="${entry.title}"></p>
-    <p th:text="${entry.author}"></p>
-    <p th:text="${entry.publisher}"></p>
-</div>
 <footer th:replace="~{fragments/footer :: footer}"></footer>
 </body>
 </html>

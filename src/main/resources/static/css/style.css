@@ -113,6 +113,7 @@
     cursor: pointer;
     text-align: center;
 }
+
 .arrow-icon {
     font-size: 16px;
 }
@@ -137,8 +138,7 @@
 }
 
 #bank-transfer,
-#credit-card
-{
+#credit-card {
     opacity: 0.5;
 }
 
@@ -156,6 +156,7 @@
 #ratingStars i.bi-star-fill {
     color: #ffc107;
 }
+
 .step {
     display: none;
 }
@@ -191,32 +192,30 @@
 }
 
 .navigation-buttons button,
-.navigation-buttons a{
+.navigation-buttons #adminBtn {
     background-color: #007bff;
     color: white;
     border: none;
-    width: 50px; /* 버튼의 가로 크기 */
-    height: 50px; /* 버튼의 세로 크기 */
-    border-radius: 50%; /* 동그라미 모양 */
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 18px; /* 아이콘 크기 */
+    font-size: 18px;
     cursor: pointer;
 }
 
-.navigation-buttons button:hover,
-navigation-buttons a:hover{
-    background-color: #007bff;
+.navigation-buttons button:hover {
+    background-color: #0056b3;
 }
 
 /* 관리자 버튼 */
-
-.navigation-buttons a.adminDashBoard:hover {
+.navigation-buttons #adminBtn:hover {
     background-color: #e92e0e !important;
 }
 
-.navigation-buttons a.adminDashBoard:hover .rotate-icon {
+.navigation-buttons #adminBtn:hover .rotate-icon {
     transform: rotate(75deg);
 }
 
@@ -225,7 +224,39 @@ navigation-buttons a:hover{
     transform-origin: center;
 }
 
-/* 관리자 버튼 끝 */
+/* 추가된 부분 */
+/* 최근 본 도서 목록 스타일 */
+#recentlyViewedList {
+    position: absolute;
+    bottom: 250px;
+    right: 0;
+    z-index: 1000;
+    opacity: 0;
+    display: none;
+    width: 300px;
+    background-color: white;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: opacity 0.3s ease-in-out;
+}
+
+#recentlyViewedList.show {
+    opacity: 1;
+    display: block;
+}
+
+@media (max-width: 768px) {
+    .navigation-buttons {
+        flex-direction: row;
+        bottom: 10px;
+        right: 10px;
+    }
+
+    #recentlyViewedList {
+        width: 100%;
+        bottom: 60px;
+    }
+}
 
 /* 슬라이드 스타일 */
 .carousel-item img {
