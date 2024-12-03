@@ -11,6 +11,7 @@ import org.hibernate.annotations.DynamicUpdate;
 @DynamicUpdate
 @Builder(toBuilder = true)
 public class RecentBookCookieDto {
+    Long id;
     String title;
     String author;
     String publisher;

@@ -86,7 +86,7 @@
                                 </div>
                                 <div class="col-md-7">
                                     <div class="card-body px-0">
-                                        <a class="stretched-link" href="#"></a>
+                                        <a class="stretched-link" th:href="@{'/book/detail'(bookId=${entry.id})}"></a>
                                         <p class="card-title text-truncate" th:text="${entry.title}"></p>
                                         <p class="card-text text-truncate mb-0"><small>저자 : <span
                                                 th:text="${entry.author}"></span></small></p>

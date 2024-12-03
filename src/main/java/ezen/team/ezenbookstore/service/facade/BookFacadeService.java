@@ -214,6 +214,7 @@ public class BookFacadeService implements BookFacadeServiceInterface {
                         Book book = bookService.findById(bookId);
 
                         // Book 데이터 추출
+                        Long id = book.getId();
                         String title = book.getTitle();
                         String author = book.getAuthor();
                         String publisher = book.getPublisher();
@@ -221,6 +222,7 @@ public class BookFacadeService implements BookFacadeServiceInterface {
 
                         // DTO 생성 후 리스트에 추가
                         RecentBookCookieDto recentBookCookieDto = RecentBookCookieDto.builder()
+                                .id(id)
                                 .title(title)
                                 .author(author)
                                 .publisher(publisher)
