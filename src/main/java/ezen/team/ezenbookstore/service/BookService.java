@@ -148,6 +148,29 @@ public class BookService implements BookServiceInterface {
         return bookRepository.findTop8ByOrderByPublishDateDesc();
     }
 
+    @Override
+    public Book updateBookCount(Long bookId) {
+        Book book = findById(bookId);
+        Book updatedBook = Book.builder()
+                .id(book.getId())
+                .title(book.getTitle())
+                .author(book.getAuthor())
+                .publisher(book.getPublisher())
+                .publishDate(book.getPublishDate())
+                .isbn(book.getIsbn())
+                .stock(book.getStock())
+                .ifkr(book.getIfkr())
+                .price(book.getPrice())
+                .category(book.getCategory())
+                .subcategory(book.getSubcategory())
+                .count(book.getCount() + 1)
+                .discount(book.getDiscount())
+                .bookdescription(book.getBookdescription())
+                .review(book.getReview())
+                .build();
+        return update(updatedBook);
+    }
+
     @Transactional
     public void updateDiscountForBooks(Map<String, Object> payload) {
         // 데이터 추출 및 변환

@@ -48,4 +48,6 @@ public interface BookServiceInterface {
 
     List<Book> findTop8ByOrderByPublishDateDesc();
 
+    Book updateBookCount(Long bookId);
+
 }

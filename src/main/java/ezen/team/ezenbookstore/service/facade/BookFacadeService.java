@@ -1,7 +1,13 @@
 package ezen.team.ezenbookstore.service.facade;
 
+import ezen.team.ezenbookstore.dto.RecentBookCookieDto;
 import ezen.team.ezenbookstore.entity.*;
 import ezen.team.ezenbookstore.service.*;
+import ezen.team.ezenbookstore.util.CookieUtil;
+import ezen.team.ezenbookstore.util.ParseUtils;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
@@ -159,29 +165,6 @@ public class BookFacadeService implements BookFacadeServiceInterface {
     }
 
     @Override
-    public Book updateBookCount(Long bookId) {
-        Book book = bookService.findById(bookId);
-        Book updatedBook = Book.builder()
-                .id(book.getId())
-                .title(book.getTitle())
-                .author(book.getAuthor())
-                .publisher(book.getPublisher())
-                .publishDate(book.getPublishDate())
-                .isbn(book.getIsbn())
-                .stock(book.getStock())
-                .ifkr(book.getIfkr())
-                .price(book.getPrice())
-                .category(book.getCategory())
-                .subcategory(book.getSubcategory())
-                .count(book.getCount() + 1)
-                .discount(book.getDiscount())
-                .bookdescription(book.getBookdescription())
-                .review(book.getReview())
-                .build();
-        return bookService.update(updatedBook);
-    }
-
-    @Override
     public String getBookImagePath(Long bookId) {
         String imagePath = fileUploadService.findImageFilePath(bookId, "book");
         return imagePath != null ? imagePath : "";
@@ -196,6 +179,64 @@ public class BookFacadeService implements BookFacadeServiceInterface {
             reviewImagePathList.add(reviewImagePath != null ? reviewImagePath : "");
         }
         return reviewImagePathList;
+    }
+
+    @Override
+    public void recentBookCookie(Long bookId, HttpServletResponse response) {
+        // 쿠키 이름 설정
+        String cookieName = "book_" + bookId;
+
+        // fileUploadService를 통해 가져온 값을 직렬화
+        String bookIdValue = fileUploadService.findImageFilePath(bookId, "book");
+
+        // 데이터를 직렬화 (Base64로 변환하여 안전하게 저장)
+        String serializedValue = CookieUtil.serialize(bookIdValue);
+
+        // 쿠키의 만료 기간 설정 2일
+        int maxAge = 2 * 24 * 60 * 60;
+
+        // 직렬화된 데이터로 쿠키 추가
+        CookieUtil.addCookie(response, cookieName, serializedValue, maxAge);
+    }
+
+    @Override
+    public List<RecentBookCookieDto> getRecentBookCookies(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        List<RecentBookCookieDto> recentBookCookieDtoList = new ArrayList<>();
+
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                // 특정 접두사가 있는 쿠키만 처리
+                if (cookie.getName().startsWith("book_")) {
+                    try {
+                        // bookId 추출
+                        Long bookId = ParseUtils.parseLong(cookie.getName().substring(5));
+                        Book book = bookService.findById(bookId);
+
+                        // Book 데이터 추출
+                        String title = book.getTitle();
+                        String author = book.getAuthor();
+                        String publisher = book.getPublisher();
+                        String imgPath = CookieUtil.deserialize(cookie, String.class);
+
+                        // DTO 생성 후 리스트에 추가
+                        RecentBookCookieDto recentBookCookieDto = RecentBookCookieDto.builder()
+                                .title(title)
+                                .author(author)
+                                .publisher(publisher)
+                                .imgPath(imgPath)
+                                .build();
+
+                        recentBookCookieDtoList.add(recentBookCookieDto);
+                    } catch (Exception e) {
+                        // 예외가 발생한 쿠키는 무시
+                        System.out.println("예외 처리된 쿠키: " + cookie.getName() + " - " + e.getMessage());
+                    }
+                }
+            }
+        }
+
+        return recentBookCookieDtoList;
     }
 
 }

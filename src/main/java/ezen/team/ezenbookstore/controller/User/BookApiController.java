@@ -1,7 +1,9 @@
 package ezen.team.ezenbookstore.controller.User;
 
 import ezen.team.ezenbookstore.entity.*;
+import ezen.team.ezenbookstore.service.BookService;
 import ezen.team.ezenbookstore.service.facade.BookFacadeService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
@@ -18,6 +20,7 @@ import java.util.List;
 public class BookApiController {
 
     private final BookFacadeService bookFacadeService;
+    private final BookService bookService;
 
     @GetMapping
     public String book(@RequestParam(name = "page", defaultValue = "0", required = false) int page,
@@ -65,10 +68,11 @@ public class BookApiController {
     }
 
     @GetMapping("/detail")
-    public String bookDetail(@RequestParam(name = "bookId") Long bookId, Model model) {
-        Book book = bookFacadeService.updateBookCount(bookId);
+    public String bookDetail(@RequestParam(name = "bookId") Long bookId, HttpServletResponse response, Model model) {
+        Book book = bookService.updateBookCount(bookId);
         String imagePath = bookFacadeService.getBookImagePath(bookId);
         List<String> reviewImagePathList = bookFacadeService.getReviewImagePathList(bookId);
+        bookFacadeService.recentBookCookie(bookId, response);
         model.addAttribute("imagePath", imagePath);
         model.addAttribute("reviewImagePathList", reviewImagePathList);
         model.addAttribute("book", book);
