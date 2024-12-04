@@ -9,16 +9,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RequiredArgsConstructor
 @Controller
@@ -32,6 +27,7 @@ public class AdminNoticeApiController {
     public String noticeControl(
             @RequestParam(required = false) String searchType,
             @RequestParam(required = false) String keyword,
+            @RequestParam(name = "files", required = false) List<MultipartFile> files,
             @PageableDefault(size = 15, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
             Model model) {
         // 검색 조건에 따라 데이터를 조회
@@ -43,12 +39,6 @@ public class AdminNoticeApiController {
         } else {
             noticePage = noticeService.findAll(pageable);
         }
-
-        // 각 공지사항의 이미지 경로를 추가
-        noticePage.getContent().forEach(notice -> {
-            String imagePath = fileUploadService.findImageFilePath(notice.getId(), "notice");
-            notice.setImagePath(imagePath != null ? imagePath : "/images/default.png");
-        });
 
         // 페이징 계산
         int totalPages = noticePage.getTotalPages();

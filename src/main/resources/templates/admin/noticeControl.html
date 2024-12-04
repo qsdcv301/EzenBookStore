@@ -57,7 +57,7 @@
             <td th:text="${notice.title}"></td>
             <td th:text="${notice.content}"></td>
             <td>
-                <img th:src="@{${notice.imagePath}}" alt="이미지 없음" class="img-thumbnail">
+                <img th:src="${@thymeleafFileUploadService.findImageFilePath(notice.id, 'notice')}"  alt="이미지 없음" class="img-thumbnail">
             </td>
             <td>
                 <button type="button" class="btn btn-warning edit-btn"
@@ -68,6 +68,9 @@
                     수정
                 </button>
             </td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(noticePage?.content)}">
+            <td colspan="8" class="text-center">검색 결과가 없습니다.</td>
         </tr>
         </tbody>
     </table>

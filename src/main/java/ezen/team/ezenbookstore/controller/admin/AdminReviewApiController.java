@@ -29,24 +29,12 @@ public class AdminReviewApiController {
 
     @GetMapping("")
     public String getAllReviews(
-            @RequestParam(required = false, defaultValue = "") String keyword,
             @PageableDefault(size = 15, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
             Model model) {
         try {
-            // 리뷰 데이터 페이징
-            Page<Review> reviewPage;
+            // 전체 리뷰 조회
+            Page<Review> reviewPage = reviewService.findAll(pageable);
 
-            // 키워드가 있는 경우 검색 수행
-            if (!keyword.isEmpty()) {
-                reviewPage = reviewService.searchByKeyword(keyword, pageable);
-            } else {
-                // 키워드가 없는 경우 전체 리뷰 조회
-                reviewPage = reviewService.findAll(pageable);
-            }
-            //이미지 카운트
-            //        List<Integer> imageCounts= reviewPage.getContent().stream()
-//                        .map(review -> fileUploadService.getImageCount(review.getId(),"review"))
-//                        .collect(Collectors.toList());
             // 이미지 정보 추가
             List<String> imagePaths = reviewPage.getContent().stream()
                     .map(review -> fileUploadService.findImageFilePath(review.getId(), "review"))
@@ -67,7 +55,6 @@ public class AdminReviewApiController {
             model.addAttribute("currentPage", currentPage);
             model.addAttribute("startPage", startPage);
             model.addAttribute("endPage", endPage);
-            model.addAttribute("keyword", keyword);
 
             return "/admin/reviewControl";
         } catch (Exception e) {
@@ -75,6 +62,47 @@ public class AdminReviewApiController {
             return "/admin/reviewControl";
         }
     }
+    @GetMapping("/search")
+    public String searchReviews(
+            @RequestParam String type,
+            @RequestParam String keyword,
+            @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
+            Model model) {
+        try {
+            // 검색어 유효성 검사
+            if (keyword == null || keyword.trim().isEmpty()) {
+                model.addAttribute("error", "검색어를 입력해주세요.");
+                return "/admin/reviewControl";
+            }
+
+            Page<Review> result;
+
+            // 검색 타입에 따른 검색 로직
+            if ("book".equalsIgnoreCase(type)) {
+                result = reviewService.findAllByBookTitle(keyword, pageable);
+            } else if ("user".equalsIgnoreCase(type)) {
+                result = reviewService.findAllByUserName(keyword, pageable);
+            } else {
+                model.addAttribute("error", "유효하지 않은 검색 타입입니다.");
+                return "/admin/reviewControl";
+            }
+
+            // 검색 결과가 없는 경우
+            if (result == null || result.isEmpty()) {
+                model.addAttribute("error", "검색 결과가 없습니다.");
+            }
+
+            model.addAttribute("reviewPage", result);
+            return "/admin/reviewControl";
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("error", "서버 처리 중 문제가 발생했습니다: " + e.getMessage());
+            return "/admin/reviewControl";
+        }
+    }
+
+
 
     // 리뷰 삭제
     @PostMapping("/delete")
@@ -87,27 +115,6 @@ public class AdminReviewApiController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("리뷰 삭제 실패: " + e.getMessage());
         }
-    }
-
-    // 리뷰 검색
-    @GetMapping("/search")
-    public String searchReviews(
-            @RequestParam String type,
-            @RequestParam String keyword,
-            @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
-            Model model) {
-        Page<Review> result;
-        if ("book".equalsIgnoreCase(type)) {
-            // 책 제목 검색 로직
-            result = reviewService.findAllByBookTitle(keyword, pageable);
-        } else if ("user".equalsIgnoreCase(type)) {
-            // 사용자 검색 로직
-            result = reviewService.findAllByUserName(keyword, pageable);
-        } else {
-            result = Page.empty(); // 잘못된 요청 시 빈 결과 반환
-        }
-        model.addAttribute("reviewPage", result);
-        return "/admin/reviewControl"; // 검색 결과를 포함해 Thymeleaf로 렌더링
     }
 
     @GetMapping("/{id}")

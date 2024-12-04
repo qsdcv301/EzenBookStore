@@ -74,13 +74,10 @@ public class NoticeService implements NoticeServiceInterface{
 
     @Override
     public List<Long> noticeIds() {
-        // findAll로 모든 Notice 엔티티 가져오기
         List<Notice> notices = noticeRepository.findAll();
-
-        // Stream API로 id만 추출
         return notices.stream()
                 .map(Notice::getId) // id만 매핑
-                .collect(Collectors.toList()); // List로 변환
+                .collect(Collectors.toList());
     }
 
 }
