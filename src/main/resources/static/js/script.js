@@ -902,6 +902,7 @@ $(document).ready(function () {
                 buyer_email: userEmail,
                 buyer_name: userName,
                 buyer_tel: userTel,
+                notice_url: "http://localhost:8080/order/payment/check",
             },
             function (response) {
                 if (response.success) {
