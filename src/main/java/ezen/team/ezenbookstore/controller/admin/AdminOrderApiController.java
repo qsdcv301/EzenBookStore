@@ -1,16 +1,18 @@
 package ezen.team.ezenbookstore.controller.admin;
 
-import ezen.team.ezenbookstore.entity.Book;
-import ezen.team.ezenbookstore.entity.OrderItem;
-import ezen.team.ezenbookstore.entity.Orders;
+import ezen.team.ezenbookstore.entity.*;
+import ezen.team.ezenbookstore.service.DeliveryService;
 import ezen.team.ezenbookstore.service.OrderItemService;
 import ezen.team.ezenbookstore.service.OrdersService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -20,12 +22,68 @@ public class AdminOrderApiController {
 
     private final OrdersService ordersService;
     private final OrderItemService orderItemService;
+    private final DeliveryService deliveryService;
 
     @GetMapping("")
-    public String ordersControl(Model model) {
-        List<Orders> ordersList = ordersService.findAll();
+    public String getDeliveryCounts(
+            @RequestParam(value = "type", required = false) String type,
+            @RequestParam(value = "keyword", required = false) String keyword,
+            @RequestParam(name = "delivery", defaultValue = "", required = false) String delivery,
+            @RequestParam(name = "payment", defaultValue = "", required = false) String payment,
+            @RequestParam(name = "status", defaultValue = "", required = false) String status,
+            @RequestParam(name = "page", defaultValue = "1", required = false) int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            Model model) {
+
+        //전체 주문 가져오기
+        List<Orders> ordersList;
+
+        // 검색 기능
+        if (type != null && !type.isEmpty() && keyword != null && !keyword.isEmpty()) {
+            // type에 따라 검색 필터링을 다르게 적용
+            if (type.equalsIgnoreCase("email")) {
+                ordersList = ordersService.findAllByEmail(keyword);
+            } else if (type.equalsIgnoreCase("name")) {
+                ordersList = ordersService.findAllByUserName(keyword);
+            } else {
+                ordersList = ordersService.findAll();
+            }
+        } else {
+            ordersList = ordersService.findAll();
+        }
+
+        List<Orders> filteredOrders = ordersList;
+
+
+//        // 배송상태 필터링
+//        if (!delivery.isEmpty()) {
+//            long deliveryValue = Integer.parseInt(delivery);
+//            filteredOrders.retainAll(ordersService.findAllByDeliveryId(deliveryValue));
+//        }
+//
+//        // 카테고리 필터링
+//        if (!payment.isEmpty()) {
+//            Category selectedCategory = categoryService.findById(Long.parseLong(payment));
+//            if (selectedCategory != null) {
+//                filteredOrders.retainAll(bookService.findAllByCategoryId(selectedCategory.getId()));
+//            }
+//        }
+//
+//        // 서브카테고리 필터링
+//        if (!status.isEmpty()) {
+//            SubCategory selectedSubCategory = subCategoryService.findById(Long.parseLong(status));
+//            if (selectedSubCategory != null) {
+//                filteredOrders.retainAll(bookService.findAllBySubcategoryId(selectedSubCategory.getId()));
+//            }
+//        }
+
+        model.addAttribute("type", type);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("status", status);
+        model.addAttribute("delivery", delivery);
+        model.addAllAttributes(ordersService.getDeliveryCountsByStatus());
         model.addAttribute("ordersList", ordersList);
-        return "admin/orderControl";
+        return "admin/orderControl"; // HTML 파일 이름
     }
 
     // 주문 목록 조회

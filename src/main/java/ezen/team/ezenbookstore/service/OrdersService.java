@@ -256,4 +256,26 @@ public class OrdersService implements OrdersServiceInterface{
         return orderRepository.countByStatus3();
     }
 
+    public Map<String, Object> getDeliveryCountsByStatus() {
+        Map<String, Object> deliveryCounts = new HashMap<>();
+
+        // 전체 건수 및 상태별 건수 계산
+        deliveryCounts.put("totalCount", orderRepository.count());
+        deliveryCounts.put("preparingCount", orderRepository.countByStatus((byte) 1)); // 배송 준비중
+        deliveryCounts.put("shippingCount", orderRepository.countByStatus((byte) 2)); // 배송중
+        deliveryCounts.put("completedCount", orderRepository.countByStatus((byte) 3)); // 배송 완료
+        deliveryCounts.put("returnPreparingCount", orderRepository.countByStatus((byte) 4)); // 반송 준비중
+        deliveryCounts.put("returnShippingCount", orderRepository.countByStatus((byte) 5)); // 반송중
+        deliveryCounts.put("returnCompletedCount", orderRepository.countByStatus((byte) 6)); // 반송 완료
+
+        return deliveryCounts;
+    }
+
+    public List<Orders> findAllByEmail(String keyword) {
+        return orderRepository.findAllByUserEmail(keyword);
+    }
+
+    public List<Orders> findAllByUserName(String keyword) {
+        return orderRepository.findAllByUserName(keyword);
+    }
 }

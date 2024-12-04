@@ -3,9 +3,11 @@ package ezen.team.ezenbookstore.repository;
 import ezen.team.ezenbookstore.entity.Orders;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Timestamp;
+import java.util.Collection;
 import java.util.List;
 
 @Repository
@@ -28,4 +30,12 @@ public interface OrdersRepository extends JpaRepository<Orders, Long> {
     @Query("SELECT COUNT(d) FROM Delivery d WHERE d.status = 3")
     Long countByStatus3();
 
+    @Query("SELECT COUNT(o) FROM Orders o WHERE o.status = :status")
+    Long countByStatus(@Param("status") Byte status);
+
+    @Query("SELECT o FROM Orders o WHERE LOWER(o.user.email) LIKE LOWER(CONCAT('%', :email, '%'))")
+    List<Orders> findAllByUserEmail(@Param("email") String email);
+
+    @Query("SELECT o FROM Orders o WHERE LOWER(o.user.name) LIKE LOWER(CONCAT('%', :name, '%'))")
+    List<Orders> findAllByUserName(@Param("name") String name);
 }
