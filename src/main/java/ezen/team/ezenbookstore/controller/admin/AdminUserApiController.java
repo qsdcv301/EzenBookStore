@@ -39,6 +39,8 @@ public class AdminUserApiController {
 
         // 전체 사용자 리스트 가져오기 (검색 조건이 있는 경우와 없는 경우 모두 포함)
         List<User> userList;
+        
+        //검색기능
         if (type != null && !type.isEmpty() && keyword != null && !keyword.isEmpty()) {
             // type에 따라 검색 필터링을 다르게 적용
             if (type.equalsIgnoreCase("email")) {
