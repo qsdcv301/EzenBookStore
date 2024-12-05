@@ -187,10 +187,28 @@
 
     <!-- 페이지네이션 -->
     <nav aria-label="Page navigation" class="mt-4">
-        <ul class="pagination justify-content-center" id="pagination">
-            <!-- 페이지 번호가 여기에 동적으로 추가됩니다. -->
+        <ul class="pagination justify-content-center">
+            <!-- 이전 페이지 -->
+            <li class="page-item" th:classappend="${ordersPage.hasPrevious() ? '' : 'disabled'}">
+                <a class="page-link" th:href="@{'/admin/order'(page=${ordersPage.number - 1}, size=${ordersPage.size}, keyword=${keyword}, type=${type}, delivery=${delivery}, payment=${payment}, status=${status})}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            <!-- 페이지 번호 -->
+            <li class="page-item" th:each="pageNum : ${#numbers.sequence(1, ordersPage.totalPages)}"
+                th:classappend="${pageNum == ordersPage.number + 1 ? 'active' : ''}">
+                <a class="page-link" th:href="@{'/admin/order'(page=${pageNum - 1}, size=${ordersPage.size}, keyword=${keyword}, type=${type}, delivery=${delivery}, payment=${payment}, status=${status})}"
+                   th:text="${pageNum}"></a>
+            </li>
+            <!-- 다음 페이지 -->
+            <li class="page-item" th:classappend="${ordersPage.hasNext() ? '' : 'disabled'}">
+                <a class="page-link" th:href="@{'/admin/order'(page=${ordersPage.number + 1}, size=${ordersPage.size}, keyword=${keyword}, type=${type}, delivery=${delivery}, payment=${payment}, status=${status})}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
         </ul>
     </nav>
+
 </div>
 
 <div th:each="order : ${ordersList}">
@@ -327,67 +345,8 @@
 
     // 초기화 버튼 (검색 & 필터 모두 초기화)
     function resetFilters() {
-        location.href = `/admin/order?page=1&size=10`;
+        location.href = `/admin/order?page=0`;
     }
-
-
-
-    // // 배송 상태 필터링
-    // function filterDeliveryStatus(delivery) {
-    //     const params = new URLSearchParams(window.location.search);
-    //     params.set('delivery', delivery); // delivery 값을 업데이트
-    //
-    //     // Active 클래스 업데이트
-    //     const filterOptions = document.querySelectorAll('.filter-option');
-    //     filterOptions.forEach(option => {
-    //         if (option.getAttribute('data-status') === delivery) {
-    //             option.classList.add('active');
-    //         } else {
-    //             option.classList.remove('active');
-    //         }
-    //     });
-    //
-    //     // URL 갱신
-    //     window.location.search = params.toString();
-    // }
-    //
-    //
-    // // 필터 적용 버튼 클릭
-    // document.getElementById('applyFilters').addEventListener('click', function () {
-    //     const params = new URLSearchParams(window.location.search);
-    //
-    //     // 선택된 주문 상태와 결제 상태 가져오기
-    //     const orderStatus = document.getElementById('deliveryStatus').value;
-    //     const paymentStatus = document.getElementById('paymentStatus').value;
-    //
-    //     // order와 payment 파라미터 설정
-    //     if (orderStatus) {
-    //         params.set('order', orderStatus);
-    //     } else {
-    //         params.delete('order'); // 값이 없으면 파라미터 제거
-    //     }
-    //
-    //     if (paymentStatus) {
-    //         params.set('payment', paymentStatus);
-    //     } else {
-    //         params.delete('payment'); // 값이 없으면 파라미터 제거
-    //     }
-    //
-    //     window.location.search = params.toString(); // URL 갱신
-    // });
-    //
-    // // 초기화 버튼 클릭
-    // document.getElementById('resetFilters').addEventListener('click', function () {
-    //     const params = new URLSearchParams(window.location.search);
-    //
-    //     // 모든 필터 값 초기화
-    //     params.delete('delivery');
-    //     params.delete('order');
-    //     params.delete('payment');
-    //
-    //     window.location.search = params.toString(); // URL 갱신
-    // });
-
 
 </script>
 
