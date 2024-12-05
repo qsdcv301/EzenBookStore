@@ -44,6 +44,22 @@ $(document).ready(function () {
         });
     });
 
+    $('.loginBtn').on('click', function (e) {
+        e.preventDefault(); // 기본 동작 막기
+
+        const loginEmail = $('#loginEmail').val().trim(); // 입력 값의 앞뒤 공백 제거
+        const loginPassword = $('#loginPassword').val().trim();
+
+        // 빈 값 확인
+        if (loginEmail === "" || loginPassword === "") {
+            alert("아이디 혹은 비밀번호를 입력해주세요.");
+            return; // 조건에 맞으면 함수 종료
+        }
+
+        // 조건을 만족하면 폼 제출
+        $('.loginValidation').submit();
+    });
+
     //header
 
     // 서브메뉴 호버 효과
@@ -61,25 +77,25 @@ $(document).ready(function () {
         const searchSelect = $(".searchSelect").select().val();
         const searchInput = $(".searchInput").val().trim();
         let encodedKeyword;
-        switch (searchSelect){
+        switch (searchSelect) {
             case "0":
-                 encodedKeyword = encodeURIComponent("[title,author,isbn,publisher]");
+                encodedKeyword = encodeURIComponent("[title,author,isbn,publisher]");
                 window.location.href = `/book/search?keyword=${encodedKeyword}&val=${searchInput}`;
                 break;
             case "1":
-                 encodedKeyword = encodeURIComponent("[title]");
+                encodedKeyword = encodeURIComponent("[title]");
                 window.location.href = `/book/search?keyword=${encodedKeyword}&val=${searchInput}`;
                 break;
             case "2":
-                 encodedKeyword = encodeURIComponent("[author]");
+                encodedKeyword = encodeURIComponent("[author]");
                 window.location.href = `/book/search?keyword=${encodedKeyword}&val=${searchInput}`;
                 break;
             case "3":
-                 encodedKeyword = encodeURIComponent("isbn]");
+                encodedKeyword = encodeURIComponent("isbn]");
                 window.location.href = `/book/search?keyword=${encodedKeyword}&val=${searchInput}`;
                 break;
             case "4":
-                 encodedKeyword = encodeURIComponent("[publisher]");
+                encodedKeyword = encodeURIComponent("[publisher]");
                 window.location.href = `/book/search?keyword=${encodedKeyword}&val=${searchInput}`;
                 break;
             default :
@@ -92,7 +108,7 @@ $(document).ready(function () {
     //footer
 
     $("#scrollTopBtn").on("click", function () {
-        $("html, body").animate({ scrollTop: 0 }, "slow");
+        $("html, body").animate({scrollTop: 0}, "slow");
     });
 
     $("#goHomeBtn").on("click", function () {
@@ -142,6 +158,35 @@ $(document).ready(function () {
             const birthday = form.find('#userBirth').val();
             const addr = form.find('#addr').val();
             const addrextra = form.find('#addrextra').val();
+            if (userId === '') {
+                alert("이메일을 입력해주세요.");
+                form.find('#userId').focus();
+                return;
+            }
+            if (name === '') {
+                alert("이름을 입력해주세요.");
+                form.find('#userName').focus();
+            }
+            if (password === '') {
+                alert("비밀번호를 입력해주세요.");
+                form.find('#userPwCheck').focus();
+            }
+            if (tel === '') {
+                alert("전화번호를 입력해주세요.");
+                form.find('#userTel').focus();
+            }
+            if (birthday === '') {
+                alert("생년월일을 입력해주세요.");
+                form.find('#userBirth').focus();
+            }
+            if (addr === '') {
+                alert("주소를 입력해주세요.");
+                form.find('#addr').focus();
+            }
+            if (addrextra === '') {
+                alert("상세주소를 입력해주세요.");
+                form.find('#addrextra').focus();
+            }
             $.ajax({
                 type: 'POST',
                 url: `/signup`,
@@ -257,6 +302,11 @@ $(document).ready(function () {
     $('#userTel').on('input', function () {
         let phoneValue = $('#userTel').val().replace(/[^0-9]/g, ''); // 숫자 이외의 문자는 제거
 
+        // 입력값이 11자리를 초과하면 잘라냄
+        if (phoneValue.length > 11) {
+            phoneValue = phoneValue.substring(0, 11); // 최대 11자리까지만 허용
+        }
+
         if (phoneValue.length > 3 && phoneValue.length <= 7) {
             phoneValue = phoneValue.replace(/(\d{3})(\d{1,4})/, '$1-$2');
         } else if (phoneValue.length > 7) {
@@ -304,6 +354,11 @@ $(document).ready(function () {
 
     $('#checkDuplicateBtn').click(function (e) {
         e.preventDefault();
+        const userIdCheck = $("#userId");
+        if (userIdCheck.hasClass('is-invalid')) {
+            alert("이메일 형식이 올바르지 않습니다.");
+            return;
+        }
         const form = $('#step2');
         const userId = form.find('#userId').val();
         $.ajax({
@@ -1090,6 +1145,23 @@ $(document).ready(function () {
     }
 
     //     findIdPw
+
+    $('.userTel').on('input', function () {
+        let phoneValue = $(this).val().replace(/[^0-9]/g, ''); // 숫자 이외의 문자는 제거
+
+        // 입력값이 11자리를 초과하면 잘라냄
+        if (phoneValue.length > 11) {
+            phoneValue = phoneValue.substring(0, 11); // 최대 11자리까지만 허용
+        }
+
+        if (phoneValue.length > 3 && phoneValue.length <= 7) {
+            phoneValue = phoneValue.replace(/(\d{3})(\d{1,4})/, '$1-$2');
+        } else if (phoneValue.length > 7) {
+            phoneValue = phoneValue.replace(/(\d{3})(\d{4})(\d{1,4})/, '$1-$2-$3');
+        }
+
+        $(this).val(phoneValue); // 포맷팅된 값을 다시 입력 필드에 넣음
+    });
 
     // 버튼 클릭 시 폼 표시 토글
     $('#findIdTab, #resetPwTab').on('shown.bs.tab', function (e) {
