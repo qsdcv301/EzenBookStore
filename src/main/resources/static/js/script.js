@@ -44,7 +44,7 @@ $(document).ready(function () {
         });
     });
 
-    $('.loginBtn').on('click', function (e) {
+    $('.localLoginBtn').on('click', function (e) {
         e.preventDefault(); // 기본 동작 막기
 
         const loginEmail = $('#loginEmail').val().trim(); // 입력 값의 앞뒤 공백 제거
