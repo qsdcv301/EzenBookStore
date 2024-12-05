@@ -37,33 +37,34 @@
 
     <!-- 배송 상태별 건수 -->
     <div class="d-flex justify-content-start mb-3">
-        <span class="filter-option" data-status="" th:classappend="${delivery == null ? 'active' : ''}">
-            전체 <span th:text="${totalCount}"></span>
+        <span class="filter-option" data-status="" th:classappend="${delivery == '' ? 'active' : ''}"
+              onclick="filterDeliveryStatus(this)">
+            전체 <span th:text="${deliveryCount.get('totalCount')}"></span>
         </span>
 
-        <span class="filter-option" data-status="1" th:classappend="${delivery == 1 ? 'active' : ''}"
-                  onclick="filterDeliveryStatus('1')">
-            배송 준비중 <span th:text="${preparingCount}"></span> <!-- 배송 준비중 상태 -->
+        <span class="filter-option" data-status="1" th:classappend="${delivery == '1' ? 'active' : ''}"
+                  onclick="filterDeliveryStatus(this)">
+            배송 준비중 <span th:text="${deliveryCount.get('preparingCount')}"></span> <!-- 배송 준비중 상태 -->
         </span>
-            <span class="filter-option" data-status="2" th:classappend="${delivery == 2 ? 'active' : ''}"
-                  onclick="filterDeliveryStatus('2')">
-            배송중 <span th:text="${shippingCount}"></span> <!-- 배송중 상태 -->
+            <span class="filter-option" data-status="2" th:classappend="${delivery == '2' ? 'active' : ''}"
+                  onclick="filterDeliveryStatus(this)">
+            배송중 <span th:text="${deliveryCount.get('shippingCount')}"></span> <!-- 배송중 상태 -->
         </span>
-            <span class="filter-option" data-status="3" th:classappend="${delivery == 3 ? 'active' : ''}"
-                  onclick="filterDeliveryStatus('3')">
-            배송 완료 <span th:text="${completedCount}"></span> <!-- 배송 완료 상태 -->
+            <span class="filter-option" data-status="3" th:classappend="${delivery == '3' ? 'active' : ''}"
+                  onclick="filterDeliveryStatus(this)">
+            배송 완료 <span th:text="${deliveryCount.get('completedCount')}"></span> <!-- 배송 완료 상태 -->
         </span>
-            <span class="filter-option" data-status="4" th:classappend="${delivery == 4 ? 'active' : ''}"
-                  onclick="filterDeliveryStatus('4')">
-            반송 준비중 <span th:text="${returnPreparingCount}"></span> <!-- 반송 준비중 상태 -->
+            <span class="filter-option" data-status="4" th:classappend="${delivery == '4' ? 'active' : ''}"
+                  onclick="filterDeliveryStatus(this)">
+            반송 준비중 <span th:text="${deliveryCount.get('returnPreparingCount')}"></span> <!-- 반송 준비중 상태 -->
         </span>
-            <span class="filter-option" data-status="5" th:classappend="${delivery == 5 ? 'active' : ''}"
-                  onclick="filterDeliveryStatus('5')">
-            반송중 <span th:text="${returnShippingCount}"></span> <!-- 반송중 상태 -->
+            <span class="filter-option" data-status="5" th:classappend="${delivery == '5' ? 'active' : ''}"
+                  onclick="filterDeliveryStatus(this)">
+            반송중 <span th:text="${deliveryCount.get('returnShippingCount')}"></span> <!-- 반송중 상태 -->
         </span>
-            <span class="filter-option" data-status="6" th:classappend="${delivery == 6 ? 'active' : ''}"
-                  onclick="filterDeliveryStatus('6')">
-            반송 완료 <span th:text="${returnCompletedCount}"></span> <!-- 반송 완료 상태 -->
+            <span class="filter-option" data-status="6" th:classappend="${delivery == '6' ? 'active' : ''}"
+                  onclick="filterDeliveryStatus(this)">
+            반송 완료 <span th:text="${deliveryCount.get('returnCompletedCount')}"></span> <!-- 반송 완료 상태 -->
         </span>
     </div>
 
@@ -71,35 +72,30 @@
 
     <div class="card mt-3" id="advancedSearch">
         <div class="card-body row">
-            <div class="col-md-1"></div>
             <div class="col-md-4">
                 <select id="deliveryStatus" name="deliveryStatus" class="form-control">
                     <option value="">주문 상태를 선택하세요</option>
-                    <option value="1">주문 완료</option>
-                    <option value="2">주문 취소</option>
-                    <option value="3">교환/반품 신청</option>
-                    <option value="4">교환/반품 승인</option>
+                    <option value="1" th:selected="${status == '1'}">주문 완료</option>
+                    <option value="2" th:selected="${status == '2'}">주문 취소</option>
+                    <option value="3" th:selected="${status == '3'}">교환/반품 신청</option>
+                    <option value="4" th:selected="${status == '4'}">교환/반품 승인</option>
                 </select>
             </div>
-
             <div class="col-md-4">
                 <select id="paymentStatus" name="paymentStatus" class="form-control">
                     <option value="">결제 상태를 선택하세요</option>
-                    <option value="1">결제 완료</option>
-                    <option value="2">결제 취소</option>
-                    <option value="3">재결제 완료</option>
+                    <option value="1" th:selected="${payment == '1'}">결제 완료</option>
+                    <option value="2" th:selected="${payment == '2'}">결제 취소</option>
+                    <option value="3" th:selected="${payment == '3'}">재결제 완료</option>
                 </select>
             </div>
             <div class="col-md-3">
-                <button class="btn btn-primary" type="button" id="applyFilters">필터
-                    적용
-                </button>
-                <button class="btn btn-secondary" type="button"
-                        id="resetFilters">초기화
-                </button>
+                <button class="btn btn-primary" type="button" onclick="applyAdvancedFilters()">필터 적용</button>
+                <button class="btn btn-secondary" type="button" onclick="resetFilters()">초기화</button>
             </div>
         </div>
     </div>
+
 
     <hr>
     <!-- 수정/삭제 버튼 및 검색 섹션 -->
@@ -274,75 +270,123 @@
         $('.order-checkbox').prop('checked', isChecked); // 하위 체크박스 상태 변경
     }
 
-    //검색 기능 스크립트
-    function searchUsers(){
+    // 배송 상태 필터링
+    function filterDeliveryStatus(element) {
+        const delivery = element.getAttribute("data-status");
+        const urlParams = new URLSearchParams(window.location.search);
+
+        // 기존 파라미터 유지 + 배송 상태 변경
+        urlParams.set("delivery", delivery);
+        urlParams.set("page", 0); // 필터링 시 첫 페이지로 이동
+
+        // 새 URL로 이동
+        location.href = `/admin/order?${urlParams.toString()}`;
+    }
+
+    // 주문 상태 및 결제 상태 필터링
+    function applyAdvancedFilters() {
+        const deliveryStatus = document.getElementById("deliveryStatus").value;
+        const paymentStatus = document.getElementById("paymentStatus").value;
+        const urlParams = new URLSearchParams(window.location.search);
+
+        // 기존 파라미터 유지 + 필터링 조건 추가
+        if (deliveryStatus) {
+            urlParams.set("status", deliveryStatus);
+        } else {
+            urlParams.delete("status");
+        }
+        if (paymentStatus) {
+            urlParams.set("payment", paymentStatus);
+        } else {
+            urlParams.delete("payment");
+        }
+        urlParams.set("page", 0); // 필터링 시 첫 페이지로 이동
+
+        // 새 URL로 이동
+        location.href = `/admin/order?${urlParams.toString()}`;
+    }
+
+    // 검색 기능
+    function searchUsers() {
         const type = document.getElementById("search-type").value;
         const keyword = document.getElementById("search-input").value;
+        const urlParams = new URLSearchParams(window.location.search);
 
-        if(!keyword){
+        // 검색 조건 추가
+        if (!keyword) {
             alert("검색어를 입력하세요.");
             return;
         }
+        urlParams.set("type", type);
+        urlParams.set("keyword", encodeURIComponent(keyword));
+        urlParams.set("page", 0); // 검색 시 첫 페이지로 이동
 
-        location.href  = `/admin/order?type=${type}&keyword=${encodeURIComponent(keyword)}&page=1`;
-
+        // 새 URL로 이동
+        location.href = `/admin/order?${urlParams.toString()}`;
     }
 
-    // 배송 상태 필터링
-    function filterDeliveryStatus(delivery) {
-        const params = new URLSearchParams(window.location.search);
-        params.set('delivery', delivery); // delivery 값을 업데이트
-
-        // Active 클래스 업데이트
-        const filterOptions = document.querySelectorAll('.filter-option');
-        filterOptions.forEach(option => {
-            if (option.getAttribute('data-status') === delivery) {
-                option.classList.add('active');
-            } else {
-                option.classList.remove('active');
-            }
-        });
-
-        // URL 갱신
-        window.location.search = params.toString();
+    // 초기화 버튼 (검색 & 필터 모두 초기화)
+    function resetFilters() {
+        location.href = `/admin/order?page=1&size=10`;
     }
 
 
-    // 필터 적용 버튼 클릭
-    document.getElementById('applyFilters').addEventListener('click', function () {
-        const params = new URLSearchParams(window.location.search);
 
-        // 선택된 주문 상태와 결제 상태 가져오기
-        const orderStatus = document.getElementById('deliveryStatus').value;
-        const paymentStatus = document.getElementById('paymentStatus').value;
-
-        // order와 payment 파라미터 설정
-        if (orderStatus) {
-            params.set('order', orderStatus);
-        } else {
-            params.delete('order'); // 값이 없으면 파라미터 제거
-        }
-
-        if (paymentStatus) {
-            params.set('payment', paymentStatus);
-        } else {
-            params.delete('payment'); // 값이 없으면 파라미터 제거
-        }
-
-        window.location.search = params.toString(); // URL 갱신
-    });
-
-    // 초기화 버튼 클릭
-    document.getElementById('resetFilters').addEventListener('click', function () {
-        const params = new URLSearchParams(window.location.search);
-
-        // 모든 필터 값 초기화
-        params.delete('delivery');
-        params.delete('order');
-        params.delete('payment');
-
-        window.location.search = params.toString(); // URL 갱신
-    });
+    // // 배송 상태 필터링
+    // function filterDeliveryStatus(delivery) {
+    //     const params = new URLSearchParams(window.location.search);
+    //     params.set('delivery', delivery); // delivery 값을 업데이트
+    //
+    //     // Active 클래스 업데이트
+    //     const filterOptions = document.querySelectorAll('.filter-option');
+    //     filterOptions.forEach(option => {
+    //         if (option.getAttribute('data-status') === delivery) {
+    //             option.classList.add('active');
+    //         } else {
+    //             option.classList.remove('active');
+    //         }
+    //     });
+    //
+    //     // URL 갱신
+    //     window.location.search = params.toString();
+    // }
+    //
+    //
+    // // 필터 적용 버튼 클릭
+    // document.getElementById('applyFilters').addEventListener('click', function () {
+    //     const params = new URLSearchParams(window.location.search);
+    //
+    //     // 선택된 주문 상태와 결제 상태 가져오기
+    //     const orderStatus = document.getElementById('deliveryStatus').value;
+    //     const paymentStatus = document.getElementById('paymentStatus').value;
+    //
+    //     // order와 payment 파라미터 설정
+    //     if (orderStatus) {
+    //         params.set('order', orderStatus);
+    //     } else {
+    //         params.delete('order'); // 값이 없으면 파라미터 제거
+    //     }
+    //
+    //     if (paymentStatus) {
+    //         params.set('payment', paymentStatus);
+    //     } else {
+    //         params.delete('payment'); // 값이 없으면 파라미터 제거
+    //     }
+    //
+    //     window.location.search = params.toString(); // URL 갱신
+    // });
+    //
+    // // 초기화 버튼 클릭
+    // document.getElementById('resetFilters').addEventListener('click', function () {
+    //     const params = new URLSearchParams(window.location.search);
+    //
+    //     // 모든 필터 값 초기화
+    //     params.delete('delivery');
+    //     params.delete('order');
+    //     params.delete('payment');
+    //
+    //     window.location.search = params.toString(); // URL 갱신
+    // });
 
 
 </script>

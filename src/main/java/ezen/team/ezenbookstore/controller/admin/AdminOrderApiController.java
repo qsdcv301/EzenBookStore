@@ -4,16 +4,18 @@ import ezen.team.ezenbookstore.entity.*;
 import ezen.team.ezenbookstore.service.DeliveryService;
 import ezen.team.ezenbookstore.service.OrderItemService;
 import ezen.team.ezenbookstore.service.OrdersService;
+import ezen.team.ezenbookstore.service.PaymentService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Controller
@@ -23,20 +25,22 @@ public class AdminOrderApiController {
     private final OrdersService ordersService;
     private final OrderItemService orderItemService;
     private final DeliveryService deliveryService;
+    private final PaymentService paymentService;
 
     @GetMapping("")
     public String getDeliveryCounts(
             @RequestParam(value = "type", required = false) String type,
             @RequestParam(value = "keyword", required = false) String keyword,
-            @RequestParam(name = "delivery", defaultValue = "", required = false) String delivery,
-            @RequestParam(name = "payment", defaultValue = "", required = false) String payment,
-            @RequestParam(name = "status", defaultValue = "", required = false) String status,
-            @RequestParam(name = "page", defaultValue = "1", required = false) int page,
+            @RequestParam(name = "delivery", defaultValue = "0", required = false) Byte delivery,
+            @RequestParam(name = "payment", defaultValue = "0", required = false) Byte payment,
+            @RequestParam(name = "status", defaultValue = "0", required = false) Byte status,
+            @RequestParam(name = "page", defaultValue = "0", required = false) int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
             Model model) {
 
         //전체 주문 가져오기
         List<Orders> ordersList;
+        Pageable pageable = PageRequest.of(page, size);
 
         // 검색 기능
         if (type != null && !type.isEmpty() && keyword != null && !keyword.isEmpty()) {
@@ -52,37 +56,40 @@ public class AdminOrderApiController {
             ordersList = ordersService.findAll();
         }
 
+        //작업중
         List<Orders> filteredOrders = ordersList;
 
+        // 배송상태 필터링
+        if (delivery != 0) {
+            filteredOrders.retainAll(ordersService.findAllByDelivery_Status(delivery));
+        }
 
-//        // 배송상태 필터링
-//        if (!delivery.isEmpty()) {
-//            long deliveryValue = Integer.parseInt(delivery);
-//            filteredOrders.retainAll(ordersService.findAllByDeliveryId(deliveryValue));
-//        }
-//
-//        // 카테고리 필터링
-//        if (!payment.isEmpty()) {
-//            Category selectedCategory = categoryService.findById(Long.parseLong(payment));
-//            if (selectedCategory != null) {
-//                filteredOrders.retainAll(bookService.findAllByCategoryId(selectedCategory.getId()));
-//            }
-//        }
-//
-//        // 서브카테고리 필터링
-//        if (!status.isEmpty()) {
-//            SubCategory selectedSubCategory = subCategoryService.findById(Long.parseLong(status));
-//            if (selectedSubCategory != null) {
-//                filteredOrders.retainAll(bookService.findAllBySubcategoryId(selectedSubCategory.getId()));
-//            }
-//        }
+        // 카테고리 필터링
+        if (payment != 0) {
+            filteredOrders.retainAll(ordersService.findAllByPayment_Status(payment));
+        }
 
+        // 서브카테고리 필터링
+        if (status != 0) {
+            filteredOrders.retainAll(ordersService.findAllByStatus(status));
+        }
+
+        // 페이지네이션 적용
+        int start = Math.min((int) pageable.getOffset(), filteredOrders.size());
+        int end = Math.min((start + pageable.getPageSize()), filteredOrders.size());
+        List<Orders> pagedOrders = filteredOrders.subList(start, end);
+        Page<Orders> ordersPage = new PageImpl<>(pagedOrders, pageable, filteredOrders.size());
+
+        Map<String, Object> deliveryCount = new HashMap<>();
+        deliveryCount = deliveryService.getDeliveryCountsByStatus();
+        model.addAttribute("ordersList", ordersPage.getContent());
+        model.addAttribute("ordersPage", ordersPage);
         model.addAttribute("type", type);
         model.addAttribute("keyword", keyword);
         model.addAttribute("status", status);
         model.addAttribute("delivery", delivery);
-        model.addAllAttributes(ordersService.getDeliveryCountsByStatus());
-        model.addAttribute("ordersList", ordersList);
+        model.addAttribute("payment", payment);
+        model.addAttribute("deliveryCount", deliveryCount);
         return "admin/orderControl"; // HTML 파일 이름
     }
 

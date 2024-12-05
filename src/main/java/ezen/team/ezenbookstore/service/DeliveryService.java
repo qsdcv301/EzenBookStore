@@ -5,7 +5,10 @@ import ezen.team.ezenbookstore.repository.DeliveryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -67,6 +70,22 @@ public class DeliveryService implements DeliveryServiceInterface {
     @Override
     public Long countByStatusIn456() {
         return deliveryRepository.countByStatusIn456();
+    }
+
+
+    public Map<String, Object> getDeliveryCountsByStatus() {
+        Map<String, Object> deliveryCounts = new HashMap<>();
+
+        // 전체 건수 및 상태별 건수 계산
+        deliveryCounts.put("totalCount", deliveryRepository.count());
+        deliveryCounts.put("preparingCount", deliveryRepository.countByDeliveryStatus((byte) 1)); // 배송 준비중
+        deliveryCounts.put("shippingCount", deliveryRepository.countByDeliveryStatus((byte) 2)); // 배송중
+        deliveryCounts.put("completedCount", deliveryRepository.countByDeliveryStatus((byte) 3)); // 배송 완료
+        deliveryCounts.put("returnPreparingCount", deliveryRepository.countByDeliveryStatus((byte) 4)); // 반송 준비중
+        deliveryCounts.put("returnShippingCount", deliveryRepository.countByDeliveryStatus((byte) 5)); // 반송중
+        deliveryCounts.put("returnCompletedCount", deliveryRepository.countByDeliveryStatus((byte) 6)); // 반송 완료
+
+        return deliveryCounts;
     }
 
 }

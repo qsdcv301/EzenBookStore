@@ -56,6 +56,10 @@
             font-size: 0.7rem;
             margin-bottom: 0.25rem;
         }
+
+        .checkboxScale{
+            transform: scale(1.5);
+        }
     </style>
 </head>
 <body>
@@ -69,7 +73,7 @@
                     <div class="position-sticky sidebar">
                         <ul class="nav flex-column">
                             <!-- 국내 카테고리 -->
-                            <li class="nav-item">
+                            <li class="nav-item border-bottom">
                                 <p class="nav-item">
                                     <a th:href="@{/book(page=0,sort=${sort},direction=${direction}, ifkr='0', category='', subcategory='')}">국내</a>
                                     <a href="#" class="float-right" data-toggle="collapse"
@@ -97,8 +101,9 @@
                                     </li>
                                 </ul>
                             </li>
+
                             <!-- 국외 카테고리 -->
-                            <li class="nav-item">
+                            <li class="nav-item mt-4">
                                 <p class="nav-item">
                                     <a th:href="@{/book(page=0,sort=${sort},direction=${direction}, ifkr='1', category='', subcategory='')}">국외</a>
                                     <a href="#" class="float-right" data-toggle="collapse"
@@ -134,7 +139,7 @@
                 <main class="col-md-10">
                     <div class="product-grid">
                         <h2 class="mt-1 mb-5"
-                            th:text="${ifkr=='0' ? '국내' : ifkr=='1' ? '국외' : ''}+${category=='' ? '' : ', ' + category}+${subcategory=='' ? '' : ', ' + subcategory}+' 상품 목록'"></h2>
+                            th:text="${ifkr == '0' ? '국내' : ifkr == '1' ? '국외' : ''}+${category=='' ? '' : ', ' + category}+${subcategory=='' ? '' : ', ' + subcategory}+' 상품 목록'"></h2>
                         <div class="d-flex justify-content-end align-items-center mb-3">
                             <div class="form-check mt-3 me-2">
                                 <input class="form-check-input" type="checkbox" id="selectAll">
@@ -179,7 +184,7 @@
                         <div class="col mb-4 cart-Data" th:each="book, index : ${bookList}">
                             <div class="card">
                                 <div class="form-check position-absolute top-0 m-2">
-                                    <input class="form-check-input cart-checkbox" type="checkbox" id="product1">
+                                    <input class="form-check-input cart-checkbox checkboxScale" type="checkbox" th:id="${book.id}">
                                 </div>
                                 <a th:href="@{/book/detail(bookId=${book.id})}" class="d-block text-decoration-none">
                                     <img th:src="${imageList[index.index] != '' ? imageList[index.index] : 'https://via.placeholder.com/100'}"

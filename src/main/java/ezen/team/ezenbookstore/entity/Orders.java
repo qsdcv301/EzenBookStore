@@ -30,10 +30,12 @@ public class Orders {
     private User user;
 
     @OneToOne
+    @JsonIgnore
     @JoinColumn(name = "delivery_id", referencedColumnName = "id")
     private Delivery delivery;
 
     @OneToOne
+    @JsonIgnore
     @JoinColumn(name = "payment_id", referencedColumnName = "id")
     private Payment payment;
 
