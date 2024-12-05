@@ -33,7 +33,7 @@ public class UserApiController {
     @GetMapping("/loginSuccess")
     public String getLoginInfo(@AuthenticationPrincipal CustomOAuth2User user) {
         User findUser = userFacadeService.processOAuthLogin(user);
-        return (findUser.getGrade() == 99) ? "redirect:/admin/book" : "redirect:/";
+        return (findUser.getGrade() == 99) ? "redirect:/admin" : "redirect:/";
     }
 
     @PostMapping("/findId")
