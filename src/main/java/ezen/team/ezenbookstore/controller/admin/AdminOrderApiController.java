@@ -35,12 +35,11 @@ public class AdminOrderApiController {
             @RequestParam(name = "payment", defaultValue = "0", required = false) Byte payment,
             @RequestParam(name = "status", defaultValue = "0", required = false) Byte status,
             @RequestParam(name = "page", defaultValue = "0", required = false) int page,
-            @RequestParam(value = "size", defaultValue = "10") int size,
             Model model) {
 
         //전체 주문 가져오기
         List<Orders> ordersList;
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, 10);
 
         // 검색 기능
         if (type != null && !type.isEmpty() && keyword != null && !keyword.isEmpty()) {
