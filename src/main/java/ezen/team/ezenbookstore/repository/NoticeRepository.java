@@ -11,7 +11,7 @@ import java.util.List;
 @Repository
 public interface NoticeRepository extends JpaRepository<Notice, Long> {
     Page<Notice> findAll(Pageable pageable);
-
+    Page<Notice> findById(Long id, Pageable pageable);
     Page<Notice> findByTitleContaining(String keyword,Pageable pageable);
 
     Page<Notice> findByContentContaining(String keyword,Pageable pageable);

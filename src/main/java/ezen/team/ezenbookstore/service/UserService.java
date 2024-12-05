@@ -16,12 +16,13 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Service
-public class UserService {
+public class UserService implements UserServiceInterface{
 
     private final UserRepository userRepository;
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    @Override
     public Object userInConnection() {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -49,6 +50,7 @@ public class UserService {
         }
     }
 
+    @Override
     public String getUserEmail() {
         Object userObject = userInConnection();
 
@@ -61,14 +63,17 @@ public class UserService {
         }
     }
 
+    @Override
     public User findById(Long id) {
         return userRepository.findById(id).orElse(null);
     }
 
+    @Override
     public Page<User> findAll(Pageable pageable) {
         return userRepository.findAll(pageable);
     }
 
+    @Override
     public User create(User user) {
         if (user.getPassword() == null || user.getPassword().isEmpty()) {
             // 비밀번호가 null일 경우 기본 비밀번호를 설정
@@ -78,6 +83,7 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    @Override
     public User update(User user) {
         User newUser = User.builder()
                 .id(user.getId())
@@ -96,6 +102,7 @@ public class UserService {
         return userRepository.save(newUser);
     }
 
+    @Override
     public User updatePass(User user) {
         User newUser = User.builder()
                 .id(user.getId())
@@ -114,38 +121,51 @@ public class UserService {
         return userRepository.save(newUser);
     }
 
+    @Override
     public void deleteById(Long id) {
         userRepository.deleteById(id);
     }
 
+    @Override
     public User findByEmail(String email) {
         return userRepository.findByEmail(email).orElse(null);
     }
 
+    @Override
     public User findByEmailAndProvider(String email, String provider) {
         return userRepository.findByEmailAndProvider(email, provider).orElse(null);
     }
 
+    @Override
     public User findByNameAndTel(String name, String tel) {
         return userRepository.findByNameAndTel(name, tel).orElse(null);
     }
 
+    @Override
     public User findByEmailAndTel(String email, String tel) {
         return userRepository.findByEmailAndTel(email, tel).orElse(null);
     }
 
+    @Override
     public List<User> findAllUsers() {
         return userRepository.findAll();
     }
 
     // 이메일로 사용자 목록 검색하기
+    @Override
     public List<User> findUsersByEmail(String email) {
         return userRepository.findByEmailContainingIgnoreCase(email);
     }
 
     // 이름으로 사용자 목록 검색하기
+    @Override
     public List<User> findUsersByName(String name) {
         return userRepository.findByNameContainingIgnoreCase(name);
+    }
+
+    @Override
+    public Long userCount(){
+        return userRepository.count();
     }
 
 }

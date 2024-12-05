@@ -33,7 +33,8 @@
                 <h5 class="text-primary mb-3">소셜 미디어</h5>
                 <ul class="list-unstyled">
                     <li class="mb-2"><a href="#" class="text-muted"><i class="bi bi-facebook mr-2"></i>Facebook</a></li>
-                    <li class="mb-2"><a href="#" class="text-muted"><i class="bi bi-instagram mr-2"></i>Instagram</a></li>
+                    <li class="mb-2"><a href="#" class="text-muted"><i class="bi bi-instagram mr-2"></i>Instagram</a>
+                    </li>
                     <li class="mb-2"><a href="#" class="text-muted"><i class="bi bi-twitter mr-2"></i>Twitter</a></li>
                     <li><a href="#" class="text-muted"><i class="bi bi-youtube mr-2"></i>YouTube</a></li>
                 </ul>
@@ -60,11 +61,100 @@
         </div>
     </div>
     <div class="navigation-buttons">
+        <!-- 최근 본 도서 버튼 -->
+        <button id="recentItemsBtn" class="btn btn-primary position-relative">
+            <span id="bookCountBadge" class="badge badge-danger position-absolute"
+                  style="top: -10px; right: 0;">3</span>
+            <i class="bi bi-book"></i>
+        </button>
+        <ul id="recentlyViewedList" class="list-group mt-3">
+            <li class="list-group-item list-group-item-info d-flex align-items-center" style="height: 60px;">
+                <h5>최근 본 도서 목록</h5>
+            </li>
+            <li class="bookList overflow-auto" style="max-height: 50vh;">
+                <ul class="p-0">
+                    <li class="list-group-item list-group-item-warning" id="noItemsMessage"
+                        style="height: 60px; display: none;">
+                        <p>최근 본 도서가 없습니다.</p>
+                    </li>
+                    <li class="list-group-item" th:each="entry : ${recentBookCookie}">
+                        <div class="card">
+                            <div class="row g-0">
+                                <div class="col-md-5">
+                                    <img th:src="${entry.imgPath}" th:alt="${entry.title}" class="card-img-top"
+                                         style="width: 100%; height: 100%; object-fit: cover;">
+                                </div>
+                                <div class="col-md-7">
+                                    <div class="card-body px-0">
+                                        <a class="stretched-link" th:href="@{'/book/detail'(bookId=${entry.id})}"></a>
+                                        <p class="card-title text-truncate" th:text="${entry.title}"></p>
+                                        <p class="card-text text-truncate mb-0"><small>저자 : <span
+                                                th:text="${entry.author}"></span></small></p>
+                                        <p class="card-text text-truncate"><small>출판사 : <span
+                                                th:text="${entry.publisher}"></span></small></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </li>
+        </ul>
         <!-- 관리자 버튼 초기설정 display none-->
         <a th:if="${admin}" href="/admin/book" id="adminBtn" class="adminDashBoard">
             <i class="bi bi-gear-fill rotate-icon"></i>
         </a>
         <button id="scrollTopBtn"><i class="bi bi-arrow-up"></i></button>
         <button id="goHomeBtn"><i class="bi bi-house-fill"></i></button>
+
     </div>
+    <script>
+
+        // 최근 본 도서 목록 토글
+        document.getElementById('recentItemsBtn').addEventListener('click', function () {
+            toggleVisibility('recentlyViewedList');
+        });
+
+        function toggleVisibility(elementId) {
+            const element = document.getElementById(elementId);
+            element.classList.toggle('show');
+        }
+
+        // 배지 숫자를 업데이트하고 목록이 비어있을 경우 메시지를 출력하는 함수
+        function updateBadgeAndMessage() {
+            const list = document.querySelector('#recentlyViewedList .bookList');
+
+            // 최근 본 도서 목록 항목 중 실제 도서 요소만 선택
+            const items = list.querySelectorAll('li:not(.list-group-item-info):not(#noItemsMessage)');
+            const itemCount = items.length; // 실제 항목 개수 계산
+
+            // 배지에 개수 표시
+            document.getElementById('bookCountBadge').innerText = itemCount;
+
+            // "최근 본 도서가 없습니다" 메시지 요소 선택
+            const noItemsMessage = document.getElementById('noItemsMessage');
+
+            // 목록이 비어있으면 메시지를 표시하고, 그렇지 않으면 숨김
+            if (itemCount === 0) {
+                noItemsMessage.style.display = 'block';
+            } else {
+                noItemsMessage.style.display = 'none';
+            }
+        }
+
+        // 페이지가 로드될 때 초기화
+        document.addEventListener('DOMContentLoaded', () => {
+            updateBadgeAndMessage();
+
+            // MutationObserver를 사용하여 li의 변화 감지
+            const list = document.querySelector('#recentlyViewedList .bookList');
+            const observer = new MutationObserver(() => {
+                updateBadgeAndMessage(); // DOM 변경 시 업데이트 함수 호출
+            });
+
+            // 감시 대상과 옵션 설정
+            observer.observe(list, {childList: true, subtree: false});
+        });
+
+    </script>
 </footer>

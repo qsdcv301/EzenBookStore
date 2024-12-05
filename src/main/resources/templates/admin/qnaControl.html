@@ -73,6 +73,9 @@
             <td>
                 <button type="button" class="btn btn-info btn-sm view-btn" th:attr="data-qna-id=${qnA.id}">상세보기</button>
             </td>
+            <td>
+                <input type="hidden" class="hiddenImg" th:value="${@thymeleafFileUploadService.findImageFilePath(qnA.id,'qna')}">
+            </td>
         </tr>
         </tbody>
     </table>
@@ -85,6 +88,7 @@
 <div class="modal fade" id="qnaDetailModal" tabindex="-1" aria-labelledby="qnaDetailModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
+            <form>
             <div class="modal-header">
                 <h5 class="modal-title" id="qnaDetailModalLabel">QnA 상세보기</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -95,6 +99,8 @@
                 <p><strong>카테고리:</strong> <span id="detailCategory"></span></p>
                 <p><strong>질문 제목:</strong> <span id="detailTitle"></span></p>
                 <p><strong>질문 내용:</strong> <span id="detailQuestion"></span></p>
+                <p class="modalImgPTag"><strong>이미지파일 첨부확인</strong></p>
+                <img id="detailImg" src=""/>
                 <p><strong>답변:</strong></p>
                 <textarea id="editAnswer" class="form-control"></textarea>
             </div>
@@ -102,6 +108,7 @@
                 <button type="button" class="btn btn-primary" id="saveAnswer">답변 저장</button>
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
             </div>
+            </form>
         </div>
     </div>
 </div>
@@ -210,6 +217,7 @@
                 $('#detailTitle').text(response.title);
                 $('#detailQuestion').text(response.question);
                 $('#editAnswer').val(response.answer || ''); // 답변 값이 없으면 빈 문자열로 처리
+                $('#detailImg').attr('src', $('.hiddenImg').val());
                 $('#qnaDetailModal').modal('show'); // 모달 표시
             },
             error: function () {

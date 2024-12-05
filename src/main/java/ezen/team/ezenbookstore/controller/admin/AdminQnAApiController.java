@@ -112,7 +112,6 @@ public class AdminQnAApiController {
     public ResponseEntity<String> saveAnswer(@PathVariable Long id, @RequestBody Map<String, String> request) {
         String answer = request.get("answer");
         boolean updated = qnaService.saveAnswer(id, answer);
-
         if (updated) {
             return ResponseEntity.ok("답변이 저장되었습니다.");
         } else {

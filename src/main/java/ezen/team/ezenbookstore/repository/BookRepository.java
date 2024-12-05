@@ -5,6 +5,9 @@ import ezen.team.ezenbookstore.entity.Notice;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -44,4 +47,7 @@ public interface BookRepository extends JpaRepository<Book, Long> {
 
     List<Book> findTop8ByOrderByPublishDateDesc();
 
+    @Modifying
+    @Query("UPDATE Book b SET b.discount = :discount WHERE b.id = :id")
+    int updateDiscountById(@Param("id") Long id, @Param("discount") int discount);
 }

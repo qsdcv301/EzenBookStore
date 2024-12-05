@@ -14,7 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @DynamicInsert
 @DynamicUpdate
-@Builder
+@Builder(toBuilder = true)
 @ToString
 @Table(name = "category")
 public class Category {

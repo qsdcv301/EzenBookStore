@@ -23,12 +23,15 @@
             background-color: #f4f4f4;
         }
     </style>
+    <link rel="icon" href="/image/favicon.ico" type="image/x-icon">
 </head>
 <body>
 <div class="container">
     <h2>리뷰 관리</h2>
     <p>이곳은 리뷰의 삭제 및 조회를 하는 페이지 입니다.</p>
-
+    <div th:if="${error}" class="alert alert-warning" role="alert">
+        <span th:text="${error}"></span>
+    </div>
     <!-- 검색 폼 -->
     <form id="searchForm">
         <select id="searchType" class="form-select" style="width: 150px; display: inline-block;">
@@ -43,7 +46,7 @@
     <table class="reviewTable">
         <thead>
         <tr>
-            <th>체크박스</th>
+            <th><input type="checkbox" id="selectAllReview"></th>
             <th>리뷰 ID</th>
             <th>책 제목</th>
             <th>작성자</th>
@@ -54,7 +57,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each="review : ${reviewList}">
+        <tr th:each="review : ${reviewPage.content}" th:unless="${#lists.isEmpty(reviewPage?.content)}">
             <td><input type="checkbox" name="checkBoxReview"></td>
             <td class="reviewId" th:text="${review.id}"></td>
             <td th:text="${review.book.title}"></td>
@@ -63,42 +66,68 @@
             <td th:text="${review.title}"></td>
             <td th:text="${review.comment}"></td>
             <td>
-                <button type="button" class="btn btn-info btn-sm view-btn" th:attr="data-review-id=${review.id}">조회</button>
+                <button type="button" class="btn btn-info btn-sm view-btn"
+                        data-bs-toggle="modal" data-bs-target="#reviewDetailModal"
+                        th:attr="data-review-id=${review.id}">
+                    조회
+                </button>
             </td>
+            <input class="hiddenImage" type="hidden" th:value="${@thymeleafFileUploadService.findImageFilePath(review.id,'review')}">
+        </tr>
+        <tr th:if="${#lists.isEmpty(reviewPage?.content)}">
+            <td colspan="8" class="text-center">검색 결과가 없습니다.</td>
         </tr>
         </tbody>
     </table>
-    <button type="button" id="selectAllReview" class="btn btn-secondary">일괄 선택</button>
     <button type="button" id="deleteReview" class="btn btn-danger">선택 삭제</button>
 </div>
-
 <!-- 리뷰 상세보기 모달 -->
 <div class="modal fade" id="reviewDetailModal" tabindex="-1" aria-labelledby="reviewDetailModalLabel" aria-hidden="true" insert>
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="reviewDetailModalLabel">리뷰 상세보기</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p><strong>리뷰 ID:</strong> <span id="detailReviewId"></span></p>
-                <p><strong>책 제목:</strong> <span id="detailBookTitle"></span></p>
-                <p><strong>작성자:</strong> <span id="detailUser"></span></p>
-                <p><strong>평점:</strong> <span id="detailRating"></span></p>
-                <p><strong>리뷰 제목:</strong> <span id="detailTitle"></span></p>
-                <p><strong>리뷰 내용:</strong></p>
-                <p id="detailComment"></p>
-                <p><strong>작성일:</strong> <span id="detailCreateAt"></span></p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-            </div>
+                <div class="modal-header">
+                    <h5 class="modal-title" id="reviewDetailModalLabel">리뷰 상세보기</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p><strong>리뷰 ID:</strong> <span id="detailReviewId"></span></p>
+                    <p><strong>책 제목:</strong> <span id="detailBookTitle"></span></p>
+                    <p><strong>작성자:</strong> <span id="detailUser"></span></p>
+                    <p><strong>평점:</strong> <span id="detailRating"></span></p>
+                    <p><strong>리뷰 제목:</strong> <span id="detailTitle"></span></p>
+                    <p><strong>리뷰 내용:</strong></p>
+                    <p id="detailComment"></p>
+                    <p><strong>작성일:</strong> <span id="detailCreateAt"></span></p>
+                    <img id="detailImage" src="">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                </div>
         </div>
     </div>
 </div>
-
 <script>
-    // 조회 버튼 클릭 시 AJAX로 상세 데이터 로드
+    $('#btnSearch').click(function () {
+        const searchType = $('#searchType').val();  // 검색 타입
+        const keyword = $('#keyword').val().trim();  // 검색어
+
+        // 검색어 유효성 검사
+        if (!keyword) {
+            alert('키워드를 입력해주세요');
+            return;
+        }
+        if (!['book', 'user'].includes(searchType)) {
+            alert('유효하지 않은 검색 타입입니다.');
+            return;
+        }
+        const query = `?type=${encodeURIComponent(searchType)}&keyword=${encodeURIComponent(keyword)}`;
+        console.log(searchType,keyword);
+        location.href= '/admin/review/search'+ query;
+    });
+
+    $('#selectAllReview').click(function () {
+        $('input[name="checkBoxReview"]').prop('checked', this.checked);
+    });
     $(document).on('click', '.view-btn', function () {
         const reviewId = $(this).data('review-id'); // 리뷰 ID 가져오기
         //console.log(reviewId);
@@ -114,6 +143,8 @@
                 $('#detailTitle').text(response.title);
                 $('#detailComment').text(response.comment);
                 $('#detailCreateAt').text(formatDate(response.createAt));
+                $('#detailImage').attr('src', $('.hiddenImage').val());
+
 
                 // 날짜 포맷 함수
                 function formatDate(dateString) {
@@ -135,14 +166,6 @@
             }
         });
     });
-
-    // 일괄 선택
-    $('#selectAllReview').click(function () {
-        const isAllChecked = $('input[name="checkBoxReview"]:checked').length === $('input[name="checkBoxReview"]').length;
-        $('input[name="checkBoxReview"]').prop('checked', !isAllChecked);
-        $(this).text(isAllChecked ? '일괄 선택' : '선택 해제');
-    });
-
     // 선택 삭제
     $('#deleteReview').click(function () {
         const selectedIds = [];
@@ -150,7 +173,10 @@
             const reviewId = $(this).closest('tr').find('.reviewId').text();
             selectedIds.push(reviewId);
         });
-
+        if (selectedIds.length === 0) {
+            alert('삭제할 리뷰를 선택해주세요.');
+            return;
+        }
         if (selectedIds.length > 0) {
             if (confirm('선택한 리뷰를 삭제하시겠습니까?')) {
                 $.ajax({

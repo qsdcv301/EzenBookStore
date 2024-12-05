@@ -14,7 +14,7 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 @DynamicInsert
 @DynamicUpdate
-@Builder
+@Builder(toBuilder = true)
 @Table(name = "payment")
 public class Payment {
 
@@ -27,6 +27,7 @@ public class Payment {
     private User user;
 
     @Column(name = "payment_date")
+    @CreationTimestamp
     private Timestamp paymentDate;
 
     @Column(name = "amount")

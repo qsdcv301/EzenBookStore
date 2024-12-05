@@ -9,22 +9,26 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class DeliveryService {
+public class DeliveryService implements DeliveryServiceInterface {
 
     private final DeliveryRepository deliveryRepository;
 
+    @Override
     public Delivery findById(Long id) {
         return deliveryRepository.findById(id).orElse(null);
     }
 
+    @Override
     public List<Delivery> findAll() {
         return deliveryRepository.findAll();
     }
 
+    @Override
     public Delivery create(Delivery delivery) {
         return deliveryRepository.save(delivery);
     }
 
+    @Override
     public Delivery update(Long id, Delivery delivery) {
         Delivery newDelivery = Delivery.builder()
                 .id(id)
@@ -40,8 +44,29 @@ public class DeliveryService {
         return deliveryRepository.save(newDelivery);
     }
 
+    @Override
     public void delete(Long id) {
         deliveryRepository.deleteById(id);
+    }
+
+    @Override
+    public Long countByStatus1() {
+        return deliveryRepository.countByStatus1();
+    }
+
+    @Override
+    public Long countByStatus2() {
+        return deliveryRepository.countByStatus2();
+    }
+
+    @Override
+    public Long countByStatus3() {
+        return deliveryRepository.countByStatus3();
+    }
+
+    @Override
+    public Long countByStatusIn456() {
+        return deliveryRepository.countByStatusIn456();
     }
 
 }

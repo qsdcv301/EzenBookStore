@@ -14,7 +14,7 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 @DynamicInsert
 @DynamicUpdate
-@Builder
+@Builder(toBuilder = true)
 @Table(name = "review")
 public class Review {
 
@@ -42,5 +42,8 @@ public class Review {
     @Column(name = "create_at")
     @CreationTimestamp
     private Timestamp createAt;
+
+    @Transient //데이터 베이스에는 저장되지않는 이미지 경로
+    private String imagePath;
 
 }

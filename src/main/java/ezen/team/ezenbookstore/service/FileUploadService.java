@@ -10,11 +10,12 @@ import java.io.IOException;
 
 @Service
 @RequiredArgsConstructor
-public class FileUploadService {
+public class FileUploadService implements FileUploadServiceInterface{
 
     @Value("${file.upload-dir}")
     private String uploadDir;
 
+    @Override
     public boolean uploadFile(MultipartFile file, String id, String type) {
         // 선택된 파일이 있는지 확인
         if (file.isEmpty()) {
@@ -46,6 +47,7 @@ public class FileUploadService {
         }
     }
 
+    @Override
     public String findImageFilePath(Long id, String type) {
         // 실제 파일 시스템 경로를 사용
         String folderPath = uploadDir + "/" + type + "/";
@@ -58,6 +60,7 @@ public class FileUploadService {
                 : null;
     }
 
+    @Override
     public int getImageCount(Long id, String type) {
         String folderPath = uploadDir + "/" + type + "/";
         File dir = new File(folderPath);
