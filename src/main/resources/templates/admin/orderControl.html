@@ -73,7 +73,7 @@
     <div class="card mt-3" id="advancedSearch">
         <div class="card-body row">
             <div class="col-md-4">
-                <select id="deliveryStatus" name="deliveryStatus" class="form-control">
+                <select id="orderStatus" name="orderStatus" class="form-control">
                     <option value="">주문 상태를 선택하세요</option>
                     <option value="1" th:selected="${status == '1'}">주문 완료</option>
                     <option value="2" th:selected="${status == '2'}">주문 취소</option>
@@ -109,7 +109,35 @@
             <button class="btn btn-primary" onclick="searchUsers()">조회</button>
             <button class="btn btn-secondary ml-2" onclick="resetSearch()">초기화</button>
         </div>
+        <!-- order.delivery.status, order.payment.status, order.status 값 표시용 select -->
+        <div class="d-flex align-items-center">
+            <!-- 배송 상태 -->
+            <select class="form-control mr-2" id="delivery-status">
+                <option value="1">배송 준비중</option>
+                <option value="2">배송중</option>
+                <option value="3">배송 완료</option>
+                <option value="4">반송 준비중</option>
+                <option value="5">반송중</option>
+                <option value="6">반송 완료</option>
+            </select>
+            <!-- 결제 상태 -->
+            <select class="form-control mr-2" id="payment-status">
+                <option value="1">결제 완료</option>
+                <option value="2">결제 취소</option>
+                <option value="3">재결제 완료</option>
+            </select>
+            <!-- 주문 상태 -->
+            <select class="form-control mr-2" id="order-status">
+                <option value="1">주문 완료</option>
+                <option value="2">주문 취소</option>
+                <option value="3">교환/반품 신청</option>
+                <option value="4">교환/반품 승인</option>
+            </select>
+        </div>
+        <!-- 기존 수정 버튼 -->
+        <button class="btn btn-primary" id="update-status" onclick="updateStatus()">수정</button>
     </div>
+
 
     <!-- 주문 목록 테이블 -->
     <table class="table table-bordered text-center">
@@ -138,41 +166,21 @@
             <td th:text="${order.orderItems.get(0).book.title}">상품명</td> <!-- 예시로 첫번째 상품 표시 -->
             <td th:text="${order.orderItems.size()}">수량</td>
             <td th:text="${order.payment.amount}">총 결제 금액</td>
-            <td>
-                <select class="form-control" name="status" th:value="${order.delivery.status}">
-                    <option value="1" th:selected="${order.delivery.status == 1}">배송 준비중</option>
-                    <option value="2" th:selected="${order.delivery.status == 2}">배송중</option>
-                    <option value="3" th:selected="${order.delivery.status == 3}">배송 완료</option>
-                    <option value="4" th:selected="${order.delivery.status == 4}">반송 준비중</option>
-                    <option value="4" th:selected="${order.delivery.status == 5}">반송중</option>
-                    <option value="4" th:selected="${order.delivery.status == 6}">반송 완료</option>
-                    <option value="5" th:selected="${!(order.delivery.status == 1 ||
-                     order.delivery.status == 2 || order.delivery.status == 3 || order.delivery.status == 4 ||
-                     order.delivery.status == 5 || order.delivery.status == 6)}">
-                        기타
-                    </option>
-                </select>
+            <td th:text="${order.delivery.status == 1 ? '배송 준비중' :
+                          (order.delivery.status == 2 ? '배송중' :
+                          (order.delivery.status == 3 ? '배송 완료' :
+                          (order.delivery.status == 4 ? '반송 준비중' :
+                          (order.delivery.status == 5 ? '반송중' :
+                          (order.delivery.status == 6 ? '반송 완료' : '기타')))))}">
             </td>
-            <td>
-                <select class="form-control" name="status" th:value="${order.payment.status}">
-                    <option value="1" th:selected="${order.payment.status == 1}">결제 완료</option>
-                    <option value="2" th:selected="${order.payment.status == 2}">결제 취소</option>
-                    <option value="3" th:selected="${order.payment.status == 3}">재결제 완료</option>
-                    <option value="5" th:selected="${!(order.payment.status == 1 || order.payment.status == 2 || order.payment.status == 3)}">
-                        기타
-                    </option>
-                </select>
+            <td th:text="${order.payment.status == 1 ? '결제 완료' :
+                          (order.payment.status == 2 ? '결제 취소' :
+                          (order.payment.status == 3 ? '재결제 완료' : '기타'))}">
             </td>
-            <td>
-                <select class="form-control" name="status" th:value="${order.status}">
-                    <option value="1" th:selected="${order.status == 1}">주문 완료</option>
-                    <option value="2" th:selected="${order.status == 2}">주문 취소</option>
-                    <option value="3" th:selected="${order.status == 3}">교환/반품 신청</option>
-                    <option value="4" th:selected="${order.status == 4}">교환/반품 승인</option>
-                    <option value="5" th:selected="${!(order.status == 1 || order.status == 2 || order.status == 3 || order.status == 4)}">
-                        기타
-                    </option>
-                </select>
+            <td th:text="${order.status == 1 ? '주문 완료' :
+                         (order.status == 2 ? '주문 취소' :
+                         (order.status == 3 ? '교환/반품 신청' :
+                         (order.status == 4 ? '교환/반품 승인' : '기타')))}">
             </td>
 
 
@@ -303,13 +311,13 @@
 
     // 주문 상태 및 결제 상태 필터링
     function applyAdvancedFilters() {
-        const deliveryStatus = document.getElementById("deliveryStatus").value;
+        const orderStatus = document.getElementById("orderStatus").value;
         const paymentStatus = document.getElementById("paymentStatus").value;
         const urlParams = new URLSearchParams(window.location.search);
 
         // 기존 파라미터 유지 + 필터링 조건 추가
-        if (deliveryStatus) {
-            urlParams.set("status", deliveryStatus);
+        if (orderStatus) {
+            urlParams.set("status", orderStatus);
         } else {
             urlParams.delete("status");
         }
@@ -346,6 +354,49 @@
     // 초기화 버튼 (검색 & 필터 모두 초기화)
     function resetFilters() {
         location.href = `/admin/order?page=0`;
+    }
+
+    function updateStatus(){
+        document.getElementById("update-status").addEventListener("click", () => {
+            const newStatus = document.getElementById("bulk-status").value; // 선택된 등급 값
+            const selectedIds = Array.from(document.querySelectorAll(".user-checkbox:checked"))
+                .map(cb => cb.dataset.id); // 선택된 사용자 ID 목록
+
+            if (!newStatus) {
+                alert("변경할 등급을 선택하세요.");
+                return;
+            }
+
+            if (selectedIds.length === 0) {
+                alert("수정할 사용자를 선택하세요.");
+                return;
+            }
+
+            // 서버에 등급 상태 변경 요청
+            fetch('/admin/order/update', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({
+                    orderId: [selectedIds],
+                    grade: newStatus
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(`선택된 사용자들의 등급이 '${getGradeName(newStatus)}'로 성공적으로 변경되었습니다.`);
+                        location.reload(); // 페이지 새로고침
+                    } else {
+                        alert("등급 변경에 실패했습니다.");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    alert("서버와 통신 중 오류가 발생했습니다.");
+                });
+        });
     }
 
 </script>
