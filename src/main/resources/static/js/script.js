@@ -960,7 +960,29 @@ $(document).ready(function () {
             });
         }
 
-        // 비동기 즉시 실행 함수(async IIFE)
+        // 결제 상태를 확인하는 함수(폴링)
+        async function waitForPaymentStatus(paymentCode, maxAttempts = 20, interval = 500) {
+            for (let i = 0; i < maxAttempts; i++) {
+                try {
+                    const statusResponse = await $.ajax({
+                        url: `/order/payment/status?paymentCode=${paymentCode}`,
+                        type: 'GET',
+                        dataType: 'json'
+                    });
+
+                    if (statusResponse && statusResponse.status === 'paid') {
+                        return true;
+                    }
+                } catch (e) {
+                    // 상태 확인 시 에러 발생 시 무시하고 재시도
+                }
+
+                // 일정 시간 대기 후 재시도
+                await new Promise((r) => setTimeout(r, interval));
+            }
+            return false;
+        }
+
         (async function () {
             const response = await requestPayment({
                 pg: "html5_inicis",
@@ -974,8 +996,15 @@ $(document).ready(function () {
                 notice_url: "http://localhost:8080/order/payment/check"
             });
 
-            // 결제 콜백 완료 후 결과에 따라 AJAX 실행
             if (response.success) {
+                // 결제 상태가 "paid"로 업데이트 될 때까지 대기
+                const isPaid = await waitForPaymentStatus(paymentCode);
+                if (!isPaid) {
+                    alert("결제 확인이 지연되고 있습니다. 잠시 후 다시 시도해주세요.");
+                    return;
+                }
+
+                // 결제 상태가 확인된 후에야 /order/payment 요청
                 try {
                     const ajaxResponse = await $.ajax({
                         url: '/order/payment',
