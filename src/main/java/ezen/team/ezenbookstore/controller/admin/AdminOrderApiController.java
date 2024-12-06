@@ -25,9 +25,10 @@ import java.util.stream.Collectors;
 public class AdminOrderApiController {
 
     private final OrdersService ordersService;
-    private final OrderItemService orderItemService;
+    private final OrderItemService ordersItemService;
     private final DeliveryService deliveryService;
     private final PaymentService paymentService;
+    private final OrderItemService orderItemService;
 
     @GetMapping("")
     public String getDeliveryCounts(
@@ -154,5 +155,29 @@ public class AdminOrderApiController {
         response.put("success", true);
         return ResponseEntity.ok(response);
     }
+
+    // 주문 항목 수량 수정
+    @PostMapping("/{ordersItemId}/edit")
+    public ResponseEntity<Void> updateOrdersItem(
+            @PathVariable Long ordersItemId,
+            @RequestBody OrderItem orderItem) {
+        orderItemService.updateQuantity(ordersItemId, orderItem.getQuantity());
+        return ResponseEntity.ok().build();
+    }
+
+    // 주문 항목 삭제
+    @PostMapping("/{ordersItemId}/delete")
+    public ResponseEntity<Void> deleteOrdersItem(@PathVariable Long ordersItemId) {
+        ordersItemService.deleteOrdersItem(ordersItemId);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{orderId}/details")
+    @ResponseBody
+    public ResponseEntity<List<OrderItem>> getOrderDetails(@PathVariable Long orderId) {
+        List<OrderItem> orderItems = ordersItemService.getOrderItemsByOrderId(orderId);
+        return ResponseEntity.ok(orderItems);
+    }
+
 
 }
