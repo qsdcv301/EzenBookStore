@@ -918,12 +918,14 @@ $(document).ready(function () {
 
     $(".confirmPurchase").click(function (e) {
         e.preventDefault();
+
         const name = $(".modalBookTitle").eq(0).text();
         const quantity = $(".modalQuantity").eq(0).text();
         let quantityList = [];
         let titleList = [];
         let totalQuantity = 0;
         let cartIdList = [];
+
         $(".modalQuantity").each(function () {
             totalQuantity += parseInt($(this).text().replace(/[^0-9]/g, ""), 10) || 0;
             quantityList.push($(this).text().replace(/[^0-9]/g, ""));
@@ -932,13 +934,14 @@ $(document).ready(function () {
         $(".modalBookTitle").each(function () {
             titleList.push($(this).text());
         });
+
         $(".modalCartId").each(function () {
             const value = $(this).val();
             if (value) {
                 cartIdList.push(value);
             }
         });
-        console.log(cartIdList);
+
         totalQuantity -= quantity;
         const userAddr = $(".payment-addr").val();
         const userAddrextra = $(".payment-addrextra").val();
@@ -947,8 +950,41 @@ $(document).ready(function () {
         const userName = $(".payment-name").val();
         const userTel = $(".payment-tel").val();
         const paymentCode = Date.now();
-        IMP.request_pay(
-            {
+
+        // IMP.request_pay를 Promise로 감싸는 함수
+        function requestPayment(paymentData) {
+            return new Promise((resolve) => {
+                IMP.request_pay(paymentData, function (response) {
+                    resolve(response);
+                });
+            });
+        }
+
+        // 결제 상태를 확인하는 함수(폴링)
+        async function waitForPaymentStatus(paymentCode, maxAttempts = 20, interval = 500) {
+            for (let i = 0; i < maxAttempts; i++) {
+                try {
+                    const statusResponse = await $.ajax({
+                        url: `/order/payment/status?paymentCode=${paymentCode}`,
+                        type: 'GET',
+                        dataType: 'json'
+                    });
+
+                    if (statusResponse && statusResponse.status === 'paid') {
+                        return true;
+                    }
+                } catch (e) {
+                    // 상태 확인 시 에러 발생 시 무시하고 재시도
+                }
+
+                // 일정 시간 대기 후 재시도
+                await new Promise((r) => setTimeout(r, interval));
+            }
+            return false;
+        }
+
+        (async function () {
+            const response = await requestPayment({
                 pg: "html5_inicis",
                 pay_method: "card",
                 merchant_uid: paymentCode,
@@ -957,11 +993,20 @@ $(document).ready(function () {
                 buyer_email: userEmail,
                 buyer_name: userName,
                 buyer_tel: userTel,
-                notice_url: "http://localhost:8080/order/payment/check",
-            },
-            function (response) {
-                if (response.success) {
-                    $.ajax({
+                notice_url: "http://localhost:8080/order/payment/check"
+            });
+
+            if (response.success) {
+                // 결제 상태가 "paid"로 업데이트 될 때까지 대기
+                const isPaid = await waitForPaymentStatus(paymentCode);
+                if (!isPaid) {
+                    alert("결제 확인이 지연되고 있습니다. 잠시 후 다시 시도해주세요.");
+                    return;
+                }
+
+                // 결제 상태가 확인된 후에야 /order/payment 요청
+                try {
+                    const ajaxResponse = await $.ajax({
                         url: '/order/payment',
                         type: 'POST',
                         data: {
@@ -974,26 +1019,24 @@ $(document).ready(function () {
                             addr: userAddr,
                             addrextra: userAddrextra,
                             tel: userTel,
-                        },
-                        success: function (response) {
-                            if (response.success) {
-                                alert("결제가 완료되었습니다.");
-                                location.reload();
-                            } else {
-                                alert("결제에 실패했습니다.");
-                                location.reload();
-                            }
-                        },
-                        error: function () {
-                            alert("서버 오류가 발생했습니다.");
                         }
                     });
-                } else {
-                    alert("결제에 실패했습니다.");
-                    location.reload();
+
+                    if (ajaxResponse.success) {
+                        alert("결제가 완료되었습니다.");
+                        location.reload();
+                    } else {
+                        alert("결제에 실패했습니다.");
+                        location.reload();
+                    }
+                } catch (error) {
+                    alert("서버 오류가 발생했습니다.");
                 }
-            },
-        );
+            } else {
+                alert("결제에 실패했습니다.");
+                location.reload();
+            }
+        })();
     });
 
     //     book
