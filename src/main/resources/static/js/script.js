@@ -951,6 +951,15 @@ $(document).ready(function () {
         const userTel = $(".payment-tel").val();
         const paymentCode = Date.now();
 
+        // IMP.request_pay를 Promise로 감싸는 함수
+        function requestPayment(paymentData) {
+            return new Promise((resolve) => {
+                IMP.request_pay(paymentData, function (response) {
+                    resolve(response);
+                });
+            });
+        }
+
         // 결제 취소 함수
         function cancelPay(merchantUid, reason) {
             return new Promise((resolve, reject) => {
