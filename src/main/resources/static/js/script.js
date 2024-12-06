@@ -960,6 +960,22 @@ $(document).ready(function () {
             });
         }
 
+        // 결제 취소 함수
+        function cancelPay(merchantUid, reason) {
+            return new Promise((resolve, reject) => {
+                IMP.cancel({
+                    merchant_uid: merchantUid,
+                    reason: reason || "결제 과정 중 오류 발생으로 취소",
+                }, function (response) {
+                    if (response.success) {
+                        resolve(response);
+                    } else {
+                        reject(response.error_msg);
+                    }
+                });
+            });
+        }
+
         // 결제 상태를 확인하는 함수(폴링)
         async function waitForPaymentStatus(paymentCode, maxAttempts = 20, interval = 500) {
             for (let i = 0; i < maxAttempts; i++) {
@@ -993,14 +1009,20 @@ $(document).ready(function () {
                 buyer_email: userEmail,
                 buyer_name: userName,
                 buyer_tel: userTel,
-                notice_url: "http://localhost:8080/order/payment/check"
+                notice_url: "http://ezbook.store/order/payment/check"
             });
 
             if (response.success) {
                 // 결제 상태가 "paid"로 업데이트 될 때까지 대기
                 const isPaid = await waitForPaymentStatus(paymentCode);
                 if (!isPaid) {
-                    alert("결제 확인이 지연되고 있습니다. 잠시 후 다시 시도해주세요.");
+                    // 결제 상태가 확인되지 않으면 결제를 취소
+                    try {
+                        await cancelPay(paymentCode, "결제 상태 확인 실패");
+                        alert("결제 확인이 지연되어 결제가 취소되었습니다.");
+                    } catch (cancelError) {
+                        alert(`결제를 취소하는 중 오류가 발생했습니다: ${cancelError}`);
+                    }
                     return;
                 }
 
@@ -1030,7 +1052,8 @@ $(document).ready(function () {
                         location.reload();
                     }
                 } catch (error) {
-                    alert("서버 오류가 발생했습니다.");
+                    alert("서버 오류가 발생했습니다. 결제를 취소합니다.");
+                    await cancelPay(paymentCode, "결제 처리 중 오류");
                 }
             } else {
                 alert("결제에 실패했습니다.");
