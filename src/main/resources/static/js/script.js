@@ -960,7 +960,45 @@ $(document).ready(function () {
             });
         }
 
-        // 비동기 즉시 실행 함수(async IIFE)
+        // 결제 취소 함수
+        function cancelPay(merchantUid, reason) {
+            return new Promise((resolve, reject) => {
+                IMP.cancel({
+                    merchant_uid: merchantUid,
+                    reason: reason || "결제 과정 중 오류 발생으로 취소",
+                }, function (response) {
+                    if (response.success) {
+                        resolve(response);
+                    } else {
+                        reject(response.error_msg);
+                    }
+                });
+            });
+        }
+
+        // 결제 상태를 확인하는 함수(폴링)
+        async function waitForPaymentStatus(paymentCode, maxAttempts = 20, interval = 500) {
+            for (let i = 0; i < maxAttempts; i++) {
+                try {
+                    const statusResponse = await $.ajax({
+                        url: `/order/payment/status?paymentCode=${paymentCode}`,
+                        type: 'GET',
+                        dataType: 'json'
+                    });
+
+                    if (statusResponse && statusResponse.status === 'paid') {
+                        return true;
+                    }
+                } catch (e) {
+                    // 상태 확인 시 에러 발생 시 무시하고 재시도
+                }
+
+                // 일정 시간 대기 후 재시도
+                await new Promise((r) => setTimeout(r, interval));
+            }
+            return false;
+        }
+
         (async function () {
             const response = await requestPayment({
                 pg: "html5_inicis",
@@ -971,11 +1009,24 @@ $(document).ready(function () {
                 buyer_email: userEmail,
                 buyer_name: userName,
                 buyer_tel: userTel,
-                notice_url: "http://localhost:8080/order/payment/check"
+                notice_url: "http://ezbook.store/order/payment/check"
             });
 
-            // 결제 콜백 완료 후 결과에 따라 AJAX 실행
             if (response.success) {
+                // 결제 상태가 "paid"로 업데이트 될 때까지 대기
+                const isPaid = await waitForPaymentStatus(paymentCode);
+                if (!isPaid) {
+                    // 결제 상태가 확인되지 않으면 결제를 취소
+                    try {
+                        await cancelPay(paymentCode, "결제 상태 확인 실패");
+                        alert("결제 확인이 지연되어 결제가 취소되었습니다.");
+                    } catch (cancelError) {
+                        alert(`결제를 취소하는 중 오류가 발생했습니다: ${cancelError}`);
+                    }
+                    return;
+                }
+
+                // 결제 상태가 확인된 후에야 /order/payment 요청
                 try {
                     const ajaxResponse = await $.ajax({
                         url: '/order/payment',
@@ -1001,7 +1052,8 @@ $(document).ready(function () {
                         location.reload();
                     }
                 } catch (error) {
-                    alert("서버 오류가 발생했습니다.");
+                    alert("서버 오류가 발생했습니다. 결제를 취소합니다.");
+                    await cancelPay(paymentCode, "결제 처리 중 오류");
                 }
             } else {
                 alert("결제에 실패했습니다.");

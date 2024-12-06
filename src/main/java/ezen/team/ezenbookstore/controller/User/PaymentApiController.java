@@ -14,6 +14,7 @@ import java.util.*;
 @RequiredArgsConstructor
 @Controller
 @RequestMapping("/order/payment")
+@CrossOrigin(origins = "*")
 public class PaymentApiController {
 
     private final PaymentService paymentService;
@@ -66,12 +67,12 @@ public class PaymentApiController {
             String merchantUid = (String) webhookData.get("merchant_uid");
             String status = (String) webhookData.get("status");
 
-            // 세션 또는 DB에 상태 저장 (예: 세션 사용)
+            // 세션 또는 DB에 상태 저장
             Map<String, String> paymentStatus = (Map<String, String>) session.getAttribute("paymentStatus");
             if (paymentStatus == null) {
                 paymentStatus = new HashMap<>();
             }
-            paymentStatus.put(merchantUid, status); // 결제 상태 저장
+            paymentStatus.put(merchantUid, status);
             session.setAttribute("paymentStatus", paymentStatus);
 
             return ResponseEntity.ok().build();
@@ -79,5 +80,19 @@ public class PaymentApiController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+    @GetMapping("/status")
+    @ResponseBody
+    public Map<String, String> getPaymentStatus(@RequestParam String paymentCode, HttpSession session) {
+        Map<String, String> result = new HashMap<>();
+        Map<String, String> paymentStatus = (Map<String, String>) session.getAttribute("paymentStatus");
+        if (paymentStatus != null && "paid".equals(paymentStatus.get(paymentCode))) {
+            result.put("status", "paid");
+        } else {
+            result.put("status", "not_paid");
+        }
+        return result;
+    }
+
 
 }
