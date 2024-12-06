@@ -88,4 +88,7 @@ public class DeliveryService implements DeliveryServiceInterface {
         return deliveryCounts;
     }
 
+    public void updateStatus(Delivery delivery) {
+        deliveryRepository.save(delivery);
+    }
 }

@@ -177,4 +177,7 @@ public class PaymentService implements PaymentServiceInterface {
         return paymentRepository.countByStatus2();
     }
 
+    public void updateStatus(Payment payment) {
+        paymentRepository.save(payment);
+    }
 }

@@ -10,6 +10,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -92,72 +94,65 @@ public class AdminOrderApiController {
         return "admin/orderControl"; // HTML 파일 이름
     }
 
-    // 주문 목록 조회
-    @PostMapping("/list")
-    public String getOrderList() {
-        // 주문 목록 조회 로직
-        return "redirect:/admin/order"; // 주문 목록 페이지로 리다이렉트
-    }
-
-    // 주문 상태 조회
-    @PostMapping("/detail")
-    public String getOrderDetail(@RequestParam Long orderId) {
-        // 특정 주문 상세 조회 로직
-        return "redirect:/admin/order"; // 상세 페이지로 리다이렉트 (예시로 목록 페이지로 설정)
-    }
-
-    // 주문 상태 업데이트
-    @PostMapping("/updateStatus")
-    public String updateOrderStatus(@RequestParam Long orderId, @RequestParam String status) {
-        // 주문 상태 업데이트 로직
-        return "redirect:/admin/order"; // 상태 업데이트 후 목록 페이지로 리다이렉트
-    }
-
-    // 취소/반품/교환 요청 목록 조회
-    @PostMapping("/request/list")
-    public String getRequestList() {
-        // 취소/반품/교환 요청 목록 조회 로직
-        return "redirect:/admin/order"; // 요청 목록 페이지로 리다이렉트
-    }
-
-    // 취소/반품/교환 요청 상세 조회
-    @PostMapping("/request/detail")
-    public String getRequestDetail(@RequestParam Long requestId) {
-        // 특정 요청 상세 조회 로직
-        return "redirect:/admin/order"; // 상세 페이지로 리다이렉트
-    }
-
-    // 취소/반품/교환 요청 상태 업데이트
-    @PostMapping("/request/updateStatus")
-    public String updateRequestStatus(@RequestParam Long requestId, @RequestParam String status) {
-        // 요청 상태 업데이트 로직
-        return "redirect:/admin/order"; // 상태 업데이트 후 목록 페이지로 리다이렉트
-    }
-
-
-    @GetMapping("/search")
-    public String searchOrders(
-            @RequestParam("searchType") String searchType,
-            @RequestParam("keyword") String keyword,
-            Model model) {
-
-        List<Orders> orders;
-
-        if ("userId".equals(searchType)) {
-            orders = ordersService.findByUserEmail(keyword);
-        } else if ("id".equals(searchType)) {
-            try {
-                Long id = Long.parseLong(keyword);
-                orders = ordersService.findByOrderId(id);
-            } catch (NumberFormatException e) {
-                orders = new ArrayList<>();
-            }
-        } else {
-            orders = new ArrayList<>();
+    @PostMapping("/update")
+    public ResponseEntity<Map<String, Boolean>> updateOrder(
+            @RequestParam String orderId,
+            @RequestParam String deliveryStatus,
+            @RequestParam String paymentStatus,
+            @RequestParam String orderStatus
+    ){
+        Map<String, Boolean> response = new HashMap<>();
+        // orderId가 null 또는 빈 값일 경우 처리
+        if (orderId == null || orderId.isEmpty()) {
+            response.put("success", false);
+            return ResponseEntity.badRequest().body(response);
         }
 
-        model.addAttribute("ordersList", orders);
-        return "admin/orderControl";
+        // String을 Byte로 변환
+        // String 값을 Byte로 변환 (빈 값인 경우 기본값 설정)
+        Byte deliveryStatusByte = (deliveryStatus != null && !deliveryStatus.isEmpty())
+                ? Byte.valueOf(deliveryStatus)
+                : null;
+        Byte paymentStatusByte = (paymentStatus != null && !paymentStatus.isEmpty())
+                ? Byte.valueOf(paymentStatus)
+                : null;
+        Byte orderStatusByte = (orderStatus != null && !orderStatus.isEmpty())
+                ? Byte.valueOf(orderStatus)
+                : null;
+
+        // 여러 Order ID 처리
+        String[] orderIds = orderId.split(",");
+        for (String id : orderIds) {
+            // Orders 객체 조회
+            Orders orders = ordersService.findById(Long.parseLong(id));
+            if (orders != null) {
+                // Orders 엔티티에서 Delivery와 Payment 가져오기
+                Delivery delivery = orders.getDelivery();
+                Payment payment = orders.getPayment();
+
+                // Delivery 상태 업데이트
+                if (delivery != null && deliveryStatusByte != null) {
+                    delivery.setStatus(deliveryStatusByte);
+                    deliveryService.updateStatus(delivery);
+                }
+
+                // Payment 상태 업데이트
+                if (payment != null && paymentStatusByte != null) {
+                    payment.setStatus(paymentStatusByte);
+                    paymentService.updateStatus(payment);
+                }
+
+                // Orders 상태 업데이트
+                if (orderStatusByte != null) {
+                    orders.setStatus(orderStatusByte);
+                    ordersService.updateStatus(orders);
+                }
+            }
+        }
+
+        // 성공 응답
+        response.put("success", true);
+        return ResponseEntity.ok(response);
     }
 
 }
