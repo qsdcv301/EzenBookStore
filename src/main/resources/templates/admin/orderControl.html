@@ -113,6 +113,7 @@
         <div class="d-flex align-items-center">
             <!-- 배송 상태 -->
             <select class="form-control mr-2" id="delivery-status">
+                <option value="">배송 상태</option>
                 <option value="1">배송 준비중</option>
                 <option value="2">배송중</option>
                 <option value="3">배송 완료</option>
@@ -122,12 +123,14 @@
             </select>
             <!-- 결제 상태 -->
             <select class="form-control mr-2" id="payment-status">
+                <option value="">결제 상태</option>
                 <option value="1">결제 완료</option>
                 <option value="2">결제 취소</option>
                 <option value="3">재결제 완료</option>
             </select>
             <!-- 주문 상태 -->
             <select class="form-control mr-2" id="order-status">
+                <option value="">주문 상태</option>
                 <option value="1">주문 완료</option>
                 <option value="2">주문 취소</option>
                 <option value="3">교환/반품 신청</option>
@@ -336,19 +339,15 @@
     function searchUsers() {
         const type = document.getElementById("search-type").value;
         const keyword = document.getElementById("search-input").value;
-        const urlParams = new URLSearchParams(window.location.search);
 
         // 검색 조건 추가
         if (!keyword) {
             alert("검색어를 입력하세요.");
             return;
         }
-        urlParams.set("type", type);
-        urlParams.set("keyword", encodeURIComponent(keyword));
-        urlParams.set("page", 0); // 검색 시 첫 페이지로 이동
 
         // 새 URL로 이동
-        location.href = `/admin/order?${urlParams.toString()}`;
+        location.href = `/admin/order?type=${type}&keyword=${keyword}`;
     }
 
     // 초기화 버튼 (검색 & 필터 모두 초기화)
@@ -356,48 +355,63 @@
         location.href = `/admin/order?page=0`;
     }
 
-    function updateStatus(){
-        document.getElementById("update-status").addEventListener("click", () => {
-            const newStatus = document.getElementById("bulk-status").value; // 선택된 등급 값
-            const selectedIds = Array.from(document.querySelectorAll(".user-checkbox:checked"))
-                .map(cb => cb.dataset.id); // 선택된 사용자 ID 목록
+    function updateStatus() {
+        const updateButton = document.getElementById("update-status");
+        updateButton.disabled = true; // 버튼 비활성화
 
-            if (!newStatus) {
-                alert("변경할 등급을 선택하세요.");
-                return;
-            }
+        const newDeliveryStatus = document.getElementById("delivery-status").value;
+        const newPaymentStatus = document.getElementById("payment-status").value;
+        const newOrderStatus = document.getElementById("order-status").value;
+        const selectedIds = Array.from(document.querySelectorAll(".order-checkbox:checked"))
+            .map(cb => cb.dataset.id);
 
-            if (selectedIds.length === 0) {
-                alert("수정할 사용자를 선택하세요.");
-                return;
-            }
+        if (!validateInputs(newDeliveryStatus, newPaymentStatus, newOrderStatus, selectedIds)) {
+            updateButton.disabled = false; // 버튼 활성화
+            return;
+        }
 
-            // 서버에 등급 상태 변경 요청
-            fetch('/admin/order/update', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: new URLSearchParams({
-                    orderId: [selectedIds],
-                    grade: newStatus
-                })
+        fetch('/admin/order/update', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({
+                orderId: selectedIds.join(','), // 배열을 쉼표로 연결
+                deliveryStatus: newDeliveryStatus,
+                paymentStatus: newPaymentStatus,
+                orderStatus: newOrderStatus
             })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert(`선택된 사용자들의 등급이 '${getGradeName(newStatus)}'로 성공적으로 변경되었습니다.`);
-                        location.reload(); // 페이지 새로고침
-                    } else {
-                        alert("등급 변경에 실패했습니다.");
-                    }
-                })
-                .catch(error => {
-                    console.error("Error:", error);
-                    alert("서버와 통신 중 오류가 발생했습니다.");
-                });
-        });
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(`선택된 항목들이 성공적으로 변경되었습니다.`);
+                    location.reload();
+                } else {
+                    alert("변경에 실패했습니다.");
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("서버와 통신 중 오류가 발생했습니다.");
+            })
+            .finally(() => {
+                updateButton.disabled = false; // 버튼 다시 활성화
+            });
     }
+
+    function validateInputs(newDeliveryStatus, newPaymentStatus, newOrderStatus, selectedIds) {
+        if (!newDeliveryStatus && !newPaymentStatus && !newOrderStatus) {
+            alert("변경할 상태를 선택하세요.");
+            return false;
+        }
+
+        if (selectedIds.length === 0) {
+            alert("수정할 주문을 선택하세요.");
+            return false;
+        }
+
+        return true;
+    }
+
 
 </script>
 
