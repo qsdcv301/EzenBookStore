@@ -80,4 +80,18 @@ public class PaymentApiController {
         }
     }
 
+    @GetMapping("/status")
+    @ResponseBody
+    public Map<String, String> getPaymentStatus(@RequestParam String paymentCode, HttpSession session) {
+        Map<String, String> result = new HashMap<>();
+        Map<String, String> paymentStatus = (Map<String, String>) session.getAttribute("paymentStatus");
+        if (paymentStatus != null && "paid".equals(paymentStatus.get(paymentCode))) {
+            result.put("status", "paid");
+        } else {
+            result.put("status", "not_paid");
+        }
+        return result;
+    }
+
+
 }
