@@ -2,28 +2,30 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>Event Control</title>
+    <title>이벤트 관리 페이지</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <style>
         .container { margin-top: 20px; }
-        .filter span { cursor: pointer; padding: 5px 10px; margin-right: 5px; border-radius: 5px; background: #e9ecef; }
+        .filter span { cursor: pointer; padding: 10px 20px; margin-right: 5px; border-radius: 5px; background: #eeeeee; }
         .filter span.active { background: #0d6efd; color: white; }
     </style>
 </head>
 <body>
-<div class="container">
-    <h2>이벤트 관리</h2>
-    <p>이곳은 이벤트 추가, 삭제, 수정을 위한 관리 페이지입니다.</p>
+<div class="container mt-5">
+    <h3 class="font-weight-bold mb-3">이벤트 관리</h3>
+    <p>이벤트 추가, 삭제, 수정을 위한 관리 페이지입니다.</p>
 
     <!-- 필터 영역 -->
-    <div class="filter mb-3">
+    <div class="d-flex justify-content-start filter mb-3">
         <span class="filter-btn" th:classappend="${filter == 'all' ? 'active' : ''}" data-filter="all">전체</span>
         <span class="filter-btn" th:classappend="${filter == 'upcoming' ? 'active' : ''}" data-filter="upcoming">시작 전</span>
         <span class="filter-btn" th:classappend="${filter == 'ongoing' ? 'active' : ''}" data-filter="ongoing">진행 중</span>
         <span class="filter-btn" th:classappend="${filter == 'ended' ? 'active' : ''}" data-filter="ended">종료</span>
     </div>
+    <hr>
+
     <!-- 검색 및 추가 버튼 -->
     <div class="d-flex justify-content-between mb-3">
         <form id="searchForm" class="d-flex">
