@@ -222,6 +222,7 @@
 
 </div>
 
+<!-- 상품상세 모달 -->
 <div th:each="order : ${ordersList}">
     <div class="modal fade" th:id="'orderDetailModal-' + ${order.id}" tabindex="-1" role="dialog" aria-labelledby="orderDetailModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
@@ -280,7 +281,7 @@
                         <tbody>
                         <tr th:each="item : ${order.orderItems}">
                             <td th:text="${item.book.title}">상품명</td>
-                            <td><input th:value="${item.quantity}" th:id="'ordersItemQuantity-' + ${item.id}"></td>
+                            <td><input th:value="${item.quantity}" th:id="'ordersItemQuantity-' + ${item.id}" class="form-control"></td>
                             <td th:text="${item.book.price}">가격</td>
                             <td>
                                 <button class="btn btn-primary" th:onclick="'updateOrdersItem(' + ${item.id} + ')'">수정</button>
@@ -421,6 +422,7 @@
     // 주문 상세의 수량 수정
     function updateOrdersItem(ordersItemId) {
         const ordersItemQuantity = document.getElementById(`ordersItemQuantity-${ordersItemId}`).value.trim();
+        const quantityInput = document.getElementById(`ordersItemQuantity-${ordersItemId}`);
 
         if (!ordersItemQuantity) {
             alert('수량을 입력해주세요.');
@@ -443,6 +445,7 @@
             data: JSON.stringify({ quantity: quantity }), // 정수 전달
             success: function () {
                 alert('상품 수량이 성공적으로 수정되었습니다.');
+                refreshOrderModalContent(quantityInput.closest('.modal').id.split('-')[1]); // 모달 새로고침
             },
             error: function () {
                 alert('상품 수량을 수정하는 중 오류가 발생했습니다.');
@@ -461,6 +464,7 @@
             type: 'POST',
             success: function () {
                 alert('상품이 성공적으로 삭제되었습니다.');
+                refreshOrderModalContent(orderId);
             },
             error: function () {
                 alert('상품을 삭제하는 중 오류가 발생했습니다.');
@@ -471,28 +475,39 @@
     // 주문 상세 모달 새로고침 함수
     function refreshOrderModalContent(orderId) {
         $.ajax({
-            url: `/admin/order/${orderId}/details`,
+            url: `/admin/order/${orderId}/details`, // 서버로부터 주문 상세 데이터 가져오기
             type: 'GET',
             success: function (data) {
-                const tbody = document.querySelector(`#orderDetailModal-${orderId} .modal-body tbody`);
-                tbody.innerHTML = ''; // 기존 내용 제거
+                console.log(data); // 서버 응답 데이터 확인
 
-                // 데이터가 있는 경우 목록 생성
-                data.orderItems.forEach((item, index) => {
-                    tbody.innerHTML += `
-                <tr>
-                    <td>${index + 1}</td>
+                if (!data || data.length === 0) {
+                    alert('주문 데이터가 비어 있습니다.');
+                    return;
+                }
+
+                const tbody = document.querySelector(`#orderDetailModal-${orderId} .modal-body tbody`);
+                if (!tbody) {
+                    alert('모달의 테이블을 찾을 수 없습니다.');
+                    return;
+                }
+
+                tbody.innerHTML = ''; // 기존 내용 초기화
+
+                // 데이터를 기반으로 테이블 행 추가
+                data.forEach(item => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
                     <td>${item.book.title}</td>
                     <td>
-                        <input type="text" id="ordersItemQuantity-${item.id}" value="${item.quantity}" class="form-control">
+                        <input type="number" id="ordersItemQuantity-${item.id}" value="${item.quantity}" class="form-control">
                     </td>
-                    <td>${item.book.price}</td>
+                    <td>${item.book.price || '가격 정보 없음'}</td>
                     <td>
                         <button class="btn btn-primary" onclick="updateOrdersItem(${item.id})">수정</button>
-                        <button class="btn btn-danger" onclick="deleteOrdersItem(${item.id}, ${orderId})">삭제</button>
+                        <button class="btn btn-warning" onclick="deleteOrdersItem(${item.id}, ${orderId})">삭제</button>
                     </td>
-                </tr>
                 `;
+                    tbody.appendChild(row);
                 });
             },
             error: function () {
@@ -500,8 +515,6 @@
             }
         });
     }
-
-
 
 </script>
 
