@@ -1,0 +1,97 @@
+<div th:fragment="sidebar" class="col-2 adminAside px-0 m-0">
+    <nav class="sidebar">
+        <h2 class="pt-5 pb-3" style="text-align: center; font-weight: bolder;">
+            <i class="fas fa-user-cog mr-2"></i>관리자 모드
+        </h2>
+        <div class="navbar-log mb-4" style="text-align: center;">
+            <span class="navbar-text">환영합니다, 관리자님!</span>
+        </div>
+        <hr>
+
+        <!-- 메뉴탭 -->
+        <ul class="mt-3" style="height: 655px;">
+            <li><i class="fas fa-shopping-cart mr-2"></i> <strong>주문 및 배송 관리</strong>
+                <ul>
+                    <li><a href="javascript:void(0)" onclick="loadOrderHistory()">주문 조회 및 상태 관리<div class="underline"></div></a></li>
+                    <li><a href="javascript:void(0)" onclick="loadRefundExchange()">취소/반품/교환 요청 관리<div class="underline"></div></a></li>
+                    <li><a href="javascript:void(0)" onclick="loadPaymentManagement()">결제 취소/환불 관리<div class="underline"></div></a></li>
+                </ul>
+            </li>
+            <li><i class="fas fa-book mr-2"></i> <strong>상품 관리</strong>
+                <ul>
+                    <li>상품 조회 및 관리</li>
+                    <li><a href="javascript:void(0)" onclick="loadProductCategory()">상품별 카테고리 관리<div class="underline"></div></a></li>
+                </ul>
+            </li>
+            <li><i class="fas fa-user mr-2"></i> <strong>회원 관리</strong>
+                <ul>
+                    <li><a href="javascript:void(0)" onclick="loadMembershipLevels()">회원 정보 관리<div class="underline"></div></a></li>
+                </ul>
+            </li>
+            <li><i class="fas fa-comments mr-2"></i> <strong>게시판 관리</strong>
+                <ul>
+                    <li>공지사항 관리</li>
+                    <li>이벤트 관리</li>
+                    <li>문의하기 관리</li>
+                    <li>리뷰 평점 관리</li>
+                </ul>
+            </li>
+        </ul>
+
+        <!-- 하단 -->
+        <div class="sidebar-last" style="text-align: center;">
+            <hr>
+            <a href="#">돌아가기<i class="fas fa-reply ml-1"></i></a>
+            <span class="ml-2 mr-2"> | </span>
+            <a href="#">로그아웃<i class="fas fa-sign-out-alt ml-1"></i></a>
+        </div>
+    </nav>
+</div>
+<script>
+    // 사이드바 메뉴 토글 및 활성화
+    $(document).ready(function () {
+        $('.adminAside .sidebar ul li strong').click(function () {
+            $(this).next('ul').slideToggle();
+        });
+
+        $('.adminAside .sidebar ul li a').click(function () {
+            $('.adminAside .sidebar ul li a').removeClass('active');
+            $(this).addClass('active');
+        });
+    });
+
+    // iframe 로드 함수
+    function loadPage(url, menuFunction) {
+        var iframe = document.getElementById('content-frame');
+        iframe.src = url;
+        iframe.style.display = 'block';
+        setActiveMenu(menuFunction);
+    }
+
+    // 메뉴 활성화
+    function setActiveMenu(menuFunction) {
+        $('.adminAside .sidebar ul li a').removeClass('active');
+        $(`.adminAside a[onclick="${menuFunction}"]`).addClass('active');
+    }
+
+    // iframe 로드 예시 함수
+    function loadOrderHistory() {
+        loadPage('Order_History.html', 'loadOrderHistory');
+    }
+
+    function loadRefundExchange() {
+        loadPage('Refund_Exchange.html', 'loadRefundExchange');
+    }
+
+    function loadPaymentManagement() {
+        loadPage('Payment_Management.html', 'loadPaymentManagement');
+    }
+
+    function loadProductCategory() {
+        loadPage('Product_Category.html', 'loadProductCategory');
+    }
+
+    function loadMembershipLevels() {
+        loadPage('Membership_levels.html', 'loadMembershipLevels');
+    }
+</script>
