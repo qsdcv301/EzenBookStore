@@ -542,18 +542,20 @@
         location.href = '/admin/book';
     });
 
+    // 날짜 포맷 변환 함수 (ISO 형식으로 변환)
+    function formatDateToISOString(date) {
+        const d = new Date(date);
+        return d.toISOString(); // ISO 형식으로 반환
+    }
 
-
-    //수정모달 카테고리와 서브카테고리
-    $(document).ready(function () {
+    //책 수정 모달 스크립트
+    $('#productModal').on('show.bs.modal', function (event) {
         // 카테고리 목록 로드
         $.ajax({
             url: '/admin/categories/category',
             method: 'GET',
             success: function (categories) {
-                console.log('카테고리 데이터:', categories); // 카테고리 데이터 확인용 로그
-                $('#category').empty();
-                $('#category').append(new Option("카테고리를 선택하세요", "")); // 기본 옵션 추가
+                $('#category').empty().append(new Option("카테고리를 선택하세요", ""));
                 categories.forEach(function (category) {
                     $('#category').append(new Option(`${category.id}: ${category.name}`, category.id));
                 });
@@ -563,19 +565,15 @@
             }
         });
 
-// 카테고리 선택 변경 시 관련 서브카테고리 로드
+        // 카테고리 선택 변경 시 관련 서브카테고리 로드
         $('#category').on('change', function () {
             const selectedCategoryId = $(this).val();
-            console.log('선택된 카테고리 ID:', selectedCategoryId); // 선택된 카테고리 확인용 로그
-
             if (selectedCategoryId) {
                 $.ajax({
                     url: `/admin/subcategories/${selectedCategoryId}`,
                     method: 'GET',
                     success: function (subcategories) {
-                        console.log('서브카테고리 데이터:', subcategories); // 서브카테고리 데이터 확인용 로그
-                        $('#subcategory').empty();
-                        $('#subcategory').append(new Option("서브카테고리를 선택하세요", ""));
+                        $('#subcategory').empty().append(new Option("세부 카테고리를 선택하세요", ""));
                         subcategories.forEach(function (subcategory) {
                             $('#subcategory').append(new Option(`${subcategory.id}: ${subcategory.name}`, subcategory.id));
                         });
@@ -585,20 +583,10 @@
                     }
                 });
             } else {
-                $('#subcategory').empty();
-                $('#subcategory').append(new Option("서브카테고리를 선택하세요", ""));
+                $('#subcategory').empty().append(new Option("세부 카테고리를 선택하세요", ""));
             }
         });
-    });
 
-    // 날짜 포맷 변환 함수 (ISO 형식으로 변환)
-    function formatDateToISOString(date) {
-        const d = new Date(date);
-        return d.toISOString(); // ISO 형식으로 반환
-    }
-
-    //책 수정 모달 스크립트
-    $('#productModal').on('show.bs.modal', function (event) {
         var button = $(event.relatedTarget);
         var bookId = button.data('book-id');
 
