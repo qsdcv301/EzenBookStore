@@ -284,4 +284,8 @@ public class OrdersService implements OrdersServiceInterface{
     public List<Orders> findAllByPayment_Status(Byte status) {
         return orderRepository.findAllByPayment_Status(status);
     }
+
+    public void updateStatus(Orders orders){
+        orderRepository.save(orders);
+    }
 }

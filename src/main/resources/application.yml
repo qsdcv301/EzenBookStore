@@ -70,3 +70,8 @@ spring:
       mail.smtp.ssl.enable: true
 file:
   upload-dir: ${UPLOAD_DIR}
+portone:
+  api:
+    url: ${PORTONE_API_URL}
+    key: ${PORTONE_API_KEY}
+    secret: ${PORTONE_API_SECRET}
