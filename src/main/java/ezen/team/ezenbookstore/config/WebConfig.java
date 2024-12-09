@@ -15,6 +15,17 @@ public class WebConfig implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/images/**")
                 .addResourceLocations("file:" + uploadDir + "/");
+
+        registry.addResourceHandler("/js/**")
+                .addResourceLocations("classpath:/static/js/")
+                .setCachePeriod(3600)
+                .resourceChain(true);
+
+        // 특정 popper.min.js.map 파일만 처리
+        registry.addResourceHandler("/js/popper.min.js.map")
+                .addResourceLocations("classpath:/static/js/")
+                .resourceChain(false);
     }
+
 
 }
