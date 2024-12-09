@@ -145,12 +145,6 @@
 
         /* 반응형 스타일 */
 
-        @media screen and (min-width: 768px) {
-            .bottom-menu {
-                display: none;
-            }
-        }
-
         /* 태블릿 (768px 이상 992px 미만) */
         @media screen and (min-width: 768px) and (max-width: 991px) {
             .top-bar {
@@ -203,26 +197,6 @@
             .user-menu a {
                 display: inline-block;
                 margin: 0 10px;
-            }
-
-            /* 하단 고정 유저 메뉴 스타일 */
-            .bottom-menu {
-                position: fixed;
-                bottom: 0;
-                left: 0;
-                width: 100%;
-                background-color: #fff;
-                box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
-                display: flex;
-                justify-content: space-around;
-                padding: 10px 0;
-                z-index: 1000;
-            }
-
-            .bottom-menu a {
-                color: #007bff;
-                text-decoration: none;
-                font-size: 24px;
             }
 
             .container {
@@ -407,12 +381,6 @@
                     </div>
                 </div>
             </nav>
-        </div>
-        <!-- 모바일 유저 메뉴 -->
-        <div class="bottom-menu">
-            <a href="/cart"><i class="fas fa-shopping-cart"></i></a>
-            <a href="/main"><i class="fas fa-home"></i></a>
-            <a href="/user/info"><i class="fas fa-user"></i></a>
         </div>
     </header>
 
