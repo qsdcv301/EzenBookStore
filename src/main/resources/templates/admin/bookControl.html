@@ -404,18 +404,15 @@
                     </div>
                     <div class="form-group">
                         <label for="addDescription">설명</label>
-                        <textarea type="text" class="form-control" id="addDescription" name="description">
-                        </textarea>
+                        <textarea type="text" class="form-control" id="addDescription" name="description"></textarea>
                     </div>
                     <div class="form-group">
                         <label for="addWriter">작가 설명</label>
-                        <textarea type="text" class="form-control" id="addWriter" name="writer">
-                        </textarea>
+                        <textarea type="text" class="form-control" id="addWriter" name="writer"></textarea>
                     </div>
                     <div class="form-group">
                         <label for="addContents">목차</label>
-                        <textarea type="text" class="form-control" id="addContents" name="contents">
-                        </textarea>
+                        <textarea type="text" class="form-control" id="addContents" name="contents"></textarea>
                     </div>
                     <div class="form-group">
                         <label for="addFile">책 이미지</label>
@@ -876,10 +873,14 @@
         formData.append('count', count);
         formData.append('category.id', categoryId);
         formData.append('subcategory.id', subcategoryId);
-        formData.append('bookdescription.id', bookDescriptionId);
-        formData.append('bookdescription.description', description);
-        formData.append('bookdescription.writer', writer);
-        formData.append('bookdescription.contents', contents);
+        // BookDescription 데이터를 JSON 문자열로 추가
+        const bookDescription = {
+            id: $('#bookdescriptionId').val(),
+            description: $('#description').val(),
+            writer: $('#writer').val(),
+            contents: $('#contents').val()
+        };
+        formData.append('bookdescription', JSON.stringify(bookDescription));
 
         // 파일 배열을 반복하여 추가
         for (let i = 0; i < fileInputs.length; i++) {
