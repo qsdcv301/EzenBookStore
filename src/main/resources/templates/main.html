@@ -50,9 +50,8 @@
                         <div th:each="event, iterStat : ${eventList}"
                              th:classappend="'carousel-item' + (${iterStat.index == 0} ? ' active' : '')">
                             <a th:href="@{/event/{id}(id=${event.id})}">
-                                <img th:src="${#strings.isEmpty(onImageList.get(index.index))
-                                   ? '/image/noImage.jpg'
-                                   : onImageList.get(index.index)}" class="d-block w-100"
+                                <img th:src="${eventImagePath != null ? eventImagePath : '/image/noImage.jpg'}"
+                                     class="d-block w-100"
                                      th:alt="${event.title} + ' 이미지'">
                             </a>
                         </div>
