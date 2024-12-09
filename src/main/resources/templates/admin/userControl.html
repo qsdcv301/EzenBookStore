@@ -4,19 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>회원 정보 관리</title>
-    <!-- CSS 파일 -->
-    <link href="/css/bootstrap.min.css" rel="stylesheet"/>
-    <link href="/css/style.css" rel="stylesheet"/>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet"/>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet"/>
-
-    <!-- JS 파일 -->
-    <script src="/js/jquery-1.12.4.min.js"></script>
-    <script src="/js/popper.min.js"></script>
-    <script src="/js/bootstrap.min.js"></script>
-    <script src="/js/script.js"></script>
-    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <style>
         .filter-option {
@@ -43,129 +32,122 @@
 </head>
 <body>
 
-<div class="container-fluid">
-    <div class="row">
-        <nav th:replace="~{fragments/sidebar :: sidebar}"></nav>
-        <main class="col-10 content">
-            <div class="container mt-5">
-                <h3 class="font-weight-bold mb-4">회원 정보 관리</h3>
-                <P>가입된 회원 정보를 확인하거나 수정할 수 있는 페이지입니다.</P>
+<div class="container mt-5">
+    <h3 class="font-weight-bold mb-4">회원 정보 관리</h3>
+    <P>가입된 회원 정보를 확인하거나 수정할 수 있는 페이지입니다.</P>
 
-                <!-- 필터 버튼 -->
-                <div class="d-flex justify-content-start mb-3">
-                <span class="filter-option" data-grade="" th:classappend="${grade == null ? 'active' : ''}"
-                      onclick="moveToGrade(this)">
-                    전체 <span th:text="${totalCount}"></span> <!-- 검색 결과의 총 유저 수 -->
-                </span>
-                    <span class="filter-option" data-grade="1" th:classappend="${grade == 1 ? 'active' : ''}"
-                          onclick="moveToGrade(this)">
-                    일반회원 <span th:text="${generalCount}"></span> <!-- 일반회원 수 -->
-                </span>
-                    <span class="filter-option" data-grade="2" th:classappend="${grade == 2 ? 'active' : ''}"
-                          onclick="moveToGrade(this)">
-                    실버회원 <span th:text="${silverCount}"></span> <!-- 실버회원 수 -->
-                </span>
-                    <span class="filter-option" data-grade="3" th:classappend="${grade == 3 ? 'active' : ''}"
-                          onclick="moveToGrade(this)">
-                    골드회원 <span th:text="${goldCount}"></span> <!-- 골드회원 수 -->
-                </span>
-                    <span class="filter-option" data-grade="4" th:classappend="${grade == 4 ? 'active' : ''}"
-                          onclick="moveToGrade(this)">
-                    VIP 회원 <span th:text="${vipCount}"></span> <!-- VIP 회원 수 -->
-                </span>
-                    <span class="filter-option" data-grade="99" th:classappend="${grade == 99 ? 'active' : ''}"
-                          onclick="moveToGrade(this)">
-                    관리자 <span th:text="${adminCount}"></span> <!-- 관리자 수 -->
-                </span>
-                </div>
-
-
-                <hr>
-
-                <!-- 검색 및 상태 변경 섹션 -->
-                <div class="d-flex justify-content-between mb-3">
-                    <!-- 검색 섹션 -->
-                    <div class="search-section d-flex align-items-center">
-                        <select class="form-control mr-2" style="width: 150px;" id="search-type">
-                            <option value="email" th:selected="${type == 'email'}">이메일</option>
-                            <option value="name" th:selected="${type == 'name'}">이름</option>
-                        </select>
-                        <input type="text" class="form-control mr-2" placeholder="검색어를 입력하세요" style="width: 300px;" id="search-input" th:value="${keyword}">
-                        <button class="btn btn-primary" onclick="searchUsers()">조회</button>
-                        <button class="btn btn-secondary ml-2" onclick="resetSearch()">초기화</button>
-                    </div>
-
-                    <!-- 등급 상태 변경 -->
-                    <div class="d-flex align-items-center">
-                        <select class="form-control mr-3" style="width: 200px;" id="bulk-status">
-                            <option value="">등급 상태 변경</option>
-                            <option value="1">일반회원</option>
-                            <option value="2">실버회원</option>
-                            <option value="3">골드회원</option>
-                            <option value="4">VIP 회원</option>
-                            <option value="99">관리자</option>
-                        </select>
-                        <button class="btn btn-primary" id="update-selected" onclick="initUpdateAction()">수정</button>
-                        <button class="btn btn-danger ml-2" id="delete-selected" onclick="initDeleteAction()">삭제</button>
-                    </div>
-                </div>
-
-                <!-- 회원 목록 테이블 -->
-                <table class="table table-bordered text-center">
-                    <thead class="thead-light">
-                    <tr>
-                        <th><input type="checkbox" id="select-all" onclick="toggleAllCheckboxes(this)"></th>
-                        <th>가입순서</th>
-                        <th>아이디(이메일형식)</th>
-                        <th>이름</th>
-                        <th>전화번호</th>
-                        <th>주소</th>
-                        <th>회원등급</th>
-                        <th>상세보기</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr th:each="user : ${userList}">
-                        <td><input type="checkbox" class="user-checkbox" th:data-id="${user.id}"></td>
-                        <td th:text="${user.id}"></td>
-                        <td th:text="${user.email}"></td>
-                        <td th:text="${user.name}"></td>
-                        <td th:text="${user.tel}"></td>
-                        <td>
-                            <span th:text="${user.addr}"></span>
-                            <span th:if="${user.addrextra != null}" th:text="' ' + ${user.addrextra}"></span>
-                        </td>
-                        <td>
-                            <span th:if="${user.grade == 1}" th:text="'일반회원'"></span>
-                            <span th:if="${user.grade == 2}" th:text="'실버회원'"></span>
-                            <span th:if="${user.grade == 3}" th:text="'골드회원'"></span>
-                            <span th:if="${user.grade == 4}" th:text="'VIP 회원'"></span>
-                            <span th:if="${user.grade == 99}" th:text="'관리자'"></span>
-                        </td>
-
-                        <td>
-                            <button class="btn btn-primary" th:data-target="'#userDetailModal-' + ${user.id}" data-toggle="modal">상세</button>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-
-
-                <!-- 페이지네이션 -->
-                <nav aria-label="Page navigation" class="mt-4">
-                    <ul class="pagination justify-content-center">
-                        <li class="page-item" th:each="i : ${#numbers.sequence(1, totalPages)}"
-                            th:classappend="${i == currentPage ? 'active' : ''}">
-                            <a class="page-link"
-                               th:href="@{/admin/user(grade=${grade}, type=${type}, keyword=${keyword}, page=${i}, size=${10})}"
-                               th:text="${i}"></a>
-                        </li>
-                    </ul>
-                </nav>
-
-            </div>
-        </main>
+    <!-- 필터 버튼 -->
+    <div class="d-flex justify-content-start mb-3">
+    <span class="filter-option" data-grade="" th:classappend="${grade == null ? 'active' : ''}"
+          onclick="moveToGrade(this)">
+        전체 <span th:text="${totalCount}"></span> <!-- 검색 결과의 총 유저 수 -->
+    </span>
+        <span class="filter-option" data-grade="1" th:classappend="${grade == 1 ? 'active' : ''}"
+              onclick="moveToGrade(this)">
+        일반회원 <span th:text="${generalCount}"></span> <!-- 일반회원 수 -->
+    </span>
+        <span class="filter-option" data-grade="2" th:classappend="${grade == 2 ? 'active' : ''}"
+              onclick="moveToGrade(this)">
+        실버회원 <span th:text="${silverCount}"></span> <!-- 실버회원 수 -->
+    </span>
+        <span class="filter-option" data-grade="3" th:classappend="${grade == 3 ? 'active' : ''}"
+              onclick="moveToGrade(this)">
+        골드회원 <span th:text="${goldCount}"></span> <!-- 골드회원 수 -->
+    </span>
+        <span class="filter-option" data-grade="4" th:classappend="${grade == 4 ? 'active' : ''}"
+              onclick="moveToGrade(this)">
+        VIP 회원 <span th:text="${vipCount}"></span> <!-- VIP 회원 수 -->
+    </span>
+        <span class="filter-option" data-grade="99" th:classappend="${grade == 99 ? 'active' : ''}"
+              onclick="moveToGrade(this)">
+        관리자 <span th:text="${adminCount}"></span> <!-- 관리자 수 -->
+    </span>
     </div>
+
+
+    <hr>
+
+    <!-- 검색 및 상태 변경 섹션 -->
+    <div class="d-flex justify-content-between mb-3">
+        <!-- 검색 섹션 -->
+        <div class="search-section d-flex align-items-center">
+            <select class="form-control mr-2" style="width: 150px;" id="search-type">
+                <option value="email" th:selected="${type == 'email'}">이메일</option>
+                <option value="name" th:selected="${type == 'name'}">이름</option>
+            </select>
+            <input type="text" class="form-control mr-2" placeholder="검색어를 입력하세요" style="width: 300px;" id="search-input" th:value="${keyword}">
+            <button class="btn btn-primary" onclick="searchUsers()">조회</button>
+            <button class="btn btn-secondary ml-2" onclick="resetSearch()">초기화</button>
+        </div>
+
+        <!-- 등급 상태 변경 -->
+        <div class="d-flex align-items-center">
+            <select class="form-control mr-3" style="width: 200px;" id="bulk-status">
+                <option value="">등급 상태 변경</option>
+                <option value="1">일반회원</option>
+                <option value="2">실버회원</option>
+                <option value="3">골드회원</option>
+                <option value="4">VIP 회원</option>
+                <option value="99">관리자</option>
+            </select>
+            <button class="btn btn-primary" id="update-selected" onclick="initUpdateAction()">수정</button>
+            <button class="btn btn-danger ml-2" id="delete-selected" onclick="initDeleteAction()">삭제</button>
+        </div>
+    </div>
+
+    <!-- 회원 목록 테이블 -->
+    <table class="table table-bordered text-center">
+        <thead class="thead-light">
+        <tr>
+            <th><input type="checkbox" id="select-all" onclick="toggleAllCheckboxes(this)"></th>
+            <th>가입순서</th>
+            <th>아이디(이메일형식)</th>
+            <th>이름</th>
+            <th>전화번호</th>
+            <th>주소</th>
+            <th>회원등급</th>
+            <th>상세보기</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="user : ${userList}">
+            <td><input type="checkbox" class="user-checkbox" th:data-id="${user.id}"></td>
+            <td th:text="${user.id}"></td>
+            <td th:text="${user.email}"></td>
+            <td th:text="${user.name}"></td>
+            <td th:text="${user.tel}"></td>
+            <td>
+                <span th:text="${user.addr}"></span>
+                <span th:if="${user.addrextra != null}" th:text="' ' + ${user.addrextra}"></span>
+            </td>
+            <td>
+                <span th:if="${user.grade == 1}" th:text="'일반회원'"></span>
+                <span th:if="${user.grade == 2}" th:text="'실버회원'"></span>
+                <span th:if="${user.grade == 3}" th:text="'골드회원'"></span>
+                <span th:if="${user.grade == 4}" th:text="'VIP 회원'"></span>
+                <span th:if="${user.grade == 99}" th:text="'관리자'"></span>
+            </td>
+
+            <td>
+                <button class="btn btn-primary" th:data-target="'#userDetailModal-' + ${user.id}" data-toggle="modal">상세</button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+
+    <!-- 페이지네이션 -->
+    <nav aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+            <li class="page-item" th:each="i : ${#numbers.sequence(1, totalPages)}"
+                th:classappend="${i == currentPage ? 'active' : ''}">
+                <a class="page-link"
+                   th:href="@{/admin/user(grade=${grade}, type=${type}, keyword=${keyword}, page=${i}, size=${10})}"
+                   th:text="${i}"></a>
+            </li>
+        </ul>
+    </nav>
+
 </div>
 
 
