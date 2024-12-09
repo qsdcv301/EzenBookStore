@@ -3,12 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <title>공지사항 관리</title>
-    <!-- 부트스트랩 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!-- 부트스트랩 JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- CSS 파일 -->
+    <link href="/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="/css/style.css" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet"/>
+
+    <!-- JS 파일 -->
+    <script src="/js/jquery-1.12.4.min.js"></script>
+    <script src="/js/popper.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/script.js"></script>
+    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <style>
         .container { margin-top: 20px; }
         .table th, .table td { text-align: center; }
@@ -16,85 +23,93 @@
     </style>
 </head>
 <body>
-<div class="container">
-    <h3 class="font-weight-bold mb-3">공지사항 관리</h3>
-    <p>공지사항 추가, 수정, 삭제 및 검색을 위한 관리 페이지입니다.</p>
-    <hr>
 
-    <div class="d-flex justify-content-between mb-3">
-        <!-- 검색 영역 -->
-        <form id="searchForm" class="d-flex align-items-center">
-            <select id="searchType" name="searchType" class="form-control me-2" style="width: 150px;">
-                <option th:selected="${searchType == 'title'}" value="title">제목</option>
-                <option th:selected="${searchType == 'content'}" value="content">내용</option>
-            </select>
-            <input type="text" id="keyword" name="keyword" class="form-control me-2" placeholder="검색어를 입력하세요" style="width: 300px;" th:value="${keyword}">
-            <button type="submit" class="btn btn-secondary">조회</button>
-        </form>
+<div class="container-fluid">
+    <div class="row">
+        <nav th:replace="~{fragments/sidebar :: sidebar}"></nav>
+        <main class="col-10 content">
+            <div class="container">
+                <h3 class="font-weight-bold mb-3">공지사항 관리</h3>
+                <p>공지사항 추가, 수정, 삭제 및 검색을 위한 관리 페이지입니다.</p>
+                <hr>
 
-        <!-- 공지사항 추가 버튼 -->
-        <div>
-            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addNoticeModal">공지사항 추가</button>
-        </div>
-    </div>
+                <div class="d-flex justify-content-between mb-3">
+                    <!-- 검색 영역 -->
+                    <form id="searchForm" class="d-flex align-items-center">
+                        <select id="searchType" name="searchType" class="form-control me-2" style="width: 150px;">
+                            <option th:selected="${searchType == 'title'}" value="title">제목</option>
+                            <option th:selected="${searchType == 'content'}" value="content">내용</option>
+                        </select>
+                        <input type="text" id="keyword" name="keyword" class="form-control me-2" placeholder="검색어를 입력하세요" style="width: 300px;" th:value="${keyword}">
+                        <button type="submit" class="btn btn-secondary">조회</button>
+                    </form>
 
-    <!-- 공지사항 목록 -->
-    <table class="table table-bordered">
-        <thead class="thead-light">
-        <tr>
-            <th><input type="checkbox" id="selectAll"></th>
-            <th>번호</th>
-            <th>제목</th>
-            <th>내용</th>
-            <th>이미지</th>
-            <th>수정</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="notice : ${noticePage.content}">
-            <td><input type="checkbox" name="checkBoxNotice" value="true"></td>
-            <td th:text="${notice.id}"></td>
-            <td th:text="${notice.title}"></td>
-            <td th:text="${notice.content}"></td>
-            <td>
-                <img th:src="${@thymeleafFileUploadService.findImageFilePath(notice.id, 'notice')}"  alt="이미지 없음" class="img-thumbnail">
-            </td>
-            <td>
-                <button type="button" class="btn btn-warning edit-btn"
-                        data-bs-toggle="modal" data-bs-target="#editNoticeModal"
-                        th:data-id="${notice.id}"
-                        th:data-title="${notice.title}"
-                        th:data-content="${notice.content}">
-                    수정
-                </button>
-            </td>
-        </tr>
-        <tr th:if="${#lists.isEmpty(noticePage?.content)}">
-            <td colspan="8" class="text-center">검색 결과가 없습니다.</td>
-        </tr>
-        </tbody>
-    </table>
+                    <!-- 공지사항 추가 버튼 -->
+                    <div>
+                        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addNoticeModal">공지사항 추가</button>
+                    </div>
+                </div>
 
-    <!-- 일괄 선택/삭제 -->
-    <div class="mt-3">
-        <button id="deleteNotice" class="btn btn-danger">선택 삭제</button>
-    </div>
+                <!-- 공지사항 목록 -->
+                <table class="table table-bordered">
+                    <thead class="thead-light">
+                    <tr>
+                        <th><input type="checkbox" id="selectAll"></th>
+                        <th>번호</th>
+                        <th>제목</th>
+                        <th>내용</th>
+                        <th>이미지</th>
+                        <th>수정</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="notice : ${noticePage.content}">
+                        <td><input type="checkbox" name="checkBoxNotice" value="true"></td>
+                        <td th:text="${notice.id}"></td>
+                        <td th:text="${notice.title}"></td>
+                        <td th:text="${notice.content}"></td>
+                        <td>
+                            <img th:src="${@thymeleafFileUploadService.findImageFilePath(notice.id, 'notice')}"  alt="이미지 없음" class="img-thumbnail">
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-warning edit-btn"
+                                    data-bs-toggle="modal" data-bs-target="#editNoticeModal"
+                                    th:data-id="${notice.id}"
+                                    th:data-title="${notice.title}"
+                                    th:data-content="${notice.content}">
+                                수정
+                            </button>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(noticePage?.content)}">
+                        <td colspan="8" class="text-center">검색 결과가 없습니다.</td>
+                    </tr>
+                    </tbody>
+                </table>
 
-    <!-- 페이징 -->
-    <div class="d-flex justify-content-center mt-4">
-        <nav>
-            <ul class="pagination">
-                <li th:if="${startPage > 0}" class="page-item">
-                    <a class="page-link" th:href="@{/admin/notice(page=${startPage - 1}, size=${noticePage.size}, keyword=${keyword}, searchType=${searchType})}">이전</a>
-                </li>
-                <li th:each="i : ${#numbers.sequence(startPage, endPage - 1)}" class="page-item" th:classappend="${i == noticePage.number} ? 'active'">
-                    <a class="page-link" th:href="@{/admin/notice(page=${i}, size=${noticePage.size}, keyword=${keyword}, searchType=${searchType})}" th:text="${i + 1}"></a>
-                </li>
-                <li th:if="${endPage < totalPages}" class="page-item">
-                    <a class="page-link" th:href="@{/admin/notice(page=${endPage}, size=${noticePage.size}, keyword=${keyword}, searchType=${searchType})}">다음</a>
-                </li>
-            </ul>
-        </nav>
+                <!-- 일괄 선택/삭제 -->
+                <div class="mt-3">
+                    <button id="deleteNotice" class="btn btn-danger">선택 삭제</button>
+                </div>
+
+                <!-- 페이징 -->
+                <div class="d-flex justify-content-center mt-4">
+                    <nav>
+                        <ul class="pagination">
+                            <li th:if="${startPage > 0}" class="page-item">
+                                <a class="page-link" th:href="@{/admin/notice(page=${startPage - 1}, size=${noticePage.size}, keyword=${keyword}, searchType=${searchType})}">이전</a>
+                            </li>
+                            <li th:each="i : ${#numbers.sequence(startPage, endPage - 1)}" class="page-item" th:classappend="${i == noticePage.number} ? 'active'">
+                                <a class="page-link" th:href="@{/admin/notice(page=${i}, size=${noticePage.size}, keyword=${keyword}, searchType=${searchType})}" th:text="${i + 1}"></a>
+                            </li>
+                            <li th:if="${endPage < totalPages}" class="page-item">
+                                <a class="page-link" th:href="@{/admin/notice(page=${endPage}, size=${noticePage.size}, keyword=${keyword}, searchType=${searchType})}">다음</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </main>
     </div>
 </div>
 
