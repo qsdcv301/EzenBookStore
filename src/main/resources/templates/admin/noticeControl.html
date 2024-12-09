@@ -84,14 +84,27 @@
     <div class="d-flex justify-content-center mt-4">
         <nav>
             <ul class="pagination">
-                <li th:if="${startPage > 0}" class="page-item">
-                    <a class="page-link" th:href="@{/admin/notice(page=${startPage - 1}, size=${noticePage.size}, keyword=${keyword}, searchType=${searchType})}">이전</a>
+                <!-- 이전 페이지 링크 -->
+                <li th:if="${noticePage.hasPrevious()}" class="page-item">
+                    <a class="page-link" th:href="@{/admin/notice(page=${noticePage.number - 1}, size=${noticePage.size}, keyword=${keyword}, searchType=${searchType})}">
+                        이전
+                    </a>
                 </li>
-                <li th:each="i : ${#numbers.sequence(startPage, endPage - 1)}" class="page-item" th:classappend="${i == noticePage.number} ? 'active'">
-                    <a class="page-link" th:href="@{/admin/notice(page=${i}, size=${noticePage.size}, keyword=${keyword}, searchType=${searchType})}" th:text="${i + 1}"></a>
+
+                <!-- 페이지 번호 반복 -->
+                <li th:each="i : ${#numbers.sequence(0, noticePage.totalPages - 1)}"
+                    class="page-item"
+                    th:classappend="${i == noticePage.number} ? 'active'">
+                    <a class="page-link" th:href="@{/admin/notice(page=${i}, size=${noticePage.size}, keyword=${keyword}, searchType=${searchType})}"
+                       th:text="${i + 1}">
+                    </a>
                 </li>
-                <li th:if="${endPage < totalPages}" class="page-item">
-                    <a class="page-link" th:href="@{/admin/notice(page=${endPage}, size=${noticePage.size}, keyword=${keyword}, searchType=${searchType})}">다음</a>
+
+                <!-- 다음 페이지 링크 -->
+                <li th:if="${noticePage.hasNext()}" class="page-item">
+                    <a class="page-link" th:href="@{/admin/notice(page=${noticePage.number + 1}, size=${noticePage.size}, keyword=${keyword}, searchType=${searchType})}">
+                        다음
+                    </a>
                 </li>
             </ul>
         </nav>

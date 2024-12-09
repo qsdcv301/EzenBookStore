@@ -76,15 +76,20 @@
     <div class="d-flex justify-content-center mt-4">
         <nav aria-label="Page navigation">
             <ul class="pagination">
-                <li th:if="${startPage > 0}" class="page-item">
-                    <a class="page-link" th:href="@{/admin/event(page=${startPage - 1}, size=${eventPage.size}, keyword=${keyword}, searchType=${searchType})}">이전</a>
+                <!-- 이전 페이지 링크 -->
+                <li th:if="${eventPage.hasPrevious()}" class="page-item">
+                    <a class="page-link" th:href="@{/admin/event(page=${eventPage.number - 1}, size=${eventPage.size}, keyword=${keyword}, searchType=${searchType})}">이전</a>
                 </li>
-                <li th:each="i : ${#numbers.sequence(startPage, endPage - 1)}" class="page-item">
+                <!-- 페이지 번호 반복 -->
+                <li th:each="i : ${#numbers.sequence(0, eventPage.totalPages - 1)}" class="page-item" th:classappend="${i == eventPage.number} ? 'active'">
                     <a class="page-link" th:href="@{/admin/event(page=${i}, size=${eventPage.size}, keyword=${keyword}, searchType=${searchType})}" th:text="${i + 1}"></a>
                 </li>
-                <li th:if="${endPage < eventPage.totalPages}" class="page-item">
-                    <a class="page-link" th:href="@{/admin/event(page=${endPage}, size=${eventPage.size}, keyword=${keyword}, searchType=${searchType})}">다음</a>
+
+                <!-- 다음 페이지 링크 -->
+                <li th:if="${eventPage.hasNext()}" class="page-item">
+                    <a class="page-link" th:href="@{/admin/event(page=${eventPage.number + 1}, size=${eventPage.size}, keyword=${keyword}, searchType=${searchType})}">다음</a>
                 </li>
+
             </ul>
         </nav>
     </div>

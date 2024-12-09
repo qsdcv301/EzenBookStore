@@ -273,9 +273,8 @@ $(document).ready(function () {
             $feedbackMessage.css("color", "#dc3545");
         } else {
             $(this).removeClass('is-invalid').addClass('is-valid');
-            $feedbackMessage.text('사용 가능한 아이디입니다.');
-
-            $feedbackMessage.css("color", "#28a745");
+            $feedbackMessage.text('사용 가능한 아이디입니다. 중복검사를 해주세요.');
+            $feedbackMessage.css("color", "#ffc107");
         }
         $feedbackMessage.css("display", "block");
     });
@@ -378,6 +377,8 @@ $(document).ready(function () {
                 } else {
                     alert("사용 가능한 아이디입니다.");
                     $('#nextBtn2').attr("data-check", "1");
+                    $('#feedbackMessage').css("display", "none");
+                    $('#feedbackMessage').text('');
                     $('#checkDuplicateBtn').removeClass('btn-warning').addClass('btn-success');
                 }
             },

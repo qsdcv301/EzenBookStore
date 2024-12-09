@@ -82,6 +82,25 @@
     <button id="selectAllQnA" class="btn btn-secondary">일괄 선택</button>
     <button id="bulkAnswer" class="btn btn-success">일괄 답변</button>
 </div>
+<div class="d-flex justify-content-center">
+    <ul class="pagination">
+        <!-- 이전 페이지 링크 -->
+        <li class="page-item" th:if="${qnAPage.hasPrevious()}">
+            <a class="page-link" th:href="@{/admin/qna(page=${qnAPage.number - 1}, size=${qnAPage.size})}">이전</a>
+        </li>
+
+        <!-- 페이지 번호 반복 -->
+        <li class="page-item" th:each="i : ${#numbers.sequence(0, qnAPage.totalPages - 1)}"
+            th:classappend="${i == qnAPage.number} ? 'active'">
+            <a class="page-link" th:href="@{/admin/qna(page=${i}, size=${qnAPage.size})}" th:text="${i + 1}"></a>
+        </li>
+
+        <!-- 다음 페이지 링크 -->
+        <li class="page-item" th:if="${qnAPage.hasNext()}">
+            <a class="page-link" th:href="@{/admin/qna(page=${qnAPage.number + 1}, size=${qnAPage.size})}">다음</a>
+        </li>
+    </ul>
+</div>
 
 
 <!-- QnA 상세보기 모달 -->
