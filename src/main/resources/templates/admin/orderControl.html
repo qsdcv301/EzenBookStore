@@ -150,8 +150,8 @@
             <th>주문번호</th>
             <th>주문일</th>
             <th>이메일</th>
-            <th>상품명</th>
-            <th>수량</th>
+            <th>주문자</th>
+            <th>상품 종류</th>
             <th>총 결제 금액</th>
             <th>배송상태</th>
             <th>결제상태</th>
@@ -166,8 +166,8 @@
             <td th:text="${order.id}">주문번호</td>
             <td th:text="${#dates.format(order.orderDate, 'yyyy.MM.dd')}">주문일</td>
             <td th:text="${order.user.email}">이메일</td>
-            <td th:text="${order.orderItems.get(0).book.title}">상품명</td> <!-- 예시로 첫번째 상품 표시 -->
-            <td th:text="${order.orderItems.size()}">수량</td>
+            <td th:text="${order.user.name}">상품명</td> <!-- 예시로 첫번째 상품 표시 -->
+            <td th:text="${order.orderItems.size()} + ' 개'">상품 종류</td>
             <td th:text="${order.payment.amount}">총 결제 금액</td>
             <td th:text="${order.delivery.status == 1 ? '배송 준비중' :
                           (order.delivery.status == 2 ? '배송중' :
@@ -222,6 +222,7 @@
 
 </div>
 
+<!-- 상품상세 모달 -->
 <div th:each="order : ${ordersList}">
     <div class="modal fade" th:id="'orderDetailModal-' + ${order.id}" tabindex="-1" role="dialog" aria-labelledby="orderDetailModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
@@ -274,13 +275,18 @@
                             <th>상품명</th>
                             <th>수량</th>
                             <th>가격</th>
+                            <th>수정 및 삭제</th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr th:each="item : ${order.orderItems}">
                             <td th:text="${item.book.title}">상품명</td>
-                            <td th:text="${item.quantity}">수량</td>
+                            <td><input th:value="${item.quantity}" th:id="'ordersItemQuantity-' + ${item.id}" class="form-control"></td>
                             <td th:text="${item.book.price}">가격</td>
+                            <td>
+                                <button class="btn btn-primary" th:onclick="'updateOrdersItem(' + ${item.id} + ')'">수정</button>
+                                <button class="btn btn-warning" th:onclick="'deleteOrdersItem(' + ${item.id} + ', ' + ${order.id} + ')'">삭제</button>
+                            </td>
                         </tr>
                         </tbody>
                     </table>
@@ -355,6 +361,7 @@
         location.href = `/admin/order?page=0`;
     }
 
+    // 배송, 결제, 주문상태 수정
     function updateStatus() {
         const updateButton = document.getElementById("update-status");
         updateButton.disabled = true; // 버튼 비활성화
@@ -412,6 +419,102 @@
         return true;
     }
 
+    // 주문 상세의 수량 수정
+    function updateOrdersItem(ordersItemId) {
+        const ordersItemQuantity = document.getElementById(`ordersItemQuantity-${ordersItemId}`).value.trim();
+        const quantityInput = document.getElementById(`ordersItemQuantity-${ordersItemId}`);
+
+        if (!ordersItemQuantity) {
+            alert('수량을 입력해주세요.');
+            return;
+        }
+
+        // 입력값이 숫자인지 확인
+        if (isNaN(ordersItemQuantity)) {
+            alert('수량은 숫자여야 합니다.');
+            return;
+        }
+
+        // 정수로 변환
+        const quantity = parseInt(ordersItemQuantity, 10);
+
+        $.ajax({
+            url: `/admin/order/${ordersItemId}/edit`,
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ quantity: quantity }), // 정수 전달
+            success: function () {
+                alert('상품 수량이 성공적으로 수정되었습니다.');
+                refreshOrderModalContent(quantityInput.closest('.modal').id.split('-')[1]); // 모달 새로고침
+            },
+            error: function () {
+                alert('상품 수량을 수정하는 중 오류가 발생했습니다.');
+            }
+        });
+    }
+
+    //주문 상세의 상품 삭제
+    function deleteOrdersItem(ordersItemId, orderId){
+        if (!confirm('정말 삭제하시겠습니까?')) {
+            return;
+        }
+
+        $.ajax({
+            url: `/admin/order/${ordersItemId}/delete`,
+            type: 'POST',
+            success: function () {
+                alert('상품이 성공적으로 삭제되었습니다.');
+                refreshOrderModalContent(orderId);
+            },
+            error: function () {
+                alert('상품을 삭제하는 중 오류가 발생했습니다.');
+            }
+        });
+    }
+
+    // 주문 상세 모달 새로고침 함수
+    function refreshOrderModalContent(orderId) {
+        $.ajax({
+            url: `/admin/order/${orderId}/details`, // 서버로부터 주문 상세 데이터 가져오기
+            type: 'GET',
+            success: function (data) {
+                console.log(data); // 서버 응답 데이터 확인
+
+                if (!data || data.length === 0) {
+                    alert('주문 데이터가 비어 있습니다.');
+                    return;
+                }
+
+                const tbody = document.querySelector(`#orderDetailModal-${orderId} .modal-body tbody`);
+                if (!tbody) {
+                    alert('모달의 테이블을 찾을 수 없습니다.');
+                    return;
+                }
+
+                tbody.innerHTML = ''; // 기존 내용 초기화
+
+                // 데이터를 기반으로 테이블 행 추가
+                data.forEach(item => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                    <td>${item.book.title}</td>
+                    <td>
+                        <input type="number" id="ordersItemQuantity-${item.id}" value="${item.quantity}" class="form-control">
+                    </td>
+                    <td>${item.book.price || '가격 정보 없음'}</td>
+                    <td>
+                        <button class="btn btn-primary" onclick="updateOrdersItem(${item.id})">수정</button>
+                        <button class="btn btn-warning" onclick="deleteOrdersItem(${item.id}, ${orderId})">삭제</button>
+                    </td>
+                `;
+                    tbody.appendChild(row);
+                });
+            },
+            error: function () {
+                alert('모달 내용을 갱신하는 중 오류가 발생했습니다.');
+            }
+        });
+    }
 
 </script>
 

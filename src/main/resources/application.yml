@@ -5,6 +5,11 @@ spring:
     multipart:
       max-file-size: 10MB
       max-request-size: 10MB
+  web:
+    resources:
+      mime:
+        types:
+          map: application/json
   security:
     oauth2:
       client:
