@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -175,5 +176,36 @@ public class QnAService implements QnAServiceInterface{
     public Long countByAnswerIsNullOrEmpty(){
         return qnARepository.countByAnswerIsNullOrEmpty();
     }
+
+    @Override
+    public Page<QnA> findByCategory(byte category, Pageable pageable) {
+        return qnARepository.findByCategory(category, pageable);
+    }
+
+
+    @Override
+    public List<QnA> filterQnAList(String category, String status, Pageable pageable) {
+        Page<QnA> qnaPage;
+
+        if ("all".equals(category)) {
+            qnaPage = findAll(pageable);
+        } else {
+            byte categoryByte = Byte.parseByte(category);
+            qnaPage = findByCategory(categoryByte, pageable);
+        }
+
+        boolean isAnswered = "answered".equals(status);
+
+        return qnaPage.getContent().stream()
+                .filter(qna -> {
+                    if ("all".equals(status)) {
+                        return true;
+                    }
+                    return isAnswered ? qna.getAnswer() != null && !qna.getAnswer().trim().isEmpty()
+                            : qna.getAnswer() == null || qna.getAnswer().trim().isEmpty();
+                })
+                .collect(Collectors.toList());
+    }
+
 
 }

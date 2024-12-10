@@ -33,7 +33,7 @@ public class AdminReviewApiController {
             Model model) {
         try {
             // 전체 리뷰 조회
-            Page<Review> reviewPage = reviewService.findAll(pageable);
+            Page<Review> reviewPage = reviewService.getAllReviewsWithImages(pageable);
 
             // 이미지 정보 추가
             List<String> imagePaths = reviewPage.getContent().stream()
@@ -50,16 +50,15 @@ public class AdminReviewApiController {
 
             // 모델에 데이터 추가
             model.addAttribute("reviewPage", reviewPage);
-            model.addAttribute("imagePaths", imagePaths);
             model.addAttribute("totalPages", totalPages);
             model.addAttribute("currentPage", currentPage);
             model.addAttribute("startPage", startPage);
             model.addAttribute("endPage", endPage);
 
-            return "/admin/reviewControl";
+            return "admin/reviewControl";
         } catch (Exception e) {
             model.addAttribute("error", "리뷰 데이터를 불러오는 중 오류가 발생했습니다.");
-            return "/admin/reviewControl";
+            return "admin/reviewControl";
         }
     }
     @GetMapping("/search")
@@ -75,17 +74,7 @@ public class AdminReviewApiController {
                 return "/admin/reviewControl";
             }
 
-            Page<Review> result;
-
-            // 검색 타입에 따른 검색 로직
-            if ("book".equalsIgnoreCase(type)) {
-                result = reviewService.findAllByBookTitle(keyword, pageable);
-            } else if ("user".equalsIgnoreCase(type)) {
-                result = reviewService.findAllByUserName(keyword, pageable);
-            } else {
-                model.addAttribute("error", "유효하지 않은 검색 타입입니다.");
-                return "/admin/reviewControl";
-            }
+            Page<Review> result = reviewService.searchReviews(type, keyword, pageable);
 
             // 검색 결과가 없는 경우
             if (result == null || result.isEmpty()) {
@@ -108,9 +97,7 @@ public class AdminReviewApiController {
     @PostMapping("/delete")
     public ResponseEntity<String> deleteReview(@RequestBody List<Long> ids) {
         try {
-            for (Long id : ids) {
-                reviewService.deleteById(id);
-            }
+            reviewService.deleteReviews(ids);
             return ResponseEntity.ok("선택된 리뷰가 삭제되었습니다.");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("리뷰 삭제 실패: " + e.getMessage());
@@ -120,12 +107,11 @@ public class AdminReviewApiController {
     @GetMapping("/{id}")
     public ResponseEntity<Map<String, Object>> getReviewDetail(@PathVariable Long id) {
         try {
-            Review review = reviewService.findById(id);
+            Review review = reviewService.getReviewDetail(id);
             if (review == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
             }
 
-            // 리뷰 데이터를 Map으로 변환
             Map<String, Object> reviewData = Map.of(
                     "id", review.getId(),
                     "title", review.getTitle(),
@@ -133,7 +119,7 @@ public class AdminReviewApiController {
                     "rating", review.getRating(),
                     "userId", review.getUser().getId(),
                     "bookId", review.getBook().getId(),
-                    "imagePath", fileUploadService.findImageFilePath(review.getId(), "review")
+                    "imagePath", review.getImagePath() // 서비스에서 세팅된 이미지 경로 사용
             );
 
             return ResponseEntity.ok(reviewData);

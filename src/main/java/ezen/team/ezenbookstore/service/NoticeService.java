@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,6 +16,8 @@ import java.util.stream.Collectors;
 public class NoticeService implements NoticeServiceInterface{
 
     private final NoticeRepository noticeRepository;
+
+    private final FileUploadService fileUploadService;
 
     @Override
     public Notice findById(Long id) {
@@ -78,6 +81,57 @@ public class NoticeService implements NoticeServiceInterface{
         return notices.stream()
                 .map(Notice::getId) // id만 매핑
                 .collect(Collectors.toList());
+    }
+    @Override
+    public Page<Notice> getFilteredNotices(String searchType, String keyword, Pageable pageable) {
+        if ("title".equalsIgnoreCase(searchType)) {
+            return noticeRepository.findByTitleContaining(keyword, pageable);
+        } else if ("content".equalsIgnoreCase(searchType)) {
+            return noticeRepository.findByContentContaining(keyword, pageable);
+        } else {
+            return noticeRepository.findAll(pageable);
+        }
+    }
+
+    @Override
+    public Notice createNoticeWithFile(String title, String content, MultipartFile image) throws Exception {
+        Notice notice = Notice.builder()
+                .title(title)
+                .content(content)
+                .build();
+
+        Notice savedNotice = noticeRepository.save(notice);
+
+        if (image != null && !image.isEmpty()) {
+            boolean uploadSuccess = fileUploadService.uploadFile(image, savedNotice.getId().toString(), "notice");
+            if (!uploadSuccess) {
+                throw new Exception("파일 업로드 실패");
+            }
+        }
+
+        return savedNotice;
+    }
+
+    @Override
+    public void updateNoticeWithFile(Long id, String title, String content, MultipartFile image) throws Exception {
+        Notice notice = noticeRepository.findById(id).orElseThrow(() -> new Exception("공지사항을 찾을 수 없습니다."));
+
+        notice.setTitle(title);
+        notice.setContent(content);
+
+        if (image != null && !image.isEmpty()) {
+            boolean uploadSuccess = fileUploadService.uploadFile(image, id.toString(), "notice");
+            if (!uploadSuccess) {
+                throw new Exception("파일 업로드 실패");
+            }
+        }
+
+        noticeRepository.save(notice);
+    }
+
+    @Override
+    public void deleteNotices(List<Long> ids) {
+        ids.forEach(noticeRepository::deleteById);
     }
 
 }

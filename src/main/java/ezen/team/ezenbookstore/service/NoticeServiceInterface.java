@@ -3,6 +3,7 @@ package ezen.team.ezenbookstore.service;
 import ezen.team.ezenbookstore.entity.Notice;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -29,5 +30,13 @@ public interface NoticeServiceInterface {
     List<Notice> findTop5ByOrderByIdDesc();
 
     List<Long> noticeIds();
+
+    Page<Notice> getFilteredNotices(String searchType, String keyword, Pageable pageable);
+
+    Notice createNoticeWithFile(String title, String content, MultipartFile image) throws Exception;
+
+    void updateNoticeWithFile(Long id, String title, String content, MultipartFile image) throws Exception;
+
+    void deleteNotices(List<Long> ids);
     
 }

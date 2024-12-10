@@ -4,8 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>주문 조회 및 상태 관리</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- CSS 파일 -->
+    <link href="/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="/css/style.css" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet"/>
+
+    <!-- JS 파일 -->
+    <script src="/js/jquery-1.12.4.min.js"></script>
+    <script src="/js/popper.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/script.js"></script>
+    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <style>
         .filter-option {
@@ -31,197 +42,204 @@
 </head>
 <body>
 
-<div class="container mt-5">
-    <h3 class="font-weight-bold mb-3">주문 조회 및 상태 관리</h3>
-    <p class="mb-4">전체 주문건을 확인하고 주문 상태를 관리할 수 있는 페이지입니다.</p>
+<div class="container-fluid">
+    <div class="row">
+        <nav th:replace="~{fragments/sidebar :: sidebar}"></nav>
+                    <main class="col-10 content">
+            <div class="container mt-5">
+                <h3 class="font-weight-bold mb-3">주문 조회 및 상태 관리</h3>
+                <p class="mb-4">전체 주문건을 확인하고 주문 상태를 관리할 수 있는 페이지입니다.</p>
 
-    <!-- 배송 상태별 건수 -->
-    <div class="d-flex justify-content-start mb-3">
-        <span class="filter-option" data-status="" th:classappend="${delivery == '' ? 'active' : ''}"
-              onclick="filterDeliveryStatus(this)">
-            전체 <span th:text="${deliveryCount.get('totalCount')}"></span>
-        </span>
+                <!-- 배송 상태별 건수 -->
+                <div class="d-flex justify-content-start mb-3">
+                    <span class="filter-option" data-status=""
+                          onclick="filterDeliveryStatus(this)">
+                        전체 <span th:text="${deliveryCount.get('totalCount')}"></span>
+                    </span>
+                    <span class="filter-option" data-status="1"
+                              onclick="filterDeliveryStatus(this)">
+                        배송 준비중 <span th:text="${deliveryCount.get('preparingCount')}"></span> <!-- 배송 준비중 상태 -->
+                    </span>
+                        <span class="filter-option" data-status="2"
+                              onclick="filterDeliveryStatus(this)">
+                        배송중 <span th:text="${deliveryCount.get('shippingCount')}"></span> <!-- 배송중 상태 -->
+                    </span>
+                        <span class="filter-option" data-status="3"
+                              onclick="filterDeliveryStatus(this)">
+                        배송 완료 <span th:text="${deliveryCount.get('completedCount')}"></span> <!-- 배송 완료 상태 -->
+                    </span>
+                        <span class="filter-option" data-status="4"
+                              onclick="filterDeliveryStatus(this)">
+                        반송 준비중 <span th:text="${deliveryCount.get('returnPreparingCount')}"></span> <!-- 반송 준비중 상태 -->
+                    </span>
+                        <span class="filter-option" data-status="5"
+                              onclick="filterDeliveryStatus(this)">
+                        반송중 <span th:text="${deliveryCount.get('returnShippingCount')}"></span> <!-- 반송중 상태 -->
+                    </span>
+                        <span class="filter-option" data-status="6"
+                              onclick="filterDeliveryStatus(this)">
+                        반송 완료 <span th:text="${deliveryCount.get('returnCompletedCount')}"></span> <!-- 반송 완료 상태 -->
+                    </span>
+                </div>
 
-        <span class="filter-option" data-status="1" th:classappend="${delivery == '1' ? 'active' : ''}"
-                  onclick="filterDeliveryStatus(this)">
-            배송 준비중 <span th:text="${deliveryCount.get('preparingCount')}"></span> <!-- 배송 준비중 상태 -->
-        </span>
-            <span class="filter-option" data-status="2" th:classappend="${delivery == '2' ? 'active' : ''}"
-                  onclick="filterDeliveryStatus(this)">
-            배송중 <span th:text="${deliveryCount.get('shippingCount')}"></span> <!-- 배송중 상태 -->
-        </span>
-            <span class="filter-option" data-status="3" th:classappend="${delivery == '3' ? 'active' : ''}"
-                  onclick="filterDeliveryStatus(this)">
-            배송 완료 <span th:text="${deliveryCount.get('completedCount')}"></span> <!-- 배송 완료 상태 -->
-        </span>
-            <span class="filter-option" data-status="4" th:classappend="${delivery == '4' ? 'active' : ''}"
-                  onclick="filterDeliveryStatus(this)">
-            반송 준비중 <span th:text="${deliveryCount.get('returnPreparingCount')}"></span> <!-- 반송 준비중 상태 -->
-        </span>
-            <span class="filter-option" data-status="5" th:classappend="${delivery == '5' ? 'active' : ''}"
-                  onclick="filterDeliveryStatus(this)">
-            반송중 <span th:text="${deliveryCount.get('returnShippingCount')}"></span> <!-- 반송중 상태 -->
-        </span>
-            <span class="filter-option" data-status="6" th:classappend="${delivery == '6' ? 'active' : ''}"
-                  onclick="filterDeliveryStatus(this)">
-            반송 완료 <span th:text="${deliveryCount.get('returnCompletedCount')}"></span> <!-- 반송 완료 상태 -->
-        </span>
-    </div>
+                <hr>
 
-    <hr>
+                <div class="card mt-3" id="advancedSearch">
+                    <div class="card-body row">
+                        <div class="col-md-4">
+                            <select id="orderStatus" name="orderStatus" class="form-control">
+                                <option value="">주문 상태를 선택하세요</option>
+                                <option value="1" th:selected="${status == '1'}">주문 완료</option>
+                                <option value="2" th:selected="${status == '2'}">주문 취소</option>
+                                <option value="3" th:selected="${status == '3'}">교환/반품 신청</option>
+                                <option value="4" th:selected="${status == '4'}">교환/반품 승인</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <select id="paymentStatus" name="paymentStatus" class="form-control">
+                                <option value="">결제 상태를 선택하세요</option>
+                                <option value="1" th:selected="${payment == '1'}">결제 완료</option>
+                                <option value="2" th:selected="${payment == '2'}">결제 취소</option>
+                                <option value="3" th:selected="${payment == '3'}">재결제 완료</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <button class="btn btn-primary" type="button" onclick="applyAdvancedFilters()">필터 적용</button>
+                            <button class="btn btn-secondary" type="button" onclick="resetFilters()">초기화</button>
+                        </div>
+                    </div>
+                </div>
 
-    <div class="card mt-3" id="advancedSearch">
-        <div class="card-body row">
-            <div class="col-md-4">
-                <select id="orderStatus" name="orderStatus" class="form-control">
-                    <option value="">주문 상태를 선택하세요</option>
-                    <option value="1" th:selected="${status == '1'}">주문 완료</option>
-                    <option value="2" th:selected="${status == '2'}">주문 취소</option>
-                    <option value="3" th:selected="${status == '3'}">교환/반품 신청</option>
-                    <option value="4" th:selected="${status == '4'}">교환/반품 승인</option>
-                </select>
+
+                <hr>
+                <!-- 수정/삭제 버튼 및 검색 섹션 -->
+                <div class="d-flex justify-content-between mb-3">
+                    <div class="search-section d-flex align-items-center">
+                        <select class="form-control mr-2" style="width: 150px;" id="search-type">
+                            <option value="email" th:selected="${type == 'email'}">이메일</option>
+                            <option value="name" th:selected="${type == 'name'}">이름</option>
+                        </select>
+                        <input type="text" class="form-control mr-2" placeholder="검색어를 입력하세요" style="width: 300px;" id="search-input" th:value="${keyword}">
+                        <button class="btn btn-primary" onclick="searchUsers()">조회</button>
+                        <button class="btn btn-secondary ml-2" onclick="resetSearch()">초기화</button>
+                    </div>
+                    <!-- order.delivery.status, order.payment.status, order.status 값 표시용 select -->
+                    <div class="d-flex align-items-center">
+                        <!-- 배송 상태 -->
+                        <select class="form-control mr-2" id="delivery-status">
+                            <option value="">배송 상태</option>
+                            <option value="1">배송 준비중</option>
+                            <option value="2">배송중</option>
+                            <option value="3">배송 완료</option>
+                            <option value="4">반송 준비중</option>
+                            <option value="5">반송중</option>
+                            <option value="6">반송 완료</option>
+                        </select>
+                        <!-- 결제 상태 -->
+                        <select class="form-control mr-2" id="payment-status">
+                            <option value="">결제 상태</option>
+                            <option value="1">결제 완료</option>
+                            <option value="2">결제 취소</option>
+                            <option value="3">재결제 완료</option>
+                        </select>
+                        <!-- 주문 상태 -->
+                        <select class="form-control mr-2" id="order-status">
+                            <option value="">주문 상태</option>
+                            <option value="1">주문 완료</option>
+                            <option value="2">주문 취소</option>
+                            <option value="3">교환/반품 신청</option>
+                            <option value="4">교환/반품 승인</option>
+                        </select>
+                    </div>
+                    <!-- 기존 수정 버튼 -->
+                    <button class="btn btn-primary" id="update-status" onclick="updateStatus()">수정</button>
+                </div>
+
+
+                <!-- 주문 목록 테이블 -->
+                <table class="table table-bordered text-center">
+                    <thead class="thead-light">
+                    <tr>
+                        <th><input type="checkbox" id="select-all-checkbox" onclick="toggleSelectAll()"></th>
+                        <th>주문번호</th>
+                        <th>주문일</th>
+                        <th>이메일</th>
+                        <th>주문자</th>
+                        <th>상품 종류</th>
+                        <th>총 결제 금액</th>
+                        <th>배송상태</th>
+                        <th>결제상태</th>
+                        <th>주문상태</th>
+                        <th>상세보기</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <!-- Thymeleaf로 주문 목록 렌더링 -->
+                    <tr th:each="order : ${ordersList}">
+                        <td><input type="checkbox" class="order-checkbox" th:data-id="${order.id}"></td>
+                        <td th:text="${order.id}">주문번호</td>
+                        <td th:text="${#dates.format(order.orderDate, 'yyyy.MM.dd')}">주문일</td>
+                        <td th:text="${order.user.email}">이메일</td>
+                        <td th:text="${order.user.name}">상품명</td> <!-- 예시로 첫번째 상품 표시 -->
+                        <td th:text="${order.orderItems.size()} + ' 개'">상품 종류</td>
+                        <td th:text="${order.payment.amount}">총 결제 금액</td>
+                        <td th:text="${order.delivery.status == 1 ? '배송 준비중' :
+                                      (order.delivery.status == 2 ? '배송중' :
+                                      (order.delivery.status == 3 ? '배송 완료' :
+                                      (order.delivery.status == 4 ? '반송 준비중' :
+                                      (order.delivery.status == 5 ? '반송중' :
+                                      (order.delivery.status == 6 ? '반송 완료' : '기타')))))}">
+                        </td>
+                        <td th:text="${order.payment.status == 1 ? '결제 완료' :
+                                      (order.payment.status == 2 ? '결제 취소' :
+                                      (order.payment.status == 3 ? '재결제 완료' : '기타'))}">
+                        </td>
+                        <td th:text="${order.status == 1 ? '주문 완료' :
+                                     (order.status == 2 ? '주문 취소' :
+                                     (order.status == 3 ? '교환/반품 신청' :
+                                     (order.status == 4 ? '교환/반품 승인' : '기타')))}">
+                        </td>
+
+
+                        <td>
+                            <button class="btn btn-primary"
+                                    th:data-target="'#orderDetailModal-' + ${order.id}"
+                                    data-toggle="modal">상세</button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <!-- 페이지네이션 -->
+                <nav aria-label="Page navigation" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        <!-- 이전 페이지 -->
+                        <li class="page-item" th:classappend="${ordersPage.hasPrevious() ? '' : 'disabled'}">
+                            <a class="page-link" th:href="@{'/admin/order'(page=${ordersPage.number - 1}, size=${ordersPage.size}, keyword=${keyword}, type=${type}, delivery=${delivery}, payment=${payment}, status=${status})}" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        <!-- 페이지 번호 -->
+                        <li class="page-item" th:each="pageNum : ${#numbers.sequence(1, ordersPage.totalPages)}"
+                            th:classappend="${pageNum == ordersPage.number + 1 ? 'active' : ''}">
+                            <a class="page-link" th:href="@{'/admin/order'(page=${pageNum - 1}, size=${ordersPage.size}, keyword=${keyword}, type=${type}, delivery=${delivery}, payment=${payment}, status=${status})}"
+                               th:text="${pageNum}"></a>
+                        </li>
+                        <!-- 다음 페이지 -->
+                        <li class="page-item" th:classappend="${ordersPage.hasNext() ? '' : 'disabled'}">
+                            <a class="page-link" th:href="@{'/admin/order'(page=${ordersPage.number + 1}, size=${ordersPage.size}, keyword=${keyword}, type=${type}, delivery=${delivery}, payment=${payment}, status=${status})}" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+
             </div>
-            <div class="col-md-4">
-                <select id="paymentStatus" name="paymentStatus" class="form-control">
-                    <option value="">결제 상태를 선택하세요</option>
-                    <option value="1" th:selected="${payment == '1'}">결제 완료</option>
-                    <option value="2" th:selected="${payment == '2'}">결제 취소</option>
-                    <option value="3" th:selected="${payment == '3'}">재결제 완료</option>
-                </select>
-            </div>
-            <div class="col-md-3">
-                <button class="btn btn-primary" type="button" onclick="applyAdvancedFilters()">필터 적용</button>
-                <button class="btn btn-secondary" type="button" onclick="resetFilters()">초기화</button>
-            </div>
-        </div>
+        </main>
     </div>
-
-
-    <hr>
-    <!-- 수정/삭제 버튼 및 검색 섹션 -->
-    <div class="d-flex justify-content-between mb-3">
-        <div class="search-section d-flex align-items-center">
-            <select class="form-control mr-2" style="width: 150px;" id="search-type">
-                <option value="email" th:selected="${type == 'email'}">이메일</option>
-                <option value="name" th:selected="${type == 'name'}">이름</option>
-            </select>
-            <input type="text" class="form-control mr-2" placeholder="검색어를 입력하세요" style="width: 300px;" id="search-input" th:value="${keyword}">
-            <button class="btn btn-primary" onclick="searchUsers()">조회</button>
-            <button class="btn btn-secondary ml-2" onclick="resetSearch()">초기화</button>
-        </div>
-        <!-- order.delivery.status, order.payment.status, order.status 값 표시용 select -->
-        <div class="d-flex align-items-center">
-            <!-- 배송 상태 -->
-            <select class="form-control mr-2" id="delivery-status">
-                <option value="">배송 상태</option>
-                <option value="1">배송 준비중</option>
-                <option value="2">배송중</option>
-                <option value="3">배송 완료</option>
-                <option value="4">반송 준비중</option>
-                <option value="5">반송중</option>
-                <option value="6">반송 완료</option>
-            </select>
-            <!-- 결제 상태 -->
-            <select class="form-control mr-2" id="payment-status">
-                <option value="">결제 상태</option>
-                <option value="1">결제 완료</option>
-                <option value="2">결제 취소</option>
-                <option value="3">재결제 완료</option>
-            </select>
-            <!-- 주문 상태 -->
-            <select class="form-control mr-2" id="order-status">
-                <option value="">주문 상태</option>
-                <option value="1">주문 완료</option>
-                <option value="2">주문 취소</option>
-                <option value="3">교환/반품 신청</option>
-                <option value="4">교환/반품 승인</option>
-            </select>
-        </div>
-        <!-- 기존 수정 버튼 -->
-        <button class="btn btn-primary" id="update-status" onclick="updateStatus()">수정</button>
-    </div>
-
-
-    <!-- 주문 목록 테이블 -->
-    <table class="table table-bordered text-center">
-        <thead class="thead-light">
-        <tr>
-            <th><input type="checkbox" id="select-all-checkbox" onclick="toggleSelectAll()"></th>
-            <th>주문번호</th>
-            <th>주문일</th>
-            <th>이메일</th>
-            <th>상품명</th>
-            <th>수량</th>
-            <th>총 결제 금액</th>
-            <th>배송상태</th>
-            <th>결제상태</th>
-            <th>주문상태</th>
-            <th>상세보기</th>
-        </tr>
-        </thead>
-        <tbody>
-        <!-- Thymeleaf로 주문 목록 렌더링 -->
-        <tr th:each="order : ${ordersList}">
-            <td><input type="checkbox" class="order-checkbox" th:data-id="${order.id}"></td>
-            <td th:text="${order.id}">주문번호</td>
-            <td th:text="${#dates.format(order.orderDate, 'yyyy.MM.dd')}">주문일</td>
-            <td th:text="${order.user.email}">이메일</td>
-            <td th:text="${order.orderItems.get(0).book.title}">상품명</td> <!-- 예시로 첫번째 상품 표시 -->
-            <td th:text="${order.orderItems.size()}">수량</td>
-            <td th:text="${order.payment.amount}">총 결제 금액</td>
-            <td th:text="${order.delivery.status == 1 ? '배송 준비중' :
-                          (order.delivery.status == 2 ? '배송중' :
-                          (order.delivery.status == 3 ? '배송 완료' :
-                          (order.delivery.status == 4 ? '반송 준비중' :
-                          (order.delivery.status == 5 ? '반송중' :
-                          (order.delivery.status == 6 ? '반송 완료' : '기타')))))}">
-            </td>
-            <td th:text="${order.payment.status == 1 ? '결제 완료' :
-                          (order.payment.status == 2 ? '결제 취소' :
-                          (order.payment.status == 3 ? '재결제 완료' : '기타'))}">
-            </td>
-            <td th:text="${order.status == 1 ? '주문 완료' :
-                         (order.status == 2 ? '주문 취소' :
-                         (order.status == 3 ? '교환/반품 신청' :
-                         (order.status == 4 ? '교환/반품 승인' : '기타')))}">
-            </td>
-
-
-            <td>
-                <button class="btn btn-primary"
-                        th:data-target="'#orderDetailModal-' + ${order.id}"
-                        data-toggle="modal">상세</button>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-
-    <!-- 페이지네이션 -->
-    <nav aria-label="Page navigation" class="mt-4">
-        <ul class="pagination justify-content-center">
-            <!-- 이전 페이지 -->
-            <li class="page-item" th:classappend="${ordersPage.hasPrevious() ? '' : 'disabled'}">
-                <a class="page-link" th:href="@{'/admin/order'(page=${ordersPage.number - 1}, size=${ordersPage.size}, keyword=${keyword}, type=${type}, delivery=${delivery}, payment=${payment}, status=${status})}" aria-label="Previous">
-                    <span aria-hidden="true">&laquo;</span>
-                </a>
-            </li>
-            <!-- 페이지 번호 -->
-            <li class="page-item" th:each="pageNum : ${#numbers.sequence(1, ordersPage.totalPages)}"
-                th:classappend="${pageNum == ordersPage.number + 1 ? 'active' : ''}">
-                <a class="page-link" th:href="@{'/admin/order'(page=${pageNum - 1}, size=${ordersPage.size}, keyword=${keyword}, type=${type}, delivery=${delivery}, payment=${payment}, status=${status})}"
-                   th:text="${pageNum}"></a>
-            </li>
-            <!-- 다음 페이지 -->
-            <li class="page-item" th:classappend="${ordersPage.hasNext() ? '' : 'disabled'}">
-                <a class="page-link" th:href="@{'/admin/order'(page=${ordersPage.number + 1}, size=${ordersPage.size}, keyword=${keyword}, type=${type}, delivery=${delivery}, payment=${payment}, status=${status})}" aria-label="Next">
-                    <span aria-hidden="true">&raquo;</span>
-                </a>
-            </li>
-        </ul>
-    </nav>
-
 </div>
 
+<!-- 상품상세 모달 -->
 <div th:each="order : ${ordersList}">
     <div class="modal fade" th:id="'orderDetailModal-' + ${order.id}" tabindex="-1" role="dialog" aria-labelledby="orderDetailModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
@@ -274,13 +292,18 @@
                             <th>상품명</th>
                             <th>수량</th>
                             <th>가격</th>
+                            <th>수정 및 삭제</th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr th:each="item : ${order.orderItems}">
                             <td th:text="${item.book.title}">상품명</td>
-                            <td th:text="${item.quantity}">수량</td>
+                            <td><input th:value="${item.quantity}" th:id="'ordersItemQuantity-' + ${item.id}" class="form-control"></td>
                             <td th:text="${item.book.price}">가격</td>
+                            <td>
+                                <button class="btn btn-primary" th:onclick="'updateOrdersItem(' + ${item.id} + ')'">수정</button>
+                                <button class="btn btn-warning" th:onclick="'deleteOrdersItem(' + ${item.id} + ', ' + ${order.id} + ')'">삭제</button>
+                            </td>
                         </tr>
                         </tbody>
                     </table>
@@ -304,6 +327,17 @@
         const delivery = element.getAttribute("data-status");
         const urlParams = new URLSearchParams(window.location.search);
 
+        // 모든 요소에서 'active' 클래스 제거
+        document.querySelectorAll('.filter-option').forEach(option => {
+            option.classList.remove('active');
+        });
+
+        // 현재 선택된 요소에 'active' 클래스 추가
+        const currentDelivery = urlParams.get("delivery");
+        if (delivery == currentDelivery) {
+            element.classList.add('active');
+        }
+
         // 기존 파라미터 유지 + 배송 상태 변경
         urlParams.set("delivery", delivery);
         urlParams.set("page", 0); // 필터링 시 첫 페이지로 이동
@@ -311,6 +345,7 @@
         // 새 URL로 이동
         location.href = `/admin/order?${urlParams.toString()}`;
     }
+
 
     // 주문 상태 및 결제 상태 필터링
     function applyAdvancedFilters() {
@@ -355,6 +390,7 @@
         location.href = `/admin/order?page=0`;
     }
 
+    // 배송, 결제, 주문상태 수정
     function updateStatus() {
         const updateButton = document.getElementById("update-status");
         updateButton.disabled = true; // 버튼 비활성화
@@ -412,6 +448,102 @@
         return true;
     }
 
+    // 주문 상세의 수량 수정
+    function updateOrdersItem(ordersItemId) {
+        const ordersItemQuantity = document.getElementById(`ordersItemQuantity-${ordersItemId}`).value.trim();
+        const quantityInput = document.getElementById(`ordersItemQuantity-${ordersItemId}`);
+
+        if (!ordersItemQuantity) {
+            alert('수량을 입력해주세요.');
+            return;
+        }
+
+        // 입력값이 숫자인지 확인
+        if (isNaN(ordersItemQuantity)) {
+            alert('수량은 숫자여야 합니다.');
+            return;
+        }
+
+        // 정수로 변환
+        const quantity = parseInt(ordersItemQuantity, 10);
+
+        $.ajax({
+            url: `/admin/order/${ordersItemId}/edit`,
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ quantity: quantity }), // 정수 전달
+            success: function () {
+                alert('상품 수량이 성공적으로 수정되었습니다.');
+                refreshOrderModalContent(quantityInput.closest('.modal').id.split('-')[1]); // 모달 새로고침
+            },
+            error: function () {
+                alert('상품 수량을 수정하는 중 오류가 발생했습니다.');
+            }
+        });
+    }
+
+    //주문 상세의 상품 삭제
+    function deleteOrdersItem(ordersItemId, orderId){
+        if (!confirm('정말 삭제하시겠습니까?')) {
+            return;
+        }
+
+        $.ajax({
+            url: `/admin/order/${ordersItemId}/delete`,
+            type: 'POST',
+            success: function () {
+                alert('상품이 성공적으로 삭제되었습니다.');
+                refreshOrderModalContent(orderId);
+            },
+            error: function () {
+                alert('상품을 삭제하는 중 오류가 발생했습니다.');
+            }
+        });
+    }
+
+    // 주문 상세 모달 새로고침 함수
+    function refreshOrderModalContent(orderId) {
+        $.ajax({
+            url: `/admin/order/${orderId}/details`, // 서버로부터 주문 상세 데이터 가져오기
+            type: 'GET',
+            success: function (data) {
+                console.log(data); // 서버 응답 데이터 확인
+
+                if (!data || data.length === 0) {
+                    alert('주문 데이터가 비어 있습니다.');
+                    return;
+                }
+
+                const tbody = document.querySelector(`#orderDetailModal-${orderId} .modal-body tbody`);
+                if (!tbody) {
+                    alert('모달의 테이블을 찾을 수 없습니다.');
+                    return;
+                }
+
+                tbody.innerHTML = ''; // 기존 내용 초기화
+
+                // 데이터를 기반으로 테이블 행 추가
+                data.forEach(item => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                    <td>${item.book.title}</td>
+                    <td>
+                        <input type="number" id="ordersItemQuantity-${item.id}" value="${item.quantity}" class="form-control">
+                    </td>
+                    <td>${item.book.price || '가격 정보 없음'}</td>
+                    <td>
+                        <button class="btn btn-primary" onclick="updateOrdersItem(${item.id})">수정</button>
+                        <button class="btn btn-warning" onclick="deleteOrdersItem(${item.id}, ${orderId})">삭제</button>
+                    </td>
+                `;
+                    tbody.appendChild(row);
+                });
+            },
+            error: function () {
+                alert('모달 내용을 갱신하는 중 오류가 발생했습니다.');
+            }
+        });
+    }
 
 </script>
 

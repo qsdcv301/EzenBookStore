@@ -1,5 +1,7 @@
 package ezen.team.ezenbookstore.controller.admin;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import ezen.team.ezenbookstore.entity.Book;
 import ezen.team.ezenbookstore.entity.Category;
 import ezen.team.ezenbookstore.entity.SubCategory;
@@ -150,20 +152,29 @@ public class AdminBookApiController {
     //책 수정 메서드
     @PostMapping("/update")
     @ResponseBody
-    public ResponseEntity<Book> updateBook(@RequestBody Book book,
-                                           @RequestParam(name = "publish_Date", required = false) String publishDate,
-                                           @RequestParam(name = "files", required = false) List<MultipartFile> files,
-                                           Model model) {
-        Book updatedBook = bookService.update(book);
+    public ResponseEntity<Book> updateBook(
+            @RequestPart("book") String bookJson,
+            @RequestParam(name = "publish_Date", required = false) String publishDate,
+            @RequestPart(name = "files", required = false) List<MultipartFile> files) {
+
+        // JSON 문자열을 Book 객체로 변환
+        ObjectMapper objectMapper = new ObjectMapper();
+        Book book;
+        try {
+            book = objectMapper.readValue(bookJson, Book.class);
+        } catch (JsonProcessingException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+
         // publishDate를 수동 변환
         if (publishDate != null && !publishDate.isEmpty()) {
-            System.out.println("Received publishDate: " + publishDate); // 디버깅용 로그
             String fullDateTime = publishDate + " 00:00:00";
             Timestamp convertedTimestamp = Timestamp.valueOf(fullDateTime);
             book.setPublishDate(convertedTimestamp); // 수동으로 변환된 값 설정
-            System.out.println("Converted publishDate to Timestamp: " + book.getPublishDate());
         }
 
+        // Book 업데이트
+        Book updatedBook = bookService.update(book);
 
         // 파일 업로드 처리
         if (files != null && !files.isEmpty()) {
@@ -173,6 +184,7 @@ public class AdminBookApiController {
         }
         return ResponseEntity.ok(updatedBook);
     }
+
 
     // 책 삭제 메서드
     @DeleteMapping("/delete/{id}")

@@ -72,10 +72,20 @@ $(document).ready(function () {
         }
     );
 
+    $(".searchInput").keydown(function (e) {
+        if (e.key === "Enter" || e.keyCode === 13) { // 'Enter' 키 확인
+            $(".searchBtn").click(); // 검색 버튼 클릭 트리거
+        }
+    });
+
     $(".searchBtn").click(function (e) {
         e.preventDefault();
         const searchSelect = $(".searchSelect").select().val();
         const searchInput = $(".searchInput").val().trim();
+        if (!searchInput) {
+            alert("검색할 내용을 입력해주세요.");
+            return;
+        }
         let encodedKeyword;
         switch (searchSelect) {
             case "0":
@@ -166,26 +176,32 @@ $(document).ready(function () {
             if (name === '') {
                 alert("이름을 입력해주세요.");
                 form.find('#userName').focus();
+                return;
             }
             if (password === '') {
                 alert("비밀번호를 입력해주세요.");
                 form.find('#userPwCheck').focus();
+                return;
             }
             if (tel === '') {
                 alert("전화번호를 입력해주세요.");
                 form.find('#userTel').focus();
+                return;
             }
             if (birthday === '') {
                 alert("생년월일을 입력해주세요.");
                 form.find('#userBirth').focus();
+                return;
             }
             if (addr === '') {
                 alert("주소를 입력해주세요.");
                 form.find('#addr').focus();
+                return;
             }
             if (addrextra === '') {
                 alert("상세주소를 입력해주세요.");
                 form.find('#addrextra').focus();
+                return;
             }
             $.ajax({
                 type: 'POST',
@@ -267,9 +283,8 @@ $(document).ready(function () {
             $feedbackMessage.css("color", "#dc3545");
         } else {
             $(this).removeClass('is-invalid').addClass('is-valid');
-            $feedbackMessage.text('사용 가능한 아이디입니다.');
-
-            $feedbackMessage.css("color", "#28a745");
+            $feedbackMessage.text('사용 가능한 아이디입니다. 중복검사를 해주세요.');
+            $feedbackMessage.css("color", "#ffc107");
         }
         $feedbackMessage.css("display", "block");
     });
@@ -372,6 +387,8 @@ $(document).ready(function () {
                 } else {
                     alert("사용 가능한 아이디입니다.");
                     $('#nextBtn2').attr("data-check", "1");
+                    $('#feedbackMessage').css("display", "none");
+                    $('#feedbackMessage').text('');
                     $('#checkDuplicateBtn').removeClass('btn-warning').addClass('btn-success');
                 }
             },
@@ -1704,12 +1721,16 @@ $(document).ready(function () {
                             userGradePercent = 1;
                             break;
                         case "2" :
-                            userGradePoint = 0.03;
-                            userGradePercent = 3;
+                            userGradePoint = 0.02;
+                            userGradePercent = 2;
                             break;
                         case "3" :
                             userGradePoint = 0.05;
                             userGradePercent = 5;
+                            break;
+                        case "4" :
+                            userGradePoint = 0.1;
+                            userGradePercent = 10;
                             break;
                         default:
                             userGradePoint = 0;
