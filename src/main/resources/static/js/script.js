@@ -72,10 +72,20 @@ $(document).ready(function () {
         }
     );
 
+    $(".searchInput").keydown(function (e) {
+        if (e.key === "Enter" || e.keyCode === 13) { // 'Enter' 키 확인
+            $(".searchBtn").click(); // 검색 버튼 클릭 트리거
+        }
+    });
+
     $(".searchBtn").click(function (e) {
         e.preventDefault();
         const searchSelect = $(".searchSelect").select().val();
         const searchInput = $(".searchInput").val().trim();
+        if (!searchInput) {
+            alert("검색할 내용을 입력해주세요.");
+            return;
+        }
         let encodedKeyword;
         switch (searchSelect) {
             case "0":
