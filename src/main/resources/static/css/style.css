@@ -247,3 +247,22 @@
 .adminAside .sidebar-last a:hover {
     color: #007bff;
 }
+
+
+/* admin QnA Review event notice style 곂친지 확인해야함 class명*/
+/*.container {*/
+/*    margin-top: 20px;*/
+/*}*/
+/*.filter span {*/
+/*    cursor: pointer;*/
+/*    padding: 10px 20px;*/
+/*    margin-right: 5px;*/
+/*    border-radius: 5px;*/
+/*    background: #eeeeee;*/
+/*}*/
+/*.filter span.active {*/
+/*    background: #0d6efd;*/
+/*    color: white;*/
+/*}*/
+
+/* */

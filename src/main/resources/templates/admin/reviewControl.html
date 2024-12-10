@@ -4,7 +4,6 @@
     <meta charset="UTF-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>리뷰 관리</title>
-    <div th:replace="~{fragments/script :: script-head}"></div> <!-- 상단 JS -->
     <style>
         .reviewTable {
             width: 90%;
@@ -117,6 +116,7 @@
         </div>
     </div>
 </div>
+<div th:replace="~{fragments/script :: script-body}"></div>
 <script>
     $('#btnSearch').click(function () {
         const searchType = $('#searchType').val();  // 검색 타입
