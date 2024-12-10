@@ -1,6 +1,7 @@
 package ezen.team.ezenbookstore.controller.admin;
 
 import ezen.team.ezenbookstore.entity.QnA;
+import ezen.team.ezenbookstore.service.QnAService;
 import ezen.team.ezenbookstore.service.QnAServiceInterface;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,7 +23,7 @@ import java.util.Map;
 @RequestMapping("/admin/qna")
 public class AdminQnAApiController {
 
-    private final QnAServiceInterface qnaService;
+    private final QnAService qnaService;
 
     // QnA 목록 조회
     @GetMapping
