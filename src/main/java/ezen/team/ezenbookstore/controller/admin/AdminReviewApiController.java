@@ -56,10 +56,10 @@ public class AdminReviewApiController {
             model.addAttribute("startPage", startPage);
             model.addAttribute("endPage", endPage);
 
-            return "/admin/reviewControl";
+            return "admin/reviewControl";
         } catch (Exception e) {
             model.addAttribute("error", "리뷰 데이터를 불러오는 중 오류가 발생했습니다.");
-            return "/admin/reviewControl";
+            return "admin/reviewControl";
         }
     }
     @GetMapping("/search")
