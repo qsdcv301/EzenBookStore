@@ -2,8 +2,12 @@ package ezen.team.ezenbookstore.service;
 
 import ezen.team.ezenbookstore.entity.Book;
 import ezen.team.ezenbookstore.entity.BookDescription;
+import ezen.team.ezenbookstore.entity.Category;
+import ezen.team.ezenbookstore.entity.SubCategory;
 import ezen.team.ezenbookstore.repository.BookDescriptionRepository;
 import ezen.team.ezenbookstore.repository.BookRepository;
+import ezen.team.ezenbookstore.repository.CategoryRepository;
+import ezen.team.ezenbookstore.repository.SubCategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +25,8 @@ public class BookService implements BookServiceInterface {
 
     private final BookRepository bookRepository;
     private final BookDescriptionRepository bookDescriptionRepository;
+    private final CategoryRepository categoryRepository;
+    private final SubCategoryRepository subCategoryRepository;
 
     @Override
     public Book findById(Long id) {
@@ -48,25 +54,49 @@ public class BookService implements BookServiceInterface {
 
     @Override
     public Book update(Book book) {
-        Book newBook = Book.builder()
-                .id(book.getId())
-                .title(book.getTitle())
-                .author(book.getAuthor())
-                .publisher(book.getPublisher())
-                .publishDate(book.getPublishDate())
-                .isbn(book.getIsbn())
-                .stock(book.getStock())
-                .ifkr(book.getIfkr())
-                .price(book.getPrice())
-                .category(book.getCategory())
-                .subcategory(book.getSubcategory())
-                .count(book.getCount())
-                .discount(book.getDiscount())
-                .bookdescription(book.getBookdescription())
-                .review(book.getReview())
-                .build();
-        return bookRepository.save(newBook);
+        // Category를 영속 상태로 변환
+        Category category = null;
+        if (book.getCategory() != null && book.getCategory().getId() != null) {
+            category = categoryRepository.findById(book.getCategory().getId())
+                    .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 카테고리 ID입니다: " + book.getCategory().getId()));
+        }
+
+        // SubCategory를 영속 상태로 변환
+        SubCategory subCategory = null;
+        if (book.getSubcategory() != null && book.getSubcategory().getId() != null) {
+            subCategory = subCategoryRepository.findById(book.getSubcategory().getId())
+                    .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 서브 카테고리 ID입니다: " + book.getSubcategory().getId()));
+        }
+
+        // BookDescription을 영속 상태로 변환
+        BookDescription bookDescription = null;
+        if (book.getBookdescription() != null && book.getBookdescription().getId() != null) {
+            bookDescription = bookDescriptionRepository.findById(book.getBookdescription().getId())
+                    .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 BookDescription ID입니다: " + book.getBookdescription().getId()));
+        }
+
+        // 기존 엔터티를 업데이트
+        Book existingBook = bookRepository.findById(book.getId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 도서를 찾을 수 없습니다: " + book.getId()));
+
+        existingBook.setTitle(book.getTitle());
+        existingBook.setAuthor(book.getAuthor());
+        existingBook.setPublisher(book.getPublisher());
+        existingBook.setPublishDate(book.getPublishDate());
+        existingBook.setIsbn(book.getIsbn());
+        existingBook.setStock(book.getStock());
+        existingBook.setIfkr(book.getIfkr());
+        existingBook.setPrice(book.getPrice());
+        existingBook.setCount(book.getCount());
+        existingBook.setDiscount(book.getDiscount());
+        existingBook.setCategory(category);
+        existingBook.setSubcategory(subCategory);
+        existingBook.setBookdescription(bookDescription);
+
+        // 업데이트 후 저장
+        return bookRepository.save(existingBook);
     }
+
 
     @Override
     public void delete(Long id) {
