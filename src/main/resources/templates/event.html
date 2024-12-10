@@ -32,8 +32,11 @@
                 <!--이벤트 카드 목록 // 배너를 누르면 상세 이벤트 페이지로 넘어가도록 구현-->
                 <div class="col-md-6 mb-4" th:each="event, index : ${onEvents}">
                     <div class="card event-card">
-                        <img th:src="${onImageList.get(index.index)}" class="card-img-top"
-                             th:alt="${event.title}+' 이벤트'">
+                            <img th:src="${#strings.isEmpty(onImageList.get(index.index))
+                                   ? '/image/noImage.jpg'
+                                   : onImageList.get(index.index)}"
+                                 class="card-img-top"
+                                 th:alt="${event.title}+' 이벤트'">
                         <div class="card-body">
                             <h5 class="card-title" th:text="${event.title}"></h5>
                             <p class="card-text"

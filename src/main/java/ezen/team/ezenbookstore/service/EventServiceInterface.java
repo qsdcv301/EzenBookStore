@@ -3,9 +3,11 @@ package ezen.team.ezenbookstore.service;
 import ezen.team.ezenbookstore.entity.Event;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 public interface EventServiceInterface {
 
@@ -32,5 +34,13 @@ public interface EventServiceInterface {
     Page<Event> searchByContent(String keyword, Pageable pageable);
 
     String calculateEventStatus(LocalDateTime startDate, LocalDateTime endDate);
+
+    Page<Event> getFilteredEvents(String searchType, String keyword, String filter, Pageable pageable);
+
+    void updateEvent(Long id, String title, String content, LocalDateTime startDate, LocalDateTime endDate, MultipartFile file) throws Exception;
+
+    Map<String, Object> getEventDetail(Long id) throws Exception;
+
+    List<Integer> getImageCounts(List<Event> events);
     
 }

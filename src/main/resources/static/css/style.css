@@ -376,3 +376,57 @@
 .book-item:hover .book-info {
     bottom: 0;
 }
+/* Admin Aside */
+
+.adminAside {
+    font-family: Arial, sans-serif;
+}
+.adminAside hr {
+    border-color: #ffffff;
+}
+.adminAside .sidebar {
+    background-color: #343a40;
+    height: 100vh;
+    color: #ffffff;
+}
+.adminAside .sidebar ul {
+    list-style: none;
+}
+.adminAside .sidebar ul li {
+    padding: 10px 0;
+}
+.adminAside .sidebar ul li ul {
+    font-size: 16px;
+}
+.adminAside .sidebar ul li strong {
+    cursor: pointer;
+    font-size: 22px;
+}
+.adminAside .sidebar ul li a {
+    text-decoration: none;
+    color: #ffffff;
+    position: relative;
+    padding: 5px 0;
+}
+.adminAside .sidebar ul li a .underline {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 0;
+    height: 2px;
+    background-color: #007bff;
+    transition: width 0.3s ease;
+}
+.adminAside .sidebar ul li a:hover .underline {
+    width: 100%;
+}
+.adminAside .sidebar ul li a.active .underline {
+    width: 100%;
+}
+.adminAside .sidebar-last a {
+    color: #ffffff;
+    text-decoration: none;
+}
+.adminAside .sidebar-last a:hover {
+    color: #007bff;
+}

@@ -40,4 +40,9 @@ public interface QnAServiceInterface {
 
     Long countByAnswerIsNullOrEmpty();
 
+
+    Page<QnA> findByCategory(byte category, Pageable pageable);
+
+    List<QnA> filterQnAList(String category, String status, Pageable pageable);
+
 }
