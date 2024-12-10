@@ -37,6 +37,7 @@ public class BookApiController {
         model.addAttribute("direction", direction);
         model.addAttribute("bookList", bookList.getContent());
         model.addAttribute("page", bookList);
+        model.addAttribute("ifkr", ifkr);
         model.addAttribute("category", category);
         model.addAttribute("subcategory", subcategory);
         return "bookMain";

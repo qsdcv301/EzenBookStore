@@ -5,10 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>상품 관리</title>
     <!-- 공통 Bootstrap 및 스타일 추가 -->
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    <!-- CSS 파일 -->
+    <link href="/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="/css/style.css" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet"/>
+
+    <!-- JS 파일 -->
+    <script src="/js/jquery-1.12.4.min.js"></script>
+    <script src="/js/popper.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/script.js"></script>
+    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <style>
         .filter-option {
@@ -53,167 +62,173 @@
     </style>
 </head>
 <body>
-<div class="container mt-5">
-    <h3 class="font-weight-bold mb-4">상품 관리</h3>
-    <p>상품 정보와 필터링 옵션을 관리할 수 있는 페이지입니다.</p>
-    <hr>
+<div class="container-fluid">
+    <div class="row">
+        <nav th:replace="~{fragments/sidebar :: sidebar}"></nav>
+        <main class="col-10 content">
+            <div class="container mt-5">
+                <h3 class="font-weight-bold mb-4">상품 관리</h3>
+                <p>상품 정보와 필터링 옵션을 관리할 수 있는 페이지입니다.</p>
+                <hr>
 
-    <!-- 필터 섹션 -->
-    <!-- 국내/외 필터링 -->
-    <div class="d-flex justify-content-between">
-        <div class="card mb-4 col-8 d-flex">
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <div class="input-group">
-                            <input type="text" class="form-control searchKeyword"
-                                   th:placeholder="${keyword == null} ? '상품명으로 검색' : ${keyword}">
-                            <div class="input-group-append">
-                                <button class="btn btn-outline-secondary searchKeywordBtn" type="button">
-                                    <i class="bi bi-search"></i>
-                                </button>
+                <!-- 필터 섹션 -->
+                <!-- 국내/외 필터링 -->
+                <div class="d-flex justify-content-between">
+                    <div class="card mb-4 col-8 d-flex">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control searchKeyword"
+                                               th:placeholder="${keyword == null} ? '상품명으로 검색' : ${keyword}">
+                                        <div class="input-group-append">
+                                            <button class="btn btn-outline-secondary searchKeywordBtn" type="button">
+                                                <i class="bi bi-search"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <button class="btn btn-outline-primary" type="button" data-toggle="collapse"
+                                            data-target="#advancedSearch">
+                                        고급 검색 <i class="bi bi-chevron-down"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="collapse mt-3" id="advancedSearch">
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <label for="dateRange">국내 / 국외</label>
+                                        <select class="form-control" id="dateRange">
+                                            <option value="0">국내</option>
+                                            <option value="1">국외</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label for="searchCategory">카테고리</label>
+                                        <select id="searchCategory" name="searchCategory" class="form-control">
+                                            <option value="">카테고리를 선택하세요</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label for="searchSubCategory">서브 카테고리</label>
+                                        <select id="searchSubCategory" name="searchSubCategory" class="form-control">
+                                            <option value="">카테고리를 선택하세요</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-12">
+                                        <button class="btn btn-primary" type="button" id="applyFilters">필터
+                                            적용
+                                        </button>
+                                        <button class="btn btn-secondary" type="button"
+                                                id="resetFilters">초기화
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6 mb-3">
-                        <button class="btn btn-outline-primary" type="button" data-toggle="collapse"
-                                data-target="#advancedSearch">
-                            고급 검색 <i class="bi bi-chevron-down"></i>
+                    <!-- 수정/삭제 버튼 -->
+                    <div class="search-section d-flex align-items-center col-4">
+                        <input type="number" class="form-control mr-2" placeholder="할인율" id="setDiscount" style="width: 100px;">
+                        <button class="btn btn-primary" id="discountControl" onclick="updateDiscountStatus()">적용</button>
+                        <button class="btn btn-danger" onclick="deleteSelectedBooks()">
+                            선택항목 삭제
                         </button>
+                        <button class="btn btn-primary" data-toggle="modal" data-target="#addProductModal">상품 추가</button>
                     </div>
+
                 </div>
 
-                <div class="collapse mt-3" id="advancedSearch">
-                    <div class="row">
-                        <div class="col-md-4 mb-3">
-                            <label for="dateRange">국내 / 국외</label>
-                            <select class="form-control" id="dateRange">
-                                <option value="0">국내</option>
-                                <option value="1">국외</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label for="searchCategory">카테고리</label>
-                            <select id="searchCategory" name="searchCategory" class="form-control">
-                                <option value="">카테고리를 선택하세요</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <label for="searchSubCategory">서브 카테고리</label>
-                            <select id="searchSubCategory" name="searchSubCategory" class="form-control">
-                                <option value="">카테고리를 선택하세요</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="row mt-3">
-                        <div class="col-12">
-                            <button class="btn btn-primary" type="button" id="applyFilters">필터
-                                적용
-                            </button>
-                            <button class="btn btn-secondary" type="button"
-                                    id="resetFilters">초기화
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                <!-- 상품 테이블 -->
+                <table class="table table-bordered text-center">
+                    <thead class="thead-light">
+                    <tr>
+                        <th><input type="checkbox" id="select-all" onclick="toggleAllCheckboxes(this)"></th>
+                        <th>제목</th>
+                        <th>저자</th>
+                        <th>출판사</th>
+                        <th>국내/국외</th>
+                        <th>카테고리</th>
+                        <th>서브 카테고리</th>
+                        <th>할인율</th>
+                        <th>관리</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="book : ${bookList}">
+                        <td><input type="checkbox" class="book-checkbox" th:data-id="${book.id}"></td>
+                        <td th:text="${book.title}"></td>
+                        <td th:text="${book.author}"></td>
+                        <td th:text="${book.publisher}"></td>
+                        <td th:text="${book.ifkr} == 0 ? '국내' : '국외'"></td>
+                        <td th:text="${book.category.name}"></td>
+                        <td th:text="${book.subcategory.name}"></td>
+                        <td th:text="${book.discount + '%'}"></td>
+                        <td>
+                            <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#productModal" th:data-book-id="${book.id}">수정</button>
+                            <button class="btn btn-danger btn-sm delete-button" th:data-book-id="${book.id}">삭제</button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <!-- 페이지네이션 -->
+                <nav>
+                    <ul class="pagination">
+                        <!-- 처음 -->
+                        <li class="page-item" th:classappend="${page.first} ? 'disabled' : ''">
+                            <a class="page-link" th:if="${!page.first}"
+                               th:href="@{/admin/book(page=0, keyword=${keyword}, ifkr=${ifkr}, category=${category}, subcategory=${subcategory})}">
+                                처음
+                            </a>
+                            <span class="page-link" th:if="${page.first}">처음</span>
+                        </li>
+
+                        <!-- 이전 -->
+                        <li class="page-item" th:classappend="${page.hasPrevious()} ? '' : 'disabled'">
+                            <a class="page-link" th:if="${page.hasPrevious()}"
+                               th:href="@{/admin/book(page=${page.number - 1}, keyword=${keyword}, ifkr=${ifkr}, category=${category}, subcategory=${subcategory})}">
+                                이전
+                            </a>
+                            <span class="page-link" th:if="${!page.hasPrevious()}">이전</span>
+                        </li>
+
+                        <!-- 페이지 번호 -->
+                        <li class="page-item" th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}"
+                            th:classappend="${i == page.number} ? 'active' : ''">
+                            <a class="page-link"
+                               th:href="@{/admin/book(page=${i}, keyword=${keyword}, ifkr=${ifkr}, category=${category}, subcategory=${subcategory})}"
+                               th:text="${i + 1}"></a>
+                        </li>
+
+                        <!-- 다음 -->
+                        <li class="page-item" th:classappend="${page.hasNext()} ? '' : 'disabled'">
+                            <a class="page-link" th:if="${page.hasNext()}"
+                               th:href="@{/admin/book(page=${page.number + 1}, keyword=${keyword}, ifkr=${ifkr}, category=${category}, subcategory=${subcategory})}">
+                                다음
+                            </a>
+                            <span class="page-link" th:if="${!page.hasNext()}">다음</span>
+                        </li>
+
+                        <!-- 마지막 -->
+                        <li class="page-item" th:classappend="${page.last} ? 'disabled' : ''">
+                            <a class="page-link" th:if="${!page.last}"
+                               th:href="@{/admin/book(page=${page.totalPages - 1}, keyword=${keyword}, ifkr=${ifkr}, category=${category}, subcategory=${subcategory})}">
+                                마지막
+                            </a>
+                            <span class="page-link" th:if="${page.last}">마지막</span>
+                        </li>
+                    </ul>
+                </nav>
+
             </div>
-        </div>
-        <!-- 수정/삭제 버튼 -->
-        <div class="search-section d-flex align-items-center col-4">
-            <input type="number" class="form-control mr-2" placeholder="할인율" id="setDiscount" style="width: 100px;">
-            <button class="btn btn-primary" id="discountControl" onclick="updateDiscountStatus()">적용</button>
-            <button class="btn btn-danger" onclick="deleteSelectedBooks()">
-                선택항목 삭제
-            </button>
-            <button class="btn btn-primary" data-toggle="modal" data-target="#addProductModal">상품 추가</button>
-        </div>
-
+        </main>
     </div>
-
-    <!-- 상품 테이블 -->
-    <table class="table table-bordered text-center">
-        <thead class="thead-light">
-        <tr>
-            <th><input type="checkbox" id="select-all" onclick="toggleAllCheckboxes(this)"></th>
-            <th>제목</th>
-            <th>저자</th>
-            <th>출판사</th>
-            <th>국내/국외</th>
-            <th>카테고리</th>
-            <th>서브 카테고리</th>
-            <th>할인율</th>
-            <th>관리</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="book : ${bookList}">
-            <td><input type="checkbox" class="book-checkbox" th:data-id="${book.id}"></td>
-            <td th:text="${book.title}"></td>
-            <td th:text="${book.author}"></td>
-            <td th:text="${book.publisher}"></td>
-            <td th:text="${book.ifkr} == 0 ? '국내' : '국외'"></td>
-            <td th:text="${book.category.name}"></td>
-            <td th:text="${book.subcategory.name}"></td>
-            <td th:text="${book.discount + '%'}"></td>
-            <td>
-                <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#productModal" th:data-book-id="${book.id}">수정</button>
-                <button class="btn btn-danger btn-sm delete-button" th:data-book-id="${book.id}">삭제</button>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-
-    <!-- 페이지네이션 -->
-    <nav>
-        <ul class="pagination">
-            <!-- 처음 -->
-            <li class="page-item" th:classappend="${page.first} ? 'disabled' : ''">
-                <a class="page-link" th:if="${!page.first}"
-                   th:href="@{/admin/book(page=0, keyword=${keyword}, ifkr=${ifkr}, category=${category}, subcategory=${subcategory})}">
-                    처음
-                </a>
-                <span class="page-link" th:if="${page.first}">처음</span>
-            </li>
-
-            <!-- 이전 -->
-            <li class="page-item" th:classappend="${page.hasPrevious()} ? '' : 'disabled'">
-                <a class="page-link" th:if="${page.hasPrevious()}"
-                   th:href="@{/admin/book(page=${page.number - 1}, keyword=${keyword}, ifkr=${ifkr}, category=${category}, subcategory=${subcategory})}">
-                    이전
-                </a>
-                <span class="page-link" th:if="${!page.hasPrevious()}">이전</span>
-            </li>
-
-            <!-- 페이지 번호 -->
-            <li class="page-item" th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}"
-                th:classappend="${i == page.number} ? 'active' : ''">
-                <a class="page-link"
-                   th:href="@{/admin/book(page=${i}, keyword=${keyword}, ifkr=${ifkr}, category=${category}, subcategory=${subcategory})}"
-                   th:text="${i + 1}"></a>
-            </li>
-
-            <!-- 다음 -->
-            <li class="page-item" th:classappend="${page.hasNext()} ? '' : 'disabled'">
-                <a class="page-link" th:if="${page.hasNext()}"
-                   th:href="@{/admin/book(page=${page.number + 1}, keyword=${keyword}, ifkr=${ifkr}, category=${category}, subcategory=${subcategory})}">
-                    다음
-                </a>
-                <span class="page-link" th:if="${!page.hasNext()}">다음</span>
-            </li>
-
-            <!-- 마지막 -->
-            <li class="page-item" th:classappend="${page.last} ? 'disabled' : ''">
-                <a class="page-link" th:if="${!page.last}"
-                   th:href="@{/admin/book(page=${page.totalPages - 1}, keyword=${keyword}, ifkr=${ifkr}, category=${category}, subcategory=${subcategory})}">
-                    마지막
-                </a>
-                <span class="page-link" th:if="${page.last}">마지막</span>
-            </li>
-        </ul>
-    </nav>
-
 </div>
-
 <!-- 수정 모달 -->
 <div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -290,15 +305,18 @@
                     </div>
                     <div class="form-group">
                         <label for="description">설명</label>
-                        <input type="text" class="form-control" id="description" name="description">
+                        <textarea type="text" class="form-control" id="description" name="description">
+                        </textarea>
                     </div>
                     <div class="form-group">
                         <label for="writer">작가 설명</label>
-                        <input type="text" class="form-control" id="writer" name="writer">
+                        <textarea type="text" class="form-control" id="writer" name="writer">
+                        </textarea>
                     </div>
                     <div class="form-group">
                         <label for="contents">목차</label>
-                        <input type="text" class="form-control" id="contents" name="contents">
+                        <textarea type="text" class="form-control" id="contents" name="contents">
+                        </textarea>
                     </div>
                     <div class="mb-3">
                         <label>현재 이미지</label>
@@ -386,15 +404,15 @@
                     </div>
                     <div class="form-group">
                         <label for="addDescription">설명</label>
-                        <input type="text" class="form-control" id="addDescription" name="description">
+                        <textarea type="text" class="form-control" id="addDescription" name="description"></textarea>
                     </div>
                     <div class="form-group">
                         <label for="addWriter">작가 설명</label>
-                        <input type="text" class="form-control" id="addWriter" name="writer">
+                        <textarea type="text" class="form-control" id="addWriter" name="writer"></textarea>
                     </div>
                     <div class="form-group">
                         <label for="addContents">목차</label>
-                        <input type="text" class="form-control" id="addContents" name="contents">
+                        <textarea type="text" class="form-control" id="addContents" name="contents"></textarea>
                     </div>
                     <div class="form-group">
                         <label for="addFile">책 이미지</label>
@@ -521,18 +539,20 @@
         location.href = '/admin/book';
     });
 
+    // 날짜 포맷 변환 함수 (ISO 형식으로 변환)
+    function formatDateToISOString(date) {
+        const d = new Date(date);
+        return d.toISOString(); // ISO 형식으로 반환
+    }
 
-
-    //수정모달 카테고리와 서브카테고리
-    $(document).ready(function () {
+    //책 수정 모달 스크립트
+    $('#productModal').on('show.bs.modal', function (event) {
         // 카테고리 목록 로드
         $.ajax({
             url: '/admin/categories/category',
             method: 'GET',
             success: function (categories) {
-                console.log('카테고리 데이터:', categories); // 카테고리 데이터 확인용 로그
-                $('#category').empty();
-                $('#category').append(new Option("카테고리를 선택하세요", "")); // 기본 옵션 추가
+                $('#category').empty().append(new Option("카테고리를 선택하세요", ""));
                 categories.forEach(function (category) {
                     $('#category').append(new Option(`${category.id}: ${category.name}`, category.id));
                 });
@@ -542,19 +562,15 @@
             }
         });
 
-// 카테고리 선택 변경 시 관련 서브카테고리 로드
+        // 카테고리 선택 변경 시 관련 서브카테고리 로드
         $('#category').on('change', function () {
             const selectedCategoryId = $(this).val();
-            console.log('선택된 카테고리 ID:', selectedCategoryId); // 선택된 카테고리 확인용 로그
-
             if (selectedCategoryId) {
                 $.ajax({
                     url: `/admin/subcategories/${selectedCategoryId}`,
                     method: 'GET',
                     success: function (subcategories) {
-                        console.log('서브카테고리 데이터:', subcategories); // 서브카테고리 데이터 확인용 로그
-                        $('#subcategory').empty();
-                        $('#subcategory').append(new Option("서브카테고리를 선택하세요", ""));
+                        $('#subcategory').empty().append(new Option("세부 카테고리를 선택하세요", ""));
                         subcategories.forEach(function (subcategory) {
                             $('#subcategory').append(new Option(`${subcategory.id}: ${subcategory.name}`, subcategory.id));
                         });
@@ -564,20 +580,10 @@
                     }
                 });
             } else {
-                $('#subcategory').empty();
-                $('#subcategory').append(new Option("서브카테고리를 선택하세요", ""));
+                $('#subcategory').empty().append(new Option("세부 카테고리를 선택하세요", ""));
             }
         });
-    });
 
-    // 날짜 포맷 변환 함수 (ISO 형식으로 변환)
-    function formatDateToISOString(date) {
-        const d = new Date(date);
-        return d.toISOString(); // ISO 형식으로 반환
-    }
-
-    //책 수정 모달 스크립트
-    $('#productModal').on('show.bs.modal', function (event) {
         var button = $(event.relatedTarget);
         var bookId = button.data('book-id');
 
@@ -867,10 +873,14 @@
         formData.append('count', count);
         formData.append('category.id', categoryId);
         formData.append('subcategory.id', subcategoryId);
-        formData.append('bookdescription.id', bookDescriptionId);
-        formData.append('bookdescription.description', description);
-        formData.append('bookdescription.writer', writer);
-        formData.append('bookdescription.contents', contents);
+        // BookDescription 데이터를 JSON 문자열로 추가
+        const bookDescription = {
+            id: $('#bookdescriptionId').val(),
+            description: $('#description').val(),
+            writer: $('#writer').val(),
+            contents: $('#contents').val()
+        };
+        formData.append('bookdescription', JSON.stringify(bookDescription));
 
         // 파일 배열을 반복하여 추가
         for (let i = 0; i < fileInputs.length; i++) {

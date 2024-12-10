@@ -2,42 +2,40 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>이벤트 관리</title>
-    <!-- 공통 Bootstrap 및 스타일 추가 -->
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <title>이벤트 관리 페이지</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <style>
         .container { margin-top: 20px; }
-        .filter span { cursor: pointer; padding: 5px 10px; margin-right: 5px; border-radius: 5px; background: #e9ecef; }
+        .filter span { cursor: pointer; padding: 10px 20px; margin-right: 5px; border-radius: 5px; background: #eeeeee; }
         .filter span.active { background: #0d6efd; color: white; }
     </style>
 </head>
 <body>
-<div class="container">
-    <h2>이벤트 관리</h2>
-    <p>이곳은 이벤트 추가, 삭제, 수정을 위한 관리 페이지입니다.</p>
+<div class="container mt-5">
+    <h3 class="font-weight-bold mb-3">이벤트 관리</h3>
+    <p>이벤트 추가, 삭제, 수정을 위한 관리 페이지입니다.</p>
 
     <!-- 필터 영역 -->
-    <div class="filter mb-3">
-        <span class="filter-btn active" data-filter="all">전체</span>
-        <span class="filter-btn" data-filter="upcoming">시작 전</span>
-        <span class="filter-btn" data-filter="ongoing">진행 중</span>
-        <span class="filter-btn" data-filter="ended">종료</span>
+    <div class="d-flex justify-content-start filter mb-3">
+        <span class="filter-btn" th:classappend="${filter == 'all' ? 'active' : ''}" data-filter="all">전체</span>
+        <span class="filter-btn" th:classappend="${filter == 'upcoming' ? 'active' : ''}" data-filter="upcoming">시작 전</span>
+        <span class="filter-btn" th:classappend="${filter == 'ongoing' ? 'active' : ''}" data-filter="ongoing">진행 중</span>
+        <span class="filter-btn" th:classappend="${filter == 'ended' ? 'active' : ''}" data-filter="ended">종료</span>
     </div>
+    <hr>
 
     <!-- 검색 및 추가 버튼 -->
     <div class="d-flex justify-content-between mb-3">
         <form id="searchForm" class="d-flex">
-            <select id="searchType" class="form-select me-2" style="width: 150px;">
-                <option value="title">제목</option>
-                <option value="content">내용</option>
+            <select id="searchType" class="form-select me-2" style="width: 150px;" th:value="${searchType}">
+                <option th:value="title" th:selected="${searchType == 'title'}">제목</option>
+                <option th:value="content" th:selected="${searchType == 'content'}">내용</option>
             </select>
-            <input type="text" id="keyword" class="form-control me-2" placeholder="검색어를 입력하세요">
+            <input type="text" id="keyword" class="form-control me-2" placeholder="검색어를 입력하세요" th:value="${keyword}">
             <button type="button" id="btnSearch" class="btn btn-primary">검색</button>
+            <button type="button" id="btnReset" class="btn btn-secondary">초기화</button>
         </form>
         <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addModal">이벤트 추가</button>
     </div>
@@ -49,28 +47,32 @@
             <th>체크박스</th>
             <th>이벤트 번호</th>
             <th>제목</th>
-            <th>내용</th>
+            <th>이벤트진행상태</th>
             <th>시작일</th>
             <th>종료일</th>
-            <th>이벤트 상태</th>
+            <th>이미지 개수</th>
             <th>수정</th>
         </tr>
         </thead>
-        <tbody>
-        <tr th:each="eventPage : ${eventPage}">
+        <tbody id="eventTableBody">
+        <tr th:each="event, iterStat : ${eventPage}">
             <td><input type="checkbox" name="checkBox"></td>
-            <td th:text="${eventPage.id}">1</td>
-            <td th:text="${eventPage.title}">이벤트 제목</td>
-            <td th:text="${eventPage.content}">이벤트 내용</td>
-            <td th:text="${#dates.format(eventPage.startDate, 'yyyy-MM-dd HH:mm')}">2024-11-19</td>
-            <td th:text="${#dates.format(eventPage.endDate, 'yyyy-MM-dd HH:mm')}">2024-11-20</td>
-            <td>이벤트 상태</td>
+            <td th:text="${event.id}">1</td>
+            <td th:text="${event.title}"></td>
             <td>
-                <button type="button" class="btn btn-warning btn-sm edit-btn" data-bs-toggle="modal" data-bs-target="#editModal">수정</button>
+                <span class="event-status" th:data-start-date="${#dates.format(event.startDate, 'yyyy-MM-dd HH:mm:ss')}" th:data-end-date="${#dates.format(event.endDate, 'yyyy-MM-dd HH:mm:ss')}">종료</span>
             </td>
+            <td th:text="${#dates.format(event.startDate, 'yyyy-MM-dd HH:mm')}">2024-11-19</td>
+            <td th:text="${#dates.format(event.endDate, 'yyyy-MM-dd HH:mm')}">2024-11-20</td>
+            <td th:text="${imageCounts[iterStat.index]>0 ? '이미지 있음' : '이미지 없음'}">0</td>
+            <td>
+                <button type="button" class="btn btn-warning btn-sm edit-btn" data-bs-toggle="modal" data-bs-target="#editModal" th:data-id="${event.id}">수정</button>
+            </td>
+            <input type="hidden" th:id="'eventContent-' + ${event.id}" th:value="${event.content}">
         </tr>
         </tbody>
     </table>
+
     <button id="selectAllEvent">일괄선택</button>
     <button id="deleteEvent">일괄삭제</button>
     <div class="d-flex justify-content-center mt-4">
@@ -99,22 +101,26 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="addEventForm">
+                <form id="addEventForm" enctype="multipart/form-data">
                     <div class="mb-3">
                         <label for="addTitle" class="form-label">제목</label>
-                        <input type="text" class="form-control" id="addTitle" required>
+                        <input type="text" class="form-control" id="addTitle" name="title" required>
                     </div>
                     <div class="mb-3">
                         <label for="addContent" class="form-label">내용</label>
-                        <textarea class="form-control" id="addContent" required></textarea>
+                        <textarea class="form-control" id="addContent" name="content" required></textarea>
                     </div>
                     <div class="mb-3">
                         <label for="addStartDate" class="form-label">시작일</label>
-                        <input type="datetime-local" class="form-control" id="addStartDate" required>
+                        <input type="datetime-local" class="form-control" id="addStartDate" name="startDate" required>
                     </div>
                     <div class="mb-3">
                         <label for="addEndDate" class="form-label">종료일</label>
-                        <input type="datetime-local" class="form-control" id="addEndDate" required>
+                        <input type="datetime-local" class="form-control" id="addEndDate" name="endDate" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="addFile" class="form-label">이미지 업로드</label>
+                        <input type="file" class="form-control" id="addFile" name="file" accept="image/*">
                     </div>
                 </form>
             </div>
@@ -126,6 +132,7 @@
     </div>
 </div>
 
+
 <!-- 수정 모달 -->
 <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -136,21 +143,28 @@
             </div>
             <div class="modal-body">
                 <form id="editEventForm">
+                    <input type="hidden" id="editEventId" name="id">
                     <div class="mb-3">
                         <label for="editTitle" class="form-label">제목</label>
-                        <input type="text" class="form-control" id="editTitle" required>
+                        <input type="text" class="form-control" id="editTitle" name="title" required>
                     </div>
                     <div class="mb-3">
                         <label for="editContent" class="form-label">내용</label>
-                        <textarea class="form-control" id="editContent" required></textarea>
+                        <textarea class="form-control" id="editContent" name="content" required></textarea>
                     </div>
                     <div class="mb-3">
                         <label for="editStartDate" class="form-label">시작일</label>
-                        <input type="datetime-local" class="form-control" id="editStartDate" required>
+                        <input type="datetime-local" class="form-control" id="editStartDate" name="startDate" required>
                     </div>
                     <div class="mb-3">
                         <label for="editEndDate" class="form-label">종료일</label>
-                        <input type="datetime-local" class="form-control" id="editEndDate" required>
+                        <input type="datetime-local" class="form-control" id="editEndDate" name="endDate" required>
+                    </div>
+                    <div class="mb-3">
+                        <label>현재 이미지</label>
+                        <div id="currentImages" class="mb-2"></div> <!-- 이미지 출력 공간 -->
+                        <label for="editFile" class="form-label">이미지 업로드</label>
+                        <input type="file" class="form-control" id="editFile" name="file" accept="image/*">
                     </div>
                 </form>
             </div>
@@ -162,264 +176,283 @@
     </div>
 </div>
 
+
 <script>
-    // 필터 기능
-    $('.filter-btn').click(function () {
-        $('.filter-btn').removeClass('active');
-        $(this).addClass('active');
-        const filter = $(this).data('filter');
-        console.log(`필터: ${filter}`); // 원하는 로직으로 대체
-    });
+    $(document).ready(function () {
+        function calculateEventStatus(startDate, endDate) {
+            const currentDate = new Date();
+            const eventStartDate = new Date(startDate);
+            const eventEndDate = new Date(endDate);
 
-    // 추가 모달 저장
+            if (currentDate < eventStartDate) {
+                return '시작 전';
+            } else if (currentDate >= eventStartDate && currentDate <= eventEndDate) {
+                return '진행 중';
+            } else {
+                return '종료';
+            }
+        }
+
+        // 페이지 로드 시 상태 업데이트
+        $('.event-status').each(function () {
+            const startDate = $(this).data('start-date');
+            const endDate = $(this).data('end-date');
+            const status = calculateEventStatus(startDate, endDate);
+            $(this).text(status);
+        });
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const filterFromUrl = urlParams.get('filter');  // URL에서 'filter' 파라미터를 추출
+
+        if (filterFromUrl) {
+            // URL에 필터가 있으면 해당 필터 버튼에 active 클래스를 추가
+            $('.filter-btn').removeClass('active');  // 기존의 active 클래스 제거
+            $(`.filter-btn[data-filter="${filterFromUrl}"]`).addClass('active');  // 해당 버튼에 active 추가
+        }
+
+        $('#btnSearch').click(function (event) {
+            event.preventDefault();
+
+            const searchType = $('#searchType').val();  // 검색 타입
+            const keyword = $('#keyword').val().trim();  // 검색어
+            const filter = $('.filter-btn.active').data('filter') || 'all';  // 필터 값
+
+            // 쿼리 파라미터 생성
+            let query = `?searchType=${searchType}&keyword=${encodeURIComponent(keyword)}&filter=${filter}`;
+
+            // 페이지 리다이렉트
+            location.href = '/admin/event' + query;
+        });
+
+        // 필터 버튼 클릭 시 동작
+        $(document).on('click', '.filter-btn', function () {
+            // 필터 활성화
+            $('.filter-btn').removeClass('active');
+            $(this).addClass('active');
+
+            // 검색어와 필터 값 유지
+            const searchType = $('#searchType').val();
+            const keyword = $('#keyword').val().trim();
+            const filter = $(this).data('filter');
+
+            // 쿼리 파라미터 생성
+            let query = `?searchType=${searchType}&keyword=${encodeURIComponent(keyword)}&filter=${filter}`;
+
+            // 페이지 리다이렉트
+            location.href = '/admin/event' + query;
+        });
+        // 필터 버튼 클릭 시 동작
+        $(document).on('click', '.filter-btn', function () {
+            // 선택된 필터 버튼 활성화
+            $('.filter-btn').removeClass('active');
+            $(this).addClass('active');
+
+            // 필터 값을 가져오기
+            const filter = $(this).data('filter');
+
+            // 검색어와 필터 값을 가져오기
+            const searchType = $('#searchType').val();  // 검색 타입
+            const keyword = $('#keyword').val().trim();  // 검색어
+
+            // 쿼리 파라미터 생성 (필터만 변경)
+            let query = generateQuery(searchType, keyword, filter);
+
+            // 페이지를 쿼리 파라미터와 함께 리다이렉트 (필터만 반영된 상태)
+            location.href = '/admin/event' + query;
+        });
+
+        // 검색어와 필터 상태에 따라 쿼리 파라미터 생성
+        function generateQuery(searchType, keyword, filter) {
+            if (keyword && !filter) {
+                return `?searchType=${searchType}&keyword=${encodeURIComponent(keyword)}&filter=`;
+            } else if (!keyword && filter) {
+                return `?searchType=${searchType}&keyword=&filter=${encodeURIComponent(filter)}`;
+            } else if (keyword && filter) {
+                return `?searchType=${searchType}&keyword=${encodeURIComponent(keyword)}&filter=${encodeURIComponent(filter)}`;
+            } else {
+                return `?searchType=${searchType}&keyword=&filter=`;
+            }
+        }
+
+        // 테이블 업데이트 함수
+        function updateTable(events) {
+            const tableBody = $('#eventTableBody');
+            tableBody.empty();  // 기존 테이블 내용 비우기
+
+            if (!events || events.length === 0) {
+                tableBody.append('<tr><td colspan="8" class="text-center">검색 결과가 없습니다.</td></tr>');
+                return;
+            }
+
+            // 이벤트 목록을 테이블에 추가
+            events.forEach(event => {
+                const status = calculateEventStatus(event.startDate, event.endDate);  // 이벤트 상태 계산
+                const row = `
+                <tr>
+                    <td><input type="checkbox" name="checkBox"></td>
+                    <td>${event.id}</td>
+                    <td>${event.title}</td>
+                    <td>${status}</td>
+                    <td>${formatDate(event.startDate)}</td>
+                    <td>${formatDate(event.endDate)}</td>
+                    <td>${event.imageCount || 0}</td>
+                    <td>
+                        <button type="button" class="btn btn-warning btn-sm edit-btn" data-id="${event.id}" data-bs-toggle="modal" data-bs-target="#editModal">수정</button>
+                    </td>
+                </tr>
+            `;
+                tableBody.append(row);
+            });
+        }
+        function formatDate(value, toFormat) {
+            if (!value) return null;
+
+            if (toFormat === 'timestamp') {
+                // 'datetime-local' -> 'YYYY-MM-DD HH:mm:ss'
+                return value.replace('T', ' ') + ':00';
+            } else if (toFormat === 'datetime-local') {
+                // 'YYYY-MM-DD HH:mm:ss' -> 'datetime-local'
+                return value.replace(' ', 'T').slice(0, 16); // 'YYYY-MM-DDTHH:mm'
+            } else {
+                console.error("Invalid format type. Use 'timestamp' or 'datetime-local'.");
+                return null;
+            }
+        }
+        // 검색 및 필터 기능
+        $('#btnReset').click(function (event) {
+            event.preventDefault();
+            $('#searchType').val('title');
+            $('#keyword').val('');
+            location.href = '/admin/event';
+        });
+    /*****************************************************************************************
+     *******************************************모달창*****************************************
+     ****************************************************************************************/
+    // 이벤트 추가
     $('#saveAdd').click(function () {
-        const title = $('#addTitle').val();
-        const content = $('#addContent').val();
-        const startDate = $('#addStartDate').val();
-        const endDate = $('#addEndDate').val();
+        const formData = new FormData();
+        formData.append('title', $('#addTitle').val());
+        formData.append('content', $('#addContent').val());
+        formData.append('startDate', formatDate($('#addStartDate').val(), 'timestamp'));
+        formData.append('endDate', formatDate($('#addEndDate').val(), 'timestamp'));
 
-        if (title && content && startDate && endDate) {
-            alert(`추가: ${title}, ${content}, ${startDate}, ${endDate}`);
-        } else {
-            alert('모든 필드를 입력해주세요.');
+        const fileInput = $('#addFile')[0].files[0];
+        if (fileInput) {
+            formData.append('file', fileInput);
         }
-    });
 
-    // 수정 모달 저장
-    $('#saveEdit').click(function () {
-        const title = $('#editTitle').val();
-        const content = $('#editContent').val();
-        const startDate = $('#editStartDate').val();
-        const endDate = $('#editEndDate').val();
-
-        if (title && content && startDate && endDate) {
-            alert(`수정: ${title}, ${content}, ${startDate}, ${endDate}`);
-        } else {
-            alert('모든 필드를 입력해주세요.');
-        }
-    });
-    // 필터 조건에 따른 AJAX 요청
-    $('.filter-btn').click(function () {
-        const filter = $(this).data('filter');
-
-        // 버튼 활성화 상태 업데이트
-        $('.filter-btn').removeClass('active');
-        $(this).addClass('active');
-
-        // AJAX 요청
         $.ajax({
-            url: '/admin/event/filter',
-            type: 'GET',
-            data: { filter: filter },
-            success: function (data) {
-                console.log(`${filter} 상태의 이벤트가 로드되었습니다.`);
-                updateTable(data.content); // 테이블 업데이트 함수 호출
+            url: '/admin/event/add',
+            type: 'POST',
+            enctype: 'multipart/form-data',
+            processData: false,
+            contentType: false,
+            data: formData,
+            success: function () {
+                alert('이벤트가 추가되었습니다.');
+                location.reload();
             },
-            error: function (xhr, status, error) {
-                console.error('필터 오류:', error);
-                alert('필터 적용 실패');
+            error: function (xhr) {
+                alert('이벤트 추가 실패: ' + xhr.responseText);
             }
         });
     });
 
-    function calculateEventStatus(startDate, endDate) {
-        const now = new Date();
-        const start = new Date(startDate);
-        const end = new Date(endDate);
-
-        if (start > now) {
-            return "시작 전";
-        } else if (start <= now && end >= now) {
-            return "진행 중";
-        } else {
-            return "종료";
-        }
-    }
-    function formatDate(dateString) {
-        const date = new Date(dateString);
-        return date.toISOString().slice(0, 16).replace('T', ' '); // 'YYYY-MM-DD HH:mm' 형식으로 변환
-    }
-    // 테이블 업데이트 함수 수정
-    function updateTable(events) {
-        const tableBody = $('table tbody');
-        tableBody.empty(); // 기존 테이블 내용 비우기
-
-        if (events.length === 0) {
-            tableBody.append('<tr><td colspan="8" class="text-center">이벤트가 없습니다.</td></tr>');
-            return;
-        }
-
-        // 필터링된 이벤트 데이터 추가
-        events.forEach(event => {
-            const status = calculateEventStatus(event.startDate, event.endDate);
-            const row = `
-            <tr>
-                <td><input type="checkbox" name="checkBox"></td>
-                <td>${event.id}</td>
-                <td>${event.title}</td>
-                <td>${event.content}</td>
-                <td>${formatDate(event.startDate)}</td>
-                <td>${formatDate(event.endDate)}</td>
-                <td>${status}</td>
-                <td>
-                    <button type="button" class="btn btn-warning btn-sm edit-btn" data-bs-toggle="modal" data-bs-target="#editModal">수정</button>
-                </td>
-            </tr>
-        `;
-            tableBody.append(row);
-        });
-    }
-
-
-    // 추가 모달 저장
-    $('#saveAdd').click(function () {
-        const title = $('#addTitle').val();
-        const content = $('#addContent').val();
-        const startDate = $('#addStartDate').val();
-        const endDate = $('#addEndDate').val();
-
-        if (title && content && startDate && endDate) {
-            $.ajax({
-                url: '/admin/event/add',
-                type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify({
-                    title: title,
-                    content: content,
-                    startDate: startDate,
-                    endDate: endDate
-                }),
-                success: function (res) {
-                    alert('이벤트가 추가되었습니다.');
-                    location.reload(); // 성공 시 페이지 새로고침
-                },
-                error: function (xhr, status, error) {
-                    console.error('추가 오류:', error);
-                    alert('이벤트 추가 실패');
-                }
-            });
-        } else {
-            alert('모든 필드를 입력해주세요.');
-        }
-    });
-
-    // 수정 모달 저장
-    $('#saveEdit').click(function () {
-        const eventId = $('#editEventForm').data('id'); // 수정할 이벤트 ID
-        const title = $('#editTitle').val();
-        const content = $('#editContent').val();
-        const startDate = $('#editStartDate').val();
-        const endDate = $('#editEndDate').val();
-
-        if (title && content && startDate && endDate) {
-            $.ajax({
-                url: '/admin/event/update',
-                type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify({
-                    id: eventId,
-                    title: title,
-                    content: content,
-                    startDate: startDate,
-                    endDate: endDate
-                }),
-                success: function (res) {
-                    alert('이벤트가 수정되었습니다.');
-                    location.reload(); // 성공 시 페이지 새로고침
-                },
-                error: function (xhr, status, error) {
-                    console.error('수정 오류:', error);
-                    alert('이벤트 수정 실패');
-                }
-            });
-        } else {
-            alert('모든 필드를 입력해주세요.');
-        }
-    });
-
-    // 테이블 수정 버튼 클릭 시 이벤트 정보 로드
+    // 수정 모달 열기
     $(document).on('click', '.edit-btn', function () {
-        const row = $(this).closest('tr');
-        const eventId = row.find('td:nth-child(2)').text(); // 이벤트 ID
-        const title = row.find('td:nth-child(3)').text(); // 제목
-        const content = row.find('td:nth-child(4)').text(); // 내용
-        const startDate = row.find('td:nth-child(5)').text(); // 시작일
-        const endDate = row.find('td:nth-child(6)').text(); // 종료일
-
-        // 모달 창에 데이터 채우기
-        $('#editTitle').val(title);
-        $('#editContent').val(content);
-        $('#editStartDate').val(startDate);
-        $('#editEndDate').val(endDate);
-        $('#editEventForm').data('id', eventId); // 이벤트 ID 저장
-    });
-
-    // 필터와 검색
-    $('#btnSearch').click(function () {
-        const searchType = $('#searchType').val();
-        const keyword = $('#keyword').val();
-
-        if (keyword.trim() === '') {
-            alert('검색어를 입력해주세요.');
-            return;
-        }
+        const eventId = $(this).data('id');
 
         $.ajax({
-            url: '/admin/event/search',
+            url: `/admin/event/${eventId}`,
             type: 'GET',
-            data: { searchType: searchType, keyword: keyword },
-            success: function (data) {
-                alert('검색 결과를 불러왔습니다.');
-                // 검색 결과 데이터를 테이블에 렌더링
+            success: function (event) {
+                $('#editEventId').val(event.id);
+                $('#editTitle').val(event.title);
+                $('#editContent').val(event.content);
+                $('#editStartDate').val(formatDate(event.startDate, 'datetime-local'));
+                $('#editEndDate').val(formatDate(event.endDate, 'datetime-local'));
+
+                const currentImagesContainer = $('#currentImages');
+                currentImagesContainer.empty();
+                if (event.imagePath) {
+                    currentImagesContainer.append(`<img src="${event.imagePath}" style="width: 100px; height: auto;">`);
+                } else {
+                    currentImagesContainer.append('<p>이미지가 없습니다.</p>');
+                }
             },
-            error: function (xhr, status, error) {
-                console.error('검색 오류:', error);
-                alert('검색 실패');
+            error: function () {
+                alert('이벤트 정보를 불러오지 못했습니다.');
             }
         });
     });
-    // 일괄선택 버튼 동작
+
+    // 이벤트 수정
+    $('#saveEdit').click(function () {
+        const formData = new FormData();
+        formData.append('id', $('#editEventId').val());
+        formData.append('title', $('#editTitle').val());
+        formData.append('content', $('#editContent').val());
+        formData.append('startDate', formatDate($('#editStartDate').val(), 'timestamp'));
+        formData.append('endDate', formatDate($('#editEndDate').val(), 'timestamp'));
+
+        const fileInput = $('#editFile')[0].files[0];
+        if (fileInput) {
+            formData.append('file', fileInput);
+        }
+
+        $.ajax({
+            url: '/admin/event/update',
+            type: 'POST',
+            enctype: 'multipart/form-data',
+            processData: false,
+            contentType: false,
+            data: formData,
+            success: function () {
+                alert('이벤트가 수정되었습니다.');
+                location.reload();
+            },
+            error: function (xhr,error) {
+                console.log(error)
+                alert('이벤트 수정 실패: ' + xhr.responseText);
+            }
+        });
+    });
+
+    // 일괄 선택 및 삭제
     $('#selectAllEvent').click(function () {
         const allChecked = $('input[name="checkBox"]:checked').length === $('input[name="checkBox"]').length;
-
-        // 모든 체크박스가 선택되어 있으면 해제, 그렇지 않으면 선택
         $('input[name="checkBox"]').prop('checked', !allChecked);
-
-        // 버튼 텍스트 변경
         $(this).text(allChecked ? '일괄선택' : '선택해제');
     });
 
-    // 일괄삭제 버튼 동작
     $('#deleteEvent').click(function () {
-        const selectedIds = [];
+        const selectedIds = $('input[name="checkBox"]:checked')
+            .map(function () {
+                return $(this).closest('tr').find('td:nth-child(2)').text();
+            })
+            .get();
 
-        // 선택된 체크박스에서 이벤트 ID 수집
-        $('input[name="checkBox"]:checked').each(function () {
-            const eventId = $(this).closest('tr').find('td:nth-child(2)').text();
-            selectedIds.push(eventId);
-        });
-
-        if (selectedIds.length > 0) {
-            if (confirm('선택된 이벤트를 삭제하시겠습니까?')) {
-                // AJAX 요청으로 삭제
-                $.ajax({
-                    url: '/admin/event/delete',
-                    type: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify(selectedIds),
-                    success: function (res) {
-                        alert('선택된 이벤트가 삭제되었습니다.');
-                        location.reload(); // 성공 시 페이지 새로고침
-                    },
-                    error: function (xhr, status, error) {
-                        console.error('삭제 오류:', error);
-                        alert('이벤트 삭제 실패');
-                    }
-                });
-            }
-        } else {
+        if (selectedIds.length === 0) {
             alert('삭제할 이벤트를 선택해주세요.');
+            return;
         }
+
+        if (confirm('선택된 이벤트를 삭제하시겠습니까?')) {
+            $.ajax({
+                url: '/admin/event/delete',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(selectedIds),
+                success: function () {
+                    alert('선택된 이벤트가 삭제되었습니다.');
+                    location.reload();
+                },
+                error: function () {
+                    alert('이벤트 삭제 실패');
+                }
+            });
+        }
+    });
     });
 </script>
 </body>

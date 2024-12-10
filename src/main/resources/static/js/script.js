@@ -166,26 +166,32 @@ $(document).ready(function () {
             if (name === '') {
                 alert("이름을 입력해주세요.");
                 form.find('#userName').focus();
+                return;
             }
             if (password === '') {
                 alert("비밀번호를 입력해주세요.");
                 form.find('#userPwCheck').focus();
+                return;
             }
             if (tel === '') {
                 alert("전화번호를 입력해주세요.");
                 form.find('#userTel').focus();
+                return;
             }
             if (birthday === '') {
                 alert("생년월일을 입력해주세요.");
                 form.find('#userBirth').focus();
+                return;
             }
             if (addr === '') {
                 alert("주소를 입력해주세요.");
                 form.find('#addr').focus();
+                return;
             }
             if (addrextra === '') {
                 alert("상세주소를 입력해주세요.");
                 form.find('#addrextra').focus();
+                return;
             }
             $.ajax({
                 type: 'POST',
@@ -267,9 +273,8 @@ $(document).ready(function () {
             $feedbackMessage.css("color", "#dc3545");
         } else {
             $(this).removeClass('is-invalid').addClass('is-valid');
-            $feedbackMessage.text('사용 가능한 아이디입니다.');
-
-            $feedbackMessage.css("color", "#28a745");
+            $feedbackMessage.text('사용 가능한 아이디입니다. 중복검사를 해주세요.');
+            $feedbackMessage.css("color", "#ffc107");
         }
         $feedbackMessage.css("display", "block");
     });
@@ -372,6 +377,8 @@ $(document).ready(function () {
                 } else {
                     alert("사용 가능한 아이디입니다.");
                     $('#nextBtn2').attr("data-check", "1");
+                    $('#feedbackMessage').css("display", "none");
+                    $('#feedbackMessage').text('');
                     $('#checkDuplicateBtn').removeClass('btn-warning').addClass('btn-success');
                 }
             },
