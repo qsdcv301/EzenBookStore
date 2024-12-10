@@ -72,8 +72,15 @@ public class BookService implements BookServiceInterface {
         BookDescription bookDescription = null;
         if (book.getBookdescription() != null && book.getBookdescription().getId() != null) {
             bookDescription = bookDescriptionRepository.findById(book.getBookdescription().getId())
-                    .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 BookDescription ID입니다: " + book.getBookdescription().getId()));
+                    .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 책 설명 ID입니다: " + book.getBookdescription().getId()));
+
+            // 기존 값을 유지하면서 필요한 필드만 업데이트
+            bookDescription.setDescription(book.getBookdescription().getDescription());
+            bookDescription.setWriter(book.getBookdescription().getWriter());
+            bookDescription.setContents(book.getBookdescription().getContents());
+            bookDescriptionRepository.save(bookDescription);
         }
+
 
         // 기존 엔터티를 업데이트
         Book existingBook = bookRepository.findById(book.getId())
