@@ -1,8 +1,10 @@
 <header th:fragment="header">
+    <link rel="stylesheet" th:href="@{/css/header.css}">
     <!-- 상단 바 -->
     <div class="top-bar d-flex justify-content-end">
+        <div class="container">
         <!-- 로그인 전 -->
-        <div>
+        <div class="d-flex justify-content-end">
             <span th:unless="${userData}">
                   <a href="/login" class="text-white mx-2">로그인</a>
                   <a href="/signup" class="text-white mx-2">회원가입</a>
@@ -10,6 +12,7 @@
             <a th:if="${userData}" href="/logout" class="text-white ml-1">로그아웃</a>
             <a href="/customerService" class="text-white ml-1">고객센터</a>
         </div>
+    </div>
     </div>
     <!-- 헤더 -->
     <div class="header">
@@ -25,9 +28,9 @@
             </span> | 보유적립금: <span th:text="${user.point}"></span> Point</span>
         </div>
 
-        <div class="container d-flex align-items-center justify-content-between pt-2 pb-4">
+        <div class="container d-flex flex-wrap align-items-center justify-content-between pt-2 pb-4">
             <!-- Logo -->
-            <a href="/" class="navbar-brand">EzenBookStore</a>
+            <a href="/" class="navbar-brand mb-2 mb-lg-0">EzenBookStore</a>
 
             <!-- Search Bar -->
             <div class="search-bar mx-3 flex-grow-1">
@@ -61,7 +64,7 @@
 
         <!-- Navigation Menu -->
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <div class="container justify-content-center">
+            <div class="container">
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
                         aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
