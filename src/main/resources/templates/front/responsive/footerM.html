@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EzenBookStoreFooter</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .navigation-buttons {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .navigation-buttons button,
+        .navigation-buttons #adminBtn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .navigation-buttons button:hover {
+            background-color: #0056b3;
+        }
+
+        /* 관리자 버튼 */
+        .navigation-buttons #adminBtn:hover {
+            background-color: #e92e0e !important;
+        }
+
+        .navigation-buttons #adminBtn:hover .rotate-icon {
+            transform: rotate(75deg);
+        }
+
+        .rotate-icon {
+            transition: transform 0.5s ease-in-out;
+            transform-origin: center;
+        }
+
+        /* 추가된 부분 */
+        /* 최근 본 도서 목록 스타일 */
+        #recentlyViewedList {
+            position: absolute;
+            bottom: 300px;
+            right: 0;
+            z-index: 1000;
+            opacity: 0;
+            display: none;
+            width: 300px;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        #recentlyViewedList.show {
+            opacity: 1;
+            display: block;
+        }
+
+        /* 반응형 스타일 */
+
+        @media screen and (min-width: 768px) {
+            .bottom-menu {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+
+            .footer-container .row {
+                flex-direction: column;
+            }
+
+            .col-md-3 {
+                width: 100%;
+                margin-bottom: 20px;
+            }
+
+            .navigation-buttons {
+                flex-direction: row;
+                bottom: 70px;
+                right: 10px;
+            }
+            
+            .navigation-buttons button,
+            .navigation-buttons #adminBtn {
+                width: 40px;
+                height: 40px;
+            }
+  
+            #goHomeBtn{
+                display: none;
+            }
+
+            #recentlyViewedList {
+                width: 50%;
+                bottom: 60px;
+            }
+
+            /* 하단 고정 유저 메뉴 스타일 */
+            .bottom-menu {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                background-color: #fff;
+                box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+                display: flex;
+                justify-content: space-around;
+                padding: 10px 0;
+                z-index: 1000;
+            }
+
+            .bottom-menu a {
+                color: #007bff;
+                text-decoration: none;
+                font-size: 24px;
+            }
+        }
+
+
+
+        @media (max-width: 576px) {
+            .navigation-buttons {
+                flex-direction: row;
+                justify-content: space-around;
+                width: 100%;
+                left: 0;
+                right: 0;
+            }
+        }
+
+        /* 추가된 부분 끝 */
+    </style>
+</head>
+
+<body>
+    <footer th:fragment="footer" class="bg-light py-5 mt-5">
+        <div class="container footer-container">
+            <div class="row">
+                <div class="col-12 col-sm-6 col-md-3 mb-4">
+                    <h5 class="text-primary mb-3">도서 카테고리</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="/book?sort=count&direction=desc" class="text-muted">베스트셀러</a></li>
+                        <li><a href="/book?sort=publishDate&direction=asc" class="text-muted">신상품</a></li>
+                        <li><a href="/book?ifkr=0" class="text-muted">국내도서</a></li>
+                        <li><a href="/book?ifkr=1" class="text-muted">해외도서</a></li>
+                        <li><a href="/event" class="text-muted">이벤트</a></li>
+                    </ul>
+                </div>
+                <div class="col-12 col-sm-6 col-md-3 mb-4">
+                    <h5 class="text-primary mb-3">고객 서비스</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="/customerService" class="text-muted">고객센터</a></li>
+                        <li><a href="/customerService?tab=faq" class="text-muted">자주 묻는 질문</a></li>
+                        <li><a href="#" class="text-muted">반품/교환 안내</a></li>
+                        <li><a href="/customerService?tab=inquiry" class="text-muted">문의하기</a></li>
+                    </ul>
+                </div>
+                <div class="col-12 col-sm-6 col-md-3 mb-4">
+                    <h5 class="text-primary mb-3">이용안내</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="/customerService?tab=terms-of-service-tab" class="text-muted">이용약관</a></li>
+                        <li><a href="/customerService?tab=privacy-policy-tab" class="text-muted">개인정보처리방침</a></li>
+                        <li><a href="/customerService?tab=youth-protection-tab" class="text-muted">청소년보호정책</a></li>
+                        <li><a href="/customerService" class="text-muted">고객센터</a></li>
+                    </ul>
+                </div>
+                <div class="col-12 col-sm-6 col-md-3 mb-4">
+                    <h5 class="text-primary mb-3">소셜 미디어</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="#" class="text-muted"><i class="bi bi-facebook mr-2"></i>Facebook</a>
+                        </li>
+                        <li class="mb-2"><a href="#" class="text-muted"><i
+                                    class="bi bi-instagram mr-2"></i>Instagram</a>
+                        </li>
+                        <li class="mb-2"><a href="#" class="text-muted"><i class="bi bi-twitter mr-2"></i>Twitter</a>
+                        </li>
+                        <li><a href="#" class="text-muted"><i class="bi bi-youtube mr-2"></i>YouTube</a></li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div class="row align-items-center">
+                <div class="col-md-4 text-center text-md-left mb-3 mb-md-0">
+                    <a href="/" class="navbar-brand text-primary">EzenBookStore</a>
+                </div>
+                <div class="col-md-4 text-center mb-3 mb-md-0">
+                    <small class="text-muted">
+                        Dveloper-Team:
+                        <a href="https://github.com/qsdcv301" class="text-muted">김태현</a>,
+                        <a href="https://github.com/HwangYeJoo" class="text-muted">황예주</a>,
+                        <a href="https://github.com/ChaiTope" class="text-muted">채윤성</a>,
+                        <a href="https://github.com/JaeHwan2569" class="text-muted">정재환</a>,
+                        <a href="https://github.com/LEE-JUNGIN" class="text-muted">이정인</a>
+                    </small>
+                </div>
+                <div class="col-md-4 text-center text-md-right">
+                    <small class="text-muted">&copy; 2024 Ezen Book Store. All Rights Reserved</small>
+                </div>
+            </div>
+        </div>
+        <div class="navigation-buttons">
+            <!-- 최근 본 도서 버튼 -->
+            <button id="recentItemsBtn" class="btn btn-primary position-relative">
+                <span id="bookCountBadge" class="badge badge-danger position-absolute"
+                    style="top: -10px; right: 0;">3</span>
+                <i class="bi bi-book"></i>
+            </button>
+            <ul id="recentlyViewedList" class="list-group mt-3">
+                <li class="list-group-item list-group-item-info d-flex align-items-center" style="height: 60px;">
+                    <h5>최근 본 도서 목록</h5>
+                </li>
+                <li class="bookList overflow-auto" style="max-height: 50vh;">
+                    <ul class="p-0">
+                        <li class="list-group-item list-group-item-warning" id="noItemsMessage"
+                            style="height: 60px; display: none;">
+                            <p>최근 본 도서가 없습니다.</p>
+                        </li>
+                        <li class="list-group-item" th:each="entry : ${recentBookCookie}">
+                            <div class="card">
+                                <div class="row g-0">
+                                    <div class="col-md-5">
+                                        <img th:src="${entry.imgPath}" th:alt="${entry.title}" class="card-img-top"
+                                            style="width: 100%; height: 100%; object-fit: cover;">
+                                    </div>
+                                    <div class="col-md-7">
+                                        <div class="card-body px-0">
+                                            <a class="stretched-link"
+                                                th:href="@{'/book/detail'(bookId=${entry.id})}"></a>
+                                            <p class="card-title text-truncate" th:text="${entry.title}"></p>
+                                            <p class="card-text text-truncate mb-0"><small>저자 : <span
+                                                        th:text="${entry.author}"></span></small></p>
+                                            <p class="card-text text-truncate"><small>출판사 : <span
+                                                        th:text="${entry.publisher}"></span></small></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+            <!-- 관리자 버튼 초기설정 display none-->
+            <a th:if="${admin}" href="/admin/book" id="adminBtn" class="adminDashBoard">
+                <i class="bi bi-gear-fill rotate-icon"></i>
+            </a>
+            <button id="scrollTopBtn"><i class="bi bi-arrow-up"></i></button>
+            <button id="goHomeBtn"><i class="bi bi-house-fill"></i></button>
+
+        </div>
+        <!-- 모바일 유저 메뉴 -->
+        <div class="bottom-menu">
+            <a href="/cart"><i class="fas fa-shopping-cart"></i></a>
+            <a href="/main"><i class="fas fa-home"></i></a>
+            <a href="/user/info"><i class="fas fa-user"></i></a>
+        </div>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        <script>
+
+            // 최근 본 도서 목록 토글
+            document.getElementById('recentItemsBtn').addEventListener('click', function () {
+                toggleVisibility('recentlyViewedList');
+            });
+
+            function toggleVisibility(elementId) {
+                const element = document.getElementById(elementId);
+                element.classList.toggle('show');
+            }
+
+            // 배지 숫자를 업데이트하고 목록이 비어있을 경우 메시지를 출력하는 함수
+            function updateBadgeAndMessage() {
+                const list = document.querySelector('#recentlyViewedList .bookList');
+
+                // 최근 본 도서 목록 항목 중 실제 도서 요소만 선택
+                const items = list.querySelectorAll('li:not(.list-group-item-info):not(#noItemsMessage)');
+                const itemCount = items.length; // 실제 항목 개수 계산
+
+                // 배지에 개수 표시
+                document.getElementById('bookCountBadge').innerText = itemCount;
+
+                // "최근 본 도서가 없습니다" 메시지 요소 선택
+                const noItemsMessage = document.getElementById('noItemsMessage');
+
+                // 목록이 비어있으면 메시지를 표시하고, 그렇지 않으면 숨김
+                if (itemCount === 0) {
+                    noItemsMessage.style.display = 'block';
+                } else {
+                    noItemsMessage.style.display = 'none';
+                }
+            }
+
+            // 페이지가 로드될 때 초기화
+            document.addEventListener('DOMContentLoaded', () => {
+                updateBadgeAndMessage();
+
+                // MutationObserver를 사용하여 li의 변화 감지
+                const list = document.querySelector('#recentlyViewedList .bookList');
+                const observer = new MutationObserver(() => {
+                    updateBadgeAndMessage(); // DOM 변경 시 업데이트 함수 호출
+                });
+
+                // 감시 대상과 옵션 설정
+                observer.observe(list, { childList: true, subtree: false });
+            });
+
+        </script>
+    </footer>
+</body>
+
+</html>

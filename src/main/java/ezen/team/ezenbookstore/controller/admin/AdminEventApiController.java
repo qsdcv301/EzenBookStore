@@ -2,6 +2,7 @@ package ezen.team.ezenbookstore.controller.admin;
 
 import ezen.team.ezenbookstore.entity.Event;
 import ezen.team.ezenbookstore.service.EventServiceInterface;
+import ezen.team.ezenbookstore.service.FileUploadService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Controller
@@ -24,6 +26,7 @@ import java.util.Map;
 public class AdminEventApiController {
 
     private final EventServiceInterface eventService;
+    private final FileUploadService fileUploadService;
 
     // 이벤트 목록 조회 및 필터링
     @GetMapping
@@ -38,9 +41,14 @@ public class AdminEventApiController {
             Page<Event> eventPage = eventService.getFilteredEvents(searchType, keyword, filter, pageable);
 
             List<Integer> imageCounts = eventService.getImageCounts(eventPage.getContent());
+            List<String> imagePaths = eventPage.getContent().stream()
+                    .map(event -> fileUploadService.findImageFilePath(event.getId(), "event"))
+                    .map(path -> path != null ? path : "/images/default.png")
+                    .collect(Collectors.toList());
 
             model.addAttribute("eventPage", eventPage);
             model.addAttribute("imageCounts", imageCounts);
+            model.addAttribute("imagePaths", imagePaths);
             model.addAttribute("keyword", keyword);
             model.addAttribute("searchType", searchType);
             model.addAttribute("filter", filter);
