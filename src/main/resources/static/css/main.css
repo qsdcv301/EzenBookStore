@@ -1,0 +1,118 @@
+/* 슬라이드 스타일 */
+.carousel-item img {
+    height: 400px;
+    object-fit: cover;
+}
+
+.carousel-control-prev,
+.carousel-control-next {
+    width: 5%;
+    opacity: 0.8;
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    width: 30px;
+    height: 30px;
+}
+
+.carousel-control-prev {
+    left: 10px;
+}
+
+.carousel-control-next {
+    right: 10px;
+}
+
+.carousel-control-prev,
+.carousel-control-next {
+    width: 5%;
+    opacity: 0.8;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 50%;
+    height: 40px;
+    width: 40px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.carousel-control-prev:hover,
+.carousel-control-next:hover {
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+.carousel-control-prev i,
+.carousel-control-next i {
+    font-size: 1.5rem;
+    color: #fff;
+}
+
+/* 슬라이드 스타일 끝 */
+
+/* 공지사항 */
+/* 수직 슬라이드를 위한 스타일 */
+#noticeCarousel.vertical .carousel-inner {
+    height: 100%;
+}
+
+#noticeCarousel.vertical .carousel-item {
+    transition: transform 0.6s ease;
+    transform: translate3d(0, 100%, 0);
+}
+
+#noticeCarousel.vertical .carousel-item.active,
+#noticeCarousel.vertical .carousel-item-next.carousel-item-left,
+#noticeCarousel.vertical .carousel-item-prev.carousel-item-right {
+    transform: translate3d(0, 0, 0);
+}
+
+#noticeCarousel.vertical .carousel-item-next,
+#noticeCarousel.vertical .active.carousel-item-right {
+    transform: translate3d(0, 100%, 0);
+}
+
+#noticeCarousel.vertical .carousel-item-prev,
+#noticeCarousel.vertical .active.carousel-item-left {
+    transform: translate3d(0, -100%, 0);
+}
+
+#noticeCarousel .carousel-item a {
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+/* 공지사항끝 */
+
+
+/* 섹션 제목 스타일 */
+.main-con .section-title {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+}
+
+/* 상품 스타일 */
+.main-con .book-item img {
+    border-radius: 5px;
+}
+
+.main-con .book-item {
+    position: relative;
+    overflow: hidden;
+    border-radius: 5px;
+
+}
+
+.main-con .book-info {
+    position: absolute;
+    bottom: -100%;
+    left: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 10px;
+    transition: bottom 0.3s ease-in-out;
+}
+
+.main-con .book-item:hover .book-info {
+    bottom: 0;
+}
