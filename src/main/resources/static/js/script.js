@@ -1721,12 +1721,16 @@ $(document).ready(function () {
                             userGradePercent = 1;
                             break;
                         case "2" :
-                            userGradePoint = 0.03;
-                            userGradePercent = 3;
+                            userGradePoint = 0.02;
+                            userGradePercent = 2;
                             break;
                         case "3" :
                             userGradePoint = 0.05;
                             userGradePercent = 5;
+                            break;
+                        case "4" :
+                            userGradePoint = 0.1;
+                            userGradePercent = 10;
                             break;
                         default:
                             userGradePoint = 0;

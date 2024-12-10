@@ -26,6 +26,7 @@ public class UserFacadeService implements UserFacadeServiceInterface {
     private final EmailService emailService;
 
     private static final String VERIFICATION_CODE_SESSION_KEY = "verificationCode";
+    private final OrderItemService orderItemService;
 
     // 사용자 등록
     @Override
@@ -227,6 +228,17 @@ public class UserFacadeService implements UserFacadeServiceInterface {
             endDate = LocalDate.now();
             startDate = endDate.minusMonths(monthsAgo);
         }
+        Integer userOrderItemsSuccessCount = orderItemService.countByUserIdAndStatus(userId, (byte) 3); // 3은 주문확정 도서들
+        int nextGrade;
+        if (userOrderItemsSuccessCount >= 100) {
+            nextGrade = 0;
+        } else if (userOrderItemsSuccessCount >= 50) {
+            nextGrade = 100 - userOrderItemsSuccessCount;
+        } else if (userOrderItemsSuccessCount >= 20) {
+            nextGrade = 50 - userOrderItemsSuccessCount;
+        } else{
+            nextGrade = 20 - userOrderItemsSuccessCount;
+        }
 
         // 주문 필터링 처리
         List<Orders> filteredOrders = ordersService.filterOrders(startDate, endDate, deliveryStatus, orderStatus, keyword, userId);
@@ -251,6 +263,7 @@ public class UserFacadeService implements UserFacadeServiceInterface {
         modelAttributes.put("direction", direction);
         modelAttributes.put("questionList", qPaging.getContent());
         modelAttributes.put("qnaPage", qPaging);
+        modelAttributes.put("nextGrade", nextGrade);
 
         return modelAttributes;
     }
