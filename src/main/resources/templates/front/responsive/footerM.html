@@ -338,17 +338,6 @@
                 observer.observe(list, { childList: true, subtree: false });
             });
 
-            document.addEventListener('DOMContentLoaded', function () {
-                const bottomMenuLinks = document.querySelectorAll('.bottom-menu a');
-                bottomMenuLinks.forEach(link => {
-                    link.addEventListener('click', function (e) {
-                        e.preventDefault(); // 기본 클릭 동작 방지
-                        // 여기에 원하는 동작 추가 (예: 페이지 이동)
-                        window.location.href = this.getAttribute('href');
-                    });
-                });
-            });
-
         </script>
     </footer>
 </body>
