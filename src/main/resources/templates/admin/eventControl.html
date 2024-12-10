@@ -1,129 +1,97 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <title>Event Control</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head th:replace="~{fragments/css :: css}">
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>이벤트관리</title>
+    <div th:replace="~{fragments/script :: script-head}"></div>
+    <!-- 상단 JS -->
     <style>
-        .filter span {
-            cursor: pointer;
-            padding: 5px 10px;
-            margin-right: 5px;
-            border-radius: 5px;
-            background: #e9ecef;
-        }
-
-        .filter span.active {
-            background: #0d6efd;
-            color: white;
-        }
+        .container { margin-top: 20px; }
+        .filter span { cursor: pointer; padding: 5px 10px; margin-right: 5px; border-radius: 5px; background: #e9ecef; }
+        .filter span.active { background: #0d6efd; color: white; }
     </style>
 </head>
 <body>
-<div class="container-fluid">
-    <div class="row">
-        <!-- 사이드바 부분 -->
-        <nav th:replace="~{fragments/sidebar :: sidebar}"></nav>
-        <main class="col-10 content">
-            <div class="p-5" style="height: 100%;">
-                <h2>이벤트 관리</h2>
-                <p>이곳은 이벤트 추가, 삭제, 수정을 위한 관리 페이지입니다.</p>
+<div class="container">
+    <h2>이벤트 관리</h2>
+    <p>이곳은 이벤트 추가, 삭제, 수정을 위한 관리 페이지입니다.</p>
 
-                <!-- 필터 영역 -->
-                <div class="filter mb-3">
-                    <span class="filter-btn" th:classappend="${filter == 'all' ? 'active' : ''}"
-                          data-filter="all">전체</span>
-                    <span class="filter-btn" th:classappend="${filter == 'upcoming' ? 'active' : ''}"
-                          data-filter="upcoming">시작 전</span>
-                    <span class="filter-btn" th:classappend="${filter == 'ongoing' ? 'active' : ''}"
-                          data-filter="ongoing">진행 중</span>
-                    <span class="filter-btn" th:classappend="${filter == 'ended' ? 'active' : ''}" data-filter="ended">종료</span>
-                </div>
-                <!-- 검색 및 추가 버튼 -->
-                <div class="d-flex justify-content-between mb-3">
-                    <form id="searchForm" class="d-flex">
-                        <select id="searchType" class="form-select me-2" style="width: 150px;" th:value="${searchType}">
-                            <option th:value="title" th:selected="${searchType == 'title'}">제목</option>
-                            <option th:value="content" th:selected="${searchType == 'content'}">내용</option>
-                        </select>
-                        <input type="text" id="keyword" class="form-control me-2" placeholder="검색어를 입력하세요"
-                               th:value="${keyword}">
-                        <button type="button" id="btnSearch" class="btn btn-primary">검색</button>
-                        <button type="button" id="btnReset" class="btn btn-secondary">초기화</button>
-                    </form>
-                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addModal">이벤트
-                        추가
-                    </button>
-                </div>
+    <!-- 필터 영역 -->
+    <div class="filter mb-3">
+        <span class="filter-btn" th:classappend="${filter == 'all' ? 'active' : ''}" data-filter="all">전체</span>
+        <span class="filter-btn" th:classappend="${filter == 'upcoming' ? 'active' : ''}" data-filter="upcoming">시작 전</span>
+        <span class="filter-btn" th:classappend="${filter == 'ongoing' ? 'active' : ''}" data-filter="ongoing">진행 중</span>
+        <span class="filter-btn" th:classappend="${filter == 'ended' ? 'active' : ''}" data-filter="ended">종료</span>
+    </div>
+    <!-- 검색 및 추가 버튼 -->
+    <div class="d-flex justify-content-between mb-3">
+        <form id="searchForm" class="d-flex">
+            <select id="searchType" class="form-select me-2" style="width: 150px;" th:value="${searchType}">
+                <option th:value="title" th:selected="${searchType == 'title'}">제목</option>
+                <option th:value="content" th:selected="${searchType == 'content'}">내용</option>
+            </select>
+            <input type="text" id="keyword" class="form-control me-2" placeholder="검색어를 입력하세요" th:value="${keyword}">
+            <button type="button" id="btnSearch" class="btn btn-primary">검색</button>
+            <button type="button" id="btnReset" class="btn btn-secondary">초기화</button>
+        </form>
+        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addModal">이벤트 추가</button>
+    </div>
 
-                <!-- 이벤트 리스트 -->
-                <table class="table table-bordered">
-                    <thead>
-                    <tr>
-                        <th>체크박스</th>
-                        <th>이벤트 번호</th>
-                        <th>제목</th>
-                        <th>이벤트진행상태</th>
-                        <th>시작일</th>
-                        <th>종료일</th>
-                        <th>이미지 개수</th>
-                        <th>수정</th>
-                    </tr>
-                    </thead>
-                    <tbody id="eventTableBody">
-                    <tr th:each="event, iterStat : ${eventPage}">
-                        <td><input type="checkbox" name="checkBox"></td>
-                        <td th:text="${event.id}">1</td>
-                        <td th:text="${event.title}"></td>
-                        <td>
-                            <span class="event-status"
-                                  th:data-start-date="${#dates.format(event.startDate, 'yyyy-MM-dd HH:mm:ss')}"
-                                  th:data-end-date="${#dates.format(event.endDate, 'yyyy-MM-dd HH:mm:ss')}">종료</span>
-                        </td>
-                        <td th:text="${#dates.format(event.startDate, 'yyyy-MM-dd HH:mm')}">2024-11-19</td>
-                        <td th:text="${#dates.format(event.endDate, 'yyyy-MM-dd HH:mm')}">2024-11-20</td>
-                        <td th:text="${imageCounts[iterStat.index]>0 ? '이미지 있음' : '이미지 없음'}">0</td>
-                        <td>
-                            <button type="button" class="btn btn-warning btn-sm edit-btn" data-bs-toggle="modal"
-                                    data-bs-target="#editModal" th:data-id="${event.id}">수정
-                            </button>
-                        </td>
-                        <input type="hidden" th:id="'eventContent-' + ${event.id}" th:value="${event.content}">
-                    </tr>
-                    </tbody>
-                </table>
+    <!-- 이벤트 리스트 -->
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>체크박스</th>
+            <th>이벤트 번호</th>
+            <th>제목</th>
+            <th>이벤트진행상태</th>
+            <th>시작일</th>
+            <th>종료일</th>
+            <th>이미지 개수</th>
+            <th>수정</th>
+        </tr>
+        </thead>
+        <tbody id="eventTableBody">
+        <tr th:each="event, iterStat : ${eventPage}">
+            <td><input type="checkbox" name="checkBox"></td>
+            <td th:text="${event.id}">1</td>
+            <td th:text="${event.title}"></td>
+            <td>
+                <span class="event-status" th:data-start-date="${#dates.format(event.startDate, 'yyyy-MM-dd HH:mm:ss')}" th:data-end-date="${#dates.format(event.endDate, 'yyyy-MM-dd HH:mm:ss')}">종료</span>
+            </td>
+            <td th:text="${#dates.format(event.startDate, 'yyyy-MM-dd HH:mm')}">2024-11-19</td>
+            <td th:text="${#dates.format(event.endDate, 'yyyy-MM-dd HH:mm')}">2024-11-20</td>
+            <td th:text="${imageCounts[iterStat.index]>0 ? '이미지 있음' : '이미지 없음'}">0</td>
+            <td>
+                <button type="button" class="btn btn-warning btn-sm edit-btn" data-bs-toggle="modal" data-bs-target="#editModal" th:data-id="${event.id}">수정</button>
+            </td>
+            <input type="hidden" th:id="'eventContent-' + ${event.id}" th:value="${event.content}">
+        </tr>
+        </tbody>
+    </table>
 
-                <button id="selectAllEvent">일괄선택</button>
-                <button id="deleteEvent">일괄삭제</button>
-                <div class="d-flex justify-content-center mt-4">
-                    <nav aria-label="Page navigation">
-                        <ul class="pagination">
-                            <!-- 이전 페이지 링크 -->
-                            <li th:if="${eventPage.hasPrevious()}" class="page-item">
-                                <a class="page-link"
-                                   th:href="@{/admin/event(page=${eventPage.number - 1}, size=${eventPage.size}, keyword=${keyword}, searchType=${searchType})}">이전</a>
-                            </li>
-                            <!-- 페이지 번호 반복 -->
-                            <li th:each="i : ${#numbers.sequence(0, eventPage.totalPages - 1)}" class="page-item"
-                                th:classappend="${i == eventPage.number} ? 'active'">
-                                <a class="page-link"
-                                   th:href="@{/admin/event(page=${i}, size=${eventPage.size}, keyword=${keyword}, searchType=${searchType})}"
-                                   th:text="${i + 1}"></a>
-                            </li>
+    <button id="selectAllEvent">일괄선택</button>
+    <button id="deleteEvent">일괄삭제</button>
+    <div class="d-flex justify-content-center mt-4">
+        <nav aria-label="Page navigation">
+            <ul class="pagination">
+                <!-- 이전 페이지 링크 -->
+                <li th:if="${eventPage.hasPrevious()}" class="page-item">
+                    <a class="page-link" th:href="@{/admin/event(page=${eventPage.number - 1}, size=${eventPage.size}, keyword=${keyword}, searchType=${searchType})}">이전</a>
+                </li>
+                <!-- 페이지 번호 반복 -->
+                <li th:each="i : ${#numbers.sequence(0, eventPage.totalPages - 1)}" class="page-item" th:classappend="${i == eventPage.number} ? 'active'">
+                    <a class="page-link" th:href="@{/admin/event(page=${i}, size=${eventPage.size}, keyword=${keyword}, searchType=${searchType})}" th:text="${i + 1}"></a>
+                </li>
 
-                            <!-- 다음 페이지 링크 -->
-                            <li th:if="${eventPage.hasNext()}" class="page-item">
-                                <a class="page-link"
-                                   th:href="@{/admin/event(page=${eventPage.number + 1}, size=${eventPage.size}, keyword=${keyword}, searchType=${searchType})}">다음</a>
-                            </li>
+                <!-- 다음 페이지 링크 -->
+                <li th:if="${eventPage.hasNext()}" class="page-item">
+                    <a class="page-link" th:href="@{/admin/event(page=${eventPage.number + 1}, size=${eventPage.size}, keyword=${keyword}, searchType=${searchType})}">다음</a>
+                </li>
 
-                        </ul>
-                    </nav>
-                </div>
-            </div>
-        </main>
+            </ul>
+        </nav>
     </div>
 </div>
 
@@ -339,7 +307,6 @@
                 tableBody.append(row);
             });
         }
-
         function formatDate(value, toFormat) {
             if (!value) return null;
 
@@ -354,7 +321,6 @@
                 return null;
             }
         }
-
         // 검색 및 필터 기능
         $('#btnReset').click(function (event) {
             event.preventDefault();
@@ -362,134 +328,156 @@
             $('#keyword').val('');
             location.href = '/admin/event';
         });
-        /*****************************************************************************************
-         *******************************************모달창*****************************************
-         ****************************************************************************************/
-        // 이벤트 추가
-        $('#saveAdd').click(function () {
-            const formData = new FormData();
-            formData.append('title', $('#addTitle').val());
-            formData.append('content', $('#addContent').val());
-            formData.append('startDate', formatDate($('#addStartDate').val(), 'timestamp'));
-            formData.append('endDate', formatDate($('#addEndDate').val(), 'timestamp'));
+    /*****************************************************************************************
+     *******************************************모달창*****************************************
+     ****************************************************************************************/
+    // 이벤트 추가
+    $('#saveAdd').click(function () {
+        const formData = new FormData();
+        formData.append('title', $('#addTitle').val());
+        formData.append('content', $('#addContent').val());
+        formData.append('startDate', formatDate($('#addStartDate').val(), 'timestamp'));
+        formData.append('endDate', formatDate($('#addEndDate').val(), 'timestamp'));
 
-            const fileInput = $('#addFile')[0].files[0];
-            if (fileInput) {
-                formData.append('file', fileInput);
+        const fileInput = $('#addFile')[0].files[0];
+        if (fileInput) {
+            formData.append('file', fileInput);
+        }
+
+        $.ajax({
+            url: '/admin/event/add',
+            type: 'POST',
+            enctype: 'multipart/form-data',
+            processData: false,
+            contentType: false,
+            data: formData,
+            success: function () {
+                alert('이벤트가 추가되었습니다.');
+                location.reload();
+            },
+            error: function (xhr) {
+                alert('이벤트 추가 실패: ' + xhr.responseText);
             }
+        });
+    });
 
-            $.ajax({
-                url: '/admin/event/add',
-                type: 'POST',
-                enctype: 'multipart/form-data',
-                processData: false,
-                contentType: false,
-                data: formData,
-                success: function () {
-                    alert('이벤트가 추가되었습니다.');
-                    location.reload();
-                },
-                error: function (xhr) {
-                    alert('이벤트 추가 실패: ' + xhr.responseText);
+    // 수정 모달 열기
+    $(document).on('click', '.edit-btn', function () {
+        const eventId = $(this).data('id');
+
+        $.ajax({
+            url: `/admin/event/${eventId}`,
+            type: 'GET',
+            success: function (event) {
+                $('#editEventId').val(event.id);
+                $('#editTitle').val(event.title);
+                $('#editContent').val(event.content);
+                $('#editStartDate').val(formatDate(event.startDate, 'datetime-local'));
+                $('#editEndDate').val(formatDate(event.endDate, 'datetime-local'));
+
+                const currentImagesContainer = $('#currentImages');
+                currentImagesContainer.empty();
+                if (event.imagePath) {
+                    currentImagesContainer.append(`<img src="${event.imagePath}" style="width: 100px; height: auto;">`);
+                } else {
+                    currentImagesContainer.append('<p>이미지가 없습니다.</p>');
                 }
-            });
+            },
+            error: function () {
+                alert('이벤트 정보를 불러오지 못했습니다.');
+            }
+        });
+    });
+
+    // 이벤트 수정
+    $('#saveEdit').click(function () {
+        const formData = new FormData();
+        formData.append('id', $('#editEventId').val());
+        formData.append('title', $('#editTitle').val());
+        formData.append('content', $('#editContent').val());
+        formData.append('startDate', formatDate($('#editStartDate').val(), 'timestamp'));
+        formData.append('endDate', formatDate($('#editEndDate').val(), 'timestamp'));
+
+        const fileInput = $('#editFile')[0].files[0];
+        if (fileInput) {
+            formData.append('file', fileInput);
+        }
+
+        $.ajax({
+            url: '/admin/event/update',
+            type: 'POST',
+            enctype: 'multipart/form-data',
+            processData: false,
+            contentType: false,
+            data: formData,
+            success: function () {
+                alert('이벤트가 수정되었습니다.');
+                location.reload();
+            },
+            error: function (xhr,error) {
+                console.log(error)
+                alert('이벤트 수정 실패: ' + xhr.responseText);
+            }
+        });
+    });
+
+    // 일괄 선택 및 삭제
+    $('#selectAllEvent').click(function () {
+        $('input[name="checkBox"]').prop('checked', this.checked);
+    });
+    $('.inputCheckbox').click(function (){
+        const selectedIds = $('input[name="checkBox"]:checked').map(function () {
+                                return $(this).closest('tr').find('td:nth-child(2)').text();}).get();
+        const checkBox = $('input[name="checkBox"]');
+
+        if (selectedIds.length == checkBox.length) {
+            $('#selectAllEvent').prop('checked', true);
+        } else {
+            $('#selectAllEvent').prop('checked', false);
+        }
+    });
+            $('input[name="checkBox"]').prop('checked', this.checked);
+        });
+        $('.inputCheckbox').click(function (){
+            const selectedIds = $('input[name="checkBox"]:checked').map(function () {
+                return $(this).closest('tr').find('td:nth-child(2)').text();}).get();
+            const checkBox = $('input[name="checkBox"]');
+
+            if (selectedIds.length == checkBox.length) {
+                $('#selectAllEvent').prop('checked', true);
+            } else {
+                $('#selectAllEvent').prop('checked', false);
+            }
         });
 
-        // 수정 모달 열기
-        $(document).on('click', '.edit-btn', function () {
-            const eventId = $(this).data('id');
+    $('#deleteEvent').click(function () {
+        const selectedIds = $('input[name="checkBox"]:checked')
+            .map(function () {
+                return $(this).closest('tr').find('td:nth-child(2)').text();
+            })
+            .get();
 
+        if (selectedIds.length === 0) {
+            alert('삭제할 이벤트를 선택해주세요.');
+            return;
+        }
+
+        if (confirm('선택된 이벤트를 삭제하시겠습니까?')) {
             $.ajax({
-                url: `/admin/event/${eventId}`,
-                type: 'GET',
-                success: function (event) {
-                    $('#editEventId').val(event.id);
-                    $('#editTitle').val(event.title);
-                    $('#editContent').val(event.content);
-                    $('#editStartDate').val(formatDate(event.startDate, 'datetime-local'));
-                    $('#editEndDate').val(formatDate(event.endDate, 'datetime-local'));
-
-                    const currentImagesContainer = $('#currentImages');
-                    currentImagesContainer.empty();
-                    if (event.imagePath) {
-                        currentImagesContainer.append(`<img src="${event.imagePath}" style="width: 100px; height: auto;">`);
-                    } else {
-                        currentImagesContainer.append('<p>이미지가 없습니다.</p>');
-                    }
+                url: '/admin/event/delete',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(selectedIds),
+                success: function () {
+                    alert('선택된 이벤트가 삭제되었습니다.');
+                    location.reload();
                 },
                 error: function () {
-                    alert('이벤트 정보를 불러오지 못했습니다.');
+                    alert('이벤트 삭제 실패');
                 }
             });
-        });
-
-        // 이벤트 수정
-        $('#saveEdit').click(function () {
-            const formData = new FormData();
-            formData.append('id', $('#editEventId').val());
-            formData.append('title', $('#editTitle').val());
-            formData.append('content', $('#editContent').val());
-            formData.append('startDate', formatDate($('#editStartDate').val(), 'timestamp'));
-            formData.append('endDate', formatDate($('#editEndDate').val(), 'timestamp'));
-
-            const fileInput = $('#editFile')[0].files[0];
-            if (fileInput) {
-                formData.append('file', fileInput);
-            }
-
-            $.ajax({
-                url: '/admin/event/update',
-                type: 'POST',
-                enctype: 'multipart/form-data',
-                processData: false,
-                contentType: false,
-                data: formData,
-                success: function () {
-                    alert('이벤트가 수정되었습니다.');
-                    location.reload();
-                },
-                error: function (xhr, error) {
-                    console.log(error)
-                    alert('이벤트 수정 실패: ' + xhr.responseText);
-                }
-            });
-        });
-
-        // 일괄 선택 및 삭제
-        $('#selectAllEvent').click(function () {
-            const allChecked = $('input[name="checkBox"]:checked').length === $('input[name="checkBox"]').length;
-            $('input[name="checkBox"]').prop('checked', !allChecked);
-            $(this).text(allChecked ? '일괄선택' : '선택해제');
-        });
-
-        $('#deleteEvent').click(function () {
-            const selectedIds = $('input[name="checkBox"]:checked')
-                .map(function () {
-                    return $(this).closest('tr').find('td:nth-child(2)').text();
-                })
-                .get();
-
-            if (selectedIds.length === 0) {
-                alert('삭제할 이벤트를 선택해주세요.');
-                return;
-            }
-
-            if (confirm('선택된 이벤트를 삭제하시겠습니까?')) {
-                $.ajax({
-                    url: '/admin/event/delete',
-                    type: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify(selectedIds),
-                    success: function () {
-                        alert('선택된 이벤트가 삭제되었습니다.');
-                        location.reload();
-                    },
-                    error: function () {
-                        alert('이벤트 삭제 실패');
-                    }
-                });
-            }
-        });
+        }
+    });
     });
 </script>
 </body>
