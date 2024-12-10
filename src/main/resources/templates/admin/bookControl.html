@@ -550,6 +550,7 @@
 
     //책 수정 모달 스크립트
     $('#productModal').on('show.bs.modal', function (event) {
+
         // 카테고리 목록 로드
         $.ajax({
             url: '/admin/categories/category',
@@ -598,7 +599,7 @@
 
         // 책 정보 가져오기
         $.ajax({
-            url: '/admin/book/' + bookId,
+            url: `/admin/book/${bookId}`,
             method: 'Post',
             success: function (data) {
                 $('#bookId').val(data.book.id || '');
@@ -704,7 +705,12 @@
             category: { id: $('#category').val() },
             subcategory: { id: $('#subcategory').val() },
             publishDate: $('#publishDate').val(),
-            bookdescription: { id: $('#bookdescriptionId').val() }
+            bookdescription: {
+                id: $('#bookdescriptionId').val(),
+                description: $('#description').val(),
+                writer: $('#writer').val(),
+                contents: $('#contents').val() // 여기 값이 비어있는지 확인
+            }
         };
 
         const formData = new FormData();
@@ -730,7 +736,7 @@
             processData: false,
             contentType: false,
             success: function (response) {
-                console.log('Success:', response);
+                console.log('Success:', response)
                 location.reload();
             },
             error: function (xhr, status, error) {
