@@ -30,7 +30,7 @@ public class AdminQnAApiController {
                              Model model) {
         Page<QnA> qnAPage = qnaService.findAll(pageable);
         model.addAttribute("qnAPage", qnAPage);
-        return "/admin/qnaControl";
+        return "admin/qnaControl";
     }
 
     // QnA 필터링
