@@ -22,5 +22,7 @@ public interface OrderItemServiceInterface {
     Map<String, String> buildOrderItemResponse(String orderItemId, @ModelAttribute("user") User user);
 
     Map<String, String> updateOrderItemAndUserPoint(Long orderItemId, Long point, @ModelAttribute("user") User user);
+
+    Integer countByUserIdAndStatus(Long userId, Byte status);
     
 }

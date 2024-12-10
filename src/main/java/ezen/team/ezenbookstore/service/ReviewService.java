@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -71,7 +72,6 @@ public class ReviewService implements ReviewServiceInterface{
         return reviewRepository.findAllByBookId(bookId);
     }
 
-    // 모든 리뷰 조회 (페이지네이션)
     @Override
     public Page<Review> findAll(Pageable pageable) {
         return reviewRepository.findAll(pageable);
@@ -129,5 +129,74 @@ public class ReviewService implements ReviewServiceInterface{
     @Override
     public Page<Review> findAllByBookTitle(String title, Pageable pageable) {
         return reviewRepository.findAllByBook_TitleContaining(title, pageable);
+    }
+    @Override
+    public Page<Review> getAllReviewsWithImages(Pageable pageable) {
+        Page<Review> reviewPage = reviewRepository.findAll(pageable);
+        // Review 엔티티 각각에 imagePath 세팅
+        reviewPage.getContent().forEach(review -> {
+            String imagePath = fileUploadService.findImageFilePath(review.getId(), "review");
+            if (imagePath == null) {
+                imagePath = "/image/noImage.png";
+            }
+            review.setImagePath(imagePath);
+        });
+        return reviewPage;
+    }
+
+    @Override
+    public Page<Review> searchReviews(String type, String keyword, Pageable pageable) {
+        Page<Review> result;
+        if ("book".equalsIgnoreCase(type)) {
+            result = reviewRepository.findAllByBookTitle(keyword, pageable);
+        } else if ("user".equalsIgnoreCase(type)) {
+            result = reviewRepository.findAllByUserName(keyword, pageable);
+        } else {
+            // 잘못된 검색 타입인 경우 빈 페이지 반환
+            return Page.empty();
+        }
+
+        // 검색된 Review에 imagePath 세팅
+        result.getContent().forEach(review -> {
+            String imagePath = fileUploadService.findImageFilePath(review.getId(), "review");
+            if (imagePath == null) {
+                imagePath = "/images/default.png";
+            }
+            review.setImagePath(imagePath);
+        });
+
+        return result;
+    }
+
+    @Override
+    public Review getReviewDetail(Long id) {
+        Optional<Review> review = reviewRepository.findById(id);
+        if (review.isEmpty()) return null;
+
+        // 단건 리뷰에도 imagePath 세팅
+        String imagePath = fileUploadService.findImageFilePath(review.get().getId(), "review");
+        if (imagePath == null) {
+            imagePath = "/images/default.png";
+        }
+        review.get().setImagePath(imagePath);
+
+        return review.orElse(null);
+    }
+
+    @Override
+    public void deleteReviews(List<Long> ids) {
+        for (Long id : ids) {
+            reviewRepository.deleteById(id);
+        }
+    }
+
+    @Override
+    public int getStartPage(int currentPage, int pageGroupSize) {
+        return Math.max(0, (currentPage / pageGroupSize) * pageGroupSize);
+    }
+
+    @Override
+    public int getEndPage(int startPage, int totalPages, int pageGroupSize) {
+        return Math.min(startPage + pageGroupSize, totalPages);
     }
 }
