@@ -42,42 +42,7 @@ public class AdminBookApiController {
             @RequestParam(name = "page", defaultValue = "0", required = false) int page,
             Model model) {
 
-        List<Book> filteredBooks = bookService.findAll(); // 기본적으로 전체 책 조회
-        int size = 10;
-        Pageable pageable = PageRequest.of(page, size);
-        // 키워드로 필터링
-        if (!keyword.isEmpty()) {
-            filteredBooks = bookService.findByTitleContaining(keyword);
-        }
-
-        // 국내/국외 필터링
-        if (!ifkr.isEmpty()) {
-            byte ifkrValue = Byte.parseByte(ifkr);
-            filteredBooks.retainAll(bookService.findAllByIfkr(ifkrValue));
-        }
-
-        // 카테고리 필터링
-        if (!category.isEmpty()) {
-            Category selectedCategory = categoryService.findById(Long.parseLong(category));
-            if (selectedCategory != null) {
-                filteredBooks.retainAll(bookService.findAllByCategoryId(selectedCategory.getId()));
-            }
-        }
-
-        // 서브카테고리 필터링
-        if (!subcategory.isEmpty()) {
-            SubCategory selectedSubCategory = subCategoryService.findById(Long.parseLong(subcategory));
-            if (selectedSubCategory != null) {
-                filteredBooks.retainAll(bookService.findAllBySubcategoryId(selectedSubCategory.getId()));
-            }
-        }
-
-        // 페이지네이션 적용
-        int start = Math.min((int) pageable.getOffset(), filteredBooks.size());
-        int end = Math.min((start + pageable.getPageSize()), filteredBooks.size());
-        List<Book> pagedBooks = filteredBooks.subList(start, end);
-        Page<Book> bookPage = new PageImpl<>(pagedBooks, pageable, filteredBooks.size());
-
+        Page<Book> bookPage = bookService.adminFilteredBooks(keyword, ifkr, category, subcategory, page);
 
         List<String> imagePaths = bookPage.getContent().stream()
                 .map(book -> fileUploadService.findImageFilePath(book.getId(), "book"))

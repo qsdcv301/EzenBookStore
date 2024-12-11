@@ -455,54 +455,6 @@
         checkboxes.forEach(cb => cb.checked = checkbox.checked);
     }
 
-
-    //검색창 카테고리와 서브카테고리
-    $(document).ready(function () {
-        // 카테고리 목록 로드
-        $.ajax({
-            url: '/admin/categories/category',
-            method: 'GET',
-            success: function (categories) {
-                console.log('카테고리 데이터:', categories); // 카테고리 데이터 확인용 로그
-                $('#searchCategory').empty();
-                $('#searchCategory').append(new Option("카테고리를 선택하세요", "")); // 기본 옵션 추가
-                categories.forEach(function (category) {
-                    $('#searchCategory').append(new Option(`${category.id}: ${category.name}`, category.id));
-                });
-            },
-            error: function (xhr, status, error) {
-                console.error('카테고리 로드 실패:', error);
-            }
-        });
-
-// 카테고리 선택 변경 시 관련 서브카테고리 로드
-        $('#searchCategory').on('change', function () {
-            const selectedCategoryId = $(this).val();
-            console.log('선택된 카테고리 ID:', selectedCategoryId); // 선택된 카테고리 확인용 로그
-
-            if (selectedCategoryId) {
-                $.ajax({
-                    url: `/admin/subcategories/${selectedCategoryId}`,
-                    method: 'GET',
-                    success: function (subcategories) {
-                        console.log('서브카테고리 데이터:', subcategories); // 서브카테고리 데이터 확인용 로그
-                        $('#searchSubCategory').empty();
-                        $('#searchSubCategory').append(new Option("서브카테고리를 선택하세요", ""));
-                        subcategories.forEach(function (subcategory) {
-                            $('#searchSubCategory').append(new Option(`${subcategory.id}: ${subcategory.name}`, subcategory.id));
-                        });
-                    },
-                    error: function (xhr, status, error) {
-                        console.error('서브카테고리 로드 실패:', error);
-                    }
-                });
-            } else {
-                $('#searchSubCategory').empty();
-                $('#searchSubCategory').append(new Option("서브카테고리를 선택하세요", ""));
-            }
-        });
-    });
-
     //검색기능 스크립트
     $('.searchKeywordBtn').on('click', function () {
         const keyword = $('.searchKeyword').val();
@@ -548,45 +500,69 @@
         return d.toISOString(); // ISO 형식으로 반환
     }
 
+    // 카테고리 목록 로드
+    $.ajax({
+        url: '/admin/categories/category',
+        method: 'GET',
+        success: function (categories) {
+            $('#category').empty().append(new Option("카테고리를 선택하세요", ""));
+            $('#searchCategory').empty().append(new Option("카테고리를 선택하세요", ""));
+            categories.forEach(function (category) {
+                $('#category').append(new Option(`${category.id}: ${category.name}`, category.id));
+                $('#searchCategory').append(new Option(`${category.id}: ${category.name}`, category.id));
+            });
+        },
+        error: function (xhr, status, error) {
+            console.error('카테고리 로드 실패:', error);
+        }
+    });
+
+    // 카테고리 선택 변경 시 관련 서브카테고리 로드
+    $('#category').on('change', function () {
+        const selectedCategoryId = $(this).val();
+        if (selectedCategoryId) {
+            $.ajax({
+                url: `/admin/subcategories/${selectedCategoryId}`,
+                method: 'GET',
+                success: function (subcategories) {
+                    $('#subcategory').empty().append(new Option("세부 카테고리를 선택하세요", ""));
+                    subcategories.forEach(function (subcategory) {
+                        $('#subcategory').append(new Option(`${subcategory.id}: ${subcategory.name}`, subcategory.id));
+                    });
+                },
+                error: function (xhr, status, error) {
+                    console.error('서브카테고리 로드 실패:', error);
+                }
+            });
+        } else {
+            $('#subcategory').empty().append(new Option("세부 카테고리를 선택하세요", ""));
+        }
+    });
+
+    // 카테고리 선택 변경 시 관련 서브카테고리 로드
+    $('#searchCategory').on('change', function () {
+        const selectedCategoryId = $(this).val();
+        if (selectedCategoryId) {
+            $.ajax({
+                url: `/admin/subcategories/${selectedCategoryId}`,
+                method: 'GET',
+                success: function (subcategories) {
+                    $('#searchSubCategory').empty().append(new Option("서브카테고리를 선택하세요", "")); // 기본 옵션 추가
+                    subcategories.forEach(function (subcategory) {
+                        $('#searchSubCategory').append(new Option(`${subcategory.id}: ${subcategory.name}`, subcategory.id));
+                    });
+                },
+                error: function (xhr, status, error) {
+                    console.error('서브카테고리 로드 실패:', error);
+                }
+            });
+        } else {
+            $('#searchSubCategory').empty().append(new Option("서브카테고리를 선택하세요", ""));
+        }
+    });
+
     //책 수정 모달 스크립트
     $('#productModal').on('show.bs.modal', function (event) {
-
-        // 카테고리 목록 로드
-        $.ajax({
-            url: '/admin/categories/category',
-            method: 'GET',
-            success: function (categories) {
-                $('#category').empty().append(new Option("카테고리를 선택하세요", ""));
-                categories.forEach(function (category) {
-                    $('#category').append(new Option(`${category.id}: ${category.name}`, category.id));
-                });
-            },
-            error: function (xhr, status, error) {
-                console.error('카테고리 로드 실패:', error);
-            }
-        });
-
-        // 카테고리 선택 변경 시 관련 서브카테고리 로드
-        $('#category').on('change', function () {
-            const selectedCategoryId = $(this).val();
-            if (selectedCategoryId) {
-                $.ajax({
-                    url: `/admin/subcategories/${selectedCategoryId}`,
-                    method: 'GET',
-                    success: function (subcategories) {
-                        $('#subcategory').empty().append(new Option("세부 카테고리를 선택하세요", ""));
-                        subcategories.forEach(function (subcategory) {
-                            $('#subcategory').append(new Option(`${subcategory.id}: ${subcategory.name}`, subcategory.id));
-                        });
-                    },
-                    error: function (xhr, status, error) {
-                        console.error('서브카테고리 로드 실패:', error);
-                    }
-                });
-            } else {
-                $('#subcategory').empty().append(new Option("세부 카테고리를 선택하세요", ""));
-            }
-        });
 
         var button = $(event.relatedTarget);
         var bookId = button.data('book-id');
