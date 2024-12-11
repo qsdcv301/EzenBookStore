@@ -133,8 +133,13 @@
                                         <h5 class="card-title title text-truncate" th:text="${book.title}"></h5>
                                         <p class="card-text text-truncate" th:text="${book.author}"></p>
                                         <p class="card-text text-truncate" th:text="${book.publisher}"></p>
-                                        <p class="card-text"><strong class="text-muted price"
-                                                                    th:text="${book.price}"></strong></p>
+                                        <p class="card-text">
+                                            <!--할인전 가격-->
+                                            <del class="me-2 origin-price" th:text="${book.price}"></del>
+                                            <!--할인후 가격-->
+                                            <strong class="text-danger dc-Price">할인된 금액</strong>
+                                            <small>[<span class="dc-per" th:text="${book.discount}"></span>%할인]</small>
+                                        </p>
                                         <input type="hidden" class="quantity cartAdd" value="1"
                                                th:data-book-id="${book.id}">
                                     </div>
