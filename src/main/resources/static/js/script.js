@@ -1055,6 +1055,37 @@ $(document).ready(function () {
         window.location.href = `/book?page=${page}&sort=${encodedSort}&direction=${encodedDirection}&ifkr=${ifkr}&category=${encodedCategory}&subcategory=${encodedSubcategory}`;
     });
 
+    // bookMain
+
+    $(".card-text").each(function () {
+        const $container = $(this); // 현재 컨테이너 (반복 중인 요소)
+
+        // 각각의 값을 읽어오기
+        const originPrice = $container.find(".origin-price").text(); // 할인 전 가격
+        const discount = $container.find(".dc-per").text(); // 할인율
+
+        // 값 파싱 및 포맷팅
+        const parsedValues = parseMoneyValues(originPrice, discount);
+        const formattedValues = formatMoneyValues(parsedValues.price, parsedValues.discount);
+
+        // DOM 업데이트
+        $container.find(".origin-price").text(formattedValues.formattedPrice);
+        $container.find(".dc-Price").text(formattedValues.discountedPrice);
+
+    });
+
+    function parseMoneyValues(price, discount) { //숫자의 문자열을 제거하고 순수 숫자만 남김
+        const numericPrice = parseInt(price.replace(/[^0-9]/g, ""), 10) || 0;
+        const numericDiscount = parseInt(discount.replace(/[^0-9]/g, ""), 10) || 0;
+        return {price: numericPrice, discount: numericDiscount};
+    }
+
+    function formatMoneyValues(price, discount) { //순수한 숫자를 포맷팅하여 한국 원화를 표기
+        const formattedPrice = price.toLocaleString("ko-KR") + "원";
+        const discountedPrice = Math.floor(price * (1 - discount / 100)).toLocaleString("ko-KR") + "원";
+        return {formattedPrice, discountedPrice};
+    }
+
     //     bookSerach
 
     $(".paymentModal-Data").each(function () {
