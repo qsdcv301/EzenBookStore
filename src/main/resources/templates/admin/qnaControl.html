@@ -4,7 +4,6 @@
     <meta charset="UTF-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>QnA관리</title>
-    <div th:replace="~{fragments/script :: script-head}"></div> <!-- 상단 JS -->
     <style>
         .container { margin-top: 20px; }
         .filter-btn { cursor: pointer; padding: 5px 15px; margin-right: 5px; border-radius: 5px; background: #e9ecef; }
@@ -142,7 +141,7 @@
         </div>
     </div>
 </div>
-
+<div th:replace="~{fragments/script :: script-body}"></div>
 <script>
     function getQueryParam(param) {
         const urlParams = new URLSearchParams(window.location.search);
