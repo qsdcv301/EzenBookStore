@@ -1,7 +1,7 @@
 <footer th:fragment="footer" class="bg-light py-5 mt-5">
     <div class="container">
         <div class="row">
-            <div class="col-md-3 mb-4">
+            <div class="col-12 col-sm-6 col-md-3 mb-4">
                 <h5 class="text-primary mb-3">도서 카테고리</h5>
                 <ul class="list-unstyled">
                     <li><a href="/book?sort=count&direction=desc" class="text-muted">베스트셀러</a></li>
@@ -11,7 +11,7 @@
                     <li><a href="/event" class="text-muted">이벤트</a></li>
                 </ul>
             </div>
-            <div class="col-md-3 mb-4">
+            <div class="col-12 col-sm-6 col-md-3 mb-4">
                 <h5 class="text-primary mb-3">고객 서비스</h5>
                 <ul class="list-unstyled">
                     <li><a href="/customerService" class="text-muted">고객센터</a></li>
@@ -20,7 +20,7 @@
                     <li><a href="/customerService?tab=inquiry" class="text-muted">문의하기</a></li>
                 </ul>
             </div>
-            <div class="col-md-3 mb-4">
+            <div class="col-12 col-sm-6 col-md-3 mb-4">
                 <h5 class="text-primary mb-3">이용안내</h5>
                 <ul class="list-unstyled">
                     <li><a href="/customerService?tab=terms-of-service-tab" class="text-muted">이용약관</a></li>
@@ -29,13 +29,15 @@
                     <li><a href="/customerService" class="text-muted">고객센터</a></li>
                 </ul>
             </div>
-            <div class="col-md-3 mb-4">
+            <div class="col-12 col-sm-6 col-md-3 mb-4">
                 <h5 class="text-primary mb-3">소셜 미디어</h5>
                 <ul class="list-unstyled">
-                    <li class="mb-2"><a href="#" class="text-muted"><i class="bi bi-facebook mr-2"></i>Facebook</a></li>
+                    <li class="mb-2"><a href="#" class="text-muted"><i class="bi bi-facebook mr-2"></i>Facebook</a>
+                    </li>
                     <li class="mb-2"><a href="#" class="text-muted"><i class="bi bi-instagram mr-2"></i>Instagram</a>
                     </li>
-                    <li class="mb-2"><a href="#" class="text-muted"><i class="bi bi-twitter mr-2"></i>Twitter</a></li>
+                    <li class="mb-2"><a href="#" class="text-muted"><i class="bi bi-twitter mr-2"></i>Twitter</a>
+                    </li>
                     <li><a href="#" class="text-muted"><i class="bi bi-youtube mr-2"></i>YouTube</a></li>
                 </ul>
             </div>
@@ -64,7 +66,7 @@
         <!-- 최근 본 도서 버튼 -->
         <button id="recentItemsBtn" class="btn btn-primary position-relative">
             <span id="bookCountBadge" class="badge badge-danger position-absolute"
-                  style="top: -10px; right: 0;">3</span>
+                style="top: -10px; right: 0;">3</span>
             <i class="bi bi-book"></i>
         </button>
         <ul id="recentlyViewedList" class="list-group mt-3">
@@ -82,16 +84,16 @@
                             <div class="row g-0">
                                 <div class="col-md-5">
                                     <img th:src="${entry.imgPath}" th:alt="${entry.title}" class="card-img-top"
-                                         style="width: 100%; height: 100%; object-fit: cover;">
+                                        style="width: 100%; height: 100%; object-fit: cover;">
                                 </div>
                                 <div class="col-md-7">
                                     <div class="card-body px-0">
                                         <a class="stretched-link" th:href="@{'/book/detail'(bookId=${entry.id})}"></a>
                                         <p class="card-title text-truncate" th:text="${entry.title}"></p>
                                         <p class="card-text text-truncate mb-0"><small>저자 : <span
-                                                th:text="${entry.author}"></span></small></p>
+                                                    th:text="${entry.author}"></span></small></p>
                                         <p class="card-text text-truncate"><small>출판사 : <span
-                                                th:text="${entry.publisher}"></span></small></p>
+                                                    th:text="${entry.publisher}"></span></small></p>
                                     </div>
                                 </div>
                             </div>
@@ -107,6 +109,12 @@
         <button id="scrollTopBtn"><i class="bi bi-arrow-up"></i></button>
         <button id="goHomeBtn"><i class="bi bi-house-fill"></i></button>
 
+    </div>
+    <!-- 모바일 유저 메뉴 -->
+    <div class="bottom-menu">
+        <a href="/cart" class="btn loginCheck"><i class="fas fa-shopping-cart"></i></a>
+        <a href="/" class="btn"><i class="fas fa-home"></i></a>
+        <a href="/user/info" class="btn loginCheck"><i class="fas fa-user"></i></a>
     </div>
     <script>
 
@@ -153,7 +161,7 @@
             });
 
             // 감시 대상과 옵션 설정
-            observer.observe(list, {childList: true, subtree: false});
+            observer.observe(list, { childList: true, subtree: false });
         });
 
     </script>

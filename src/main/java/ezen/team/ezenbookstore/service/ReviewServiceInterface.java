@@ -36,5 +36,11 @@ public interface ReviewServiceInterface {
     Page<Review> findAllByUserName(String name, Pageable pageable);
 
     Page<Review> findAllByBookTitle(String title, Pageable pageable);
+    Page<Review> getAllReviewsWithImages(Pageable pageable);
+    Page<Review> searchReviews(String type, String keyword, Pageable pageable);
+    Review getReviewDetail(Long id);
+    void deleteReviews(List<Long> ids);
+    int getStartPage(int currentPage, int pageGroupSize);
+    int getEndPage(int startPage, int totalPages, int pageGroupSize);
 
 }

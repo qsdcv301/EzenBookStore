@@ -16,7 +16,7 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
-public class OrderItemService implements OrderItemServiceInterface{
+public class OrderItemService implements OrderItemServiceInterface {
 
     private final OrderItemRepository orderItemRepository;
     private final UserService userService;
@@ -86,6 +86,30 @@ public class OrderItemService implements OrderItemServiceInterface{
     @Transactional(rollbackFor = Exception.class)
     public Map<String, String> updateOrderItemAndUserPoint(Long orderItemId, Long point, @ModelAttribute("user") User user) {
         Map<String, String> response = new HashMap<>();
+        OrderItem orderItem = findById(orderItemId);
+        byte status = 3;
+        OrderItem newOrderItem = OrderItem.builder()
+                .id(orderItem.getId())
+                .book(orderItem.getBook())
+                .orders(orderItem.getOrders())
+                .quantity(orderItem.getQuantity())
+                .status(status)
+                .build();
+        update(newOrderItem);
+        int userGrade;
+        if (user.getGrade() != 99) {
+            if (countByUserIdAndStatus(user.getId(), status) >= 20) {
+                userGrade = 2;
+            } else if (countByUserIdAndStatus(user.getId(), status) >= 50) {
+                userGrade = 3;
+            } else if (countByUserIdAndStatus(user.getId(), status) >= 100) {
+                userGrade = 4;
+            } else {
+                userGrade = 1;
+            }
+        } else {
+            userGrade = 99;
+        }
         User newUser = User.builder()
                 .id(user.getId())
                 .provider(user.getProvider())
@@ -97,22 +121,17 @@ public class OrderItemService implements OrderItemServiceInterface{
                 .addrextra(user.getAddrextra())
                 .createdAt(user.getCreatedAt())
                 .birthday(user.getBirthday())
-                .grade(user.getGrade())
+                .grade(userGrade)
                 .point(user.getPoint() + point)
                 .build();
         userService.update(newUser);
-        OrderItem orderItem = findById(orderItemId);
-        byte status = 3;
-        OrderItem newOrderItem = OrderItem.builder()
-                .id(orderItem.getId())
-                .book(orderItem.getBook())
-                .orders(orderItem.getOrders())
-                .quantity(orderItem.getQuantity())
-                .status(status)
-                .build();
-        update(newOrderItem);
         response.put("success", "true");
         return response;
+    }
+
+    @Override
+    public Integer countByUserIdAndStatus(Long userId, Byte status) {
+        return orderItemRepository.countByOrders_UserIdAndStatus(userId, status);
     }
 
     // 주문 항목 수량 업데이트

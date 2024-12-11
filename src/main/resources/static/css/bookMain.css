@@ -1,0 +1,47 @@
+.book-main .side {
+    padding-top: 220px;
+}
+
+.book-main .sidebar {
+    top: 40px;
+    border-radius: 15px;
+    background-color: #f8f9fa;
+    padding: 20px;
+}
+
+.book-main .side a {
+    color: #000000;
+    text-decoration: none;
+}
+
+.book-main .product-grid {
+    padding: 20px;
+}
+
+.book-main .card-img-top {
+    max-width: 100%;
+    height: 320px;
+    object-fit: cover;
+}
+
+.book-main .card-body {
+    padding: 0.5rem;
+}
+
+.book-main .card-title {
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+}
+
+.book-main .card-text {
+    font-size: 0.8rem;
+    margin-bottom: 0.25rem;
+}
+
+.book-main .checkboxScale{
+    transform: scale(1.5);
+}
+
+.book-main .arrow-icon{
+    font-size: 16px;
+}

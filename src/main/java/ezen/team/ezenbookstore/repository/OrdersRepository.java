@@ -30,8 +30,6 @@ public interface OrdersRepository extends JpaRepository<Orders, Long> {
     @Query("SELECT COUNT(d) FROM Orders d WHERE d.status = 3")
     Long countByStatus3();
 
-
-
     @Query("SELECT o FROM Orders o WHERE LOWER(o.user.email) LIKE LOWER(CONCAT('%', :email, '%'))")
     List<Orders> findAllByUserEmail(@Param("email") String email);
 

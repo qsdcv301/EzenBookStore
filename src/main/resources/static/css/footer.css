@@ -1,0 +1,159 @@
+/* footer 스타일 */
+.navigation-buttons {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.navigation-buttons button,
+.navigation-buttons #adminBtn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.navigation-buttons button:hover {
+    background-color: #0056b3;
+}
+
+/* 관리자 버튼 */
+.navigation-buttons #adminBtn:hover {
+    background-color: #e92e0e !important;
+}
+
+.navigation-buttons #adminBtn:hover .rotate-icon {
+    transform: rotate(75deg);
+}
+
+.rotate-icon {
+    transition: transform 0.5s ease-in-out;
+    transform-origin: center;
+}
+
+/* 추가된 부분 */
+/* 최근 본 도서 목록 스타일 */
+#recentlyViewedList {
+    position: absolute;
+    bottom: 250px;
+    right: 0;
+    z-index: 1000;
+    opacity: 0;
+    display: none;
+    width: 300px;
+    background-color: white;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: opacity 0.3s ease-in-out;
+}
+
+#recentlyViewedList.show {
+    opacity: 1;
+    display: block;
+}
+
+/* 반응형 스타일 */
+
+@media (hover: none) {
+    .bottom-menu .btn:hover {
+        /* hover 효과를 제거하는 스타일 */
+        color: inherit;
+        background-color: inherit;
+        /* 다른 hover 관련 속성들도 초기화 */
+    }
+}
+
+@media screen and (min-width: 768px) {
+    .bottom-menu {
+        display: none;
+    }
+}
+
+@media (max-width: 768px) {
+
+    .footer-container .row {
+        flex-direction: column;
+    }
+
+    .col-md-3 {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+    .navigation-buttons {
+        flex-direction: row;
+        bottom: 70px;
+        right: 10px;
+    }
+
+    .navigation-buttons button,
+    .navigation-buttons #adminBtn {
+        width: 40px;
+        height: 40px;
+    }
+
+    #goHomeBtn {
+        display: none;
+    }
+
+    #recentlyViewedList {
+        width: 50%;
+        bottom: 60px;
+    }
+
+    /* 하단 고정 유저 메뉴 스타일 */
+    .bottom-menu {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background-color: #fff;
+        box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+        display: flex;
+        justify-content: space-around;
+        padding: 10px 0;
+        z-index: 1000;
+    }
+
+    .bottom-menu a {
+        color: #007bff;
+        text-decoration: none;
+        font-size: 24px;
+        -webkit-tap-highlight-color: transparent;
+        /* iOS에서 탭 시 하이라이트 제거 */
+    }
+
+    .bottom-menu a:active,
+    .bottom-menu a:focus,
+    .bottom-menu a:hover,
+    .bottom-menu a:visited {
+        color: #007bff !important;
+        background-color: transparent !important;
+        outline: none;
+    }
+}
+
+
+
+@media (max-width: 576px) {
+    .navigation-buttons {
+        flex-direction: row;
+        justify-content: space-around;
+        width: 100%;
+        left: 0;
+        right: 0;
+    }
+}
+
+
+/* footer 스타일 끝 */

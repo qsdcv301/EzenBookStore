@@ -1,0 +1,238 @@
+/* 헤더 기본 스타일 */
+header {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.container {
+    width: 100%;
+    max-width: 1200px;
+    padding: 0 15px;
+}
+
+/* 최상단 바 스타일 */
+.top-bar {
+    background-color: #007bff;
+    color: #fff;
+    padding: 12px 0;
+}
+
+.top-bar .container {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.top-bar a {
+    color: #fff;
+    text-decoration: none;
+}
+
+.top-bar a:hover {
+    text-decoration: underline;
+}
+
+/* 로고 스타일 */
+.navbar-brand {
+    font-size: 30px;
+    font-weight: bold;
+    margin-right: -45px;
+}
+
+/* 검색바 스타일 */
+.search-bar {
+    display: flex;
+    align-items: center;
+    max-width: 500px;
+    width: 100%;
+    border: 2px solid #007bff;
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.search-bar select,
+.search-bar input,
+.search-bar button {
+    border: none;
+    border-radius: 0;
+    outline: none;
+    color: #007bff;
+}
+
+.search-bar select {
+    padding-left: 15px;
+    background-color: transparent;
+    font-weight: bold;
+}
+
+/* 사용자 메뉴 스타일 */
+.user-menu a {
+    margin-left: 1rem;
+    font-size: 18px;
+}
+
+/* 네비게이션 메뉴 스타일 */
+.navbar-nav {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.nav-item .nav-link {
+    color: #555;
+    transition: color 0.3s ease;
+}
+
+.nav-item .nav-link:hover {
+    color: #007bff;
+}
+
+.badge {
+    font-size: 0.8rem;
+}
+
+.nav-item {
+    margin-left: 10px;
+}
+
+/* 카테고리 스타일 */
+.dropdown-menu {
+    padding: 0;
+    border: 1px solid #ddd;
+    min-width: 200px;
+}
+
+.submenu-container {
+    position: relative;
+}
+
+.category-item {
+    position: relative;
+}
+
+.category-item .dropdown-item {
+    padding: 10px 15px;
+}
+
+.submenu {
+    display: none;
+    position: absolute;
+    left: 100%;
+    top: 0;
+    width: 600px;
+    background: white;
+    border: 1px solid #ddd;
+    padding: 15px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.category-item:hover .submenu {
+    display: block;
+}
+
+.category-item:hover {
+    background-color: #f8f9fa;
+}
+
+/* 반응형 스타일 */
+
+/* 태블릿 (768px 이상 992px 미만) */
+@media screen and (min-width: 768px) and (max-width: 991px) {
+    .top-bar {
+        padding: 12px 20px;
+    }
+
+    .search-bar {
+        max-width: 100%;
+    }
+
+    .user-menu a {
+        margin-left: 0.5rem;
+    }
+
+    .navbar-brand {
+        font-size: 24px;
+    }
+
+}
+
+/* 모바일 (768px 미만) */
+@media screen and (max-width: 767px) {
+    body {
+        padding-bottom: 60px;
+    }
+
+    .top-bar {
+        padding: 10px 0;
+    }
+
+    .top-bar .container {
+        padding: 0 10px;
+    }
+
+    .navbar-brand {
+        font-size: 20px;
+        margin-right: 0;
+    }
+
+    .search-bar {
+        max-width: 90%;
+        margin: 10px auto;
+    }
+
+    /* 기존 유저 메뉴 숨기기 */
+    .user-menu {
+        display: none !important;
+    }
+
+    .user-menu a {
+        display: inline-block;
+        margin: 0 10px;
+    }
+
+    .container {
+        flex-direction: column;
+    }
+
+    .dropdown-menu {
+        min-width: 100%;
+    }
+
+    .submenu {
+        position: static;
+        width: 100%;
+        box-shadow: none;
+    }
+
+}
+
+/* 가로 모드 (991px 이하) */
+@media screen and (max-width: 991px) and (orientation: landscape) {
+    .search-bar {
+        max-width: 60%;
+        margin: 10px auto;
+    }
+
+    .navbar-brand {
+        font-size: 20px;
+    }
+}
+
+/* 데스크톱 (992px 이상) */
+@media screen and (min-width: 992px) {
+    .top-bar {
+        padding: 12px 405px;
+    }
+}
+
+/* 대형 화면 (1024px 이상) */
+@media screen and (min-width: 1024px) {
+    .top-bar {
+        padding: 12px 0;
+    }
+
+    .top-bar .container {
+        display: flex;
+        justify-content: flex-end;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 15px;
+    }
+}

@@ -1,6 +1,7 @@
 package ezen.team.ezenbookstore.controller.admin;
 
 import ezen.team.ezenbookstore.entity.Event;
+import ezen.team.ezenbookstore.service.EventService;
 import ezen.team.ezenbookstore.service.EventServiceInterface;
 import ezen.team.ezenbookstore.service.FileUploadService;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +26,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/admin/event")
 public class AdminEventApiController {
 
-    private final EventServiceInterface eventService;
+    private final EventService eventService;
     private final FileUploadService fileUploadService;
 
     // 이벤트 목록 조회 및 필터링

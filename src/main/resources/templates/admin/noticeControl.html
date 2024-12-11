@@ -1,19 +1,14 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <title>공지사항 관리</title>
-    <!-- 부트스트랩 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!-- 부트스트랩 JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head th:replace="~{fragments/css :: css}">
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>공지사항관리</title>
     <style>
+        .container { margin-top: 20px; }
         .table th, .table td {
             text-align: center;
         }
-
         .img-thumbnail {
             max-width: 100px;
             height: auto;
@@ -23,32 +18,34 @@
 <body>
 <div class="container-fluid">
     <div class="row">
-        <!-- 사이드바 부분 -->
         <nav th:replace="~{fragments/sidebar :: sidebar}"></nav>
-
         <main class="col-10 content">
-            <div class="p-5" style="height: 100%;">
+            <div class="container">
                 <h3 class="font-weight-bold mb-3">공지사항 관리</h3>
                 <p>공지사항 추가, 수정, 삭제 및 검색을 위한 관리 페이지입니다.</p>
                 <hr>
 
+                <!-- 검색 및 추가/삭제 버튼 영역 -->
                 <div class="d-flex justify-content-between mb-3">
                     <!-- 검색 영역 -->
-                    <form id="searchForm" class="d-flex align-items-center">
-                        <select id="searchType" name="searchType" class="form-control me-2" style="width: 150px;">
+                    <!-- Bootstrap4: form-inline, form-control, mr-2 -->
+                    <form id="searchForm" class="form-inline" method="get" th:action="@{/admin/notice}">
+                        <select id="searchType" name="searchType" class="form-control mr-2" style="width: 150px;">
                             <option th:selected="${searchType == 'title'}" value="title">제목</option>
                             <option th:selected="${searchType == 'content'}" value="content">내용</option>
                         </select>
-                        <input type="text" id="keyword" name="keyword" class="form-control me-2"
-                               placeholder="검색어를 입력하세요" style="width: 300px;" th:value="${keyword}">
+                        <input type="text" id="keyword" name="keyword" class="form-control mr-2" placeholder="검색어를 입력하세요"
+                               style="width: 300px;" th:value="${keyword}">
                         <button type="submit" class="btn btn-secondary">조회</button>
                     </form>
 
-                    <!-- 공지사항 추가 버튼 -->
                     <div>
-                        <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                data-bs-target="#addNoticeModal">공지사항 추가
+                        <!-- 공지사항 추가 버튼 -->
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addNoticeModal">
+                            공지사항 추가 <i class="far fa-plus-square"></i>
                         </button>
+                        <!-- 선택 삭제 버튼 -->
+                        <button id="deleteNotice" class="btn btn-danger">삭제</button>
                     </div>
                 </div>
 
@@ -71,12 +68,11 @@
                         <td th:text="${notice.title}"></td>
                         <td th:text="${notice.content}"></td>
                         <td>
-                            <img th:src="${@thymeleafFileUploadService.findImageFilePath(notice.id, 'notice')}"
-                                 alt="이미지 없음" class="img-thumbnail">
+                            <img th:src="${@thymeleafFileUploadService.findImageFilePath(notice.id, 'notice')}" alt="이미지 없음" class="img-thumbnail">
                         </td>
                         <td>
-                            <button type="button" class="btn btn-warning edit-btn"
-                                    data-bs-toggle="modal" data-bs-target="#editNoticeModal"
+                            <button type="button" class="btn btn-primary edit-btn"
+                                    data-toggle="modal" data-target="#editNoticeModal"
                                     th:data-id="${notice.id}"
                                     th:data-title="${notice.title}"
                                     th:data-content="${notice.content}">
@@ -90,11 +86,6 @@
                     </tbody>
                 </table>
 
-                <!-- 일괄 선택/삭제 -->
-                <div class="mt-3">
-                    <button id="deleteNotice" class="btn btn-danger">선택 삭제</button>
-                </div>
-
                 <!-- 페이징 -->
                 <div class="d-flex justify-content-center mt-4">
                     <nav>
@@ -102,9 +93,7 @@
                             <!-- 이전 페이지 링크 -->
                             <li th:if="${noticePage.hasPrevious()}" class="page-item">
                                 <a class="page-link"
-                                   th:href="@{/admin/notice(page=${noticePage.number - 1}, size=${noticePage.size}, keyword=${keyword}, searchType=${searchType})}">
-                                    이전
-                                </a>
+                                   th:href="@{/admin/notice(page=${noticePage.number - 1}, size=${noticePage.size}, keyword=${keyword}, searchType=${searchType})}">이전</a>
                             </li>
 
                             <!-- 페이지 번호 반복 -->
@@ -113,16 +102,13 @@
                                 th:classappend="${i == noticePage.number} ? 'active'">
                                 <a class="page-link"
                                    th:href="@{/admin/notice(page=${i}, size=${noticePage.size}, keyword=${keyword}, searchType=${searchType})}"
-                                   th:text="${i + 1}">
-                                </a>
+                                   th:text="${i + 1}"></a>
                             </li>
 
                             <!-- 다음 페이지 링크 -->
                             <li th:if="${noticePage.hasNext()}" class="page-item">
                                 <a class="page-link"
-                                   th:href="@{/admin/notice(page=${noticePage.number + 1}, size=${noticePage.size}, keyword=${keyword}, searchType=${searchType})}">
-                                    다음
-                                </a>
+                                   th:href="@{/admin/notice(page=${noticePage.number + 1}, size=${noticePage.size}, keyword=${keyword}, searchType=${searchType})}">다음</a>
                             </li>
                         </ul>
                     </nav>
@@ -130,135 +116,132 @@
             </div>
         </main>
     </div>
-    <!-- 공지사항 추가 모달 -->
-    <div class="modal fade" id="addNoticeModal" tabindex="-1" aria-labelledby="addNoticeModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <form id="addNoticeForm" th:action="@{/admin/notice/add}" method="post" enctype="multipart/form-data">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="addNoticeModalLabel">공지사항 추가</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+
+<!-- 공지사항 추가 모달 -->
+<div class="modal fade" id="addNoticeModal" tabindex="-1" role="dialog" aria-labelledby="addNoticeModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form id="addNoticeForm" th:action="@{/admin/notice/add}" method="post" enctype="multipart/form-data">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addNoticeModalLabel">공지사항 추가</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="addTitle">제목</label>
+                        <input type="text" class="form-control" id="addTitle" name="title" placeholder="공지사항 제목을 입력하세요" required>
                     </div>
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label for="addTitle" class="form-label">제목</label>
-                            <input type="text" class="form-control" id="addTitle" name="title"
-                                   placeholder="공지사항 제목을 입력하세요" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="addContent" class="form-label">내용</label>
-                            <textarea class="form-control" id="addContent" name="content" rows="5"
-                                      placeholder="공지사항 내용을 입력하세요" required></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="addImage" class="form-label">이미지 첨부</label>
-                            <input type="file" class="form-control" id="addImage" name="imageAdd">
-                        </div>
+                    <div class="form-group">
+                        <label for="addContent">내용</label>
+                        <textarea class="form-control" id="addContent" name="content" rows="5" placeholder="공지사항 내용을 입력하세요" required></textarea>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-                        <button type="submit" class="btn btn-primary">추가</button>
+                    <div class="form-group">
+                        <label for="addImage">이미지 첨부</label>
+                        <input type="file" class="form-control-file" id="addImage" name="imageAdd">
                     </div>
-                </form>
-            </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+                    <button type="submit" class="btn btn-primary">추가</button>
+                </div>
+            </form>
         </div>
     </div>
+</div>
 
-    <!-- 공지사항 수정 모달 -->
-    <div class="modal fade" id="editNoticeModal" tabindex="-1" aria-labelledby="editNoticeModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <form id="editNoticeForm" th:action="@{/admin/notice/update}" method="post"
-                      enctype="multipart/form-data">
-                    <input type="hidden" id="editId" name="id">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="editNoticeModalLabel">공지사항 수정</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<!-- 공지사항 수정 모달 -->
+<div class="modal fade" id="editNoticeModal" tabindex="-1" role="dialog" aria-labelledby="editNoticeModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form id="editNoticeForm" th:action="@{/admin/notice/update}" method="post" enctype="multipart/form-data">
+                <input type="hidden" id="editId" name="id">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editNoticeModalLabel">공지사항 수정</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="editTitle">제목</label>
+                        <input type="text" class="form-control" id="editTitle" name="title" required>
                     </div>
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label for="editTitle" class="form-label">제목</label>
-                            <input type="text" class="form-control" id="editTitle" name="title" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="editContent" class="form-label">내용</label>
-                            <textarea class="form-control" id="editContent" name="content" rows="5" required></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">현재 이미지</label>
-                            <div>
-                                <img id="currentImage" src="" alt="이미지 없음" class="img-thumbnail">
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="editImage" class="form-label">이미지 변경</label>
-                            <input type="file" class="form-control" id="editImage" name="image">
-                        </div>
-                        <p class="text-muted">새 이미지를 업로드하면 기존 이미지가 대체됩니다.</p>
+                    <div class="form-group">
+                        <label for="editContent">내용</label>
+                        <textarea class="form-control" id="editContent" name="content" rows="5" required></textarea>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-                        <button type="submit" class="btn btn-primary">저장</button>
+                    <div class="form-group">
+                        <label>현재 이미지</label>
+                        <div>
+                            <img id="currentImage" src="" alt="이미지 없음" class="img-thumbnail">
+                        </div>
                     </div>
-                </form>
-            </div>
+                    <div class="form-group">
+                        <label for="editImage">이미지 변경</label>
+                        <input type="file" class="form-control-file" id="editImage" name="image">
+                    </div>
+                    <p class="text-muted">새 이미지를 업로드하면 기존 이미지가 대체됩니다.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+                    <button type="submit" class="btn btn-primary">저장</button>
+                </div>
+            </form>
         </div>
     </div>
+</div>
+<div th:replace="~{fragments/script :: script-body}"></div>
+<script>
+    // 수정 버튼 클릭 시 데이터 설정
+    $(document).on('click', '.edit-btn', function () {
+        const id = $(this).data('id');
+        const title = $(this).data('title');
+        const content = $(this).data('content');
+        const imageSrc = $(this).closest('tr').find('img').attr('src');
 
-    <script>
-        // 검색 폼 제출 시 페이지 리로드
-        $('#searchForm').submit(function (event) {
-            // 폼 기본 동작 유지
+        $('#editId').val(id);
+        $('#editTitle').val(title);
+        $('#editContent').val(content);
+        $('#currentImage').attr('src', imageSrc);
+    });
+
+    // 전체 선택/해제
+    $('#selectAll').click(function () {
+        $('input[name="checkBoxNotice"]').prop('checked', this.checked);
+    });
+
+    // 선택 삭제
+    $('#deleteNotice').click(function () {
+        const selectedIds = [];
+        $('input[name="checkBoxNotice"]:checked').each(function () {
+            const id = $(this).closest('tr').find('td:nth-child(2)').text();
+            selectedIds.push(id);
         });
 
-        // 수정 버튼 클릭 시 데이터 설정
-        $(document).on('click', '.edit-btn', function () {
-            const id = $(this).data('id');
-            const title = $(this).data('title');
-            const content = $(this).data('content');
-            const imageSrc = $(this).closest('tr').find('img').attr('src');
+        if (selectedIds.length === 0) {
+            alert('삭제할 공지사항을 선택해주세요.');
+            return;
+        }
 
-            $('#editId').val(id);
-            $('#editTitle').val(title);
-            $('#editContent').val(content);
-            $('#currentImage').attr('src', imageSrc);
-        });
-
-        // 전체 선택/해제
-        $('#selectAll').click(function () {
-            $('input[name="checkBoxNotice"]').prop('checked', this.checked);
-        });
-
-        // 선택 삭제
-        $('#deleteNotice').click(function () {
-            const selectedIds = [];
-            $('input[name="checkBoxNotice"]:checked').each(function () {
-                const id = $(this).closest('tr').find('td:nth-child(2)').text();
-                selectedIds.push(id);
+        if (confirm('선택된 공지사항을 삭제하시겠습니까?')) {
+            $.ajax({
+                url: '/admin/notice/delete',
+                type: 'POST',
+                traditional: true,
+                data: { ids: selectedIds },
+                success: function () {
+                    alert('선택된 공지사항이 삭제되었습니다.');
+                    location.reload();
+                },
+                error: function () {
+                    alert('공지사항 삭제에 실패했습니다.');
+                }
             });
-
-            if (selectedIds.length === 0) {
-                alert('삭제할 공지사항을 선택해주세요.');
-                return;
-            }
-
-            if (confirm('선택된 공지사항을 삭제하시겠습니까?')) {
-                $.ajax({
-                    url: '/admin/notice/delete',
-                    type: 'POST',
-                    traditional: true,
-                    data: {ids: selectedIds},
-                    success: function () {
-                        alert('선택된 공지사항이 삭제되었습니다.');
-                        location.reload();
-                    },
-                    error: function () {
-                        alert('공지사항 삭제에 실패했습니다.');
-                    }
-                });
-            }
-        });
-    </script>
+        }
+    });
+</script>
 </body>
 </html>
