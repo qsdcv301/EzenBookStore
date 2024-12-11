@@ -1,5 +1,6 @@
 package ezen.team.ezenbookstore.service;
 
+import ezen.team.ezenbookstore.dto.BookDescriptionDto;
 import ezen.team.ezenbookstore.entity.BookDescription;
 
 import java.util.List;
@@ -16,4 +17,5 @@ public interface BookDescriptionServiceInterface {
 
     void delete(Long id);
 
+    BookDescriptionDto formatDescriptionElements(Long id);
 }
