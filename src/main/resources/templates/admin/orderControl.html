@@ -52,7 +52,7 @@
 
                 <!-- 배송 상태별 건수 -->
                 <div class="d-flex justify-content-start mb-3">
-                    <span class="filter-option active" data-status=""
+                    <span class="filter-option" data-status=""
                           onclick="filterDeliveryStatus(this)">
                         전체 <span th:text="${deliveryCount.get('totalCount')}"></span>
                     </span>
@@ -316,6 +316,12 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
 
 <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (!urlParams.has("delivery") || !urlParams.has("page")) {
+            window.location.href = "/admin/order?delivery=&page=0";
+        }
+    });
 
     //체크박스 전체선택
     function toggleSelectAll() {
