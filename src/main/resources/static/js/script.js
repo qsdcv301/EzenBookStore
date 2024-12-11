@@ -1057,7 +1057,7 @@ $(document).ready(function () {
 
     // bookMain
 
-    $(".card-text").each(function () {
+    $(".card-price").each(function () {
         const $container = $(this); // 현재 컨테이너 (반복 중인 요소)
 
         // 각각의 값을 읽어오기
