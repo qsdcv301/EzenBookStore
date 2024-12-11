@@ -1,6 +1,8 @@
 package ezen.team.ezenbookstore.controller.User;
 
+import ezen.team.ezenbookstore.dto.BookDescriptionDto;
 import ezen.team.ezenbookstore.entity.*;
+import ezen.team.ezenbookstore.service.BookDescriptionService;
 import ezen.team.ezenbookstore.service.BookService;
 import ezen.team.ezenbookstore.service.facade.BookFacadeService;
 import jakarta.servlet.http.HttpServletResponse;
@@ -21,6 +23,7 @@ public class BookApiController {
 
     private final BookFacadeService bookFacadeService;
     private final BookService bookService;
+    private final BookDescriptionService bookDescriptionService;
 
     @GetMapping
     public String book(@RequestParam(name = "page", defaultValue = "0", required = false) int page,
@@ -71,12 +74,17 @@ public class BookApiController {
     @GetMapping("/detail")
     public String bookDetail(@RequestParam(name = "bookId") Long bookId, HttpServletResponse response, Model model) {
         Book book = bookService.updateBookCount(bookId);
+        // 책 설명(BookDescription) 포맷팅
+        Long descriptionId = book.getBookdescription().getId(); // bookdescription ID 가져오기
+        BookDescriptionDto bookDescriptionDto = bookDescriptionService.formatDescriptionElements(descriptionId);
+
         String imagePath = bookFacadeService.getBookImagePath(bookId);
         List<String> reviewImagePathList = bookFacadeService.getReviewImagePathList(bookId);
         bookFacadeService.recentBookCookie(bookId, response);
         model.addAttribute("imagePath", imagePath);
         model.addAttribute("reviewImagePathList", reviewImagePathList);
         model.addAttribute("book", book);
+        model.addAttribute("bookDescription", bookDescriptionDto);
         return "bookDetail";
     }
 

@@ -10,6 +10,8 @@ import ezen.team.ezenbookstore.repository.CategoryRepository;
 import ezen.team.ezenbookstore.repository.SubCategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +29,8 @@ public class BookService implements BookServiceInterface {
     private final BookDescriptionRepository bookDescriptionRepository;
     private final CategoryRepository categoryRepository;
     private final SubCategoryRepository subCategoryRepository;
+    private final CategoryService categoryService;
+    private final SubCategoryService subCategoryService;
 
     @Override
     public Book findById(Long id) {
@@ -269,5 +273,44 @@ public class BookService implements BookServiceInterface {
     @Transactional
     public void deleteBooksByIds(List<Long> bookIds) {
         bookRepository.deleteAllById(bookIds); // Repository 호출
+    }
+
+    @Transactional
+    public Page<Book> adminFilteredBooks(String keyword,String ifkr,String category,String subcategory,int page) {
+        List<Book> filteredBooks = findAll(); // 기본적으로 전체 책 조회
+        int size = 10;
+        Pageable pageable = PageRequest.of(page, size);
+        // 키워드로 필터링
+        if (!keyword.isEmpty()) {
+            filteredBooks = findByTitleContaining(keyword);
+        }
+
+        // 국내/국외 필터링
+        if (!ifkr.isEmpty()) {
+            byte ifkrValue = Byte.parseByte(ifkr);
+            filteredBooks.retainAll(findAllByIfkr(ifkrValue));
+        }
+
+        // 카테고리 필터링
+        if (!category.isEmpty()) {
+            Category selectedCategory = categoryService.findById(Long.parseLong(category));
+            if (selectedCategory != null) {
+                filteredBooks.retainAll(findAllByCategoryId(selectedCategory.getId()));
+            }
+        }
+
+        // 서브카테고리 필터링
+        if (!subcategory.isEmpty()) {
+            SubCategory selectedSubCategory = subCategoryService.findById(Long.parseLong(subcategory));
+            if (selectedSubCategory != null) {
+                filteredBooks.retainAll(findAllBySubcategoryId(selectedSubCategory.getId()));
+            }
+        }
+
+        // 페이지네이션 적용
+        int start = Math.min((int) pageable.getOffset(), filteredBooks.size());
+        int end = Math.min((start + pageable.getPageSize()), filteredBooks.size());
+        List<Book> pagedBooks = filteredBooks.subList(start, end);
+        return new PageImpl<>(pagedBooks, pageable, filteredBooks.size());
     }
 }
