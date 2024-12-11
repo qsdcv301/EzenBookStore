@@ -1,4 +1,4 @@
-<header th:fragment="header">
+<header th:fragment="header" class="bg-white">
     <!-- 상단 바 -->
     <div class="top-bar d-flex justify-content-end">
         <div class="container">
@@ -15,7 +15,7 @@
     </div>
     <!-- 헤더 -->
     <div class="header">
-        <div class="d-flex align-items-center justify-content-center mt-3"
+        <div class="d-flex align-items-center justify-content-center pt-3"
              style="color: #007bff; font-size: 14px; font-weight: 700;">
             <p th:unless="${userData}"></p>
             <span th:if="${userData}"><span th:text="${user.name}"></span>님, 환영합니다. | 등급: <span th:switch="${user.grade}">
