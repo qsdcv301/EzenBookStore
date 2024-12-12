@@ -11,15 +11,19 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
 public class UserService implements UserServiceInterface{
 
     private final UserRepository userRepository;
-
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Override
@@ -167,5 +171,60 @@ public class UserService implements UserServiceInterface{
     public Long userCount(){
         return userRepository.count();
     }
+
+    @Transactional
+    @Override
+    public List<User> fetchUserList(String type, String keyword) {
+        if (type != null && !type.isEmpty() && keyword != null && !keyword.isEmpty()) {
+            if (type.equalsIgnoreCase("email")) {
+                return findUsersByEmail(keyword);
+            } else if (type.equalsIgnoreCase("name")) {
+                return findUsersByName(keyword);
+            }
+        }
+        return findAllUsers();
+    }
+
+    @Transactional
+    @Override
+    public List<User> filterUsersByGrade(List<User> userList, Integer grade) {
+        if (grade != null) {
+            return userList.stream()
+                    .filter(u -> u.getGrade().equals(grade))
+                    .collect(Collectors.toList());
+        }
+        return userList;
+    }
+
+    @Transactional
+    @Override
+    public List<User> paginateUsers(List<User> users, int page, int size) {
+        int fromIndex = (page - 1) * size;
+        int toIndex = Math.min(fromIndex + size, users.size());
+
+        if (fromIndex >= users.size()) {
+            return Collections.emptyList();
+        }
+        return users.subList(fromIndex, toIndex);
+    }
+
+    @Transactional
+    @Override
+    public Map<String, Long> calculateGradeCounts(List<User> userList) {
+        Map<String, Long> gradeCounts = new HashMap<>();
+        gradeCounts.put("general", userList.stream().filter(u -> u.getGrade() == 1).count());
+        gradeCounts.put("silver", userList.stream().filter(u -> u.getGrade() == 2).count());
+        gradeCounts.put("gold", userList.stream().filter(u -> u.getGrade() == 3).count());
+        gradeCounts.put("vip", userList.stream().filter(u -> u.getGrade() == 4).count());
+        gradeCounts.put("admin", userList.stream().filter(u -> u.getGrade() == 99).count());
+        return gradeCounts;
+    }
+
+    @Transactional
+    @Override
+    public int calculateTotalPages(int totalItems, int size) {
+        return (int) Math.ceil((double) totalItems / size);
+    }
+
 
 }

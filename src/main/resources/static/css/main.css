@@ -1,5 +1,15 @@
+.main-con .row {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.main-con .col-6 {
+    flex: 0 0 50%;
+    max-width: 50%;
+}
+
 /* 슬라이드 스타일 */
-.carousel-item img {
+.event-list img {
     height: 400px;
     object-fit: cover;
 }
@@ -50,6 +60,19 @@
 /* 슬라이드 스타일 끝 */
 
 /* 공지사항 */
+#noticeCarousel .carousel-item a {
+    font-size: 1.1rem;
+    font-weight: 500;
+    display: block;
+    /* 블록 요소로 설정 */
+    overflow: hidden;
+    /* 넘치는 텍스트 숨김 */
+    white-space: nowrap;
+    /* 텍스트를 한 줄로 표시 */
+    text-overflow: ellipsis;
+    /* 말줄임표 적용 */
+}
+
 /* 수직 슬라이드를 위한 스타일 */
 #noticeCarousel.vertical .carousel-inner {
     height: 100%;
@@ -92,6 +115,7 @@
 
 /* 상품 스타일 */
 .main-con .book-item img {
+    height: 400px;
     border-radius: 5px;
 }
 
@@ -115,4 +139,123 @@
 
 .main-con .book-item:hover .book-info {
     bottom: 0;
+}
+
+@media screen and (min-width: 768px) {
+    .main-con .col-md-3 {
+        flex: 0 0 25%;
+        max-width: 25%;
+    }
+}
+
+@media (max-width: 767px) {
+    .event-list img {
+        height: 200px;
+        width: 100%;
+        object-fit: cover;
+    }
+
+    .main-con .book-item img {
+        height: 200px;
+    }
+
+    .main-con .book-item {
+        margin-bottom: 20px;
+    }
+
+    .main-con .book-info {
+        height: auto;
+        width: 100%;
+        background-color: rgba(0, 0, 0, 0.7);
+        color: #fff;
+        position: static;
+        padding: 10px;
+    }
+
+    .main-con .book-info h5 {
+        font-size: 1.2rem;
+        /* 제목 텍스트 크기 조정 */
+        margin-bottom: 5px;
+    }
+
+    .main-con .book-info p {
+        font-size: 1rem;
+        /* 내용 텍스트 크기 조정 */
+        margin-bottom: 0;
+    }
+
+    .main-con .book-info p.product-publisher,
+    .main-con .book-info p.product-price {
+        display: none;
+    }
+
+
+    .main-con .book-item img {
+        height: 200px;
+        width: 100%;
+        object-fit: cover;
+        /* 이미지 비율 유지 */
+    }
+
+    .main-con .book-item:hover .book-info {
+        bottom: 0;
+        position: static;
+    }
+
+    .carousel-control-prev,
+    .carousel-control-next {
+        display: none;
+    }
+}
+
+@media screen and (min-width: 768px) and (max-width: 1023px) {
+    .event-list img {
+        height: 300px;
+    }
+
+    .main-con .book-item img {
+        height: 300px;
+    }
+}
+
+@media (max-width: 1024px) {
+
+    /* 태블릿 및 모바일 가로 모드 포함 */
+    .main-con .book-item img {
+        height: 200px;
+        width: 100%;
+        object-fit: cover;
+        /* 이미지 비율 유지 */
+    }
+
+    .main-con .book-item {
+        margin-bottom: 20px;
+    }
+
+    .main-con .book-info {
+        height: auto;
+        width: 100%;
+        background-color: rgba(0, 0, 0, 0.7);
+        color: #fff;
+        position: static;
+        padding: 10px;
+    }
+
+    .main-con .book-info h5 {
+        font-size: 1.2rem;
+        /* 제목 텍스트 크기 조정 */
+        margin-bottom: 5px;
+    }
+
+    .main-con .book-info p {
+        font-size: 1rem;
+        /* 내용 텍스트 크기 조정 */
+        margin-bottom: 0;
+    }
+
+    .main-con .book-info p.product-publisher,
+    .main-con .book-info p.product-price {
+        display: none;
+        /* 출판사와 가격 숨김 */
+    }
 }

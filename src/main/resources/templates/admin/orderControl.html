@@ -292,6 +292,7 @@
                             <th>상품명</th>
                             <th>수량</th>
                             <th>가격</th>
+                            <th>상태</th>
                             <th>수정 및 삭제</th>
                         </tr>
                         </thead>
@@ -300,6 +301,12 @@
                             <td th:text="${item.book.title}">상품명</td>
                             <td><input th:value="${item.quantity}" th:id="'ordersItemQuantity-' + ${item.id}" class="form-control"></td>
                             <td th:text="${item.book.price}">가격</td>
+                            <td th:text="${item.status == 1 ? '배송 전' :
+                                      (item.status == 2 ? '배송 완료' :
+                                      (item.status == 3 ? '주문 확정' :
+                                      (item.status == 4 ? '교환/반품 신청' :
+                                      (item.status == 5 ? '교환됨' :
+                                      (item.status == 6 ? '반품됨' : '기타')))))}">상태</td>
                             <td>
                                 <button class="btn btn-primary" th:onclick="'updateOrdersItem(' + ${item.id} + ')'">수정</button>
                                 <button class="btn btn-warning" th:onclick="'deleteOrdersItem(' + ${item.id} + ', ' + ${order.id} + ')'">삭제</button>
