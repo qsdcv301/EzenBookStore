@@ -93,24 +93,24 @@
 
 
         /* 섹션 제목 스타일 */
-        .section-title {
+        .main-con .section-title {
             margin-top: 2rem;
             margin-bottom: 1rem;
         }
 
         /* 상품 스타일 */
-        .book-item img {
+        .main-con .book-item img {
             border-radius: 5px;
         }
 
-        .book-item {
+        .main-con .book-item {
             position: relative;
             overflow: hidden;
             border-radius: 5px;
 
         }
 
-        .book-info {
+        .main-con .book-info {
             position: absolute;
             bottom: -100%;
             left: 0;
@@ -121,16 +121,14 @@
             transition: bottom 0.3s ease-in-out;
         }
 
-        .book-item:hover .book-info {
+        .main-con .book-item:hover .book-info {
             bottom: 0;
         }
-
-        /* 상품 스타일 끝 */
     </style>
 </head>
 
 <body>
-    <div class="container mt-5">
+    <div class="container mt-5 main-con">
         <main class="mb-5">
             <!-- 섹션 0: 공지사항 -->
             <div class="container-fluid px-0">
