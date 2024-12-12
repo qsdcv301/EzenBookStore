@@ -6,6 +6,7 @@ import ezen.team.ezenbookstore.entity.Book;
 import ezen.team.ezenbookstore.entity.BookDescription;
 import ezen.team.ezenbookstore.service.BookService;
 import ezen.team.ezenbookstore.service.FileUploadService;
+import ezen.team.ezenbookstore.util.FormatUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +15,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -26,14 +26,7 @@ public class AdminBookApiController {
 
     private final BookService bookService;
     private final FileUploadService fileUploadService;
-    private Timestamp formatPublishDate(String publishDate) {
-        Timestamp convertedTimestamp = null;
-        if (publishDate != null && !publishDate.isEmpty()) {
-            String fullDateTime = publishDate + " 00:00:00";
-            convertedTimestamp = Timestamp.valueOf(fullDateTime);
-        }
-        return convertedTimestamp;
-    }
+
 
     @GetMapping("")
     public String bookControl(
@@ -89,25 +82,20 @@ public class AdminBookApiController {
             @RequestParam(name = "publish_Date", required = false) String publishDate,
             @ModelAttribute BookDescription bookDescription,
             @RequestParam(name = "files", required = false) List<MultipartFile> files) {
-        try {
-            System.out.println(book);
-            System.out.println(bookDescription);
-            book.setPublishDate(formatPublishDate(publishDate)); // 수동으로 변환된 값 설정
 
-            // 데이터베이스에 저장
-            Book newBook = bookService.addBook(book, bookDescription);
+        // 수동으로 변환된 값 설정
+        book.setPublishDate(FormatUtils.formatPublishDate(publishDate));
 
-            // 파일 업로드 처리
-            if (files != null && !files.isEmpty()) {
-                for (MultipartFile file : files) {
-                    fileUploadService.uploadFile(file, newBook.getId().toString(), "book");
-                }
+        // 데이터베이스에 저장
+        Book newBook = bookService.addBook(book, bookDescription);
+
+        // 파일 업로드 처리
+        if (files != null && !files.isEmpty()) {
+            for (MultipartFile file : files) {
+                fileUploadService.uploadFile(file, newBook.getId().toString(), "book");
             }
-            return ResponseEntity.ok("Book added successfully");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().body("Book addition failed: " + e.getMessage());
         }
+        return ResponseEntity.ok("Book added successfully");
     }
 
 
@@ -129,12 +117,8 @@ public class AdminBookApiController {
             return ResponseEntity.badRequest().body(null);
         }
 
-        // publishDate를 수동 변환
-        if (publishDate != null && !publishDate.isEmpty()) {
-            String fullDateTime = publishDate + " 00:00:00";
-            Timestamp convertedTimestamp = Timestamp.valueOf(fullDateTime);
-            book.setPublishDate(convertedTimestamp); // 수동으로 변환된 값 설정
-        }
+        // 수동으로 변환된 값 설정
+        book.setPublishDate(FormatUtils.formatPublishDate(publishDate));
 
         // Book 업데이트
         Book updatedBook = bookService.update(book);

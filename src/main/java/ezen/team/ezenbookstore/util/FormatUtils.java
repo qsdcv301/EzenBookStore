@@ -1,5 +1,6 @@
 package ezen.team.ezenbookstore.util;
 
+import java.sql.Timestamp;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -15,6 +16,15 @@ public class FormatUtils {
         }
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         return formatter.format(date);
+    }
+
+    public static Timestamp formatPublishDate(String publishDate) {
+        Timestamp convertedTimestamp = null;
+        if (publishDate != null && !publishDate.isEmpty()) {
+            String fullDateTime = publishDate + " 00:00:00";
+            convertedTimestamp = Timestamp.valueOf(fullDateTime);
+        }
+        return convertedTimestamp;
     }
 
     public static String formatCurrency(Long amount) {

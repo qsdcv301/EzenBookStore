@@ -1,6 +1,8 @@
 package ezen.team.ezenbookstore.service;
 
 import ezen.team.ezenbookstore.entity.Category;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
 
 import java.util.List;
 
@@ -26,4 +28,16 @@ public interface CategoryServiceInterface {
 
     List<Category> getAllCategories();
 
+    @Transactional
+    List<Category> filterCategories(String keyword);
+
+    @Transactional
+    List<Category> paginateCategories(List<Category> categoryList, int page, int size);
+
+    @Transactional
+    int calculateTotalPages(long totalCategories, int size);
+
+    @Transactional
+    void addAttributesToModel(Model model, List<Category> categoryList, int totalPages, int currentPage,
+                              long totalCount, String keyword, int pageSize);
 }

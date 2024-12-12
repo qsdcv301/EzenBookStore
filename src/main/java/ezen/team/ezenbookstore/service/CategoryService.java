@@ -6,7 +6,10 @@ import ezen.team.ezenbookstore.repository.CategoryRepository;
 import ezen.team.ezenbookstore.repository.SubCategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
 
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -25,18 +28,6 @@ public class CategoryService implements CategoryServiceInterface {
     public List<Category> findAll() {
         return categoryRepository.findAll();
     }
-//
-//    public Category create(Category category) {
-//        return categoryRepository.save(category);
-//    }
-
-//    public Category update(Long id, Category category) {
-//        Category newCategory = Category.builder()
-//                .id(id)
-//                .name(category.getName())
-//                .build();
-//        return categoryRepository.save(newCategory);
-//    }
 
     @Override
     public Category create(Category category) {
@@ -91,6 +82,47 @@ public class CategoryService implements CategoryServiceInterface {
     @Override
     public List<Category> getAllCategories() {
         return categoryRepository.findAll();
+    }
+
+    @Transactional
+    @Override
+    public List<Category> filterCategories(String keyword) {
+        if (keyword != null && !keyword.isEmpty()) {
+            return findCategoriesByName(keyword);
+        } else {
+            return findAll();
+        }
+    }
+
+    @Transactional
+    @Override
+    public List<Category> paginateCategories(List<Category> categoryList, int page, int size) {
+        int fromIndex = (page - 1) * size;
+        int toIndex = Math.min(fromIndex + size, categoryList.size());
+
+        if (fromIndex >= categoryList.size()) {
+            return Collections.emptyList();
+        } else {
+            return categoryList.subList(fromIndex, toIndex);
+        }
+    }
+
+    @Transactional
+    @Override
+    public int calculateTotalPages(long totalCategories, int size) {
+        return (int) Math.ceil((double) totalCategories / size);
+    }
+
+    @Transactional
+    @Override
+    public void addAttributesToModel(Model model, List<Category> categoryList, int totalPages, int currentPage,
+                                     long totalCount, String keyword, int pageSize) {
+        model.addAttribute("categoryList", categoryList);
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("currentPage", currentPage);
+        model.addAttribute("totalCount", totalCount);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("pageSize", pageSize);
     }
 
 }
