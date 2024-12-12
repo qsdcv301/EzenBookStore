@@ -316,27 +316,38 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
 
 <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (!urlParams.has("delivery") || !urlParams.has("page")) {
+            window.location.href = "/admin/order?delivery=&page=0";
+        }
+    });
+
     //체크박스 전체선택
     function toggleSelectAll() {
         const isChecked = $('#select-all-checkbox').is(':checked'); // 상단 체크박스 상태 확인
         $('.order-checkbox').prop('checked', isChecked); // 하위 체크박스 상태 변경
     }
 
-    // 배송 상태 필터링
+    // 초기화 코드: 페이지 로드 시 active 클래스 설정
+    document.addEventListener("DOMContentLoaded", () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentDelivery = urlParams.get("delivery");
+        if (currentDelivery || currentDelivery === '') {
+            document.querySelectorAll('.filter-option').forEach(option => {
+                if (option.getAttribute("data-status") === currentDelivery) {
+                    option.classList.add('active');
+                } else {
+                    option.classList.remove('active');
+                }
+            });
+        }
+    });
+
+    // 배송 상태 필터링 함수
     function filterDeliveryStatus(element) {
         const delivery = element.getAttribute("data-status");
         const urlParams = new URLSearchParams(window.location.search);
-
-        // 모든 요소에서 'active' 클래스 제거
-        document.querySelectorAll('.filter-option').forEach(option => {
-            option.classList.remove('active');
-        });
-
-        // 현재 선택된 요소에 'active' 클래스 추가
-        const currentDelivery = urlParams.get("delivery");
-        if (delivery == currentDelivery) {
-            element.classList.add('active');
-        }
 
         // 기존 파라미터 유지 + 배송 상태 변경
         urlParams.set("delivery", delivery);
@@ -345,6 +356,7 @@
         // 새 URL로 이동
         location.href = `/admin/order?${urlParams.toString()}`;
     }
+
 
 
     // 주문 상태 및 결제 상태 필터링

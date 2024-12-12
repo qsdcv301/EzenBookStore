@@ -1,6 +1,7 @@
 package ezen.team.ezenbookstore.service;
 
 import ezen.team.ezenbookstore.entity.Book;
+import ezen.team.ezenbookstore.entity.BookDescription;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -12,7 +13,8 @@ public interface BookServiceInterface {
 
     Book create(Book book);
 
-    Book addBook(Book book);
+    // 새 책 추가 메서드
+    Book addBook(Book book, BookDescription bookDescription);
 
     Book update(Book book);
 

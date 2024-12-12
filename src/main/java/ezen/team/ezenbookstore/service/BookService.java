@@ -18,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,6 +30,7 @@ public class BookService implements BookServiceInterface {
     private final SubCategoryRepository subCategoryRepository;
     private final CategoryService categoryService;
     private final SubCategoryService subCategoryService;
+    private final BookDescriptionService bookDescriptionService;
 
     @Override
     public Book findById(Long id) {
@@ -44,16 +44,24 @@ public class BookService implements BookServiceInterface {
 
     // 새 책 추가 메서드
     @Override
-    public Book addBook(Book book) {
-        // 책 설명이 포함된 경우 처리
-        if (book.getBookdescription() != null) {
-            BookDescription description = book.getBookdescription();
-            bookDescriptionRepository.save(description);
-            book.setBookdescription(description); // 저장된 설명을 책에 설정
-        }
-
+    public Book addBook(Book book, BookDescription bookDescription) {
+        BookDescription newBookDescription = bookDescriptionService.create(bookDescription);
+        Book newBook = Book.builder()
+                .title(book.getTitle())
+                .author(book.getAuthor())
+                .publisher(book.getPublisher())
+                .publishDate(book.getPublishDate())
+                .isbn(book.getIsbn())
+                .stock(book.getStock())
+                .ifkr(book.getIfkr())
+                .price(book.getPrice())
+                .category(book.getCategory())
+                .subcategory(book.getSubcategory())
+                .discount(book.getDiscount())
+                .bookdescription(newBookDescription)
+                .build();
         // 카테고리와 서브카테고리, 설명이 포함된 상태로 책 저장
-        return bookRepository.save(book);
+        return bookRepository.save(newBook);
     }
 
     @Override
