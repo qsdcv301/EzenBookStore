@@ -5,7 +5,7 @@
 
 <body class="bg-image">
     <header th:replace="~{fragments/header :: header}"></header>
-    <div class="container main-con mt-5">
+    <div class="container main-con">
         <main class="mb-5">
             <!-- 섹션 0: 공지사항 -->
             <div class="container-fluid px-0">
@@ -14,7 +14,7 @@
                         <div class="d-flex justify-content-between align-items-center bg-info">
                             <div class="col-2 px-3">
                                 <span class="text-white font-weight-bold d-none d-md-block">공지사항</span>
-                                <span class="text-white d-md-none">공지</span>
+                                <span class="text-white d-md-none" style="font-size: 0.7em;">공지</span>
                             </div>
                             <div class="col-8 flex-grow-1">
                                 <div id="noticeCarousel" class="carousel slide vertical py-2" data-ride="carousel"
@@ -31,10 +31,11 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-2 px-3 d-flex justify-content-end">
-                                    <a href="/customerService" class="text-white text-decoration-none d-none d-md-block">+더보기</a>
-                                    <a href="/customerService" class="bi bi-three-dots text-white d-md-none"></a>
-                                </div>
+                            </div>
+                            <div class="col-2 px-3 d-flex justify-content-end">
+                                <a href="/customerService"
+                                    class="text-white text-decoration-none d-none d-md-block">+더보기</a>
+                                <a href="/customerService" class="bi bi-three-dots text-white d-md-none"></a>
                             </div>
                         </div>
                     </div>
@@ -144,7 +145,7 @@
                                                         <h5 th:text="${newBookList[chunkIndex * 4 + bookIndex].title}"
                                                             class="product-title text-truncate"></h5>
                                                         <p th:text="'작가: ' + ${newBookList[chunkIndex * 4 + bookIndex].author}"
-                                                            class="product-authortext-truncate"></p>
+                                                            class="product-author text-truncate"></p>
                                                         <p th:text="'출판사: ' + ${newBookList[chunkIndex * 4 + bookIndex].publisher}"
                                                             class="product-publisher text-truncate"></p>
                                                         <p class="card-price" style="font-size: 0.9em;">
