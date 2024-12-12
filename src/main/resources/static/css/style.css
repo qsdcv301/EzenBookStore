@@ -1,72 +1,64 @@
-body{
-    background-image: url("/image/background.jpg");
-    background-size: cover; /* 이미지가 화면 전체를 덮도록 */
-    background-position: center; /* 이미지를 화면 중앙에 배치 */
-    background-repeat: no-repeat; /* 이미지 반복 방지 */
-    background-attachment: fixed; /* 스크롤 시 배경 고정 */
-}
-
-.quantity-input {
-    width: 70px;
-}
-
-.cart-item {
-    margin-bottom: 1rem;
+.bg-image {
+  background-image: url("/image/background.jpg");
+  background-size: cover; /* 이미지가 화면 전체를 덮도록 */
+  background-position: center; /* 이미지를 화면 중앙에 배치 */
+  background-repeat: no-repeat; /* 이미지 반복 방지 */
+  background-attachment: fixed; /* 스크롤 시 배경 고정 */
 }
 
 /* Admin Aside */
 
 .adminAside {
-    font-family: Arial, sans-serif;
+  font-family: Arial, sans-serif;
 }
 .adminAside hr {
-    border-color: #ffffff;
+  border-color: #ffffff;
 }
 .adminAside .sidebar {
-    background-color: #343a40;
-    height: 100vh;
-    color: #ffffff;
+  background-color: #343a40;
+  height: 100vh;
+  color: #ffffff;
 }
 .adminAside .sidebar ul {
-    list-style: none;
+  list-style: none;
 }
 .adminAside .sidebar ul li {
-    padding: 10px 0;
+  padding: 10px 0;
 }
 .adminAside .sidebar ul li ul {
-    font-size: 16px;
+  font-size: 16px;
 }
 .adminAside .sidebar ul li strong {
-    cursor: pointer;
-    font-size: 22px;
+  cursor: pointer;
+  font-size: 22px;
 }
 .adminAside .sidebar ul li a {
-    text-decoration: none;
-    color: #ffffff;
-    position: relative;
-    padding: 5px 0;
+  text-decoration: none;
+  color: #ffffff;
+  position: relative;
+  padding: 5px 0;
 }
 .adminAside .sidebar ul li a .underline {
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    width: 0;
-    height: 2px;
-    background-color: #007bff;
-    transition: width 0.3s ease;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0;
+  height: 2px;
+  background-color: #007bff;
+  transition: width 0.3s ease;
 }
 .adminAside .sidebar ul li a:hover .underline {
-    width: 100%;
+  width: 100%;
 }
 .adminAside .sidebar ul li a.active .underline {
-    width: 100%;
+  width: 100%;
 }
 .adminAside .sidebar-last a {
-    color: #ffffff;
-    text-decoration: none;
+  color: #ffffff;
+  text-decoration: none;
 }
 .adminAside .sidebar-last a:hover {
-    color: #007bff;
+  color: #007bff;
 }
 
 

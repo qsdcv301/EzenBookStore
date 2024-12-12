@@ -1,10 +1,13 @@
 package ezen.team.ezenbookstore.service;
 
 import ezen.team.ezenbookstore.entity.Book;
+import ezen.team.ezenbookstore.entity.BookDescription;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 public interface BookServiceInterface {
 
@@ -12,7 +15,8 @@ public interface BookServiceInterface {
 
     Book create(Book book);
 
-    Book addBook(Book book);
+    // 새 책 추가 메서드
+    Book addBook(Book book, BookDescription bookDescription);
 
     Book update(Book book);
 
@@ -50,4 +54,13 @@ public interface BookServiceInterface {
 
     Book updateBookCount(Long bookId);
 
+    void updateDiscountForBooks(Map<String, Object> payload);
+
+    void updateDiscountByBookId(Long bookId, byte discount);
+
+    void deleteBooksByIdsRaw(List<?> bookIdsRaw);
+
+    void deleteBooksByIds(List<Long> bookIds);
+
+    Page<Book> adminFilteredBooks(String keyword, String ifkr, String category, String subcategory, int page);
 }
