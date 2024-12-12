@@ -41,8 +41,4 @@ public class QnA {
     @Column(name = "create_at")
     @CreationTimestamp
     private Timestamp createAt;
-
-    public boolean isAnswered() {
-        return this.answer != null && !this.answer.trim().isEmpty();
-    }
 }
