@@ -177,7 +177,6 @@ public class EventService implements EventServiceInterface{
                 .map(event -> fileUploadService.getImageCount(event.getId(), "event"))
                 .collect(Collectors.toList());
     }
-//    public Page<Event> calculateEventStatus() {
-//        return eventRepository.;
-//    }
+//    @Override
+//    public Event creatEvent(String title,String content,Timestamp startDate, Timestamp  endDate,)
 }

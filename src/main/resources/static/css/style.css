@@ -61,20 +61,55 @@
   color: #007bff;
 }
 
-/* admin QnA Review event notice style 곂친지 확인해야함 class명*/
-/*.container {*/
-/*    margin-top: 20px;*/
-/*}*/
-/*.filter span {*/
-/*    cursor: pointer;*/
-/*    padding: 10px 20px;*/
-/*    margin-right: 5px;*/
-/*    border-radius: 5px;*/
-/*    background: #eeeeee;*/
-/*}*/
-/*.filter span.active {*/
-/*    background: #0d6efd;*/
-/*    color: white;*/
-/*}*/
 
-/* */
+ /*admin QnA event */
+.adminEvent-container .container {
+    margin-top: 20px;
+}
+.adminEvent-container .filter span {
+    cursor: pointer;
+    padding: 10px 20px;
+    margin-right: 5px;
+    border-radius: 5px;
+    background: #eeeeee;
+}
+.adminEvent-container .filter span.active {
+    background: #0d6efd;
+    color: white;
+}
+.adminQnA-container .container {
+    margin-top: 20px;
+}
+.adminQnA-container .filter span {
+    cursor: pointer;
+    padding: 10px 20px;
+    margin-right: 5px;
+    border-radius: 5px;
+    background: #eeeeee;
+}
+.adminQnA-container .filter span.active {
+    background: #0d6efd;
+    color: white;
+}
+
+/** admin QnApage.css */
+table th, table td {
+    word-wrap: break-word; /* 텍스트가 길어질 때 자동으로 줄 바꿈 */
+    white-space: normal;   /* 텍스트가 한 줄에 표시되도록 방지 */
+    padding: 10px;         /* 셀 패딩 추가 */
+    vertical-align: middle; /* 수직 중앙 정렬 */
+}
+
+table td {
+    max-width: 200px;      /* 최대 너비 지정 (적당한 값으로 조정) */
+    overflow: hidden;      /* 내용이 넘칠 경우 숨기기 */
+    text-overflow: ellipsis; /* 넘칠 때 '...' 표시 */
+}
+
+table th {
+    word-wrap: break-word;
+}
+
+table .btn {
+    white-space: nowrap; /* 버튼 안에서 텍스트가 한 줄로 표시되도록 */
+}
