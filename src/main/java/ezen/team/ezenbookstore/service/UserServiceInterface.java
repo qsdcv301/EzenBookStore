@@ -3,8 +3,10 @@ package ezen.team.ezenbookstore.service;
 import ezen.team.ezenbookstore.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 public interface UserServiceInterface {
 
@@ -39,5 +41,20 @@ public interface UserServiceInterface {
     List<User> findUsersByName(String name);
 
     Long userCount();
+
+    @Transactional
+    List<User> fetchUserList(String type, String keyword);
+
+    @Transactional
+    List<User> filterUsersByGrade(List<User> userList, Integer grade);
+
+    @Transactional
+    List<User> paginateUsers(List<User> users, int page, int size);
+
+    @Transactional
+    Map<String, Long> calculateGradeCounts(List<User> userList);
+
+    @Transactional
+    int calculateTotalPages(int totalItems, int size);
 
 }

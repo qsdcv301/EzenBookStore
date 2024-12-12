@@ -1,7 +1,6 @@
 package ezen.team.ezenbookstore.service;
 
 import ezen.team.ezenbookstore.entity.OrderItem;
-import ezen.team.ezenbookstore.entity.SubCategory;
 import ezen.team.ezenbookstore.entity.User;
 import ezen.team.ezenbookstore.repository.OrderItemRepository;
 import ezen.team.ezenbookstore.util.ParseUtils;
@@ -134,7 +133,8 @@ public class OrderItemService implements OrderItemServiceInterface {
         return orderItemRepository.countByOrders_UserIdAndStatus(userId, status);
     }
 
-    // 주문 항목 수량 업데이트
+    @Transactional
+    @Override
     public boolean updateQuantity(Long ordersItemId, int quantity) {
         OrderItem ordersItem = orderItemRepository.findById(ordersItemId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 주문 항목 ID입니다."));
@@ -143,7 +143,8 @@ public class OrderItemService implements OrderItemServiceInterface {
         return true;
     }
 
-    // 주문 항목 삭제
+    @Transactional
+    @Override
     public void deleteOrdersItem(Long ordersItemId) {
         orderItemRepository.deleteById(ordersItemId);
     }
