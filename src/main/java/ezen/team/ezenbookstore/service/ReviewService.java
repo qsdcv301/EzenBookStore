@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -146,18 +147,18 @@ public class ReviewService implements ReviewServiceInterface{
 
     @Override
     public Page<Review> searchReviews(String type, String keyword, Pageable pageable) {
-        Page<Review> result;
+        Page<Review> reviewPage;
         if ("book".equalsIgnoreCase(type)) {
-            result = reviewRepository.findAllByBookTitle(keyword, pageable);
+            reviewPage = reviewRepository.findAllByBookTitle(keyword, pageable);
         } else if ("user".equalsIgnoreCase(type)) {
-            result = reviewRepository.findAllByUserName(keyword, pageable);
+            reviewPage = reviewRepository.findAllByUserName(keyword, pageable);
         } else {
             // 잘못된 검색 타입인 경우 빈 페이지 반환
             return Page.empty();
         }
 
         // 검색된 Review에 imagePath 세팅
-        result.getContent().forEach(review -> {
+        reviewPage.getContent().forEach(review -> {
             String imagePath = fileUploadService.findImageFilePath(review.getId(), "review");
             if (imagePath == null) {
                 imagePath = "/images/default.png";
@@ -165,23 +166,38 @@ public class ReviewService implements ReviewServiceInterface{
             review.setImagePath(imagePath);
         });
 
-        return result;
+        return reviewPage;
     }
 
     @Override
-    public Review getReviewDetail(Long id) {
-        Optional<Review> review = reviewRepository.findById(id);
-        if (review.isEmpty()) return null;
+    public Map<String, Object> getReviewDetail(Long id) {
+        Optional<Review> reviewOptional = reviewRepository.findById(id);
+        if (reviewOptional.isEmpty()) {
+            return null;
+        }
 
-        // 단건 리뷰에도 imagePath 세팅
-        String imagePath = fileUploadService.findImageFilePath(review.get().getId(), "review");
+        Review review = reviewOptional.get();
+
+        // 이미지 경로 설정
+        String imagePath = fileUploadService.findImageFilePath(review.getId(), "review");
         if (imagePath == null) {
             imagePath = "/images/default.png";
         }
-        review.get().setImagePath(imagePath);
 
-        return review.orElse(null);
+        // 리뷰 데이터 Map 생성
+        Map<String, Object> reviewData = new HashMap<>();
+        reviewData.put("id", review.getId());
+        reviewData.put("title", review.getTitle());
+        reviewData.put("comment", review.getComment());
+        reviewData.put("rating", review.getRating());
+        reviewData.put("user", Map.of("id", review.getUser().getId(), "name", review.getUser().getName()));
+        reviewData.put("book", Map.of("id", review.getBook().getId(), "title", review.getBook().getTitle()));
+        reviewData.put("createAt", review.getCreateAt());
+        reviewData.put("imagePath", imagePath);
+
+        return reviewData;
     }
+
 
     @Override
     public void deleteReviews(List<Long> ids) {

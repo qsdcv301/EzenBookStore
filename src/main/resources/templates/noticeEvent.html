@@ -24,7 +24,7 @@
         </div>
 
         <div class="card-body overflow-auto">
-            <div class="card-text" th:text="${notice != null ? notice.content : event.content}">
+            <div class="card-text" th:utext="${notice != null ? notice.content : event.content}">
             </div>
             <div class="card-img mt-3" th:if="${noticeImagePath != null || eventImagePath != null}">
                 <img th:src="${noticeImagePath != null ? noticeImagePath : eventImagePath}" class="card-img-top img-thumbnail"

@@ -74,14 +74,14 @@ public class AdminReviewApiController {
                 return "/admin/reviewControl";
             }
 
-            Page<Review> result = reviewService.searchReviews(type, keyword, pageable);
+            Page<Review> review = reviewService.searchReviews(type, keyword, pageable);
 
             // 검색 결과가 없는 경우
-            if (result == null || result.isEmpty()) {
+            if (review == null || review.isEmpty()) {
                 model.addAttribute("error", "검색 결과가 없습니다.");
             }
 
-            model.addAttribute("reviewPage", result);
+            model.addAttribute("reviewPage", review);
             return "/admin/reviewControl";
 
         } catch (Exception e) {
@@ -107,24 +107,18 @@ public class AdminReviewApiController {
     @GetMapping("/{id}")
     public ResponseEntity<Map<String, Object>> getReviewDetail(@PathVariable Long id) {
         try {
-            Review review = reviewService.getReviewDetail(id);
-            if (review == null) {
+            Map<String, Object> reviewData = reviewService.getReviewDetail(id);
+            if (reviewData == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
             }
-
-            Map<String, Object> reviewData = Map.of(
-                    "id", review.getId(),
-                    "title", review.getTitle(),
-                    "comment", review.getComment(),
-                    "rating", review.getRating(),
-                    "userId", review.getUser().getId(),
-                    "bookId", review.getBook().getId(),
-                    "imagePath", review.getImagePath() // 서비스에서 세팅된 이미지 경로 사용
-            );
-
             return ResponseEntity.ok(reviewData);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+            Map<String, Object> errorResponse = Map.of(
+                    "status", HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                    "message", "An unexpected error occurred: " + e.getMessage()
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
 }
+
