@@ -3,15 +3,11 @@ package ezen.team.ezenbookstore.controller.admin;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ezen.team.ezenbookstore.entity.Book;
-import ezen.team.ezenbookstore.entity.Category;
-import ezen.team.ezenbookstore.entity.SubCategory;
+import ezen.team.ezenbookstore.entity.BookDescription;
 import ezen.team.ezenbookstore.service.BookService;
-import ezen.team.ezenbookstore.service.CategoryService;
 import ezen.team.ezenbookstore.service.FileUploadService;
-import ezen.team.ezenbookstore.service.SubCategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -30,8 +26,14 @@ public class AdminBookApiController {
 
     private final BookService bookService;
     private final FileUploadService fileUploadService;
-    private final CategoryService categoryService;
-    private final SubCategoryService subCategoryService;
+    private Timestamp formatPublishDate(String publishDate) {
+        Timestamp convertedTimestamp = null;
+        if (publishDate != null && !publishDate.isEmpty()) {
+            String fullDateTime = publishDate + " 00:00:00";
+            convertedTimestamp = Timestamp.valueOf(fullDateTime);
+        }
+        return convertedTimestamp;
+    }
 
     @GetMapping("")
     public String bookControl(
@@ -85,19 +87,15 @@ public class AdminBookApiController {
     public ResponseEntity<String> addBook(
             @ModelAttribute Book book,
             @RequestParam(name = "publish_Date", required = false) String publishDate,
+            @ModelAttribute BookDescription bookDescription,
             @RequestParam(name = "files", required = false) List<MultipartFile> files) {
         try {
-            // publishDate를 수동 변환
-            if (publishDate != null && !publishDate.isEmpty()) {
-                System.out.println("Received publishDate: " + publishDate); // 디버깅용 로그
-                String fullDateTime = publishDate + " 00:00:00";
-                Timestamp convertedTimestamp = Timestamp.valueOf(fullDateTime);
-                book.setPublishDate(convertedTimestamp); // 수동으로 변환된 값 설정
-                System.out.println("Converted publishDate to Timestamp: " + book.getPublishDate());
-            }
+            System.out.println(book);
+            System.out.println(bookDescription);
+            book.setPublishDate(formatPublishDate(publishDate)); // 수동으로 변환된 값 설정
 
             // 데이터베이스에 저장
-            Book newBook = bookService.addBook(book);
+            Book newBook = bookService.addBook(book, bookDescription);
 
             // 파일 업로드 처리
             if (files != null && !files.isEmpty()) {
