@@ -3,25 +3,18 @@
 <head th:replace="~{fragments/css :: css}">
     <meta charset="UTF-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>QnA관리</title>
-    <style>
-        .container { margin-top: 20px; }
-        .filter-btn { cursor: pointer; padding: 5px 15px; margin-right: 5px; border-radius: 5px; background: #e9ecef; }
-        .filter-btn.active { background: #0d6efd; color: white; }
-        .hidden { display: none; }
-    </style>
+    <title>문의하기 관리 페이지</title>
 </head>
 <body>
-<div class="container-fluid">
+<div class="container-fluid adminQnA-container">
     <div class="row">
         <nav th:replace="~{fragments/sidebar :: sidebar}"></nav>
         <main class="col-10 content">
-            <div class="container">
-                <h2>QnA 관리</h2>
-                <p>QnA 관리 페이지입니다. 카테고리별 분리 및 답변 기능을 제공합니다.</p>
-
+            <div class="container mt-5">
+                <h2>문의하기 관리</h2>
+                <p>카테고리별 문의를 확인하고 관리할 수 있는 페이지입니다.</p>
                 <!-- 카테고리 필터 -->
-                <div class="filter mb-3">
+                <div class="d-flex justify-content-start filter mb-3">
                     <span class="filter-btn active" data-filter="all">전체</span>
                     <span class="filter-btn" data-filter="1">회원 문의</span>
                     <span class="filter-btn" data-filter="2">상품 문의</span>
@@ -30,21 +23,25 @@
                     <span class="filter-btn" data-filter="5">취소/반품 문의</span>
                     <span class="filter-btn" data-filter="6">기타 문의</span>
                 </div>
+                <hr>
+                <div class="d-flex justify-content-between filter mb-3">
+                    <!-- 답변 상태 필터 -->
+                    <form id="searchForm" class="form-inline">
+                        <select id="answerStatusFilter" class="form-control mr-2" style="width: 200px; display: inline-block;">
+                            <option value="all">모든 상태</option>
+                            <option value="answered">답변 완료</option>
+                            <option value="pending">답변 대기중</option>
+                        </select>
+                        <button id="filterStatus" class="btn btn-primary">상태 필터 적용</button>
+                    </form>
 
-                <!-- 답변 상태 필터 -->
-                <!-- form-select -> form-control 변경 -->
-                <div class="mb-3">
-                    <select id="answerStatusFilter" class="form-control" style="width: 200px; display: inline-block;">
-                        <option value="all">모든 상태</option>
-                        <option value="answered">답변 완료</option>
-                        <option value="pending">답변 대기중</option>
-                    </select>
-                    <button id="filterStatus" class="btn btn-primary">상태 필터 적용</button>
+                    <div>
+                        <button id="bulkAnswer" class="btn btn-success">일괄 답변</button>
+                    </div>
                 </div>
-
                 <!-- QnA 테이블 -->
-                <table class="table table-bordered">
-                    <thead>
+                <table class="table table-bordered text-center">
+                    <thead class="thead-light">
                     <tr>
                         <th><input type="checkbox" id="selectAllQnA"></th>
                         <th>QnA 아이디</th>
@@ -57,7 +54,8 @@
                     </thead>
                     <tbody>
                     <tr th:each="qnA : ${qnAPage}">
-                        <td><input type="checkbox" th:class="inputCheckbox" name="checkBoxQnA" th:value="${qnA.id}"></td>
+                        <td><input type="checkbox" th:class="inputCheckbox" name="checkBoxQnA" th:value="${qnA.id}">
+                        </td>
                         <td th:text="${qnA.id}"></td>
                         <td th:text="${qnA.user.name}"></td>
                         <td>
@@ -74,16 +72,15 @@
                         <td th:text="${qnA.title}"></td>
                         <td th:text="${qnA.answer != '' ? '답변됨' : '답변 대기중'}"></td>
                         <td>
-                            <!-- Bootstrap4는 data-toggle="modal" data-target="#id" 사용 -->
-                            <button type="button" class="btn btn-info btn-sm view-btn" th:attr="data-qna-id=${qnA.id}">상세보기</button>
+                            <button type="button" class="btn btn-info btn-sm view-btn" th:attr="data-qna-id=${qnA.id}">
+                                상세보기
+                            </button>
                         </td>
-                        <td>
-                            <input type="hidden" class="hiddenImg" th:value="${@thymeleafFileUploadService.findImageFilePath(qnA.id,'qna')}">
-                        </td>
+                        <input type="hidden" class="hiddenImg"
+                               th:value="${@thymeleafFileUploadService.findImageFilePath(qnA.id,'qna')}">
                     </tr>
                     </tbody>
                 </table>
-                <button id="bulkAnswer" class="btn btn-success">일괄 답변</button>
             </div>
         </main>
     </div>
@@ -109,19 +106,18 @@
 </div>
 
 <!-- QnA 상세보기 모달 -->
-<!-- data-bs- -> data-, btn-close -> close 버튼 -->
-<div class="modal fade" id="qnaDetailModal" tabindex="-1" role="dialog" aria-labelledby="qnaDetailModalLabel" aria-hidden="true">
+<div class="modal fade" id="qnaDetailModal" tabindex="-1" role="dialog" aria-labelledby="qnaDetailModalLabel"
+     aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <form>
                 <div class="modal-header">
-                    <h5 class="modal-title" id="qnaDetailModalLabel">QnA 상세보기</h5>
-                    <!-- btn-close 대신 close 버튼 사용 -->
+                    <h5 class="modal-title" id="qnaDetailModalLabel">문의하기 상세보기</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
+                    <form>
                     <p><strong>QnA ID:</strong> <span id="detailQnAId"></span></p>
                     <p><strong>유저 이름:</strong> <span id="detailUserName"></span></p>
                     <p><strong>카테고리:</strong> <span id="detailCategory"></span></p>
@@ -131,13 +127,11 @@
                     <img id="detailImg" src=""/>
                     <p><strong>답변:</strong></p>
                     <textarea id="editAnswer" class="form-control"></textarea>
+                    </form>
                 </div>
                 <div class="modal-footer">
-                    <!-- data-bs-dismiss="modal" -> data-dismiss="modal" -->
                     <button type="button" class="btn btn-primary" id="saveAnswer">답변 저장</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
                 </div>
-            </form>
         </div>
     </div>
 </div>
@@ -166,7 +160,7 @@
             url: '/admin/qna/filter',
             type: 'POST',
             contentType: 'application/json',
-            data: JSON.stringify({ category, status }),
+            data: JSON.stringify({category, status}),
             success: function (response) {
                 updateTable(response);
             },
@@ -248,7 +242,7 @@
             url: `/admin/qna/${qnaId}/answer`,
             type: 'POST',
             contentType: 'application/json',
-            data: JSON.stringify({ answer }),
+            data: JSON.stringify({answer}),
             success: function () {
                 alert('답변이 저장되었습니다.');
                 $('#qnaDetailModal').modal('hide');
@@ -300,13 +294,14 @@
                     url: `/admin/qna/bulk-answer`,
                     type: 'POST',
                     contentType: 'application/json',
-                    data: JSON.stringify({ ids: selectedIds, answer }),
-                    success: function () {
+                    data: JSON.stringify({ids: selectedIds, answer}),
+                    success: function (request) {
+                        console.log(request);
                         alert('일괄 답변이 완료되었습니다.');
                         location.reload();
                     },
-                    error: function () {
-                        alert('일괄 답변에 실패했습니다.');
+                    error: function (xhr, status, error) {
+                        alert('일괄 답변에 실패했습니다.'+error);
                     }
                 });
             }
@@ -315,6 +310,7 @@
         }
     });
     $(document).ready(function () {
+        $('.close').click(function() { $('#qnaDetailModal').modal('hide'); });
         restoreFilters();
     });
 </script>

@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>온라인 서점</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <style>
+        body {
+            background-image: url(../../static/image/background.jpg);
+            background-size: cover;
+            /* 이미지가 화면 전체를 덮도록 */
+            background-position: center;
+            /* 이미지를 화면 중앙에 배치 */
+            background-repeat: no-repeat;
+            /* 이미지 반복 방지 */
+            background-attachment: fixed;
+            /* 스크롤 시 배경 고정 */
+        }
+
+        .main-con .row {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .main-con .col-6 {
+            flex: 0 0 50%;
+            max-width: 50%;
+        }
+
+        /* 슬라이드 스타일 */
+        .event-list img {
+            height: 400px;
+            object-fit: cover;
+        }
+
+        .carousel-control-prev,
+        .carousel-control-next {
+            width: 5%;
+            opacity: 0.8;
+        }
+
+        .carousel-control-prev-icon,
+        .carousel-control-next-icon {
+            width: 30px;
+            height: 30px;
+        }
+
+        .carousel-control-prev {
+            left: 10px;
+        }
+
+        .carousel-control-next {
+            right: 10px;
+        }
+
+        .carousel-control-prev,
+        .carousel-control-next {
+            width: 5%;
+            opacity: 0.8;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 50%;
+            height: 40px;
+            width: 40px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .carousel-control-prev:hover,
+        .carousel-control-next:hover {
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+
+        .carousel-control-prev i,
+        .carousel-control-next i {
+            font-size: 1.5rem;
+            color: #fff;
+        }
+
+        /* 슬라이드 스타일 끝 */
+
+        /* 공지사항 */
+        #noticeCarousel .carousel-item a {
+            font-size: 1.1rem;
+            font-weight: 500;
+            display: block;
+            /* 블록 요소로 설정 */
+            overflow: hidden;
+            /* 넘치는 텍스트 숨김 */
+            white-space: nowrap;
+            /* 텍스트를 한 줄로 표시 */
+            text-overflow: ellipsis;
+            /* 말줄임표 적용 */
+        }
+
+        /* 수직 슬라이드를 위한 스타일 */
+        #noticeCarousel.vertical .carousel-inner {
+            height: 100%;
+        }
+
+        #noticeCarousel.vertical .carousel-item {
+            transition: transform 0.6s ease;
+            transform: translate3d(0, 100%, 0);
+        }
+
+        #noticeCarousel.vertical .carousel-item.active,
+        #noticeCarousel.vertical .carousel-item-next.carousel-item-left,
+        #noticeCarousel.vertical .carousel-item-prev.carousel-item-right {
+            transform: translate3d(0, 0, 0);
+        }
+
+        #noticeCarousel.vertical .carousel-item-next,
+        #noticeCarousel.vertical .active.carousel-item-right {
+            transform: translate3d(0, 100%, 0);
+        }
+
+        #noticeCarousel.vertical .carousel-item-prev,
+        #noticeCarousel.vertical .active.carousel-item-left {
+            transform: translate3d(0, -100%, 0);
+        }
+
+        #noticeCarousel .carousel-item a {
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        /* 공지사항끝 */
+
+
+        /* 섹션 제목 스타일 */
+        .main-con .section-title {
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        /* 상품 스타일 */
+        .main-con .book-item img {
+            height: 400px;
+            border-radius: 5px;
+        }
+
+        .main-con .book-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 5px;
+
+        }
+
+        .main-con .book-info {
+            position: absolute;
+            bottom: -100%;
+            left: 0;
+            right: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px;
+            transition: bottom 0.3s ease-in-out;
+        }
+
+        .main-con .book-item:hover .book-info {
+            bottom: 0;
+        }
+
+        @media screen and (min-width: 768px) {
+            .main-con .col-md-3 {
+                flex: 0 0 25%;
+                max-width: 25%;
+            }
+        }
+
+        @media (max-width: 767px) {
+            .event-list img {
+                height: 200px;
+                width: 100%;
+                object-fit: cover;
+            }
+
+            .main-con .book-item img {
+                height: 200px;
+            }
+
+            .main-con .book-item {
+                margin-bottom: 20px;
+            }
+
+            .main-con .book-info {
+                height: auto;
+                width: 100%;
+                background-color: rgba(0, 0, 0, 0.7);
+                color: #fff;
+                position: static;
+                padding: 10px;
+            }
+
+            .main-con .book-info h5 {
+                font-size: 1.2rem;
+                /* 제목 텍스트 크기 조정 */
+                margin-bottom: 5px;
+            }
+
+            .main-con .book-info p {
+                font-size: 1rem;
+                /* 내용 텍스트 크기 조정 */
+                margin-bottom: 0;
+            }
+
+            .main-con .book-info p.product-publisher,
+            .main-con .book-info p.product-price {
+                display: none;
+            }
+
+
+            .main-con .book-item img {
+                height: 200px;
+                width: 100%;
+                object-fit: cover;
+                /* 이미지 비율 유지 */
+            }
+
+            .main-con .book-item:hover .book-info {
+                bottom: 0;
+                position: static;
+            }
+
+            .carousel-control-prev,
+            .carousel-control-next {
+                display: none;
+            }
+        }
+
+        @media screen and (min-width: 768px) and (max-width: 1023px) {
+            .event-list img {
+                height: 300px;
+            }
+
+            .main-con .book-item img {
+                height: 300px;
+            }
+        }
+
+        @media (max-width: 1024px) {
+
+            /* 태블릿 및 모바일 가로 모드 포함 */
+            .main-con .book-item img {
+                height: 200px;
+                width: 100%;
+                object-fit: cover;
+                /* 이미지 비율 유지 */
+            }
+
+            .main-con .book-item {
+                margin-bottom: 20px;
+            }
+
+            .main-con .book-info {
+                height: auto;
+                width: 100%;
+                background-color: rgba(0, 0, 0, 0.7);
+                color: #fff;
+                position: static;
+                padding: 10px;
+            }
+
+            .main-con .book-info h5 {
+                font-size: 1.2rem;
+                /* 제목 텍스트 크기 조정 */
+                margin-bottom: 5px;
+            }
+
+            .main-con .book-info p {
+                font-size: 1rem;
+                /* 내용 텍스트 크기 조정 */
+                margin-bottom: 0;
+            }
+
+            .main-con .book-info p.product-publisher,
+            .main-con .book-info p.product-price {
+                display: none;
+                /* 출판사와 가격 숨김 */
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container main-con mt-5">
+        <main class="mb-5">
+            <!-- 섹션 0: 공지사항 -->
+            <div class="container-fluid px-0">
+                <div class="row no-gutters">
+                    <div class="col-12">
+                        <div class="d-flex justify-content-between align-items-center bg-info">
+                            <div class="col-2 px-3">
+                                <span class="text-white font-weight-bold d-none d-md-block">공지사항</span>
+                                <span class="text-white d-md-none">공지</span>
+                            </div>
+                            <div class="col-8 flex-grow-1">
+                                <div id="noticeCarousel" class="carousel slide vertical py-2" data-ride="carousel"
+                                    data-interval="7000">
+                                    <div class="carousel-inner">
+                                        <div class="carousel-item active text-center">
+                                            <a href="공지사항페이지1" class="text-decoration-none text-white"><i
+                                                    class="bi bi-megaphone-fill mr-2"></i>안녕하세요 이젠 북 스토어 입니다.</a>
+                                        </div>
+                                        <div class="carousel-item text-center">
+                                            <a href="공지사항페이지2" class="text-decoration-none text-white"><i
+                                                    class="bi bi-megaphone-fill mr-2"></i>이곳에는 공지사항이 올라갈 예정 입니다.</a>
+                                        </div>
+                                        <div class="carousel-item text-center">
+                                            <a href="공지사항페이지3" class="text-decoration-none text-white"><i
+                                                    class="bi bi-megaphone-fill mr-2"></i>회원 등급별 적립금 시스템 안내</a>
+                                        </div>
+                                        <div class="carousel-item text-center">
+                                            <a href="공지사항페이지4" class="text-decoration-none text-white"><i
+                                                    class="bi bi-megaphone-fill mr-2"></i>공휴일 배송에 관한 공지</a>
+                                        </div>
+                                        <div class="carousel-item text-center">
+                                            <a href="공지사항페이지5" class="text-decoration-none text-white"><i
+                                                    class="bi bi-megaphone-fill mr-2"></i>가나다라마바사아자차카타파하</a>
+                                        </div>
+                                        <div class="carousel-item text-center">
+                                            <a href="공지사항페이지6" class="text-decoration-none text-white"><i
+                                                    class="bi bi-megaphone-fill mr-2"></i>일이삼사오육칠팔구십구팔칠육오사삼이일영땡</a>
+                                        </div>
+                                        <div class="carousel-item text-center">
+                                            <a href="공지사항페이지7" class="text-decoration-none text-white"><i
+                                                    class="bi bi-megaphone-fill mr-2"></i>코카콜라맛있다 맛있으면 또먹어 또먹으면 배탈나</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-2 px-3 d-flex justify-content-end">
+                                <a href="공지사항목록페이지" class="text-white text-decoration-none d-none d-md-block">+더보기</a>
+                                <a href="공지사항목록페이지" class="bi bi-three-dots text-white d-md-none"></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 섹션 1: 이벤트/프로모션-->
+            <section class="row">
+                <div class="col-12">
+                    <div id="eventCarousel" class="carousel slide" data-ride="carousel" data-interval="6000">
+                        <div class="carousel-inner" style="border-radius: 0 0 5px 5px;">
+                            <div class="carousel-item event-list active">
+                                <a href="이벤트1상세페이지">
+                                    <img src="../../static/image/event/1_SF&과학 결산전.png" class="d-block w-100"
+                                        alt="이벤트1"></a>
+                            </div>
+                            <div class="carousel-item event-list">
+                                <a href="이벤트2상세페이지">
+                                    <img src="../../static/image/event/2_외국 도서 할인.jpg" class="d-block w-100"
+                                        alt="이벤트2"></a>
+                            </div>
+                            <div class="carousel-item event-list">
+                                <a href="이벤트3상세페이지">
+                                    <img src="../../static/image/event/3_네이버 페이 적립.jpg" class="d-block w-100"
+                                        alt="이벤트3"></a>
+                            </div>
+                        </div>
+                        <a class="carousel-control-prev" href="#eventCarousel" role="button" data-slide="prev">
+                            <i class="bi bi-chevron-left" aria-hidden="true"></i>
+                            <span class="sr-only">이전</span>
+                        </a>
+                        <a class="carousel-control-next" href="#eventCarousel" role="button" data-slide="next">
+                            <i class="bi bi-chevron-right" aria-hidden="true"></i>
+                            <span class="sr-only">다음</span>
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 섹션 2: 이달의 베스트셀러 -->
+            <section class="mt-5">
+                <h2 class="section-title">이달의 베스트셀러</h2>
+                <div id="bestsellerCarousel" class="carousel slide" data-ride="carousel" data-interval="5000">
+                    <div class="carousel-inner">
+                        <div class="carousel-item active">
+                            <div class="row">
+                                <div class="col-6 col-md-3">
+                                    <div class="book-item">
+                                        <a href="베스트2상세페이지">
+                                            <img src="../../static/image/book/10_판타지-우리가 몰랐던 환상적인 경주이야기.jpg"
+                                                class="img-fluid" alt="베스트셀러2" style="width: 100%;"></a>
+                                        <div class="book-info">
+                                            <h5 class="text-truncate product-title">제목1</h5>
+                                            <p class="text-truncate product-author">작가</p>
+                                            <p class="text-truncate product-publisher">출판사</p>
+                                            <p class="text-truncate" style="font-size: 0.9em;">
+                                                <del>원래가격</del>
+                                                <strong class="text-danger">할인된가격</strong>
+                                                <small>[<span>할인율</span>%할인]</small>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <div class="book-item">
+                                        <a href="베스트2상세페이지">
+                                            <img src="../../static/image/book/11_판타지-마음이 들리는 동물병원.jpg" class="img-fluid"
+                                                alt="베스트셀러2" style="width: 100%;"></a>
+                                        <div class="book-info">
+                                            <h5 class="text-truncate product-title">제목2</h5>
+                                            <p class="text-truncate product-author">작가</p>
+                                            <p class="text-truncate product-publisher">출판사</p>
+                                            <p class="text-truncate" style="font-size: 0.9em;">
+                                                <del>원래가격</del>
+                                                <strong class="text-danger">할인된가격</strong>
+                                                <small>[<span>할인율</span>%할인]</small>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <div class="book-item">
+                                        <a href="베스트2상세페이지">
+                                            <img src="../../static/image/book/12_판타지-사단법인 한국괴물관리협회.jpg"
+                                                class="img-fluid" alt="베스트셀러2" style="width: 100%;"></a>
+                                        <div class="book-info">
+                                            <h5 class="text-truncate product-title">제목3</h5>
+                                            <p class="text-truncate product-author">작가</p>
+                                            <p class="text-truncate product-publisher">출판사</p>
+                                            <p class="text-truncate" style="font-size: 0.9em;">
+                                                <del>원래가격</del>
+                                                <strong class="text-danger">할인된가격</strong>
+                                                <small>[<span>할인율</span>%할인]</small>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <div class="book-item">
+                                        <a href="베스트2상세페이지">
+                                            <img src="../../static/image/book/13_SF&과학-목소리의 증명.jpg" class="img-fluid"
+                                                alt="베스트셀러2" style="width: 100%;"></a>
+                                        <div class="book-info">
+                                            <h5 class="text-truncate product-title">제목4</h5>
+                                            <p class="text-truncate product-author">작가</p>
+                                            <p class="text-truncate product-publisher">출판사</p>
+                                            <p class="text-truncate" style="font-size: 0.9em;">
+                                                <del>원래가격</del>
+                                                <strong class="text-danger">할인된가격</strong>
+                                                <small>[<span>할인율</span>%할인]</small>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="carousel-item">
+                            <div class="row">
+                                <div class="col-6 col-md-3">
+                                    <div class="book-item">
+                                        <a href="베스트2상세페이지">
+                                            <img src="../../static/image/book/14_판타지-미르난데의 아이들.jpg" class="img-fluid"
+                                                alt="베스트셀러2" style="width: 100%;"></a>
+                                        <div class="book-info">
+                                            <h5 class="text-truncate product-title">제목5</h5>
+                                            <p class="text-truncate product-author">작가</p>
+                                            <p class="text-truncate product-publisher">출판사</p>
+                                            <p class="text-truncate" style="font-size: 0.9em;">
+                                                <del>원래가격</del>
+                                                <strong class="text-danger">할인된가격</strong>
+                                                <small>[<span>할인율</span>%할인]</small>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <div class="book-item">
+                                        <a href="베스트2상세페이지">
+                                            <img src="../../static/image/book/15_공포&호러-당신이 찾던 무서운 이야기.jpg"
+                                                class="img-fluid" alt="베스트셀러2" style="width: 100%;"></a>
+                                        <div class="book-info">
+                                            <h5 class="text-truncate product-title">제목6</h5>
+                                            <p class="text-truncate product-author">작가</p>
+                                            <p class="text-truncate product-publisher">출판사</p>
+                                            <p class="text-truncate" style="font-size: 0.9em;">
+                                                <del>원래가격</del>
+                                                <strong class="text-danger">할인된가격</strong>
+                                                <small>[<span>할인율</span>%할인]</small>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <div class="book-item">
+                                        <a href="베스트2상세페이지">
+                                            <img src="../../static/image/book/16_판타지-마법에 걸린 집을 길들이는 법.jpg"
+                                                class="img-fluid" alt="베스트셀러2" style="width: 100%;"></a>
+                                        <div class="book-info">
+                                            <h5 class="text-truncate product-title">제목7</h5>
+                                            <p class="text-truncate product-author">작가</p>
+                                            <p class="text-truncate product-publisher">출판사</p>
+                                            <p class="text-truncate" style="font-size: 0.9em;">
+                                                <del>원래가격</del>
+                                                <strong class="text-danger">할인된가격</strong>
+                                                <small>[<span>할인율</span>%할인]</small>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <div class="book-item">
+                                        <a href="베스트2상세페이지">
+                                            <img src="../../static/image/book/17_공포&호러-괴담 고이즈미 야쿠모 작품집.jpg"
+                                                class="img-fluid" alt="베스트셀러2" style="width: 100%;"></a>
+                                        <div class="book-info">
+                                            <h5 class="text-truncate product-title">제목8</h5>
+                                            <p class="text-truncate product-author">작가</p>
+                                            <p class="text-truncate product-publisher">출판사</p>
+                                            <p class="text-truncate" style="font-size: 0.9em;">
+                                                <del>원래가격</del>
+                                                <strong class="text-danger">할인된가격</strong>
+                                                <small>[<span>할인율</span>%할인]</small>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <a class="carousel-control-prev" href="#bestsellerCarousel" role="button" data-slide="prev">
+                        <i class="bi bi-chevron-left" aria-hidden="true"></i>
+                        <span class="sr-only">이전</span>
+                    </a>
+                    <a class="carousel-control-next" href="#bestsellerCarousel" role="button" data-slide="next">
+                        <i class="bi bi-chevron-right" aria-hidden="true"></i>
+                        <span class="sr-only">다음</span>
+                    </a>
+                </div>
+            </section>
+
+            <!-- 섹션 3: 신상품 -->
+            <section class="mt-5">
+                <h2 class="section-title">신상품</h2>
+                <div id="newArrivalsCarousel" class="carousel slide" data-ride="carousel" data-interval="5000">
+                    <div class="carousel-inner">
+                        <div class="carousel-item active">
+                            <div class="row">
+                                <div class="col-6 col-md-3">
+                                    <div class="book-item">
+                                        <a href="신상품1상세페이지">
+                                            <img src="../../static/image/book/19_공포&호러-바꿔볼래.jpg" class="img-fluid"
+                                                alt="신상품1" style="width: 100%;"></a>
+                                        <div class="book-info">
+                                            <h5 class="text-truncate product-title">제목1</h5>
+                                            <p class="text-truncate product-author">작가</p>
+                                            <p class="text-truncate product-publisher">출판사</p>
+                                            <p class="text-truncate" style="font-size: 0.9em;">
+                                                <del>원래가격</del>
+                                                <strong class="text-danger">할인된가격</strong>
+                                                <small>[<span>할인율</span>%할인]</small>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <div class="book-item">
+                                        <a href="신상품2상세페이지">
+                                            <img src="../../static/image/book/1_SF&과학-죄의 끝.jpg" class="img-fluid"
+                                                alt="신상품2" style="width: 100%;"></a>
+                                        <div class="book-info">
+                                            <h5 class="text-truncate product-title">제목2</h5>
+                                            <p class="text-truncate product-author">작가</p>
+                                            <p class="text-truncate product-publisher">출판사</p>
+                                            <p class="text-truncate" style="font-size: 0.9em;">
+                                                <del>원래가격</del>
+                                                <strong class="text-danger">할인된가격</strong>
+                                                <small>[<span>할인율</span>%할인]</small>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <div class="book-item">
+                                        <a href="신상품3상세페이지">
+                                            <img src="../../static/image/book/20_공포&호러-9791169108423.jpg"
+                                                class="img-fluid" alt="신상품3" style="width: 100%;"></a>
+                                        <div class="book-info">
+                                            <h5 class="text-truncate product-title">제목3</h5>
+                                            <p class="text-truncate product-author">작가</p>
+                                            <p class="text-truncate product-publisher">출판사</p>
+                                            <p class="text-truncate" style="font-size: 0.9em;">
+                                                <del>원래가격</del>
+                                                <strong class="text-danger">할인된가격</strong>
+                                                <small>[<span>할인율</span>%할인]</small>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <div class="book-item">
+                                        <a href="신상품4상세페이지">
+                                            <img src="../../static/image/book/21_역사-9791192313597.jpg" class="img-fluid"
+                                                alt="신상품4" style="width: 100%;"></a>
+                                        <div class="book-info">
+                                            <h5 class="text-truncate product-title">제목4</h5>
+                                            <p class="text-truncate product-author">작가</p>
+                                            <p class="text-truncate product-publisher">출판사</p>
+                                            <p class="text-truncate" style="font-size: 0.9em;">
+                                                <del>원래가격</del>
+                                                <strong class="text-danger">할인된가격</strong>
+                                                <small>[<span>할인율</span>%할인]</small>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="carousel-item">
+                            <div class="row">
+                                <div class="col-6 col-md-3">
+                                    <div class="book-item">
+                                        <a href="신상품5상세페이지">
+                                            <img src="../../static/image/book/22_공포&호러-9791170524311.jpg"
+                                                class="img-fluid" alt="신상품5" style="width: 100%;"></a>
+                                        <div class="book-info">
+                                            <h5 class="text-truncate product-title">제목5</h5>
+                                            <p class="text-truncate product-author">작가</p>
+                                            <p class="text-truncate product-publisher">출판사</p>
+                                            <p class="text-truncate" style="font-size: 0.9em;">
+                                                <del>원래가격</del>
+                                                <strong class="text-danger">할인된가격</strong>
+                                                <small>[<span>할인율</span>%할인]</small>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <div class="book-item">
+                                        <a href="신상품6상세페이지">
+                                            <img src="../../static/image/book/23_로맨스-9788925574240.jpg"
+                                                class="img-fluid" alt="신상품6" style="width: 100%;"></a>
+                                        <div class="book-info">
+                                            <h5 class="text-truncate product-title">제목6</h5>
+                                            <p class="text-truncate product-author">작가</p>
+                                            <p class="text-truncate product-publisher">출판사</p>
+                                            <p class="text-truncate" style="font-size: 0.9em;">
+                                                <del>원래가격</del>
+                                                <strong class="text-danger">할인된가격</strong>
+                                                <small>[<span>할인율</span>%할인]</small>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <div class="book-item">
+                                        <a href="신상품7상세페이지">
+                                            <img src="../../static/image/book/24_역사-9788961311601.jpg" class="img-fluid"
+                                                alt="신상품7" style="width: 100%;"></a>
+                                        <div class="book-info">
+                                            <h5 class="text-truncate product-title">제목7</h5>
+                                            <p class="text-truncate product-author">작가</p>
+                                            <p class="text-truncate product-publisher">출판사</p>
+                                            <p class="text-truncate" style="font-size: 0.9em;">
+                                                <del>원래가격</del>
+                                                <strong class="text-danger">할인된가격</strong>
+                                                <small>[<span>할인율</span>%할인]</small>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <div class="book-item">
+                                        <a href="신상품8상세페이지">
+                                            <img src="../../static/image/book/25_로맨스-9791138484985.jpg"
+                                                class="img-fluid" alt="신상품8" style="width: 100%;"></a>
+                                        <div class="book-info">
+                                            <h5 class="text-truncate product-title">제목8</h5>
+                                            <p class="text-truncate product-author">작가</p>
+                                            <p class="text-truncate product-publisher">출판사</p>
+                                            <p class="text-truncate" style="font-size: 0.9em;">
+                                                <del>원래가격</del>
+                                                <strong class="text-danger">할인된가격</strong>
+                                                <small>[<span>할인율</span>%할인]</small>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <a class="carousel-control-prev" href="#newArrivalsCarousel" role="button" data-slide="prev">
+                        <i class="bi bi-chevron-left" aria-hidden="true"></i>
+                        <span class="sr-only">이전</span>
+                    </a>
+                    <a class="carousel-control-next" href="#newArrivalsCarousel" role="button" data-slide="next">
+                        <i class="bi bi-chevron-right" aria-hidden="true"></i>
+                        <span class="sr-only">다음</span>
+                    </a>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        $(function () {
+            function adjustBookInfo() {
+                var width = $(window).width();
+                $('.book-info').each(function () {
+                    if (width <= 1024) {
+                        $(this).find('.product-publisher, .product-price').hide();
+                    } else {
+                        $(this).find('.product-publisher, .product-price').show();
+                    }
+                });
+            }
+
+            $(window).on('resize load', adjustBookInfo);
+        });
+    </script>
+
+</body>
+
+</html>

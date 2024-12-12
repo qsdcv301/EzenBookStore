@@ -2,6 +2,7 @@ package ezen.team.ezenbookstore.service;
 
 import ezen.team.ezenbookstore.entity.OrderItem;
 import ezen.team.ezenbookstore.entity.User;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
 import java.util.List;
@@ -24,5 +25,12 @@ public interface OrderItemServiceInterface {
     Map<String, String> updateOrderItemAndUserPoint(Long orderItemId, Long point, @ModelAttribute("user") User user);
 
     Integer countByUserIdAndStatus(Long userId, Byte status);
-    
+
+    @Transactional
+        // 주문 항목 수량 업데이트
+    boolean updateQuantity(Long ordersItemId, int quantity);
+
+    @Transactional
+        // 주문 항목 삭제
+    void deleteOrdersItem(Long ordersItemId);
 }

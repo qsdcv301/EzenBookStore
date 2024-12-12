@@ -1,162 +1,182 @@
 <!doctype html>
 <html xmlns:th="http://www.thymeleaf.org" lang="ko">
+
 <head th:replace="~{fragments/css :: css}"></head>
-<body>
-<header th:replace="~{fragments/header :: header}"></header>
-<div class="container main-con mt-5">
-    <main class="mb-5">
-        <!-- 섹션 0: 공지사항 -->
-        <div class="container-fluid px-0">
-            <div class="row no-gutters">
-                <div class="col-12">
-                    <div class="d-flex justify-content-between align-items-center bg-info">
-                        <div class="px-3">
-                            <span class="text-white font-weight-bold">공지사항</span>
-                        </div>
-                        <div class="flex-grow-1">
-                            <div id="noticeCarousel" class="carousel slide vertical py-2" data-ride="carousel"
-                                 data-interval="7000">
-                                <div class="carousel-inner">
-                                    <div th:each="notice, iterStat : ${noticeList}"
-                                         th:classappend="'carousel-item' + (${iterStat.index == 0} ? ' active' : '')"
-                                         class="text-center">
-                                        <a th:href="@{/notice/{id}(id=${notice.id})}"
-                                           class="text-decoration-none text-white">
-                                            <i class="bi bi-megaphone-fill mr-2"></i>
-                                            <span th:text="${notice.title}"></span>
-                                        </a>
+
+<body class="bg-image">
+    <header th:replace="~{fragments/header :: header}"></header>
+    <div class="container main-con">
+        <main class="mb-5">
+            <!-- 섹션 0: 공지사항 -->
+            <div class="container-fluid px-0">
+                <div class="row no-gutters">
+                    <div class="col-12">
+                        <div class="d-flex justify-content-between align-items-center bg-info">
+                            <div class="col-2 px-3">
+                                <span class="text-white font-weight-bold d-none d-md-block">공지사항</span>
+                                <span class="text-white d-md-none" style="font-size: 0.7em;">공지</span>
+                            </div>
+                            <div class="col-8 flex-grow-1">
+                                <div id="noticeCarousel" class="carousel slide vertical py-2" data-ride="carousel"
+                                    data-interval="7000">
+                                    <div class="carousel-inner">
+                                        <div th:each="notice, iterStat : ${noticeList}"
+                                            th:classappend="'carousel-item' + (${iterStat.index == 0} ? ' active' : '')"
+                                            class="text-center">
+                                            <a th:href="@{/notice/{id}(id=${notice.id})}"
+                                                class="text-decoration-none text-white">
+                                                <i class="bi bi-megaphone-fill mr-2"></i>
+                                                <span th:text="${notice.title}"></span>
+                                            </a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="px-3">
-                            <a href="/customerService" class="text-white text-decoration-none">+더보기</a>
+                            <div class="col-2 px-3 d-flex justify-content-end">
+                                <a href="/customerService"
+                                    class="text-white text-decoration-none d-none d-md-block">+더보기</a>
+                                <a href="/customerService" class="bi bi-three-dots text-white d-md-none"></a>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <!-- 섹션 1: 이벤트/프로모션-->
-        <section class="row">
-            <div class="col-12">
-                <div id="eventCarousel" class="carousel slide" data-ride="carousel" data-interval="6000">
-                    <div class="carousel-inner" style="border-radius: 0 0 5px 5px;">
-                        <div th:each="event, iterStat : ${eventList}"
-                             th:classappend="'carousel-item' + (${iterStat.index == 0} ? ' active' : '')">
-                            <a th:href="@{/event/{id}(id=${event.id})}">
-                                <img th:src="${eventImagePath != null ? eventImagePath : '/image/noImage.jpg'}"
-                                     class="d-block w-100"
-                                     th:alt="${event.title} + ' 이미지'">
+                <!-- 섹션 1: 이벤트/프로모션-->
+                <section class="row">
+                    <div class="col-12">
+                        <div id="eventCarousel" class="carousel slide" data-ride="carousel" data-interval="6000">
+                            <div class="carousel-inner" style="border-radius: 0 0 5px 5px;">
+                                <div th:each="event, iterStat : ${eventList}"
+                                    th:classappend="'carousel-item event-list' + (${iterStat.index == 0} ? ' active' : '')">
+                                    <a th:href="@{/event/{id}(id=${event.id})}">
+                                        <img th:src="${eventImageList.get(iterStat.index) != '' ? eventImageList.get(iterStat.index) : '/image/noImage.jpg'}"
+                                            class="d-block w-100" th:alt="${event.title} + ' 이미지'">
+                                    </a>
+                                </div>
+                            </div>
+
+                            <a class="carousel-control-prev" href="#eventCarousel" role="button" data-slide="prev">
+                                <i class="bi bi-chevron-left" aria-hidden="true"></i>
+                                <span class="sr-only">이전</span>
+                            </a>
+                            <a class="carousel-control-next" href="#eventCarousel" role="button" data-slide="next">
+                                <i class="bi bi-chevron-right" aria-hidden="true"></i>
+                                <span class="sr-only">다음</span>
                             </a>
                         </div>
                     </div>
+                </section>
 
-                    <a class="carousel-control-prev" href="#eventCarousel" role="button" data-slide="prev">
-                        <i class="bi bi-chevron-left" aria-hidden="true"></i>
-                        <span class="sr-only">이전</span>
-                    </a>
-                    <a class="carousel-control-next" href="#eventCarousel" role="button" data-slide="next">
-                        <i class="bi bi-chevron-right" aria-hidden="true"></i>
-                        <span class="sr-only">다음</span>
-                    </a>
-                </div>
-            </div>
-        </section>
-
-        <!-- 섹션 2: 이달의 베스트셀러 -->
-        <section class="mt-5">
-            <h2 class="section-title">베스트셀러</h2>
-            <div id="bestsellerCarousel" class="carousel slide" data-ride="carousel" data-interval="5000">
-                <div class="carousel-inner">
-                    <th:block th:if="${bestBookList != null && #lists.size(bestBookList) > 0}">
-                        <div th:each="chunkIndex : ${#numbers.sequence(0, #lists.size(bestBookList) / 4.0 - 1)}"
-                             th:class="'carousel-item' + (${chunkIndex == 0} ? ' active' : '')">
-                            <div class="row">
-                                <th:block th:each="bookIndex, iStat : ${#numbers.sequence(0, 3)}"
-                                          th:if="${chunkIndex * 4 + bookIndex < #lists.size(bestBookList)}">
-                                    <div class="col-md-3">
-                                        <div class="book-item">
-                                            <a th:href="@{'/book/detail'(bookId=${bestBookList[chunkIndex * 4 + bookIndex].id})}">
-                                                <img th:src="${bestBookImageList[chunkIndex * 4 + bookIndex]}"
-                                                     class="img-fluid"
-                                                     th:alt="${bestBookList[chunkIndex * 4 + bookIndex].title} + ' 이미지'">
-                                            </a>
-                                            <div class="book-info">
-                                                <h5 th:text="${bestBookList[chunkIndex * 4 + bookIndex].title}"></h5>
-                                                <p th:text="'작가: ' + ${bestBookList[chunkIndex * 4 + bookIndex].author}"></p>
-                                                <p th:text="'출판사: ' + ${bestBookList[chunkIndex * 4 + bookIndex].publisher}"></p>
-                                                <strong>
-                                                    가격: <span class="price"
-                                                              th:text="${bestBookList[chunkIndex * 4 + bookIndex].price}"></span>
-                                                </strong>
+                <!-- 섹션 2: 이달의 베스트셀러 -->
+                <section class="mt-5">
+                    <h2 class="section-title">베스트셀러</h2>
+                    <div id="bestsellerCarousel" class="carousel slide" data-ride="carousel" data-interval="5000">
+                        <div class="carousel-inner">
+                            <th:block th:if="${bestBookList != null && #lists.size(bestBookList) > 0}">
+                                <div th:each="chunkIndex : ${#numbers.sequence(0, #lists.size(bestBookList) / 4.0 - 1)}"
+                                    th:class="'carousel-item' + (${chunkIndex == 0} ? ' active' : '')">
+                                    <div class="row">
+                                        <th:block th:each="bookIndex, iStat : ${#numbers.sequence(0, 3)}"
+                                            th:if="${chunkIndex * 4 + bookIndex < #lists.size(bestBookList)}">
+                                            <div class="col-6 col-md-3">
+                                                <div class="book-item">
+                                                    <a
+                                                        th:href="@{'/book/detail'(bookId=${bestBookList[chunkIndex * 4 + bookIndex].id})}">
+                                                        <img th:src="${bestBookImageList[chunkIndex * 4 + bookIndex]}"
+                                                            class="img-fluid"
+                                                            th:alt="${bestBookList[chunkIndex * 4 + bookIndex].title} + ' 이미지'"
+                                                            style="width: 100%;">
+                                                    </a>
+                                                    <div class="book-info">
+                                                        <h5 th:text="${bestBookList[chunkIndex * 4 + bookIndex].title}"
+                                                            class="product-title text-truncate"></h5>
+                                                        <p th:text="'작가: ' + ${bestBookList[chunkIndex * 4 + bookIndex].author}"
+                                                            class="product-author text-truncate"></p>
+                                                        <p th:text="'출판사: ' + ${bestBookList[chunkIndex * 4 + bookIndex].publisher}"
+                                                            class="product-publisher text-truncate"></p>
+                                                        <p class="card-price" style="font-size: 0.9em;">
+                                                            가격: <del class="origin-price"
+                                                                th:text="${newBookList[chunkIndex * 4 + bookIndex].price}"></del>
+                                                            <strong class="text-danger dc-Price"></strong>
+                                                            <small>[<span class="dc-per"
+                                                                    th:text="${newBookList[chunkIndex * 4 + bookIndex].discount}"></span>%할인]</small>
+                                                        </p>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </div>
+                                        </th:block>
                                     </div>
-                                </th:block>
-                            </div>
+                                </div>
+                            </th:block>
                         </div>
-                    </th:block>
-                </div>
-                <!-- Carousel Navigation -->
-                <a class="carousel-control-prev" href="#bestsellerCarousel" role="button" data-slide="prev">
-                    <i class="bi bi-chevron-left" aria-hidden="true"></i>
-                    <span class="sr-only">이전</span>
-                </a>
-                <a class="carousel-control-next" href="#bestsellerCarousel" role="button" data-slide="next">
-                    <i class="bi bi-chevron-right" aria-hidden="true"></i>
-                    <span class="sr-only">다음</span>
-                </a>
-            </div>
-        </section>
+                        <!-- Carousel Navigation -->
+                        <a class="carousel-control-prev" href="#bestsellerCarousel" role="button" data-slide="prev">
+                            <i class="bi bi-chevron-left" aria-hidden="true"></i>
+                            <span class="sr-only">이전</span>
+                        </a>
+                        <a class="carousel-control-next" href="#bestsellerCarousel" role="button" data-slide="next">
+                            <i class="bi bi-chevron-right" aria-hidden="true"></i>
+                            <span class="sr-only">다음</span>
+                        </a>
+                    </div>
+                </section>
 
-        <!-- 섹션 3: 신상품 -->
-        <section class="mt-5">
-            <h2 class="section-title">신상품</h2>
-            <div id="newArrivalsCarousel" class="carousel slide" data-ride="carousel" data-interval="5000">
-                <div class="carousel-inner">
-                    <th:block th:if="${newBookList != null && #lists.size(newBookList) > 0}">
-                        <div th:each="chunkIndex : ${#numbers.sequence(0, #lists.size(newBookList) / 4.0 - 1)}"
-                             th:class="'carousel-item' + (${chunkIndex == 0} ? ' active' : '')">
-                            <div class="row">
-                                <th:block th:each="bookIndex, iStat : ${#numbers.sequence(0, 3)}"
-                                          th:if="${chunkIndex * 4 + bookIndex < #lists.size(bestBookList)}">
-                                    <div class="col-md-3">
-                                        <div class="book-item">
-                                            <a th:href="@{'/book/detail'(bookId=${newBookList[chunkIndex * 4 + bookIndex].id})}">
-                                                <img th:src="${newBookImageList[chunkIndex * 4 + bookIndex]}"
-                                                     class="img-fluid"
-                                                     th:alt="${newBookList[chunkIndex * 4 + bookIndex].title} + ' 이미지'">
-                                            </a>
-                                            <div class="book-info">
-                                                <h5 th:text="${newBookList[chunkIndex * 4 + bookIndex].title}"></h5>
-                                                <p th:text="'작가: ' + ${newBookList[chunkIndex * 4 + bookIndex].author}"></p>
-                                                <p th:text="'출판사: ' + ${newBookList[chunkIndex * 4 + bookIndex].publisher}"></p>
-                                                <strong>
-                                                    가격: <span class="price"
-                                                              th:text="${newBookList[chunkIndex * 4 + bookIndex].price}"></span>
-                                                </strong>
+                <!-- 섹션 3: 신상품 -->
+                <section class="mt-5">
+                    <h2 class="section-title">신상품</h2>
+                    <div id="newArrivalsCarousel" class="carousel slide" data-ride="carousel" data-interval="5000">
+                        <div class="carousel-inner">
+                            <th:block th:if="${newBookList != null && #lists.size(newBookList) > 0}">
+                                <div th:each="chunkIndex : ${#numbers.sequence(0, #lists.size(newBookList) / 4.0 - 1)}"
+                                    th:class="'carousel-item' + (${chunkIndex == 0} ? ' active' : '')">
+                                    <div class="row">
+                                        <th:block th:each="bookIndex, iStat : ${#numbers.sequence(0, 3)}"
+                                            th:if="${chunkIndex * 4 + bookIndex < #lists.size(bestBookList)}">
+                                            <div class="col-6 col-md-3">
+                                                <div class="book-item">
+                                                    <a
+                                                        th:href="@{'/book/detail'(bookId=${newBookList[chunkIndex * 4 + bookIndex].id})}">
+                                                        <img th:src="${newBookImageList[chunkIndex * 4 + bookIndex]}"
+                                                            class="img-fluid"
+                                                            th:alt="${newBookList[chunkIndex * 4 + bookIndex].title} + ' 이미지'"
+                                                            style="width: 100%;">
+                                                    </a>
+                                                    <div class="book-info">
+                                                        <h5 th:text="${newBookList[chunkIndex * 4 + bookIndex].title}"
+                                                            class="product-title text-truncate"></h5>
+                                                        <p th:text="'작가: ' + ${newBookList[chunkIndex * 4 + bookIndex].author}"
+                                                            class="product-author text-truncate"></p>
+                                                        <p th:text="'출판사: ' + ${newBookList[chunkIndex * 4 + bookIndex].publisher}"
+                                                            class="product-publisher text-truncate"></p>
+                                                        <p class="card-price" style="font-size: 0.9em;">
+                                                            가격: <del class="origin-price"
+                                                                th:text="${newBookList[chunkIndex * 4 + bookIndex].price}"></del>
+                                                            <strong class="text-danger dc-Price"></strong>
+                                                            <small>[<span class="dc-per"
+                                                                    th:text="${newBookList[chunkIndex * 4 + bookIndex].discount}"></span>%할인]</small>
+                                                        </p>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </div>
+                                        </th:block>
                                     </div>
-                                </th:block>
-                            </div>
+                                </div>
+                            </th:block>
                         </div>
-                    </th:block>
-                </div>
-                <a class="carousel-control-prev" href="#newArrivalsCarousel" role="button" data-slide="prev">
-                    <i class="bi bi-chevron-left" aria-hidden="true"></i>
-                    <span class="sr-only">이전</span>
-                </a>
-                <a class="carousel-control-next" href="#newArrivalsCarousel" role="button" data-slide="next">
-                    <i class="bi bi-chevron-right" aria-hidden="true"></i>
-                    <span class="sr-only">다음</span>
-                </a>
-            </div>
-        </section>
-    </main>
-</div>
-<footer th:replace="~{fragments/footer :: footer}"></footer>
-<div th:replace="~{fragments/script :: script-body}"></div>
+                        <a class="carousel-control-prev" href="#newArrivalsCarousel" role="button" data-slide="prev">
+                            <i class="bi bi-chevron-left" aria-hidden="true"></i>
+                            <span class="sr-only">이전</span>
+                        </a>
+                        <a class="carousel-control-next" href="#newArrivalsCarousel" role="button" data-slide="next">
+                            <i class="bi bi-chevron-right" aria-hidden="true"></i>
+                            <span class="sr-only">다음</span>
+                        </a>
+                    </div>
+                </section>
+        </main>
+    </div>
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <div th:replace="~{fragments/script :: script-body}"></div>
 </body>
+
 </html>

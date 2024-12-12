@@ -346,7 +346,7 @@
             }
 
             $.ajax({
-                url: `/admin/categories/subcategories/${subCategoryId}/edit`,
+                url: `/admin/subcategories/${subCategoryId}/edit`,
                 type: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify({ name: subCategoryName }),
@@ -367,7 +367,7 @@
             }
 
             $.ajax({
-                url: `/admin/categories/subcategories/${subCategoryId}/delete`,
+                url: `/admin/subcategories/${subCategoryId}/delete`,
                 type: 'POST',
                 success: function () {
                     alert('서브카테고리가 성공적으로 삭제되었습니다.');

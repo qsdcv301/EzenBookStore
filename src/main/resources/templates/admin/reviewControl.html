@@ -25,26 +25,31 @@
     <div class="row">
         <nav th:replace="~{fragments/sidebar :: sidebar}"></nav>
         <main class="col-10 content">
-            <div class="container">
-                <h2>리뷰 관리</h2>
-                <p>이곳은 리뷰의 삭제 및 조회를 하는 페이지 입니다.</p>
+            <div class="container mt-5">
+                <h3>리뷰 관리</h3>
+                <p>작성된 리뷰를 조회하고 관리할 수 있는 페이지입니다.</p>
                 <div th:if="${error}" class="alert alert-warning" role="alert">
                     <span th:text="${error}"></span>
                 </div>
+                <hr>
                 <!-- 검색 폼 -->
-                <!-- form-select -> form-control 로 변경 -->
-                <form id="searchForm" class="form-inline">
-                    <select id="searchType" class="form-control mr-2" style="width: 150px; display: inline-block;">
-                        <option value="book">책 제목</option>
-                        <option value="user">작성자</option>
-                    </select>
-                    <input type="text" id="keyword" class="form-control mr-2" placeholder="검색어를 입력하세요" style="display: inline-block; width: 300px;">
-                    <button type="button" id="btnSearch" class="btn btn-primary">검색</button>
-                </form>
+                <div class="d-flex justify-content-between mb-3">
+                    <form id="searchForm" class="form-inline">
+                        <select id="searchType" class="form-control mr-2" style="width: 150px; display: inline-block;">
+                            <option value="book">책 제목</option>
+                            <option value="user">작성자</option>
+                        </select>
+                        <input type="text" id="keyword" class="form-control mr-2" placeholder="검색어를 입력하세요" style="display: inline-block; width: 300px;">
+                        <button type="button" id="btnSearch" class="btn btn-primary">검색</button>
+                    </form>
+                    <div>
+                        <button type="button" id="deleteReview" class="btn btn-danger">선택 삭제</button>
+                    </div>
+                </div>
 
                 <!-- 리뷰 테이블 -->
-                <table class="reviewTable">
-                    <thead>
+                <table class="table table-bordered text-center">
+                    <thead class="thead-light">
                     <tr>
                         <th><input type="checkbox" id="selectAllReview"></th>
                         <th>리뷰 ID</th>
@@ -65,7 +70,6 @@
                         <td th:text="${review.rating}"></td>
                         <td th:text="${review.title}"></td>
                         <td th:text="${review.comment}"></td>
-                        <!-- data-bs-toggle, data-bs-target -> data-toggle, data-target -->
                         <td>
                             <button type="button" class="btn btn-info btn-sm view-btn"
                                     data-toggle="modal" data-target="#reviewDetailModal"
@@ -81,19 +85,16 @@
                     </tr>
                     </tbody>
                 </table>
-                <button type="button" id="deleteReview" class="btn btn-danger">선택 삭제</button>
             </div>
         </main>
     </div>
 </div>
 <!-- 리뷰 상세보기 모달 -->
-<!-- bootstrap5의 btn-close -> bootstrap4의 close 버튼 사용 -->
 <div class="modal fade" id="reviewDetailModal" tabindex="-1" role="dialog" aria-labelledby="reviewDetailModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">리뷰 상세보기</h5>
-                <!-- btn-close 대신 close 버튼 -->
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -110,7 +111,6 @@
                 <img id="detailImage" src="">
             </div>
             <div class="modal-footer">
-                <!-- data-bs-dismiss="modal" -> data-dismiss="modal" -->
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
             </div>
         </div>

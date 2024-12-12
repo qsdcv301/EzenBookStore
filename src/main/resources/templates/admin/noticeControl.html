@@ -20,15 +20,13 @@
     <div class="row">
         <nav th:replace="~{fragments/sidebar :: sidebar}"></nav>
         <main class="col-10 content">
-            <div class="container">
+            <div class="container mt-5">
                 <h3 class="font-weight-bold mb-3">공지사항 관리</h3>
                 <p>공지사항 추가, 수정, 삭제 및 검색을 위한 관리 페이지입니다.</p>
                 <hr>
-
                 <!-- 검색 및 추가/삭제 버튼 영역 -->
                 <div class="d-flex justify-content-between mb-3">
                     <!-- 검색 영역 -->
-                    <!-- Bootstrap4: form-inline, form-control, mr-2 -->
                     <form id="searchForm" class="form-inline" method="get" th:action="@{/admin/notice}">
                         <select id="searchType" name="searchType" class="form-control mr-2" style="width: 150px;">
                             <option th:selected="${searchType == 'title'}" value="title">제목</option>

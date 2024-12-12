@@ -57,7 +57,8 @@ public class QnAService implements QnAServiceInterface{
         // 여러 QnA에 동일한 답변 저장
         List<QnA> qnaList = qnARepository.findAllById(ids); // ID 리스트로 QnA 조회
         for (QnA qna : qnaList) {
-            qna.setAnswer(answer); // 답변 설정
+            qna.setAnswer(answer);
+            qnARepository.save(qna);// 답변 설정
         }
     }
 

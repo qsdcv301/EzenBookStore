@@ -85,7 +85,7 @@
         flex-direction: column;
     }
 
-    .col-md-3 {
+    .footer-container .col-md-3 {
         width: 100%;
         margin-bottom: 20px;
     }

@@ -10,13 +10,14 @@ import ezen.team.ezenbookstore.repository.CategoryRepository;
 import ezen.team.ezenbookstore.repository.SubCategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,6 +28,9 @@ public class BookService implements BookServiceInterface {
     private final BookDescriptionRepository bookDescriptionRepository;
     private final CategoryRepository categoryRepository;
     private final SubCategoryRepository subCategoryRepository;
+    private final CategoryService categoryService;
+    private final SubCategoryService subCategoryService;
+    private final BookDescriptionService bookDescriptionService;
 
     @Override
     public Book findById(Long id) {
@@ -40,16 +44,24 @@ public class BookService implements BookServiceInterface {
 
     // 새 책 추가 메서드
     @Override
-    public Book addBook(Book book) {
-        // 책 설명이 포함된 경우 처리
-        if (book.getBookdescription() != null) {
-            BookDescription description = book.getBookdescription();
-            bookDescriptionRepository.save(description);
-            book.setBookdescription(description); // 저장된 설명을 책에 설정
-        }
-
+    public Book addBook(Book book, BookDescription bookDescription) {
+        BookDescription newBookDescription = bookDescriptionService.create(bookDescription);
+        Book newBook = Book.builder()
+                .title(book.getTitle())
+                .author(book.getAuthor())
+                .publisher(book.getPublisher())
+                .publishDate(book.getPublishDate())
+                .isbn(book.getIsbn())
+                .stock(book.getStock())
+                .ifkr(book.getIfkr())
+                .price(book.getPrice())
+                .category(book.getCategory())
+                .subcategory(book.getSubcategory())
+                .discount(book.getDiscount())
+                .bookdescription(newBookDescription)
+                .build();
         // 카테고리와 서브카테고리, 설명이 포함된 상태로 책 저장
-        return bookRepository.save(book);
+        return bookRepository.save(newBook);
     }
 
     @Override
@@ -209,6 +221,7 @@ public class BookService implements BookServiceInterface {
     }
 
     @Transactional
+    @Override
     public void updateDiscountForBooks(Map<String, Object> payload) {
         // 데이터 추출 및 변환
         List<Integer> bookIds = (List<Integer>) payload.get("bookIds");
@@ -235,6 +248,7 @@ public class BookService implements BookServiceInterface {
     }
 
     @Transactional
+    @Override
     public void updateDiscountByBookId(Long bookId, byte discount) {
         // 데이터베이스에서 Book을 조회
         Book book = bookRepository.findById(bookId)
@@ -248,6 +262,7 @@ public class BookService implements BookServiceInterface {
     }
 
     @Transactional
+    @Override
     public void deleteBooksByIdsRaw(List<?> bookIdsRaw) {
         // Integer -> Long 변환
         List<Long> bookIds = bookIdsRaw.stream()
@@ -267,7 +282,48 @@ public class BookService implements BookServiceInterface {
     }
 
     @Transactional
+    @Override
     public void deleteBooksByIds(List<Long> bookIds) {
         bookRepository.deleteAllById(bookIds); // Repository 호출
+    }
+
+    @Transactional
+    @Override
+    public Page<Book> adminFilteredBooks(String keyword, String ifkr, String category, String subcategory, int page) {
+        List<Book> filteredBooks = findAll(); // 기본적으로 전체 책 조회
+        int size = 10;
+        Pageable pageable = PageRequest.of(page, size);
+        // 키워드로 필터링
+        if (!keyword.isEmpty()) {
+            filteredBooks = findByTitleContaining(keyword);
+        }
+
+        // 국내/국외 필터링
+        if (!ifkr.isEmpty()) {
+            byte ifkrValue = Byte.parseByte(ifkr);
+            filteredBooks.retainAll(findAllByIfkr(ifkrValue));
+        }
+
+        // 카테고리 필터링
+        if (!category.isEmpty()) {
+            Category selectedCategory = categoryService.findById(Long.parseLong(category));
+            if (selectedCategory != null) {
+                filteredBooks.retainAll(findAllByCategoryId(selectedCategory.getId()));
+            }
+        }
+
+        // 서브카테고리 필터링
+        if (!subcategory.isEmpty()) {
+            SubCategory selectedSubCategory = subCategoryService.findById(Long.parseLong(subcategory));
+            if (selectedSubCategory != null) {
+                filteredBooks.retainAll(findAllBySubcategoryId(selectedSubCategory.getId()));
+            }
+        }
+
+        // 페이지네이션 적용
+        int start = Math.min((int) pageable.getOffset(), filteredBooks.size());
+        int end = Math.min((start + pageable.getPageSize()), filteredBooks.size());
+        List<Book> pagedBooks = filteredBooks.subList(start, end);
+        return new PageImpl<>(pagedBooks, pageable, filteredBooks.size());
     }
 }

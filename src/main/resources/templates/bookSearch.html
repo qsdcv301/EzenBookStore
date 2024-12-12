@@ -1,38 +1,6 @@
 <!doctype html>
 <html xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head th:replace="~{fragments/css :: css}">
-    <style>
-        .side {
-            padding-top: 220px;
-        }
-
-        .sidebar {
-            top: 40px;
-            border-radius: 15px;
-            background-color: #f8f9fa;
-            padding: 20px;
-        }
-
-        .product-list {
-            padding: 20px;
-        }
-
-        .product-item {
-            border: 1px solid rgba(0, 0, 0, .125);
-            margin-bottom: 10px;
-            padding: 10px;
-        }
-
-        .product-item h5 {
-            font-size: 1rem;
-            margin-bottom: 0.25rem;
-        }
-
-        .product-item p {
-            font-size: 0.9rem;
-            margin-bottom: 0.25rem;
-        }
-    </style>
 </head>
 <header th:replace="~{fragments/header :: header}"></header>
 <body>
@@ -125,7 +93,7 @@
                                     <h2 class="mt-1 mb-5" th:text="${val}+'(으)로 검색한 상품목록'">'ooo'로 검색한 상품목록</h2>
                                     <div class="d-flex justify-content-end align-items-center mb-3">
                                         <div class="form-check mt-3 me-2">
-                                            <input class="form-check-input" type="checkbox" id="selectAll">
+                                            <input class="form-check-input" type="checkbox" id="selectAll" style="transform: scale(1.5);">
                                             <label class="form-check-label" for="selectAll">전체 선택</label>
                                         </div>
                                         <button th:if="${userData}" class="btn btn-primary ml-3 mt-3 cartAdd"
@@ -138,7 +106,7 @@
                                         </button>
                                     </div>
                                     <div class="d-flex justify-content-end mb-3">
-                                        <select class="form-select form-select-sm" id="sortOptions"
+                                        <select class="form-select form-select-sm form-control" id="sortOptions"
                                                 style="width: auto;">
                                             <option selected disabled>정렬 방식 선택</option>
                                             <option value="count"
@@ -175,7 +143,7 @@
                                                 <!-- 이미지 및 체크박스 -->
                                                 <div class="col-md-4 d-flex align-items-center justify-content-center">
                                                     <div class="form-check ms-2 text-center mr-4">
-                                                        <input class="form-check-input cart-checkbox" type="checkbox">
+                                                        <input class="form-check-input cart-checkbox" type="checkbox" style="transform: scale(1.5);">
                                                     </div>
                                                     <img th:src="${imageList[index.index] != '' ? imageList[index.index] : 'https://via.placeholder.com/100'}"
                                                          th:alt="${book.id}+'번 책표지'" class="img-thumbnail bookImage"
