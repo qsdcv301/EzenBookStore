@@ -12,8 +12,6 @@ public interface QnAServiceInterface {
 
     QnA findById(Long id);
 
-    Page<QnA> findByCategory(Byte category, Pageable pageable);
-
     Page<QnA> findAll(Pageable pageable);
 
     boolean saveAnswer(Long id, String answer);
@@ -43,6 +41,6 @@ public interface QnAServiceInterface {
 
     Page<QnA> findByCategory(byte category, Pageable pageable);
 
-    List<QnA> filterQnAList(String category, String status, Pageable pageable);
+    Page<QnA> filterQnAList(String category, String status, Pageable pageable);
 
 }

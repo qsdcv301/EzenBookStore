@@ -2,7 +2,6 @@ package ezen.team.ezenbookstore.controller.admin;
 
 import ezen.team.ezenbookstore.entity.QnA;
 import ezen.team.ezenbookstore.service.QnAService;
-import ezen.team.ezenbookstore.service.QnAServiceInterface;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -27,29 +25,27 @@ public class AdminQnAApiController {
 
     // QnA 목록 조회
     @GetMapping
-    public String qnAControl(@PageableDefault(size = 15, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
-                             Model model) {
-        Page<QnA> qnAPage = qnaService.findAll(pageable);
+    public String qnAControl(
+            @RequestParam(required = false, defaultValue = "all") String category,
+            @RequestParam(required = false, defaultValue = "all") String status,
+            @PageableDefault(size = 15, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
+            Model model) {
+        Page<QnA> qnAPage = qnaService.filterQnAList(category, status, pageable);
         model.addAttribute("qnAPage", qnAPage);
+        model.addAttribute("currentCategory", category);
+        model.addAttribute("currentStatus", status);
         return "admin/qnaControl";
-    }
-
-    // QnA 필터링
-    @PostMapping("/filter")
-    public ResponseEntity<List<QnA>> filterQnAList(@RequestBody Map<String, String> filterData,
-                                                   @PageableDefault(size = 15, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
-        String category = filterData.getOrDefault("category", "all");
-        String status = filterData.getOrDefault("status", "all");
-
-        List<QnA> qnaList = qnaService.filterQnAList(category, status, pageable);
-        return ResponseEntity.ok(qnaList);
     }
 
     // QnA 상세 조회
     @GetMapping("/{id}")
-    public ResponseEntity<QnA> getQnADetail(@PathVariable Long id) {
-        QnA qna = qnaService.findById(id);
-        return qna != null ? ResponseEntity.ok(qna) : ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+    public ResponseEntity<Map<String, String>> getQnADetail(@PathVariable Long id) {
+        Map<String, String> qnaDetail = qnaService.findQnAById(id.toString());
+        if ("true".equals(qnaDetail.get("success"))) {
+            return ResponseEntity.ok(qnaDetail);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(qnaDetail);
+        }
     }
 
     // QnA 답변 저장

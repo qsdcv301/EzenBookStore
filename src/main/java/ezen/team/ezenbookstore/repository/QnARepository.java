@@ -19,9 +19,20 @@ public interface QnARepository extends JpaRepository<QnA, Long> {
 
     Page<QnA> findByCategory(Byte category, Pageable pageable);
 
-    Page<QnA> findByAnswer(String answer, Pageable pageable);
+    // 카테고리별 QnA 조회
+    Page<QnA> findByCategory(byte category, Pageable pageable);
 
-    Page<QnA> findByCategoryAndAnswer(Byte category, String answer, Pageable pageable);
+    // 답변이 있는 QnA 조회
+    Page<QnA> findByCategoryAndAnswerIsNotNullAndAnswerNotEmpty(byte category, Pageable pageable);
+
+    // 답변이 없는 QnA 조회
+    Page<QnA> findByCategoryAndAnswerIsNullOrAnswerIsEmpty(byte category, Pageable pageable);
+
+    // 모든 카테고리의 답변이 있는 QnA 조회
+    Page<QnA> findByAnswerIsNotNullAndAnswerNotEmpty(Pageable pageable);
+
+    // 모든 카테고리의 답변이 없는 QnA 조회
+    Page<QnA> findByAnswerIsNullOrAnswerIsEmpty(Pageable pageable);
 
     @Query("SELECT COUNT(q) FROM QnA q WHERE q.answer IS NULL OR q.answer = ''")
     Long countByAnswerIsNullOrEmpty();

@@ -41,7 +41,8 @@
                             <option value="user">작성자</option>
                         </select>
                         <input type="text" id="keyword" class="form-control mr-2" placeholder="검색어를 입력하세요" style="width: 300px;">
-                        <button type="button" id="btnSearch" class="btn btn-primary">검색</button>
+                        <button type="button" id="btnSearch" class="btn btn-primary mr-2">검색</button>
+                        <button type="button" class="btn btn-secondary btnResetReview">초기화</button>
                     </form>
                     <div>
                         <button type="button" id="deleteReview" class="btn btn-danger">선택 삭제</button>
@@ -140,6 +141,12 @@
 
             const query = `?type=${encodeURIComponent(searchType)}&keyword=${encodeURIComponent(keyword)}`;
             location.href = `/admin/review/search${query}`;
+        });
+        $('.btnResetReview').click(function (review) {
+            review.preventDefault();
+            $('#searchType').val('book');
+            $('#keyword').val('');
+            location.href = '/admin/review';
         });
 
         // 전체 선택 체크박스 클릭 시
