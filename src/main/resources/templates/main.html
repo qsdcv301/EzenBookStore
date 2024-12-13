@@ -8,8 +8,8 @@
     <div class="container main-con">
         <main class="mb-5">
             <!-- 섹션 0: 공지사항 -->
-            <div class="container-fluid px-0">
-                <div class="d-flex justify-content-between align-items-center bg-info">
+            <div class="row px-0">
+                <div class="d-flex justify-content-between align-items-center bg-info w-100">
                     <div class="col-2 px-3">
                         <span class="text-white font-weight-bold d-none d-md-block">공지사항</span>
                         <span class="text-white d-md-none" style="font-size: 0.7em;">공지</span>
@@ -39,7 +39,7 @@
 
             <!-- 섹션 1: 이벤트/프로모션-->
             <section class="row">
-                <div class="col-12">
+                <div class="w-100">
                     <div id="eventCarousel" class="carousel slide" data-ride="carousel" data-interval="6000">
                         <div class="carousel-inner" style="border-radius: 0 0 5px 5px;">
                             <div th:each="event, iterStat : ${eventList}"
@@ -172,6 +172,7 @@
         </main>
         <footer th:replace="~{fragments/footer :: footer}"></footer>
         <div th:replace="~{fragments/script :: script-body}"></div>
+    </div>
 </body>
 
 </html>
