@@ -1882,7 +1882,10 @@ $(document).ready(function () {
     $('#submitReview').on('click', function () {
         const rating = $('#ratingValue').val();
         const reviewTitle = $('#reviewTitle').val();
-        const reviewText = $('#reviewText').val();
+        const reviewText = $('#reviewText').val().replace(/\n/g, '<br>')                //* 줄바꿈처리*/
+            .replace(/ {2,}/g, function (match) {  //*공백처리*/
+                return match.replace(/ /g, '&nbsp;');
+            });
         const orderItemId = $("#submitReview").attr("data-id");
         const fileInputs = $('#reviewFile')[0].files;
 

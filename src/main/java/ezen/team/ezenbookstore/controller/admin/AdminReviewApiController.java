@@ -27,7 +27,6 @@ public class AdminReviewApiController {
 
     private final ReviewService reviewService;
     private final FileUploadService fileUploadService;
-    private final TextFormatService textFormatService;
 
     @GetMapping("")
     public String getAllReviews(

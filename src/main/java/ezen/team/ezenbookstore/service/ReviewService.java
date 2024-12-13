@@ -93,7 +93,7 @@ public class ReviewService implements ReviewServiceInterface{
             OrderItem orderItem = orderItemService.findById(orderItemId);
             Review newReview = Review.builder()
                     .title(title)
-                    .comment(comment)
+                    .comment(textFormatService.formatText(comment))
                     .rating(rating)
                     .book(orderItem.getBook())
                     .user(user)
