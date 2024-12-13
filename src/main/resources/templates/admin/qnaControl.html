@@ -182,7 +182,6 @@
 
     $(document).on('click', '.view-btn', function () {
         const qnaId = $(this).data('qna-id');
-
         $.ajax({
             url: `/admin/qna/${qnaId}`,
             type: 'GET',
@@ -190,9 +189,15 @@
                 $('#detailQnAId').text(qnaId);
                 $('#detailUserName').text(response.name);
                 $('#detailCategory').text(response.category);
+                const questionFormated = response.question
+                    .replace(/<br\s*\/?>/g, '\n')         // 줄바꿈을 br로
+                    .replace(/&nbsp;/g, ' ');             // &nbsp;를 공백으로
                 $('#detailTitle').text(response.title);
-                $('#detailQuestion').html(response.question);
-                $('#editAnswer').val(response.answer || '');
+                $('#detailQuestion').text(response.question);
+                const answerFormatted = response.answer
+                    .replace(/<br\s*\/?>/g, '\n')         // 줄바꿈을 br로
+                    .replace(/&nbsp;/g, ' ');             // &nbsp;를 공백으로
+                $('#editAnswer').val(answerFormatted || '');
                 // 이미지 경로 설정
                 if (response.imagePath) {
                     $('#detailImg').attr('src', response.imagePath).show();
@@ -210,7 +215,11 @@
 
     $('#saveAnswer').click(function () {
         const qnaId = $('#detailQnAId').text();
-        const answer = $('#editAnswer').val();
+        const answer = $('#editAnswer').val().replace(/\n/g, '<br>')                //* 줄바꿈처리*/
+            .replace(/ {2,}/g, function (match) {  //*공백처리*/
+                return match.replace(/ /g, '&nbsp;');
+            });
+
         const currentCategory = /*[[${currentCategory}]]*/ 'all';
         const currentStatus = /*[[${currentStatus}]]*/ 'all';
         const currentPage = /*[[${qnAPage.number}]]*/ 0;

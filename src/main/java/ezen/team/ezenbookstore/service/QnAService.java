@@ -23,7 +23,7 @@ public class QnAService implements QnAServiceInterface{
     private final QnARepository qnARepository;
     private final UserService userService;
     private final FileUploadService fileUploadService;
-    private TextFormatService textFormatService;
+    private final TextFormatService textFormatService;
 
     @Override
     public QnA findById(Long id) {
@@ -38,7 +38,6 @@ public class QnAService implements QnAServiceInterface{
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean saveAnswer(Long id, String answer) {
-        // 특정 QnA에 답변 저장
         QnA qna = findById(id); // QnA를 조회
         if (qna != null) {
             String formattedAnswer = textFormatService.formatText(answer);

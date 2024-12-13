@@ -25,7 +25,6 @@ import java.util.Map;
 public class AdminQnAApiController {
 
     private final QnAService qnaService;
-    private final TextFormatService textFormatService;
 
 
     // QnA 목록 조회
