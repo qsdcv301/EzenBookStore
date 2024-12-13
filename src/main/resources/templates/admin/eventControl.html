@@ -296,15 +296,25 @@
         // 이벤트 추가
         $('#saveAdd').click(function () {
             const formData = new FormData();
-            formData.append('id',$(''))
-            formData.append('title', $('#addTitle').val());
-            formData.append('content', $('#addContent').val());
-            formData.append('startDate', formatDate($('#addStartDate').val(), 'timestamp'));
-            formData.append('endDate', formatDate($('#addEndDate').val(), 'timestamp'));
+            const titleVal = $('#addTitle').val();
+            const contentVal = $('#addContent').val();
+            const startDateVal =$('#addStartDate').val();
+            const endDateVal= $('#addEndDate').val();
+            formData.append('title', titleVal);
+            formData.append('content', contentVal);
+            formData.append('startDate', formatDate(startDateVal, 'timestamp'));
+            formData.append('endDate', formatDate(endDateVal, 'timestamp'));
 
             const fileInput = $('#addFile')[0].files[0];
             if (fileInput) {
-                formData.append('file', fileInput);
+                formData.append('image', fileInput);
+            }
+            if( titleVal==null ||titleVal==='' ||
+                contentVal==null ||contentVal==='' ||
+                startDateVal==null ||startDateVal==='' ||
+                endDateVal==null ||endDateVal==='') {
+                alert('제목 내용 시작일 종료일의 값은 필수입니다.');
+                return;
             }
 
             $.ajax({
@@ -334,7 +344,10 @@
                 success: function (event) {
                     $('#editEventId').val(event.id);
                     $('#editTitle').val(event.title);
-                    $('#editContent').val(event.content);
+                    const contentFormating = event.content
+                        .replace(/<br\s*\/?>/g, '\n')         // 줄바꿈을 br로
+                        .replace(/&nbsp;/g, ' ');             // &nbsp;를 공백으로
+                    $('#editContent').val(contentFormating);
                     $('#editStartDate').val(formatDate(event.startDate, 'datetime-local'));
                     $('#editEndDate').val(formatDate(event.endDate, 'datetime-local'));
 
@@ -354,10 +367,16 @@
 
         // 이벤트 수정
         $('#saveEdit').click(function () {
+            let content = $('#editContent').val()
+                .replace(/\n/g, '<br>')                //* 줄바꿈처리*/
+                .replace(/ {2,}/g, function (match) {  //*공백처리*/
+                    return match.replace(/ /g, '&nbsp;');
+                });
+
             const formData = new FormData();
             formData.append('id', $('#editEventId').val());
             formData.append('title', $('#editTitle').val());
-            formData.append('content', $('#editContent').val());
+            formData.append('content', content);
             formData.append('startDate', formatDate($('#editStartDate').val(), 'timestamp'));
             formData.append('endDate', formatDate($('#editEndDate').val(), 'timestamp'));
 
