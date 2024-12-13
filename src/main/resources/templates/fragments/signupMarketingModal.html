@@ -1,7 +1,6 @@
 <div th:fragment="signupMarketingModal" class="modal fade" id="marketingModal" tabindex="-1" role="dialog"
-     aria-labelledby="marketingModalLabel"
-     aria-hidden="true">
-    <div class="modal-dialog" role="document">
+    aria-labelledby="marketingModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="marketingModalLabel">마케팅 및 광고 활용 동의</h5>
@@ -9,8 +8,40 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body">
-                <!-- 마케팅 및 광고 활용 동의 내용 -->
+            <div class="modal-body overflow-auto" style="max-height: 550px;">
+                <h6 class="mb-4"><strong class="text-primary">EzenBookStore</strong> 마케팅 및 광고 활용 동의</h6>
+
+                <p>EzenBookStore는 고객님께 보다 나은 서비스를 제공하고자 아래와 같이 마케팅 정보 활용에 대한 동의를 받고 있습니다. 동의하시면 각종 할인 혜택과 이벤트 소식을 받아보실 수
+                    있습니다.</p>
+
+                <h6>1. 수집 및 이용 목적</h6>
+                <ul>
+                    <li>신규 서비스 및 상품 안내</li>
+                    <li>이벤트 및 할인 행사 안내</li>
+                    <li>고객 맞춤형 서비스 제공</li>
+                    <li>서비스 이용에 대한 통계 및 분석</li>
+                </ul>
+
+                <h6>2. 수집 항목</h6>
+                <p>성명, 이메일 주소, 휴대전화번호, 주소, 서비스 이용 기록, 구매 내역</p>
+
+                <h6>3. 보유 및 이용 기간</h6>
+                <p>회원 탈퇴 시 또는 동의 철회 시까지</p>
+
+                <h6>4. 마케팅 및 광고 활용 방법</h6>
+                <ul>
+                    <li>이메일, SMS, 앱 푸시 알림을 통한 정보 제공</li>
+                    <li>전화를 통한 상품 및 서비스 안내</li>
+                    <li>맞춤형 온라인 광고 제공</li>
+                </ul>
+
+                <h6>5. 동의 거부권 및 불이익</h6>
+                <p>귀하는 개인정보 수집 및 이용에 대한 동의를 거부할 권리가 있습니다. 다만, 동의를 거부할 경우 마케팅 정보 및 각종 혜택 안내 등의 서비스 제공에 제한을 받을 수 있습니다.</p>
+
+                <h6>6. 동의 철회 방법</h6>
+                <p>마케팅 및 광고 활용 동의를 철회하고자 하는 경우, 회원정보 수정 페이지에서 철회하거나 고객센터로 연락하여 처리할 수 있습니다.</p>
+
+                <p>EzenBookStore는 고객님의 개인정보를 소중히 여기며, 관련 법규를 준수하여 안전하게 관리하겠습니다.</p>
             </div>
         </div>
     </div>
