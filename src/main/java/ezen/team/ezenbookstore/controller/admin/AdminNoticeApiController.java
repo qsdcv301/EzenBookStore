@@ -3,6 +3,7 @@ package ezen.team.ezenbookstore.controller.admin;
 import ezen.team.ezenbookstore.entity.Notice;
 import ezen.team.ezenbookstore.service.NoticeService;
 import ezen.team.ezenbookstore.service.NoticeServiceInterface;
+import ezen.team.ezenbookstore.service.TextFormatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +22,7 @@ import java.util.List;
 public class AdminNoticeApiController {
 
     private final NoticeService noticeService;
+    private final TextFormatService textFormatService;
 
     // 공지사항 목록 조회 및 검색
     @GetMapping

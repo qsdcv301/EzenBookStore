@@ -2,7 +2,10 @@ package ezen.team.ezenbookstore.controller.admin;
 
 import ezen.team.ezenbookstore.entity.QnA;
 import ezen.team.ezenbookstore.service.QnAService;
+import ezen.team.ezenbookstore.service.TextFormatService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -22,6 +25,8 @@ import java.util.Map;
 public class AdminQnAApiController {
 
     private final QnAService qnaService;
+    private final TextFormatService textFormatService;
+
 
     // QnA 목록 조회
     @GetMapping

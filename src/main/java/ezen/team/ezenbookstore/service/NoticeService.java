@@ -19,6 +19,8 @@ public class NoticeService implements NoticeServiceInterface{
 
     private final FileUploadService fileUploadService;
 
+    private final TextFormatService textFormatService;
+
     @Override
     public Notice findById(Long id) {
         return noticeRepository.findById(id).orElse(null);
@@ -95,9 +97,10 @@ public class NoticeService implements NoticeServiceInterface{
 
     @Override
     public Notice createNoticeWithFile(String title, String content, MultipartFile image) throws Exception {
+        String formattedContent = textFormatService.formatText(content);
         Notice notice = Notice.builder()
                 .title(title)
-                .content(content)
+                .content(formattedContent)
                 .build();
 
         Notice savedNotice = noticeRepository.save(notice);
@@ -114,10 +117,11 @@ public class NoticeService implements NoticeServiceInterface{
 
     @Override
     public void updateNoticeWithFile(Long id, String title, String content, MultipartFile image) throws Exception {
+
         Notice notice = noticeRepository.findById(id).orElseThrow(() -> new Exception("공지사항을 찾을 수 없습니다."));
 
         notice.setTitle(title);
-        notice.setContent(content);
+        notice.setContent(textFormatService.formatText(content));
 
         if (image != null && !image.isEmpty()) {
             boolean uploadSuccess = fileUploadService.uploadFile(image, id.toString(), "notice");

@@ -25,6 +25,7 @@ public class ReviewService implements ReviewServiceInterface{
     private final ReviewRepository reviewRepository;
     private final FileUploadService fileUploadService;
     private final OrderItemService orderItemService;
+    private final TextFormatService textFormatService;
 
     @Override
     public Review findById(Long id) {

@@ -65,7 +65,7 @@
                         <td><input type="checkbox" name="checkBoxNotice" value="true"></td>
                         <td th:text="${notice.id}"></td>
                         <td th:text="${notice.title}"></td>
-                        <td th:text="${notice.content}"></td>
+                        <td th:utext="${notice.content}"></td>
                         <td>
                             <img th:src="${@thymeleafFileUploadService.findImageFilePath(notice.id, 'notice')}" alt="이미지 없음" class="img-thumbnail">
                         </td>
@@ -80,7 +80,7 @@
                         </td>
                     </tr>
                     <tr th:if="${#lists.isEmpty(noticePage?.content)}">
-                        <td colspan="8" class="text-center">검색 결과가 없습니다.</td>
+                        <td colspan="6" class="text-center">검색 결과가 없습니다.</td>
                     </tr>
                     </tbody>
                 </table>
@@ -204,7 +204,8 @@
     $(document).on('click', '.edit-btn', function () {
         const id = $(this).data('id');
         const title = $(this).data('title');
-        const content = $(this).data('content');
+        let content = $(this).data('content');
+        content = content.replace(/&nbsp;/g, ' ').replace(/<br\s*\/?>/gi, '\n');
         const imageSrc = $(this).closest('tr').find('img').attr('src');
 
         $('#editId').val(id);
@@ -212,7 +213,12 @@
         $('#editContent').val(content);
         $('#currentImage').attr('src', imageSrc);
     });
-
+    $('#editNoticeForm').submit(function (event) {
+        // 폼이 서버로 제출되기 전에 포맷팅된 내용을 적용
+        const content = $('#editContent').val();
+        const formattedContent = content.replace(/ /g, '&nbsp;').replace(/\n/g, '<br>');
+        $('#editContent').val(formattedContent);
+    });
     // 전체 선택/해제
     $('#selectAll').click(function () {
         $('input[name="checkBoxNotice"]').prop('checked', this.checked);

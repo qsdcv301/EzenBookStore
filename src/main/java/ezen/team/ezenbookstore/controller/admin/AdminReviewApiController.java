@@ -3,6 +3,7 @@ package ezen.team.ezenbookstore.controller.admin;
 import ezen.team.ezenbookstore.entity.Review;
 import ezen.team.ezenbookstore.service.FileUploadService;
 import ezen.team.ezenbookstore.service.ReviewService;
+import ezen.team.ezenbookstore.service.TextFormatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +27,7 @@ public class AdminReviewApiController {
 
     private final ReviewService reviewService;
     private final FileUploadService fileUploadService;
+    private final TextFormatService textFormatService;
 
     @GetMapping("")
     public String getAllReviews(

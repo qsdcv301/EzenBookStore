@@ -13,25 +13,28 @@
             <div class="container mt-5">
                 <h2>문의하기 관리</h2>
                 <p>카테고리별 문의를 확인하고 관리할 수 있는 페이지입니다.</p>
+
                 <!-- 카테고리 필터 -->
                 <div class="d-flex justify-content-start filter mb-3">
-                    <span class="filter-btn active" data-filter="all">전체</span>
-                    <span class="filter-btn" data-filter="1">회원 문의</span>
-                    <span class="filter-btn" data-filter="2">상품 문의</span>
-                    <span class="filter-btn" data-filter="3">배송 문의</span>
-                    <span class="filter-btn" data-filter="4">주문 문의</span>
-                    <span class="filter-btn" data-filter="5">취소/반품 문의</span>
-                    <span class="filter-btn" data-filter="6">기타 문의</span>
+                    <span class="filter-btn" th:classappend="${currentCategory == 'all'} ? ' active'" data-filter="all">전체</span>
+                    <span class="filter-btn" th:classappend="${currentCategory == '1'} ? ' active'" data-filter="1">회원 문의</span>
+                    <span class="filter-btn" th:classappend="${currentCategory == '2'} ? ' active'" data-filter="2">상품 문의</span>
+                    <span class="filter-btn" th:classappend="${currentCategory == '3'} ? ' active'" data-filter="3">배송 문의</span>
+                    <span class="filter-btn" th:classappend="${currentCategory == '4'} ? ' active'" data-filter="4">주문 문의</span>
+                    <span class="filter-btn" th:classappend="${currentCategory == '5'} ? ' active'" data-filter="5">취소/반품 문의</span>
+                    <span class="filter-btn" th:classappend="${currentCategory == '6'} ? ' active'" data-filter="6">기타 문의</span>
                 </div>
+
                 <hr>
+
                 <div class="d-flex justify-content-between filter mb-3">
                     <!-- 답변 상태 필터 -->
                     <form id="searchForm" class="form-inline">
                         <select id="answerStatusFilter" class="form-control mr-2"
                                 style="width: 200px; display: inline-block;">
-                            <option value="all">모든 상태</option>
-                            <option value="answered">답변 완료</option>
-                            <option value="pending">답변 대기중</option>
+                            <option value="all" th:selected="${currentStatus == 'all'}">모든 상태</option>
+                            <option value="answered" th:selected="${currentStatus == 'answered'}">답변 완료</option>
+                            <option value="pending" th:selected="${currentStatus == 'pending'}">답변 대기중</option>
                         </select>
                         <button id="filterStatus" class="btn btn-primary mr-2">상태 필터 적용</button>
                         <button type="button" class="btn btn-secondary btnResetQnA">초기화</button>
@@ -41,6 +44,7 @@
                         <button id="bulkAnswer" class="btn btn-success">일괄 답변</button>
                     </div>
                 </div>
+
                 <!-- QnA 테이블 -->
                 <table class="table table-bordered text-center">
                     <thead class="thead-light">
@@ -83,28 +87,37 @@
                         <input type="hidden" class="hiddenImg"
                                th:value="${@thymeleafFileUploadService.findImageFilePath(qnA.id, 'qna')}">
                     </tr>
+                    <tr th:if="${#lists.isEmpty(qnAPage?.content)}">
+                        <td colspan="7" class="text-center">검색 결과가 없습니다.</td>
+                    </tr>
                     </tbody>
                 </table>
             </div>
         </main>
     </div>
 </div>
+
+<!-- 페이지 네비게이션 -->
 <div class="d-flex justify-content-center">
     <ul class="pagination">
         <!-- 이전 페이지 링크 -->
         <li class="page-item" th:if="${qnAPage.hasPrevious()}">
-            <a class="page-link" th:href="@{/admin/qna(page=${qnAPage.number - 1}, size=${qnAPage.size}, category=${currentCategory}, status=${currentStatus})}">이전</a>
+            <a class="page-link"
+               th:href="@{/admin/qna(page=${qnAPage.number - 1}, size=${qnAPage.size}, category=${currentCategory}, status=${currentStatus})}">이전</a>
         </li>
 
         <!-- 페이지 번호 반복 -->
         <li class="page-item" th:each="i : ${#numbers.sequence(0, qnAPage.totalPages - 1)}"
             th:classappend="${i == qnAPage.number} ? 'active'">
-            <a class="page-link" th:href="@{/admin/qna(page=${i}, size=${qnAPage.size}, category=${currentCategory}, status=${currentStatus})}" th:text="${i + 1}"></a>
+            <a class="page-link"
+               th:href="@{/admin/qna(page=${i}, size=${qnAPage.size}, category=${currentCategory}, status=${currentStatus})}"
+               th:text="${i + 1}"></a>
         </li>
 
         <!-- 다음 페이지 링크 -->
         <li class="page-item" th:if="${qnAPage.hasNext()}">
-            <a class="page-link" th:href="@{/admin/qna(page=${qnAPage.number + 1}, size=${qnAPage.size}, category=${currentCategory}, status=${currentStatus})}">다음</a>
+            <a class="page-link"
+               th:href="@{/admin/qna(page=${qnAPage.number + 1}, size=${qnAPage.size}, category=${currentCategory}, status=${currentStatus})}">다음</a>
         </li>
     </ul>
 </div>
@@ -115,8 +128,8 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="qnaDetailModalLabel">문의하기 상세보기</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <h5 class="modal-title">문의하기 상세보기</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="닫기">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -139,13 +152,11 @@
         </div>
     </div>
 </div>
-<div th:replace="~{fragments/script :: script-body}"></div>
-<script>
-    function getQueryParam(param) {
-        const urlParams = new URLSearchParams(window.location.search);
-        return urlParams.get(param) || 'all';
-    }
 
+<!-- 스크립트 포함 -->
+<div th:replace="~{fragments/script :: script-body}"></div>
+
+<script th:inline="javascript">
     function restoreFilters() {
         const currentCategory = /*[[${currentCategory}]]*/ 'all';
         const currentStatus = /*[[${currentStatus}]]*/ 'all';
@@ -164,22 +175,9 @@
     function applyFilters() {
         const categoryFilter = $('.filter-btn.active').data('filter') || 'all';
         const statusFilter = $('#answerStatusFilter').val() || 'all';
-
-        // 페이지를 새로고침하면서 필터 파라미터를 전달
         const currentPage = /*[[${qnAPage.number}]]*/ 0;
-        window.location.href = `/admin/qna?page=${currentPage}&size=15&category=${categoryFilter}&status=${statusFilter}`;
-    }
 
-    function getCategoryName(category) {
-        const categories = {
-            1: '회원 문의',
-            2: '상품 문의',
-            3: '배송 문의',
-            4: '주문 문의',
-            5: '취소/반품 문의',
-            6: '기타 문의'
-        };
-        return categories[category] || '알 수 없는 카테고리';
+        window.location.href = `/admin/qna?page=${currentPage}&size=15&category=${categoryFilter}&status=${statusFilter}`;
     }
 
     $(document).on('click', '.view-btn', function () {
@@ -193,7 +191,7 @@
                 $('#detailUserName').text(response.name);
                 $('#detailCategory').text(response.category);
                 $('#detailTitle').text(response.title);
-                $('#detailQuestion').text(response.question);
+                $('#detailQuestion').html(response.question);
                 $('#editAnswer').val(response.answer || '');
                 // 이미지 경로 설정
                 if (response.imagePath) {
@@ -213,6 +211,10 @@
     $('#saveAnswer').click(function () {
         const qnaId = $('#detailQnAId').text();
         const answer = $('#editAnswer').val();
+        const currentCategory = /*[[${currentCategory}]]*/ 'all';
+        const currentStatus = /*[[${currentStatus}]]*/ 'all';
+        const currentPage = /*[[${qnAPage.number}]]*/ 0;
+
         $.ajax({
             url: `/admin/qna/${qnaId}/answer`,
             type: 'POST',
@@ -221,7 +223,8 @@
             success: function () {
                 alert('답변이 저장되었습니다.');
                 $('#qnaDetailModal').modal('hide');
-                location.reload();
+                // 현재 필터를 포함하여 페이지 리로드
+                window.location.href = `/admin/qna?page=${currentPage}&size=15&category=${currentCategory}&status=${currentStatus}`;
             },
             error: function () {
                 alert('답변 저장에 실패했습니다.');
@@ -232,6 +235,7 @@
     $(document).on('click', '.filter-btn', function () {
         $('.filter-btn').removeClass('active');
         $(this).addClass('active');
+        applyFilters(); // 필터 버튼 클릭 시 즉시 필터 적용
     });
 
     $('#filterStatus').click(function (event) {
@@ -265,18 +269,22 @@
         if (selectedIds.length > 0) {
             const answer = prompt('모든 선택된 질문에 동일한 답변을 입력하세요:');
             if (answer) {
+                const currentCategory = /*[[${currentCategory}]]*/ 'all';
+                const currentStatus = /*[[${currentStatus}]]*/ 'all';
+                const currentPage = /*[[${qnAPage.number}]]*/ 0;
+
                 $.ajax({
                     url: `/admin/qna/bulk-answer`,
                     type: 'POST',
                     contentType: 'application/json',
                     data: JSON.stringify({ids: selectedIds, answer}),
-                    success: function (request) {
-                        console.log(request);
+                    success: function () {
                         alert('일괄 답변이 완료되었습니다.');
-                        location.reload();
+                        // 현재 필터를 포함하여 페이지 리로드
+                        window.location.href = `/admin/qna?page=${currentPage}&size=15&category=${currentCategory}&status=${currentStatus}`;
                     },
                     error: function (xhr, status, error) {
-                        alert('일괄 답변에 실패했습니다.' + error);
+                        alert('일괄 답변에 실패했습니다. ' + error);
                     }
                 });
             }

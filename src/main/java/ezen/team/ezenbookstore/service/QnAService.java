@@ -23,6 +23,7 @@ public class QnAService implements QnAServiceInterface{
     private final QnARepository qnARepository;
     private final UserService userService;
     private final FileUploadService fileUploadService;
+    private TextFormatService textFormatService;
 
     @Override
     public QnA findById(Long id) {
@@ -40,7 +41,8 @@ public class QnAService implements QnAServiceInterface{
         // 특정 QnA에 답변 저장
         QnA qna = findById(id); // QnA를 조회
         if (qna != null) {
-            qna.setAnswer(answer); // 답변 설정
+            String formattedAnswer = textFormatService.formatText(answer);
+            qna.setAnswer(formattedAnswer); // 답변 설정
             qnARepository.save(qna); // 저장
             return true; // 성공적으로 저장된 경우
         }
@@ -51,8 +53,9 @@ public class QnAService implements QnAServiceInterface{
     @Transactional(rollbackFor = Exception.class)
     public void bulkAnswer(List<Long> ids, String answer) {
         // 여러 QnA에 동일한 답변 저장
+        String formattedAnswer = textFormatService.formatText(answer);
         List<QnA> qnaList = qnARepository.findAllById(ids); // ID 리스트로 QnA 조회
-        qnaList.forEach(qna -> qna.setAnswer(answer));
+        qnaList.forEach(qna -> qna.setAnswer(formattedAnswer));
         qnARepository.saveAll(qnaList); // 일괄 저장
     }
 
@@ -152,11 +155,12 @@ public class QnAService implements QnAServiceInterface{
         Map<String, Boolean> response = new HashMap<>();
         try {
             User user = userService.findByEmail(email);
+            String formattedQuestion = textFormatService.formatText(qna.getQuestion());
             QnA newQnA = QnA.builder()
                     .user(user)
                     .category(qna.getCategory())
                     .title(qna.getTitle())
-                    .question(qna.getQuestion())
+                    .question(formattedQuestion)
                     .build();
             QnA addQnA = create(newQnA);
             if (files != null && !files.isEmpty()) {
@@ -186,12 +190,11 @@ public class QnAService implements QnAServiceInterface{
         boolean isAllCategory = "all".equalsIgnoreCase(category);
         boolean isAllStatus = "all".equalsIgnoreCase(status);
 
-        byte categoryByte = 0;
+        byte categoryByte = 1;
         if (!isAllCategory) {
             try {
                 categoryByte = Byte.parseByte(category);
             } catch (NumberFormatException e) {
-                // 잘못된 카테고리 값 처리 (예: 기본값 설정 또는 예외 던지기)
                 categoryByte = 0;
             }
         }
@@ -214,7 +217,6 @@ public class QnAService implements QnAServiceInterface{
             }
         }
 
-        // 기본적으로 전체 조회
         return qnARepository.findAll(pageable);
     }
 }
