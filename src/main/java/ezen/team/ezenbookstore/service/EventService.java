@@ -1,14 +1,12 @@
 package ezen.team.ezenbookstore.service;
 
 import ezen.team.ezenbookstore.entity.Event;
-import ezen.team.ezenbookstore.entity.Notice;
 import ezen.team.ezenbookstore.repository.EventRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import ezen.team.ezenbookstore.service.FileUploadService;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -177,6 +175,20 @@ public class EventService implements EventServiceInterface{
                 .map(event -> fileUploadService.getImageCount(event.getId(), "event"))
                 .collect(Collectors.toList());
     }
-//    @Override
-//    public Event creatEvent(String title,String content,Timestamp startDate, Timestamp  endDate,)
+
+    @Override
+    public Event createEventWithFile(String title, String content, LocalDateTime startDate, LocalDateTime endDate, MultipartFile image) throws Exception {
+        Event event = Event.builder().title(title).content(content)
+                .startDate(Timestamp.valueOf(startDate)).endDate(Timestamp.valueOf(endDate)).build();
+        Event savedEvent = eventRepository.save(event);
+
+        if (image != null && !image.isEmpty()) {
+            boolean uploadSuccess = fileUploadService.uploadFile(image, savedEvent.getId().toString(), "event");
+            if (!uploadSuccess) {
+                throw new Exception("파일 업로드 실패");
+            }
+        }
+        return savedEvent;
+    }
+
 }

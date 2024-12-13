@@ -1,10 +1,13 @@
 package ezen.team.ezenbookstore.service;
 
 import ezen.team.ezenbookstore.entity.*;
-import ezen.team.ezenbookstore.repository.DeliveryRepository;
 import ezen.team.ezenbookstore.repository.OrdersRepository;
 import ezen.team.ezenbookstore.util.FormatUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -257,35 +260,93 @@ public class OrdersService implements OrdersServiceInterface{
         return orderRepository.countByStatus3();
     }
 
+    @Transactional
+    @Override
     public List<Orders> findAllByEmail(String keyword) {
         return orderRepository.findAllByUserEmail(keyword);
     }
 
+    @Transactional
+    @Override
     public List<Orders> findAllByUserName(String keyword) {
         return orderRepository.findAllByUserName(keyword);
     }
 
     // 특정 상태의 첫 번째 주문 조회
+    @Transactional
+    @Override
     public Orders findByStatus(Long statusId) {
         Byte status = statusId.byteValue(); // Long -> Byte 변환
         return orderRepository.findFirstByStatus(status);
     }
 
     // 특정 상태를 가진 모든 주문 조회
+    @Transactional
+    @Override
     public List<Orders> findAllByStatus(Byte status) {
         return orderRepository.findAllByStatus(status);
     }
 
+    @Transactional
+    @Override
     public List<Orders> findAllByDelivery_Status(Byte status) {
         return orderRepository.findAllByDelivery_Status(status);
     }
 
     // 특정 결제 카테고리의 주문 목록 조회
+    @Transactional
+    @Override
     public List<Orders> findAllByPayment_Status(Byte status) {
         return orderRepository.findAllByPayment_Status(status);
     }
 
+    @Transactional
+    @Override
     public void updateStatus(Orders orders){
         orderRepository.save(orders);
+    }
+
+    @Transactional
+    @Override
+    public Page<Orders> getFilteredOrders(String type, String keyword, Byte delivery, Byte payment, Byte status, int page) {
+        List<Orders> ordersList;
+        Pageable pageable = PageRequest.of(page, 10);
+
+        // 검색 기능
+        if (type != null && !type.isEmpty() && keyword != null && !keyword.isEmpty()) {
+            if (type.equalsIgnoreCase("email")) {
+                ordersList = findAllByEmail(keyword);
+            } else if (type.equalsIgnoreCase("name")) {
+                ordersList = findAllByUserName(keyword);
+            } else {
+                ordersList = findAll();
+            }
+        } else {
+            ordersList = findAll();
+        }
+
+        List<Orders> filteredOrders = ordersList;
+
+        // 배송상태 필터링
+        if (delivery != 0) {
+            filteredOrders.retainAll(findAllByDelivery_Status(delivery));
+        }
+
+        // 카테고리 필터링
+        if (payment != 0) {
+            filteredOrders.retainAll(findAllByPayment_Status(payment));
+        }
+
+        // 서브카테고리 필터링
+        if (status != 0) {
+            filteredOrders.retainAll(findAllByStatus(status));
+        }
+
+        // 페이지네이션 적용
+        int start = Math.min((int) pageable.getOffset(), filteredOrders.size());
+        int end = Math.min((start + pageable.getPageSize()), filteredOrders.size());
+        List<Orders> pagedOrders = filteredOrders.subList(start, end);
+
+        return new PageImpl<>(pagedOrders, pageable, filteredOrders.size());
     }
 }

@@ -32,15 +32,17 @@
                     <span th:text="${error}"></span>
                 </div>
                 <hr>
+
                 <!-- 검색 폼 -->
                 <div class="d-flex justify-content-between mb-3">
                     <form id="searchForm" class="form-inline">
-                        <select id="searchType" class="form-control mr-2" style="width: 150px; display: inline-block;">
+                        <select id="searchType" class="form-control mr-2" style="width: 150px;">
                             <option value="book">책 제목</option>
                             <option value="user">작성자</option>
                         </select>
-                        <input type="text" id="keyword" class="form-control mr-2" placeholder="검색어를 입력하세요" style="display: inline-block; width: 300px;">
-                        <button type="button" id="btnSearch" class="btn btn-primary">검색</button>
+                        <input type="text" id="keyword" class="form-control mr-2" placeholder="검색어를 입력하세요" style="width: 300px;">
+                        <button type="button" id="btnSearch" class="btn btn-primary mr-2">검색</button>
+                        <button type="button" class="btn btn-secondary btnResetReview">초기화</button>
                     </form>
                     <div>
                         <button type="button" id="deleteReview" class="btn btn-danger">선택 삭제</button>
@@ -69,26 +71,33 @@
                         <td th:text="${review.user.name}"></td>
                         <td th:text="${review.rating}"></td>
                         <td th:text="${review.title}"></td>
-                        <td th:text="${review.comment}"></td>
+                        <td th:utext="${review.comment}"></td>
                         <td>
                             <button type="button" class="btn btn-info btn-sm view-btn"
                                     data-toggle="modal" data-target="#reviewDetailModal"
-                                    th:attr="data-review-id=${review.id}">
+                                    th:attr="data-review-id=${review.id},
+                                             data-book-title=${review.book.title},
+                                             data-user-name=${review.user.name},
+                                             data-rating=${review.rating},
+                                             data-title=${review.title},
+                                             data-comment=${review.comment},
+                                             data-create-at=${review.createAt},
+                                             data-image-path=${@thymeleafFileUploadService.findImageFilePath(review.id, 'review')}">
                                 조회
                             </button>
                         </td>
-                        <input class="hiddenImage" type="hidden" th:value="${@thymeleafFileUploadService.findImageFilePath(review.id,'review')}">
                     </tr>
                     <tr th:if="${#lists.isEmpty(reviewPage?.content)}">
-                        <td colspan="1"></td>
-                        <td colspan="7" class="text-center">검색 결과가 없습니다.</td>
+                        <td colspan="8" class="text-center">검색 결과가 없습니다.</td>
                     </tr>
                     </tbody>
                 </table>
             </div>
+            <div th:replace="~{fragments/script :: script-body}"></div>
         </main>
     </div>
 </div>
+
 <!-- 리뷰 상세보기 모달 -->
 <div class="modal fade" id="reviewDetailModal" tabindex="-1" role="dialog" aria-labelledby="reviewDetailModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -108,7 +117,7 @@
                 <p><strong>리뷰 내용:</strong></p>
                 <p id="detailComment"></p>
                 <p><strong>작성일:</strong> <span id="detailCreateAt"></span></p>
-                <img id="detailImage" src="">
+                <img id="detailImage" src="" alt="Review Image" style="max-width: 100%; height: auto;">
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
@@ -116,98 +125,64 @@
         </div>
     </div>
 </div>
-<div th:replace="~{fragments/script :: script-body}"></div>
+
+<!-- JavaScript -->
 <script>
-    $('#btnSearch').click(function () {
-        const searchType = $('#searchType').val();  // 검색 타입
-        const keyword = $('#keyword').val().trim();  // 검색어
+    $(document).ready(function () {
+        // 검색 버튼 클릭 이벤트
+        $('#btnSearch').click(function () {
+            const searchType = $('#searchType').val();
+            const keyword = $('#keyword').val().trim();
 
-        // 검색어 유효성 검사
-        if (!keyword) {
-            alert('키워드를 입력해주세요');
-            return;
-        }
-        if (!['book', 'user'].includes(searchType)) {
-            alert('유효하지 않은 검색 타입입니다.');
-            return;
-        }
-        const query = `?type=${encodeURIComponent(searchType)}&keyword=${encodeURIComponent(keyword)}`;
-        console.log(searchType,keyword);
-        location.href= '/admin/review/search'+ query;
-    });
+            if (!keyword) {
+                alert('키워드를 입력해주세요.');
+                return;
+            }
 
-    // 전체선택 체크박스 클릭 시
-    $('#selectAllReview').click(function () {
-        $('input[name="checkBoxReview"]').prop('checked', this.checked);
-    });
+            const query = `?type=${encodeURIComponent(searchType)}&keyword=${encodeURIComponent(keyword)}`;
+            location.href = `/admin/review/search${query}`;
+        });
+        $('.btnResetReview').click(function (review) {
+            review.preventDefault();
+            $('#searchType').val('book');
+            $('#keyword').val('');
+            location.href = '/admin/review';
+        });
 
-    // 상세보기 버튼 클릭
-    $(document).on('click', '.view-btn', function () {
-        const reviewId = $(this).data('review-id'); // 리뷰 ID 가져오기
-        //console.log(reviewId);
-        $.ajax({
-            url: `/admin/review/${reviewId}`, // 상세보기 API 호출
-            type: 'GET',
-            success: function (response) {
-                // 모달에 데이터 채우기
-                $('#detailReviewId').text(response.id);
-                $('#detailBookTitle').text(response.book.title);
-                $('#detailUser').text(response.user.name);
-                $('#detailRating').text(response.rating);
-                $('#detailTitle').text(response.title);
-                $('#detailComment').text(response.comment);
-                $('#detailCreateAt').text(formatDate(response.createAt));
-                $('#detailImage').attr('src', $('.hiddenImage').val());
+        // 전체 선택 체크박스 클릭 시
+        $('#selectAllReview').click(function () {
+            $('input[name="checkBoxReview"]').prop('checked', this.checked);
+        });
 
-                // 날짜 포맷 함수
-                function formatDate(dateString) {
-                    const date = new Date(dateString);
-                    const year = date.getFullYear();
-                    const month = String(date.getMonth() + 1).padStart(2, '0');
-                    const day = String(date.getDate()).padStart(2, '0');
-                    const hours = String(date.getHours()).padStart(2, '0');
-                    const minutes = String(date.getMinutes()).padStart(2, '0');
-                    return `${year}-${month}-${day} ${hours}:${minutes}`;
-                }
+        // 상세보기 버튼 클릭 이벤트
+        $(document).on('click', '.view-btn', function () {
+            const button = $(this);
 
-                // 모달 표시
-                $('#reviewDetailModal').modal('show');
-            },
-            error: function () {
-                alert('리뷰 상세보기를 불러오는 데 실패했습니다.');
+            $('#detailReviewId').text(button.data('review-id'));
+            $('#detailBookTitle').text(button.data('book-title'));
+            $('#detailUser').text(button.data('user-name'));
+            $('#detailRating').text(button.data('rating'));
+            $('#detailTitle').text(button.data('title'));
+            $('#detailComment').text(button.data('comment'));
+            $('#detailCreateAt').text(formatDate(button.data('create-at')));
+
+            const imagePath = button.data('image-path') || '/images/default.png';
+            if (imagePath === '/images/default.png' || imagePath === '') {
+                $('#detailImage').hide();
+            } else {
+                $('#detailImage').attr('src', imagePath).show();
             }
         });
-    });
-
-    // 선택 삭제
-    $('#deleteReview').click(function () {
-        const selectedIds = [];
-        $('input[name="checkBoxReview"]:checked').each(function () {
-            const reviewId = $(this).closest('tr').find('.reviewId').text();
-            selectedIds.push(reviewId);
-        });
-        if (selectedIds.length === 0) {
-            alert('삭제할 리뷰를 선택해주세요.');
-            return;
-        }
-        if (selectedIds.length > 0) {
-            if (confirm('선택한 리뷰를 삭제하시겠습니까?')) {
-                $.ajax({
-                    url: '/admin/review/delete',
-                    type: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify(selectedIds),
-                    success: function () {
-                        alert('선택한 리뷰가 삭제되었습니다.');
-                        location.reload();
-                    },
-                    error: function () {
-                        alert('리뷰 삭제에 실패했습니다.');
-                    }
-                });
-            }
-        } else {
-            alert('삭제할 리뷰를 선택해주세요.');
+        // 날짜 포맷 함수
+        function formatDate(dateString) {
+            if (!dateString) return '';
+            const date = new Date(dateString);
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            return `${year}-${month}-${day} ${hours}:${minutes}`;
         }
     });
 </script>

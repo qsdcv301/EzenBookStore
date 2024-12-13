@@ -1,6 +1,8 @@
 package ezen.team.ezenbookstore.service;
 
 import ezen.team.ezenbookstore.entity.Orders;
+import org.springframework.data.domain.Page;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -44,4 +46,30 @@ public interface OrdersServiceInterface {
 
     Long countByStatus3();
 
+    @Transactional
+    List<Orders> findAllByEmail(String keyword);
+
+    @Transactional
+    List<Orders> findAllByUserName(String keyword);
+
+    // 특정 상태의 첫 번째 주문 조회
+    @Transactional
+    Orders findByStatus(Long statusId);
+
+    // 특정 상태를 가진 모든 주문 조회
+    @Transactional
+    List<Orders> findAllByStatus(Byte status);
+
+    @Transactional
+    List<Orders> findAllByDelivery_Status(Byte status);
+
+    // 특정 결제 카테고리의 주문 목록 조회
+    @Transactional
+    List<Orders> findAllByPayment_Status(Byte status);
+
+    @Transactional
+    void updateStatus(Orders orders);
+
+    @Transactional
+    Page<Orders> getFilteredOrders(String type, String keyword, Byte delivery, Byte payment, Byte status, int page);
 }

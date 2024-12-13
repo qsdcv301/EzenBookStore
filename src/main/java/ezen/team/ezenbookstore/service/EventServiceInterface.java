@@ -42,5 +42,6 @@ public interface EventServiceInterface {
     Map<String, Object> getEventDetail(Long id) throws Exception;
 
     List<Integer> getImageCounts(List<Event> events);
-    
+
+    Event createEventWithFile(String title, String content, LocalDateTime startDate, LocalDateTime endDate, MultipartFile image) throws Exception;
 }
