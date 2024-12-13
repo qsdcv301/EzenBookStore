@@ -111,7 +111,12 @@
 
     </div>
     <!-- 모바일 유저 메뉴 -->
-    <div class="bottom-menu">
+    <div th:if="${userData}" class="bottom-menu">
+        <a href="/cart" class="btn"><i class="fas fa-shopping-cart"></i></a>
+        <a href="/" class="btn"><i class="fas fa-home"></i></a>
+        <a href="/user/info" class="btn"><i class="fas fa-user"></i></a>
+    </div>
+    <div th:unless="${userData}" class="bottom-menu">
         <a href="/cart" class="btn loginCheck"><i class="fas fa-shopping-cart"></i></a>
         <a href="/" class="btn"><i class="fas fa-home"></i></a>
         <a href="/user/info" class="btn loginCheck"><i class="fas fa-user"></i></a>

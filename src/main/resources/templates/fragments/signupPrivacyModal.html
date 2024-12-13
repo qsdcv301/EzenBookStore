@@ -1,7 +1,7 @@
 <div th:fragment="signupPrivacyModal" class="modal fade" id="privacyModal" tabindex="-1" role="dialog"
      aria-labelledby="privacyModalLabel"
      aria-hidden="true">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="privacyModalLabel">개인정보 이용 및 수집에 대한 동의</h5>
@@ -9,8 +9,22 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body">
-                <!-- 개인정보 이용 및 수집 동의 내용 -->
+            <div class="modal-body overflow-auto" style="max-height: 550px;">
+                <h6 class="mb-4"><strong class="text-primary">EzenBookStore</strong> 개인정보 수집 및 이용 동의</h6>
+                <p>EzenBookStore는 고객님의 개인정보를 중요하게 생각하며, 다음과 같은 목적으로 개인정보를 수집 및 이용합니다:</p>
+                <ul>
+                    <li>회원 가입 및 관리</li>
+                    <li>주문 및 배송 서비스 제공</li>
+                    <li>고객 상담 및 불만 처리</li>
+                    <li>마케팅 및 광고 활용 (선택적)</li>
+                </ul>
+                <p>수집하는 개인정보 항목:</p>
+                <ul>
+                    <li>필수항목: 이름, 아이디, 비밀번호, 이메일 주소, 휴대전화번호, 주소</li>
+                    <li>선택항목: 생년월일, 성별, 관심 분야</li>
+                </ul>
+                <p>개인정보의 보유 및 이용 기간: 회원 탈퇴 시까지 (단, 관계 법령에 따라 필요한 경우 해당 법령에서 정한 기간까지 보관)</p>
+                <p>동의를 거부할 권리 및 동의 거부에 따른 불이익: 필수항목에 대한 동의를 거부할 경우 회원가입이 불가능합니다.</p>
             </div>
         </div>
     </div>
