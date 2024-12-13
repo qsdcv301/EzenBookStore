@@ -1,12 +1,48 @@
+/* 사이드바 */
+/* 사이드바 기본 스타일 */
 .book-main .side {
-    padding-top: 220px;
+    padding-top: 20px;
 }
 
 .book-main .sidebar {
-    top: 40px;
+    position: sticky;
+    top: 20px;
     border-radius: 15px;
-    background-color: #f8f9fa;
+    background-color: #f5f5f5;
     padding: 20px;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .book-main .side {
+        padding-top: 10px;
+    }
+
+    .book-main .sidebar {
+        position: static;
+        width: 100%;
+        margin-bottom: 20px;
+    }
+}
+
+/* 사이드바 내부 스타일 */
+.book-main .sidebar ul ul {
+    padding-left: 15px;
+}
+
+.book-main .sidebar>ul>li>p>a {
+    font-size: 1.1rem;
+    font-weight: bold;
+}
+
+.book-main .sidebar>ul>li>ul>li>p>a {
+    font-size: 1rem;
+}
+
+.book-main .sidebar>ul>li>ul>li>ul>li>p>a {
+    font-size: 0.9rem;
 }
 
 .book-main .side a {
@@ -14,6 +50,18 @@
     text-decoration: none;
 }
 
+.book-main .sidebar a:hover {
+    background-color: #e9ecef;
+    transition: background-color 0.3s ease;
+}
+
+.book-main .arrow-icon {
+    font-size: 12px;
+    color: #6c757d;
+}
+
+/* 사이드바 끝 */
+/* 상품목록 */
 .book-main .product-grid {
     padding: 20px;
 }
@@ -38,10 +86,10 @@
     margin-bottom: 0.25rem;
 }
 
-.book-main .checkboxScale{
+.book-main .checkboxScale {
     transform: scale(1.5);
 }
 
-.book-main .arrow-icon{
+.book-main .arrow-icon {
     font-size: 16px;
 }
