@@ -30,6 +30,7 @@ public interface ReviewServiceInterface {
     List<Review> findAllByBookIdAndUserId(Long bookId, Long userId);
 
     Map<String, String> addReview(String title, String comment, byte rating, Long orderItemId, MultipartFile file, Model model);
+    Map<String, Object> getReviewDetail(Long id);
 
     Page<Review> searchByKeyword(String keyword, Pageable pageable);
 
@@ -38,7 +39,6 @@ public interface ReviewServiceInterface {
     Page<Review> findAllByBookTitle(String title, Pageable pageable);
     Page<Review> getAllReviewsWithImages(Pageable pageable);
     Page<Review> searchReviews(String type, String keyword, Pageable pageable);
-    Review getReviewDetail(Long id);
     void deleteReviews(List<Long> ids);
     int getStartPage(int currentPage, int pageGroupSize);
     int getEndPage(int startPage, int totalPages, int pageGroupSize);

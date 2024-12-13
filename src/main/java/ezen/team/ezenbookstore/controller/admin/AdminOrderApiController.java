@@ -7,17 +7,12 @@ import ezen.team.ezenbookstore.service.OrdersService;
 import ezen.team.ezenbookstore.service.PaymentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Controller
@@ -40,50 +35,10 @@ public class AdminOrderApiController {
             @RequestParam(name = "page", defaultValue = "0", required = false) int page,
             Model model) {
 
-        //전체 주문 가져오기
-        List<Orders> ordersList;
-        Pageable pageable = PageRequest.of(page, 10);
+        Page<Orders> ordersPage = ordersService.getFilteredOrders(type, keyword, delivery, payment, status, page);
+        Map<String, Object> deliveryCount = deliveryService.getDeliveryCountsByStatus();
 
-        // 검색 기능
-        if (type != null && !type.isEmpty() && keyword != null && !keyword.isEmpty()) {
-            // type에 따라 검색 필터링을 다르게 적용
-            if (type.equalsIgnoreCase("email")) {
-                ordersList = ordersService.findAllByEmail(keyword);
-            } else if (type.equalsIgnoreCase("name")) {
-                ordersList = ordersService.findAllByUserName(keyword);
-            } else {
-                ordersList = ordersService.findAll();
-            }
-        } else {
-            ordersList = ordersService.findAll();
-        }
-
-        //작업중
-        List<Orders> filteredOrders = ordersList;
-
-        // 배송상태 필터링
-        if (delivery != 0) {
-            filteredOrders.retainAll(ordersService.findAllByDelivery_Status(delivery));
-        }
-
-        // 카테고리 필터링
-        if (payment != 0) {
-            filteredOrders.retainAll(ordersService.findAllByPayment_Status(payment));
-        }
-
-        // 서브카테고리 필터링
-        if (status != 0) {
-            filteredOrders.retainAll(ordersService.findAllByStatus(status));
-        }
-
-        // 페이지네이션 적용
-        int start = Math.min((int) pageable.getOffset(), filteredOrders.size());
-        int end = Math.min((start + pageable.getPageSize()), filteredOrders.size());
-        List<Orders> pagedOrders = filteredOrders.subList(start, end);
-        Page<Orders> ordersPage = new PageImpl<>(pagedOrders, pageable, filteredOrders.size());
-
-        Map<String, Object> deliveryCount = new HashMap<>();
-        deliveryCount = deliveryService.getDeliveryCountsByStatus();
+        // 모델에 값 추가
         model.addAttribute("ordersList", ordersPage.getContent());
         model.addAttribute("ordersPage", ordersPage);
         model.addAttribute("type", type);
@@ -92,6 +47,7 @@ public class AdminOrderApiController {
         model.addAttribute("delivery", delivery);
         model.addAttribute("payment", payment);
         model.addAttribute("deliveryCount", deliveryCount);
+
         return "admin/orderControl"; // HTML 파일 이름
     }
 
@@ -109,7 +65,6 @@ public class AdminOrderApiController {
             return ResponseEntity.badRequest().body(response);
         }
 
-        // String을 Byte로 변환
         // String 값을 Byte로 변환 (빈 값인 경우 기본값 설정)
         Byte deliveryStatusByte = (deliveryStatus != null && !deliveryStatus.isEmpty())
                 ? Byte.valueOf(deliveryStatus)
@@ -156,6 +111,13 @@ public class AdminOrderApiController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/{orderId}/details")
+    @ResponseBody
+    public ResponseEntity<List<OrderItem>> getOrderDetails(@PathVariable Long orderId) {
+        List<OrderItem> orderItems = ordersItemService.getOrderItemsByOrderId(orderId);
+        return ResponseEntity.ok(orderItems);
+    }
+
     // 주문 항목 수량 수정
     @PostMapping("/{ordersItemId}/edit")
     public ResponseEntity<Void> updateOrdersItem(
@@ -172,12 +134,6 @@ public class AdminOrderApiController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/{orderId}/details")
-    @ResponseBody
-    public ResponseEntity<List<OrderItem>> getOrderDetails(@PathVariable Long orderId) {
-        List<OrderItem> orderItems = ordersItemService.getOrderItemsByOrderId(orderId);
-        return ResponseEntity.ok(orderItems);
-    }
 
 
 }

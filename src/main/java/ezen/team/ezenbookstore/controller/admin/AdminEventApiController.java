@@ -2,8 +2,8 @@ package ezen.team.ezenbookstore.controller.admin;
 
 import ezen.team.ezenbookstore.entity.Event;
 import ezen.team.ezenbookstore.service.EventService;
-import ezen.team.ezenbookstore.service.EventServiceInterface;
 import ezen.team.ezenbookstore.service.FileUploadService;
+import ezen.team.ezenbookstore.service.TextFormatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,6 +28,7 @@ public class AdminEventApiController {
 
     private final EventService eventService;
     private final FileUploadService fileUploadService;
+    private final TextFormatService textFormatService;
 
     // 이벤트 목록 조회 및 필터링
     @GetMapping
@@ -68,10 +69,11 @@ public class AdminEventApiController {
     // 이벤트 추가
     @PostMapping("/add")
     public ResponseEntity<String> addEvent(@ModelAttribute Event event,
-                                           @RequestParam(value = "file", required = false) MultipartFile file) {
+                                           @RequestParam(value = "file", required = false) MultipartFile image) {
         try {
-            eventService.updateEvent(null, event.getTitle(), event.getContent(),
-                    event.getStartDate().toLocalDateTime(), event.getEndDate().toLocalDateTime(), file);
+            String formattedContent = textFormatService.formatText(event.getContent());
+            eventService.createEventWithFile(event.getTitle(), formattedContent,
+                    event.getStartDate().toLocalDateTime(), event.getEndDate().toLocalDateTime(), image);
             return ResponseEntity.ok("이벤트가 추가되었습니다.");
         } catch (Exception e) {
             return ResponseEntity.status(500).body("이벤트 추가 실패: " + e.getMessage());
@@ -88,7 +90,9 @@ public class AdminEventApiController {
             @RequestParam("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDate,
             @RequestPart(value = "file", required = false) MultipartFile file) {
         try {
-            eventService.updateEvent(id, title, content, startDate, endDate, file);
+            String formattedContent = textFormatService.formatText(content);
+
+            eventService.updateEvent(id, title, formattedContent, startDate, endDate, file);
             return ResponseEntity.ok("이벤트가 수정되었습니다.");
         } catch (Exception e) {
             return ResponseEntity.status(500).body("이벤트 수정 실패: " + e.getMessage());
@@ -100,6 +104,10 @@ public class AdminEventApiController {
     public ResponseEntity<Map<String, Object>> getEventDetail(@PathVariable Long id) {
         try {
             Map<String, Object> eventDetail = eventService.getEventDetail(id);
+
+            String content = (String) eventDetail.get("content");
+            eventDetail.put("content", textFormatService.formatText(content));
+
             return ResponseEntity.ok(eventDetail);
         } catch (Exception e) {
             return ResponseEntity.status(404).body(null);
