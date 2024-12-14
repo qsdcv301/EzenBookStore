@@ -198,6 +198,12 @@ header .category-item:hover {
     }
 
 }
+/* 모바일 및 태블릿에서 카테고리 메뉴 숨기기 */
+@media screen and (max-width: 991px) {
+    header .navbar-nav .nav-item.dropdown {
+        display: none !important;
+    }
+}
 
 /* 가로 모드 (991px 이하) */
 @media screen and (max-width: 991px) and (orientation: landscape) {
