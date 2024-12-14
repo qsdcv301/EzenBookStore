@@ -10,7 +10,7 @@
             <div class="row">
                 <!-- 사이드바 -->
                 <nav class="col-md-2 side">
-                    <div class="position-sticky sidebar">
+                    <div class="sidebar">
                         <ul class="nav flex-column">
                             <!-- 국내 카테고리 -->
                             <li class="nav-item border-bottom">
@@ -18,16 +18,16 @@
                                     <a th:href="@{/book(page=0,sort=${sort},direction=${direction}, ifkr='0', category='', subcategory='')}">국내</a>
                                     <a href="#" class="float-right" data-toggle="collapse"
                                        data-target="#domesticCategories"
-                                       aria-expanded="false" onclick="event.preventDefault();"><span class="arrow-icon">&#9662;</span></a>
+                                       aria-expanded="false" onclick="event.preventDefault();"><span class="arrow-icon"><i class="fas fa-chevron-down"></i></span></a>
                                 </p>
-                                <ul class="nav flex-column collapse show" id="domesticCategories">
+                                <ul class="nav flex-column collapse" id="domesticCategories">
                                     <li class="nav-item" th:each="categoryItem, index : ${categoryList}">
                                         <p class="nav-item">
                                             <a th:href="@{/book(page=0,sort=${sort},direction=${direction}, ifkr='0', category=${categoryItem.name}, subcategory='')}"
                                                th:text="${categoryItem.name}"></a>
                                             <a href="#" class="float-right" data-toggle="collapse"
                                                th:data-target="'#domesticCategory' + ${index.index}"
-                                               aria-expanded="false" onclick="event.preventDefault();"><span class="arrow-icon">&#9662;</span></a>
+                                               aria-expanded="false" onclick="event.preventDefault();"><span class="arrow-icon"><i class="fas fa-chevron-down"></i></span></a>
                                         </p>
                                         <ul class="nav flex-column collapse"
                                             th:id="'domesticCategory' + ${index.index}">
@@ -48,9 +48,9 @@
                                     <a th:href="@{/book(page=0,sort=${sort},direction=${direction}, ifkr='1', category='', subcategory='')}">국외</a>
                                     <a href="#" class="float-right" data-toggle="collapse"
                                        data-target="#foreignCategories" aria-expanded="false"
-                                       onclick="event.preventDefault();"><span class="arrow-icon">&#9662;</span></a>
+                                       onclick="event.preventDefault();"><span class="arrow-icon"><i class="fas fa-chevron-down"></i></span></a>
                                 </p>
-                                <ul class="nav flex-column collapse show" id="foreignCategories">
+                                <ul class="nav flex-column collapse" id="foreignCategories">
                                     <li class="nav-item" th:each="categoryItem, index : ${categoryList}">
                                         <p class="nav-item">
                                             <a th:href="@{/book(page=0,sort=${sort},direction=${direction}, ifkr='1', category=${categoryItem.name}, subcategory='')}"
@@ -58,7 +58,7 @@
                                             <a class="float-right" data-toggle="collapse"
                                                th:data-target="'#foreignCategory' + ${index.index}"
                                                aria-expanded="false" onclick="event.preventDefault();">
-                                                <span class="arrow-icon">&#9662;</span>
+                                                <span class="arrow-icon"><i class="fas fa-chevron-down"></i></span>
                                             </a>
                                         </p>
                                         <ul class="nav flex-column collapse" th:id="'foreignCategory' + ${index.index}">
@@ -121,7 +121,7 @@
                     </div>
                     <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-4 g-5">
                         <!-- 상품 카드 -->
-                        <div class="col mb-4 cart-Data" th:each="book, index : ${bookList}">
+                        <div class="col mb-5 cart-Data" th:each="book, index : ${bookList}">
                             <div class="card">
                                 <div class="form-check position-absolute top-0 m-2">
                                     <input class="form-check-input cart-checkbox checkboxScale" type="checkbox" th:id="${book.id}">
@@ -133,7 +133,7 @@
                                         <h5 class="card-title title text-truncate" th:text="${book.title}"></h5>
                                         <p class="card-text text-truncate" th:text="${book.author}"></p>
                                         <p class="card-text text-truncate" th:text="${book.publisher}"></p>
-                                        <p class="card-text card-price">
+                                        <p class="card-text text-truncate card-price">
                                             <!--할인전 가격-->
                                             <del class="me-2 origin-price" th:text="${book.price}"></del>
                                             <!--할인후 가격-->
@@ -155,17 +155,7 @@
                                 <a class="page-link"
                                    th:href="@{/book(page=0,sort=${sort},direction=${direction}, ifkr=${ifkr}, category=${category}, subcategory=${subcategory})}"
                                    aria-label="First">
-                                    << 처음
-                                </a>
-                            </li>
-
-                            <!-- 이전 페이지 버튼 -->
-                            <li class="page-item"
-                                th:classappend="${page.hasPrevious} ? '' : 'disabled'">
-                                <a class="page-link"
-                                   th:href="@{/book(page=${page.number - 1},sort=${sort},direction=${direction}, ifkr=${ifkr}, category=${category}, subcategory=${subcategory})}"
-                                   aria-label="Previous">
-                                    이전
+                                   <i class="bi bi-chevron-double-left"></i>
                                 </a>
                             </li>
 
@@ -181,21 +171,12 @@
                                    th:text="${i + 1}"></a>
                             </li>
 
-                            <!-- 다음 페이지 버튼 -->
-                            <li class="page-item" th:classappend="${page.hasNext} ? '' : 'disabled'">
-                                <a class="page-link"
-                                   th:href="@{/book(page=${page.number + 1},sort=${sort},direction=${direction}, ifkr=${ifkr}, category=${category}, subcategory=${subcategory})}"
-                                   aria-label="Next">
-                                    다음
-                                </a>
-                            </li>
-
                             <!-- 맨 뒤 페이지 버튼 -->
                             <li class="page-item" th:classappend="${page.last} ? 'disabled' : ''">
                                 <a class="page-link"
                                    th:href="@{/book(page=${page.totalPages - 1},sort=${sort},direction=${direction}, ifkr=${ifkr}, category=${category}, subcategory=${subcategory})}"
                                    aria-label="Last">
-                                    끝 >>
+                                   <i class="bi bi-chevron-double-right"></i>
                                 </a>
                             </li>
                         </ul>

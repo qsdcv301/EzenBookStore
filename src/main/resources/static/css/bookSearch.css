@@ -1,30 +1,160 @@
-.bookSearch-container .side {
-    padding-top: 220px;
+.book-search .side {
+    padding-top: 20px;
+    /* 220px에서 40px로 변경하여 상단 여백 줄임 */
 }
 
-.bookSearch-container .sidebar {
+.book-search .sidebar {
     top: 40px;
     border-radius: 15px;
     background-color: #f8f9fa;
     padding: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    /* 그림자 효과 추가 */
 }
 
-.bookSearch-container .product-list {
+.book-search .product-list {
     padding: 20px;
 }
 
-.bookSearch-container .product-item {
+.book-search .product-item {
     border: 1px solid rgba(0, 0, 0, .125);
-    margin-bottom: 10px;
-    padding: 10px;
+    margin-bottom: 20px;
+    /* 간격 늘림 */
+    padding: 15px;
+    /* 내부 여백 늘림 */
+    border-radius: 8px;
+    /* 모서리 둥글게 */
+    transition: box-shadow 0.3s ease;
+    /* 호버 효과를 위한 트랜지션 */
 }
 
-.bookSearch-container .product-item h5 {
-    font-size: 1rem;
-    margin-bottom: 0.25rem;
+.book-search .product-item:hover {
+    transform: scale(1.05);
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
 }
 
-.bookSearch-container .product-item p {
-    font-size: 0.9rem;
-    margin-bottom: 0.25rem;
+.book-search .product-item h5 {
+    font-size: 1.1rem;
+    /* 글자 크기 약간 키움 */
+    margin-bottom: 0.5rem;
+    /* 여백 늘림 */
+    font-weight: 600;
+    /* 글자 두께 증가 */
+}
+
+.book-search .product-item p {
+    font-size: 0.95rem;
+    /* 글자 크기 약간 키움 */
+    margin-bottom: 0.5rem;
+    /* 여백 늘림 */
+    color: #555;
+    /* 글자 색상 변경 */
+}
+
+/* 이미지 스타일 추가 */
+.book-search .product-item img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+    object-fit: cover;
+}
+
+/* 버튼 스타일 추가 */
+.book-search .product-item .btn {
+    margin-top: 10px;
+    width: 100%;
+}
+
+@media (max-width: 768px) {
+    .book-search .sidebar {
+        top: 20px;
+        /* 모바일에서 사이드바 위치 조정 */
+        padding: 10px;
+        /* 여백 줄이기 */
+    }
+
+    .book-search .product-item {
+        margin-bottom: 15px;
+        /* 간격 줄이기 */
+    }
+
+    .book-search .product-item h5 {
+        font-size: 1rem;
+        /* 글자 크기 줄이기 */
+    }
+
+    .book-search .product-item p {
+        font-size: 0.85rem;
+        /* 글자 크기 줄이기 */
+    }
+
+    .book-search .product-item img {
+        width: 100%;
+        /* 이미지가 부모 요소에 맞게 조정 */
+        height: auto;
+        /* 비율 유지 */
+    }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+    .book-search .sidebar {
+        top: 30px;
+        /* 태블릿에서 사이드바 위치 조정 */
+        padding: 15px;
+        /* 여백 조정 */
+    }
+
+    .book-search .product-item {
+        margin-bottom: 10px;
+        /* 간격 조정 */
+    }
+
+    .book-search .product-item .row {
+        flex-wrap: nowrap;
+    }
+
+    .book-search .product-item .col-md-4 {
+        flex: 0 0 auto;
+        width: auto;
+        max-width: none;
+    }
+
+    .book-search .product-item .form-check {
+        margin-right: 5px;
+    }
+
+    .book-search .product-item .img-thumbnail {
+        width: 120px;
+        height: 180px;
+    }
+
+    .book-search .product-item .col-md-5 {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .book-search .product-item .col-md-3 {
+        flex: 0 0 auto;
+        width: auto;
+    }
+
+    .book-search .product-item .btn {
+        font-size: 0.9rem;
+        padding: 0.4rem 0.6rem;
+    }
+    
+    .book-search .product-item h5 {
+        font-size: 1rem; /* 제목 크기 줄임 */
+    }
+
+    .book-search .product-item p {
+        font-size: 0.9rem; /* 본문 텍스트 크기 줄임 */
+    }
+
+    /* 사이드바 버튼 크기 조절 */
+    .book-search .sidebar .btn {
+        font-size: 0.9rem;
+        padding: 0.4rem 0.8rem;
+    }
+
 }
