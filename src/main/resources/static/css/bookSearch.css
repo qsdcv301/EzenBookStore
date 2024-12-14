@@ -55,8 +55,9 @@
 .book-search .product-item img {
     max-width: 100%;
     height: auto;
-    border-radius: 4px;
+    aspect-ratio: 3 / 4;
     object-fit: cover;
+    border-radius: 4px;
 }
 
 /* 버튼 스타일 추가 */

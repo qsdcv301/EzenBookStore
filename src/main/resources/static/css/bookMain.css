@@ -55,7 +55,8 @@
 
 .book-main .card-img-top {
     max-width: 100%;
-    height: 420px;
+    height: auto;
+    aspect-ratio: 3 / 4;
     object-fit: cover;
 }
 
@@ -84,8 +85,9 @@
 /* 반응형 디자인 */
 @media (max-width: 768px) {
     .book-main .card-img-top {
-        height: 250px;
-      }
+        height: auto;
+        aspect-ratio: 3 / 4;
+    }
 
     .book-main .side {
         padding-top: 10px;
