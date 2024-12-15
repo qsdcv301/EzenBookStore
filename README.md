@@ -2,18 +2,24 @@
 
 ## 1. 🚀 프로젝트 이름
 
-- Ezen Book Store
+- Ezen Book Store(<http://ezbook.store>)
 
 ## 2. 📖 프로젝트 개요
 
 - **목적**: 기업 요구사항에 맞춘 온라인 서점 시스템 개발 및 포트폴리오 활용
 - **주요 목표**:
-  - 사용자 계정 관리, 상품 관리, 결제 및 적립금 시스템 구현
-  - 간결하고 직관적인 디자인 제공
+  - 참여기업 요구사항 지시에 맞춘 각 시스템별 기능 구현
+  - 유저 / 관리자 SIDE별 기능
+  - 회원가입, 로그인, 내정보수정 기능
+  (Google, Naver, Kakao 등 Synchro 로그인)
+  - 장바구니, 구매기록 기능
+  - 배송비 시스템 (주문/교환/반품) - 무료 / 조건부 무료
+  - 결제 및 조회 기능 (PG사 연동)
+  - 적립금 시스템
+  - 상품등록 및 관리 기능
+  - 게시판 등록 및 관리 기능 - (상품 리뷰, 공지사항 등)
 
 ## 3. 🔧 기술 스택
-
-웹 애플리케이션을 개발하는 데 사용된 기술을 설명합니다.
 
 - **개발도구**: VS Code, IntelliJ
 - **프론트엔드**: HTML, CSS, JavaScript, Bootstrap
@@ -72,13 +78,17 @@
 
 ## 6. 아키텍처 다이어그램
 
-- **아키텍처 다이어그램 (?)**: ?
+- **아키텍처 다이어그램 (개발자 다이어그램)**: ?
 
 ![아키텍처 다이어그램](./read.me.image/00architecturediagram.png)
 
-- **아키텍처 다이어그램 (?)**: ?
+- **아키텍처 다이어그램 (흐름도 - 유저)**: ?
 
 ![아키텍처 다이어그램](./read.me.image/01architecturediagram.png)
+
+- **아키텍처 다이어그램 (흐름도 - 관리자)**: ?
+
+![아키텍처 다이어그램](./read.me.image/02architecturediagram.png)
 
 ## 7. 화면 예시
 
@@ -108,7 +118,7 @@
 
 - **장바구니 페이지**: 담은 상품을 확인하고 구매할 수 있는 페이지
 
-  ![장바구니 페이지](./read.me.image/05Cart.PNG)
+  ![장바구니 페이지](./read.me.image/05Cart.png)
 
 - **주문 확인 모달**: 주문하기 전 정보를 확인하고 구매할 수 있는 모달창
 
@@ -128,23 +138,23 @@
 
 - **관리자 페이지 - 대시보드**: 관리자페이지에 처음 접속하면 한 눈에 확인하고 관리할 수 있는 페이지
 
-  ![페이지](./read.me.image/8Admin_Dashboard.png)
+  ![관리자 페이지 - 대시보드](./read.me.image/8Admin_Dashboard.png)
 
 - **관리자 페이지 - 상품 관리 페이지**: 상품을 등록하고 조회, 관리할 수 있는 페이지
 
-  ![페이지](./read.me.image/9Admin_Product.png)
+  ![관리자 페이지 - 상품 관리 페이지](./read.me.image/9Admin_Product.png)
 
 - **관리자 페이지 - 이벤트 관리 페이지**: 이벤트를 등록하거나 관리할 수 있는 페이지
 
-  ![페이지](./read.me.image/10Admin_Event.png)
+  ![관리자 페이지 - 이벤트 관리 페이지](./read.me.image/10Admin_Event.png)
 
-- **이벤트 추가 모달**: 이벤트를 추가할 수 있는 모달창
+- **최근 본 도서 확인**: 이벤트를 추가할 수 있는 모달창
 
-  ![페이지](./read.me.image/10Event_add.PNG)
+  ![최근 본 도서 확인](./read.me.image/10Event_add.PNG)
 
-- **디테일 버튼**: 홈으로 돌아가기 / 상단으로 이동 / 관리자모드 / 최근 본 상품목록 버튼
+- **페이지 네비게이션 버튼**: 홈으로 돌아가기 / 상단으로 이동 / 관리자모드 / 최근 본 상품목록 버튼
 
-  ![페이지](./read.me.image/Detail_Buttun.PNG)
+  ![페이지 네비게이션 버튼](./read.me.image/Detail_Buttun.PNG)
 
 ## 8. 📅 참고 사이트
 
@@ -163,6 +173,6 @@
 - **연락처**:
   - 김태현 : [Email](mailto:qsdcv301@naver.com), [GitHub](https://github.com/qsdcv301)
   - 채윤성 : [Email](mailto:gksmsk5094@gmail.com), [GitHub](https://github.com/ChaiTope)
-  - 이정인 : [Email](mailto:), [GitHub](https://github.com/LEE-JUNGIN)
+  - 이정인 : [Email](mailto:dlwjddls888@gmail.com), [GitHub](https://github.com/LEE-JUNGIN)
   - 정재환 : [Email](mailto:jjjhhh2569@gmail.com), [GitHub](https://github.com/JaeHwan2569)
   - 황예주 : [Email](mailto:jooland05@gmail.com), [GitHub](https://github.com/HwangYeJoo)
