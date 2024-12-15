@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.List;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Controller
@@ -58,6 +58,29 @@ public class BookApiController {
                              Model model) {
         Page<Book> bookPage = bookFacadeService.searchBooks(keyword, val, ifkr, category, subcategory, sort, direction, page);
         List<String> imageList = bookFacadeService.getImageList(bookPage.getContent());
+        // 검색된 결과에 해당하는 카테고리 및 서브카테고리 목록 생성
+        Map<Category, Set<SubCategory>> domesticCategoryMap = new HashMap<>();
+        Map<Category, Set<SubCategory>> foreignCategoryMap = new HashMap<>();
+
+        bookPage.stream()
+                .filter(book -> book.getIfkr() == 0)  // 국내 책 필터링
+                .forEach(book -> {
+                    Category categoryObj = book.getCategory();
+                    SubCategory subCategoryObj = book.getSubcategory();
+                    domesticCategoryMap.computeIfAbsent(categoryObj, k -> new HashSet<>()).add(subCategoryObj);
+                });
+
+        bookPage.stream()
+                .filter(book -> book.getIfkr() == 1)  // 국외 책 필터링
+                .forEach(book -> {
+                    Category categoryObj = book.getCategory();
+                    SubCategory subCategoryObj = book.getSubcategory();
+                    foreignCategoryMap.computeIfAbsent(categoryObj, k -> new HashSet<>()).add(subCategoryObj);
+                });
+
+        // 모델에 추가
+        model.addAttribute("domesticCategoryMap", domesticCategoryMap);
+        model.addAttribute("foreignCategoryMap", foreignCategoryMap);
         model.addAttribute("imageList", imageList);
         model.addAttribute("keyword", keyword);
         model.addAttribute("val", val);
