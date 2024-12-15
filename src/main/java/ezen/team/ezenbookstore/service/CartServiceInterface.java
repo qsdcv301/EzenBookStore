@@ -28,4 +28,6 @@ public interface CartServiceInterface {
 
     void deleteCartItems(User user, List<String> cartIdList);
 
+    Cart findByBookIdAndUserId(Long bookId, Long userId);
+
 }

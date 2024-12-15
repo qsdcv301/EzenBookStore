@@ -14,7 +14,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class CartService implements CartServiceInterface{
+public class CartService implements CartServiceInterface {
 
     private final CartRepository cartRepository;
     private final BookService bookService;
@@ -82,13 +82,20 @@ public class CartService implements CartServiceInterface{
             Long bookIdValue = ParseUtils.parseLong(bookIdList.get(i));
             Integer quantityValue = ParseUtils.parseInt(quantityList.get(i));
 
-            Cart newCart = Cart.builder()
-                    .user(user)
-                    .book(bookService.findById(bookIdValue))
-                    .quantity(quantityValue)
-                    .build();
-
-            create(newCart);
+            Cart cart = findByBookIdAndUserId(bookIdValue, user.getId());
+            if (cart != null) {
+                cart = cart.toBuilder()
+                        .quantity(cart.getQuantity() + quantityValue)
+                        .build();
+                update(cart);
+            } else {
+                Cart newCart = Cart.builder()
+                        .user(user)
+                        .book(bookService.findById(bookIdValue))
+                        .quantity(quantityValue)
+                        .build();
+                create(newCart);
+            }
         }
     }
 
@@ -128,6 +135,11 @@ public class CartService implements CartServiceInterface{
                 throw new IllegalArgumentException("권한이 없거나 잘못된 요청입니다.");
             }
         }
+    }
+
+    @Override
+    public Cart findByBookIdAndUserId(Long bookId, Long userId) {
+        return cartRepository.findByBookIdAndUserId(bookId, userId);
     }
 
 }
