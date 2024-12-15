@@ -2,7 +2,7 @@
 
 ## 1. 🚀 프로젝트 이름
 
-- Ezen Book Store(<http://ezbook.store>)
+- Ezen Book Store (<http://ezbook.store>)
 
 ## 2. 📖 프로젝트 개요
 
@@ -10,11 +10,10 @@
 - **주요 목표**:
   - 참여기업 요구사항 지시에 맞춘 각 시스템별 기능 구현
   - 유저 / 관리자 SIDE별 기능
-  - 회원가입, 로그인, 내정보수정 기능
-  (Google, Naver, Kakao 등 Synchro 로그인)
+  - 회원가입, 로그인, 내정보수정 기능 - (Google, Naver, Kakao 등 Synchro 로그인)
   - 장바구니, 구매기록 기능
-  - 배송비 시스템 (주문/교환/반품) - 무료 / 조건부 무료
-  - 결제 및 조회 기능 (PG사 연동)
+  - 배송비 시스템 - (주문/교환/반품) - 무료 / 조건부 무료
+  - 결제 및 조회 기능 - (PG사 연동)
   - 적립금 시스템
   - 상품등록 및 관리 기능
   - 게시판 등록 및 관리 기능 - (상품 리뷰, 공지사항 등)
@@ -190,6 +189,6 @@
 - **연락처**:
   - 김태현 : [Email](mailto:qsdcv301@naver.com), [GitHub](https://github.com/qsdcv301)
   - 채윤성 : [Email](mailto:gksmsk5094@gmail.com), [GitHub](https://github.com/ChaiTope)
-  - 이정인 : [Email](mailto:dlwjddls888@gmail.com), [GitHub](https://github.com/LEE-JUNGIN)
+  - 이정인 : [Email](mailto:dlwjddls888@gmail.com), [GitHub](https://github.com/GreatOvOb)
   - 정재환 : [Email](mailto:jjjhhh2569@gmail.com), [GitHub](https://github.com/JaeHwan2569)
   - 황예주 : [Email](mailto:jooland05@gmail.com), [GitHub](https://github.com/HwangYeJoo)
