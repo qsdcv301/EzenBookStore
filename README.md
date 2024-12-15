@@ -67,7 +67,7 @@
 |------------|-----------------------------|-----------------------------------------|-------------------------------|
 | 김태현    | [역할 입력 필요]            | [GitHub](https://github.com/qsdcv301)  | <qsdcv301@naver.com>            |
 | 채윤성    | [역할 입력 필요]            | [GitHub](https://github.com/ChaiTope)  | <gksmsk5094@gmail.com>          |
-| 이정인    | [역할 입력 필요]            | [GitHub](https://github.com/LEE-JUNGIN)| <dlwjddls888@gmail.com>         |
+| 이정인    | [역할 입력 필요]            | [GitHub](https://github.com/GreatOvOb)| <dlwjddls888@gmail.com>         |
 | 정재환    | [역할 입력 필요]            | [GitHub](https://github.com/JaeHwan2569)| <jjjhhh2569@gmail.com>         |
 | 황예주    | [역할 입력 필요]            | [GitHub](https://github.com/HwangYeJoo)| <jooland05@gmail.com>           |
 
