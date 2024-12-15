@@ -6,7 +6,6 @@
 
 ## 2. 📖 프로젝트 개요
 
-- **프로젝트 이름**: EZ Book Store
 - **목적**: 기업 요구사항에 맞춘 온라인 서점 시스템 개발 및 포트폴리오 활용
 - **주요 목표**:
   - 사용자 계정 관리, 상품 관리, 결제 및 적립금 시스템 구현
@@ -73,7 +72,13 @@
 
 ## 6. 아키텍처 다이어그램
 
-![아키텍처 다이어그램](./read.me.image/main.JPG)
+- **아키텍처 다이어그램 (?)**: ?
+
+![아키텍처 다이어그램](./read.me.image/00architecturediagram.png)
+
+- **아키텍처 다이어그램 (?)**: ?
+
+![아키텍처 다이어그램](./read.me.image/01architecturediagram.png)
 
 ## 7. 화면 예시
 
@@ -87,11 +92,11 @@
 
 - **상품 디테일 페이지**: 상품 클릭시 상품의 상세정보를 볼 수 있는 상품 디테일 페이지
 
-  ![상품 디테일 페이지](./read.me.image/01bookdetail.PNG)
+  ![상품 디테일 페이지](./read.me.image/01bookdetail.png)
 
 - **회원가입 페이지**: 회원가입을 할 수 있는 페이지
 
-  ![회원가입 페이지](./read.me.image/02signup.PNG)
+  ![회원가입 페이지](./read.me.image/02signup.png)
 
 - **로그인 페이지**: 회원가입 후 로그인 또는 간편 소셜로그인을 할 수 있는 페이지
 
@@ -99,7 +104,7 @@
 
 - **마이페이지 - 나의 정보**: 가입한 정보를 확인하고 수정할 수 있는 페이지
 
-  ![마이페이지- 나의정보](./read.me.image/04mypage_profile.PNG)
+  ![마이페이지- 나의정보](./read.me.image/04mypage_profile.png)
 
 - **장바구니 페이지**: 담은 상품을 확인하고 구매할 수 있는 페이지
 
@@ -123,15 +128,15 @@
 
 - **관리자 페이지 - 대시보드**: 관리자페이지에 처음 접속하면 한 눈에 확인하고 관리할 수 있는 페이지
 
-  ![페이지](./read.me.image/8Admin_Dashboard.PNG)
+  ![페이지](./read.me.image/8Admin_Dashboard.png)
 
 - **관리자 페이지 - 상품 관리 페이지**: 상품을 등록하고 조회, 관리할 수 있는 페이지
 
-  ![페이지](./read.me.image/9Admin_Product.PNG)
+  ![페이지](./read.me.image/9Admin_Product.png)
 
 - **관리자 페이지 - 이벤트 관리 페이지**: 이벤트를 등록하거나 관리할 수 있는 페이지
 
-  ![페이지](./read.me.image/10Admin_Event.PNG)
+  ![페이지](./read.me.image/10Admin_Event.png)
 
 - **이벤트 추가 모달**: 이벤트를 추가할 수 있는 모달창
 
