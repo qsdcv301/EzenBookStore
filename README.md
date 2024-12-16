@@ -130,11 +130,11 @@
 
 ## 8. 📅 참고 사이트
 
-- 🌐 [교보 문고](https://www.kyobobook.co.kr/) : UI 참고
-- 🌐 [예스24](https://www.yes24.com/main/default.aspx) : 참고
-- 🌐 [바로보네](https://www.barovone.com/kr/index/index.lime) : 참고
-- 🌐 [반디앤루디스](https://www.bandinlunis.com/front/main.do) : 참고
-- 🌐 [알라딘](https://www.aladin.co.kr/home/welcome.aspx) : 참고
+- 🌐 [교보 문고](https://www.kyobobook.co.kr/) : 최근 본 컨텐츠 기능의 UI 디자인과 기능을 참고했습니다. (참고일 : 2024년 11월 18일)
+- 🌐 [예스24](https://www.yes24.com/main/default.aspx) : 상품목록페이지의 UI 디자인(썸네일 타입)을 참고했습니다. (참고일 : 2024년 11월 07일)
+- 🌐 [바로보네](https://www.barovone.com/kr/index/index.lime) : 상품목록페이지의 UI 디자인(리스트 타입, 상품 정렬)을 참고했습니다. (참고일 : 2024년 11월 07일)
+- 🌐 [반디앤루디스](https://www.bandinlunis.com/front/main.do) : UI 디자인과 검색 내 재검색 기능을 참고했습니다. (참고일 : 2024년 11월 10일)
+- 🌐 [알라딘](https://www.aladin.co.kr/home/welcome.aspx) : header의 UI 디자인을 참고했습니다. (참고일 : 2024년 11월 17일)
 
 ---
 
