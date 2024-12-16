@@ -145,9 +145,10 @@
                                                     <div class="form-check ms-2 text-center mr-4">
                                                         <input class="form-check-input cart-checkbox" type="checkbox" style="transform: scale(1.5);">
                                                     </div>
+                                                    <a th:href="@{/book/detail(bookId=${book.id})}" class="book-image-link">
                                                     <img th:src="${imageList[index.index] != '' ? imageList[index.index] : 'https://via.placeholder.com/100'}"
                                                          th:alt="${book.id}+'번 책표지'" class="img-thumbnail bookImage"
-                                                         style="width: 180px;height: 250px;object-fit: cover">
+                                                         style="width: 180px; height: 250px; object-fit: cover"></a>
                                                 </div>
                                                 <!-- 책 정보 -->
                                                 <div class="col-md-5">
@@ -180,8 +181,6 @@
                                                         <!-- 책 소개 -->
                                                         <p class="card-text text-truncate"
                                                            th:text="${book.bookdescription.description}"></p>
-                                                        <a th:href="@{/book/detail(bookId=${book.id})}"
-                                                           class="stretched-link"></a>
                                                     </div>
                                                 </div>
 

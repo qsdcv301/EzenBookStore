@@ -108,7 +108,7 @@ $(document).ready(function () {
                 encodedKeyword = encodeURIComponent("[publisher]");
                 window.location.href = `/book/search?keyword=${encodedKeyword}&val=${searchInput}`;
                 break;
-            default :
+            default:
                 encodedKeyword = encodeURIComponent("[title,author,isbn,publisher]");
                 window.location.href = `/book/search?keyword=${encodedKeyword}&val=${searchInput}`;
                 break;
@@ -118,7 +118,7 @@ $(document).ready(function () {
     //footer
 
     $("#scrollTopBtn").on("click", function () {
-        $("html, body").animate({scrollTop: 0}, "slow");
+        $("html, body").animate({ scrollTop: 0 }, "slow");
     });
 
     $("#goHomeBtn").on("click", function () {
@@ -642,7 +642,7 @@ $(document).ready(function () {
             url: '/cart/delete',
             type: 'POST',
             traditional: true,
-            data: {cartId: cartIds},
+            data: { cartId: cartIds },
             success: function (response) {
                 if (response.success) {
                     alert("선택된 상품이 삭제되었습니다.");
@@ -693,7 +693,7 @@ $(document).ready(function () {
 
     // 페이지 초기 로드 시 주문 요약 업데이트
     updateSummary();
-//     bookDetail
+    //     bookDetail
     $(".cartAdd").click(function () {
         let selectedBookIds = [];
         let selectedBookQuantity = [];
@@ -746,8 +746,8 @@ $(document).ready(function () {
         });
     }
 
-//     paymentModal
-// 결제 모달 버튼 클릭 시 초기화 및 계산
+    //     paymentModal
+    // 결제 모달 버튼 클릭 시 초기화 및 계산
     $(".paymentModalBtn").click(function () {
         $(".modal-items").empty(); // 모달의 기존 항목 비우기
 
@@ -1077,13 +1077,13 @@ $(document).ready(function () {
     function parseMoneyValues(price, discount) { //숫자의 문자열을 제거하고 순수 숫자만 남김
         const numericPrice = parseInt(price.replace(/[^0-9]/g, ""), 10) || 0;
         const numericDiscount = parseInt(discount.replace(/[^0-9]/g, ""), 10) || 0;
-        return {price: numericPrice, discount: numericDiscount};
+        return { price: numericPrice, discount: numericDiscount };
     }
 
     function formatMoneyValues(price, discount) { //순수한 숫자를 포맷팅하여 한국 원화를 표기
         const formattedPrice = price.toLocaleString("ko-KR") + "원";
         const discountedPrice = Math.floor(price * (1 - discount / 100)).toLocaleString("ko-KR") + "원";
-        return {formattedPrice, discountedPrice};
+        return { formattedPrice, discountedPrice };
     }
 
     //     bookSerach
@@ -1191,7 +1191,7 @@ $(document).ready(function () {
         window.location.href = `/book/search?keyword=${encodedKeyword}&val=${encodedVal}&page=${page}&sort=${encodedSort}&direction=${encodedDirection}&ifkr=${ifkr}&category=${encodedCategory}&subcategory=${encodedSubcategory}`;
     });
 
-// URL 파라미터를 객체 형태로 가져오는 함수
+    // URL 파라미터를 객체 형태로 가져오는 함수
     function getUrlParams() {
         let params = {};
         let queryString = window.location.search.substring(1);
@@ -1248,7 +1248,7 @@ $(document).ready(function () {
         $.ajax({
             type: 'POST',
             url: '/user/emailAuthentication',
-            data: {email: email},
+            data: { email: email },
             success: function (response) {
                 if (response.isEmail) {
                     alert('인증 코드가 이메일로 발송되었습니다.');
@@ -1298,7 +1298,7 @@ $(document).ready(function () {
         $.ajax({
             type: 'POST',
             url: '/user/findPw',
-            data: {tel: tel, email: email, verificationCode: verificationCode},
+            data: { tel: tel, email: email, verificationCode: verificationCode },
             success: function (response) {
                 if (response.success === "true") {
                     $("#initialForm").hide();
@@ -1342,7 +1342,7 @@ $(document).ready(function () {
         $.ajax({
             type: 'POST',
             url: '/user/newPw',
-            data: {email: confirmCurrentPasswordEmail, password: newPassword},
+            data: { email: confirmCurrentPasswordEmail, password: newPassword },
             success: function (response) {
                 if (response.success === "true") {
                     $('#pwResultSuccess').html('비밀번호 변경 되었습니다.').show();
@@ -1375,7 +1375,7 @@ $(document).ready(function () {
         $.ajax({
             type: 'POST',
             url: '/user/newPw',
-            data: {email: email, password: password},
+            data: { email: email, password: password },
             success: function (response) {
                 if (response.success === "true") {
                     $('#pwResultSuccess').html('비밀번호 변경 되었습니다.').show();
@@ -1444,7 +1444,7 @@ $(document).ready(function () {
         $.ajax({
             type: 'POST',
             url: '/user/delete',
-            data: {userId: [userId]},
+            data: { userId: [userId] },
             success: function (response) {
                 if (response.success) {
                     alert("회원탈퇴 되었습니다. 로그인창으로 이동합니다.")
@@ -1545,7 +1545,7 @@ $(document).ready(function () {
         updateMainModalData(ordersId);
     });
 
-// 메인 모달 데이터 업데이트 함수 분리
+    // 메인 모달 데이터 업데이트 함수 분리
     function updateMainModalData(ordersId) {
         // AJAX 요청을 통해 상세 데이터 가져오기
         $.ajax({
@@ -1636,7 +1636,7 @@ $(document).ready(function () {
         $.ajax({
             type: 'POST',
             url: '/order/orderCancel',
-            data: {orderId: orderId},
+            data: { orderId: orderId },
             success: function (response) {
                 if (response.success) {
                     alert("주문 취소 요청을 했습니다.");
@@ -1747,19 +1747,19 @@ $(document).ready(function () {
                     let userGradePercent = 0;
 
                     switch (userGrade) {
-                        case "1" :
+                        case "1":
                             userGradePoint = 0.01;
                             userGradePercent = 1;
                             break;
-                        case "2" :
+                        case "2":
                             userGradePoint = 0.02;
                             userGradePercent = 2;
                             break;
-                        case "3" :
+                        case "3":
                             userGradePoint = 0.05;
                             userGradePercent = 5;
                             break;
-                        case "4" :
+                        case "4":
                             userGradePoint = 0.1;
                             userGradePercent = 10;
                             break;
@@ -1946,7 +1946,7 @@ $(document).ready(function () {
     $('#eventTabs a').on('click', function (e) {
         const tabId = $(this).attr('href').substring(1);
         const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?tab=' + tabId;
-        window.history.pushState({path: newUrl}, '', newUrl);
+        window.history.pushState({ path: newUrl }, '', newUrl);
     });
 
     // 카드 클릭 시 상세 페이지로 이동
@@ -1956,5 +1956,48 @@ $(document).ready(function () {
             window.location.href = url;
         }
     });
+
+    // 상품 카드 클릭 이벤트
+    $('.product-item').on('click', function (e) {
+        if (!$(e.target).closest('.book-image-link').length) {
+            var checkbox = $(this).find('.cart-checkbox');
+            checkbox.prop('checked', !checkbox.prop('checked'));
+            updateSelectedItems();
+            e.preventDefault();
+        }
+    });
+
+    // 체크박스 클릭 이벤트
+    $('.cart-checkbox').on('click', function (e) {
+        e.stopPropagation();
+        updateSelectedItems();
+    });
+
+    // 이미지 클릭 이벤트
+    $('.book-image-link').on('click', function (e) {
+        e.stopPropagation();
+    });
+
+    // 전체 선택 체크박스 이벤트
+    $('#selectAll').on('change', function () {
+        $('.cart-checkbox').prop('checked', $(this).prop('checked'));
+        updateSelectedItems();
+    });
+
+    // 개별 체크박스 변경 이벤트
+    $('.cart-checkbox').on('change', function () {
+        updateSelectedItems();
+    });
+
+    function updateSelectedItems() {
+        var selectedCount = $('.cart-checkbox:checked').length;
+        console.log('선택된 항목 수:', selectedCount);
+    }
+
+    // 호버 효과
+    $('.product-item').hover(
+        function () { $(this).addClass('hovered'); },
+        function () { $(this).removeClass('hovered'); }
+    );
 
 });
