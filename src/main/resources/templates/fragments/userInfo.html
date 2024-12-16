@@ -102,7 +102,7 @@
                         <h5>적립금 정보</h5>
                         <div class="form-group">
                             <label>현재 보유 적립금</label>
-                            <input type="text" class="form-control" th:value="${user.point}" readonly>
+                            <input type="text" class="form-control" th:value="${#numbers.formatInteger(user.point, 0, 'COMMA')}" readonly>
                         </div>
                     </div>
                 </div>

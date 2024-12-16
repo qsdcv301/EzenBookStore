@@ -8,7 +8,7 @@
                   <a href="/login" class="text-white mx-2">로그인</a>
                   <a href="/signup" class="text-white mx-2">회원가입</a>
             </span>
-            <a th:if="${userData}" href="/logout" class="text-white ml-1">로그아웃</a>
+            <a th:if="${userData}" href="/logout" class="text-white mr-2">로그아웃</a>
             <a href="/customerService" class="text-white ml-1">고객센터</a>
         </div>
     </div>
@@ -24,7 +24,7 @@
                 <span th:case="3">골드 회원</span>
                 <span th:case="4">Vip 회원</span>
                 <span th:case="99">관리자</span>
-            </span> | 보유적립금: <span th:text="${user.point}"></span> Point</span>
+            </span> | 보유적립금: <span th:text="${#numbers.formatInteger(user.point, 0, 'COMMA')}"> Point</span>
         </div>
 
         <div class="container d-flex flex-wrap align-items-center justify-content-between pt-2 pb-4">
