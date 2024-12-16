@@ -19,6 +19,7 @@ public class OrderItemService implements OrderItemServiceInterface {
 
     private final OrderItemRepository orderItemRepository;
     private final UserService userService;
+    private final FileUploadService fileUploadService;
 
     @Override
     public OrderItem findById(Long id) {
@@ -68,6 +69,8 @@ public class OrderItemService implements OrderItemServiceInterface {
         String status = orderItem.getStatus().toString();
         String bookId = orderItem.getBook().getId().toString();
         String userGrade = user.getGrade().toString();
+        String bookImagePath = fileUploadService.findImageFilePath(orderItem.getBook().getId(),"book");
+        response.put("imagePath", bookImagePath);
         response.put("success", "true");
         response.put("bookId", bookId);
         response.put("orderItemId", id.toString());

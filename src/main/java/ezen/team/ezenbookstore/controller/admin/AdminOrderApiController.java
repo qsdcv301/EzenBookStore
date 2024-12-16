@@ -90,7 +90,7 @@ public class AdminOrderApiController {
                 if (delivery != null && deliveryStatusByte != null) {
                     delivery.setStatus(deliveryStatusByte);
                     deliveryService.updateStatus(delivery);
-                    if (deliveryStatusByte == 2) {
+                    if (deliveryStatusByte == 3) {
                         List<OrderItem> orderItems = orders.getOrderItems();
                         for (OrderItem orderItem : orderItems) {
                             OrderItem orderItemStatus = orderItemService.findById(orderItem.getId());
