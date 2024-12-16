@@ -47,7 +47,7 @@
 
 ### ⚙️ 기타 도구  
 
-![Jenkins](https://img.shields.io/badge/Jenkins-D24939?logo=jenkins&logoColor=white)  ![Git](https://img.shields.io/badge/Git-F05032?logo=git&logoColor=white)  ![AWS](https://img.shields.io/badge/AWS-232F3E?logo=amazonaws&logoColor=white)  ![Linux](https://img.shields.io/badge/Linux-FCC624?style=flat-square&logo=linux&logoColor=black)  ![Google Cloud](https://img.shields.io/badge/Google Cloud-4285F4?style=flat-square&logo=Google Cloud&logoColor=white)  ![PostMan](https://img.shields.io/badge/Postman-FF6C37?style=flat-square&logo=Postman&logoColor=white)
+![Jenkins](https://img.shields.io/badge/Jenkins-D24939?logo=jenkins&logoColor=white)  ![Git](https://img.shields.io/badge/Git-F05032?logo=git&logoColor=white)  ![AWS](https://img.shields.io/badge/AWS-232F3E?logo=amazonaws&logoColor=white)  ![Linux](https://img.shields.io/badge/Linux-FCC624?style=flat-square&logo=linux&logoColor=black)  ![PostMan](https://img.shields.io/badge/Postman-FF6C37?style=flat-square&logo=Postman&logoColor=white)
 
 ---
 
