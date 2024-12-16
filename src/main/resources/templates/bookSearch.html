@@ -165,15 +165,15 @@
                                                         <p class="card-text" th:text="'ISBN: '+${book.isbn}"></p>
 
                                                         <!-- 가격 및 할인 정보 -->
-                                                        <p class="card-text">
+                                                        <p class="card-text card-price">
                                                             <!-- 원래 가격 -->
                                                             <del style="font-size: 1.2rem;"
-                                                                 class="me-2 price" th:text="${book.price}">
+                                                                 class="me-2 origin-price" th:text="${book.price}">
                                                             </del>
                                                             <!-- 할인된 가격 -->
                                                             <span style="font-size: 1.5rem;"
-                                                                  class="text-danger fw-bold discountPrice"></span>
-                                                            <small>[<span class="discount"
+                                                                  class="text-danger fw-bold dc-Price"></span>
+                                                            <small>[<span class="dc-per"
                                                                           th:text="${book.discount}"></span>%할인]</small>
                                                         </p>
 
