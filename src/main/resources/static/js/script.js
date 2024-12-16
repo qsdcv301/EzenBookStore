@@ -60,6 +60,14 @@ $(document).ready(function () {
         $('.loginValidation').submit();
     });
 
+    // 엔터 키 입력 시 로그인 버튼 클릭
+    $('#loginEmail, #loginPassword').on('keydown', function (e) {
+        if (e.keyCode === 13) { // Enter 키 감지
+            e.preventDefault(); // 기본 동작 막기
+            $('.localLoginBtn').click(); // 로그인 버튼 클릭 이벤트 호출
+        }
+    });
+
     //header
 
     // 서브메뉴 호버 효과
@@ -1330,8 +1338,8 @@ $(document).ready(function () {
 
     $('#changePassword').on('click', function (event) {
         event.preventDefault();
-        const newPassword = $('#newPassword').val();
-        const confirmNewPassword = $('#confirmNewPassword').val();
+        const newPassword = $('#userNewPassword').val();
+        const confirmNewPassword = $('#userConfirmNewPassword').val();
         const confirmCurrentPasswordEmail = $('#confirmCurrentPasswordEmail').val();
 
         if (newPassword !== confirmNewPassword) {
@@ -1344,7 +1352,7 @@ $(document).ready(function () {
             url: '/user/newPw',
             data: { email: confirmCurrentPasswordEmail, password: newPassword },
             success: function (response) {
-                if (response.success === "success") {
+                if (response.success === true) {
                     if (confirm("비밀번호가 변경 되었습니다. 보안을 위해 로그아웃합니다.")) {
                         location.replace("/logout");
                     }

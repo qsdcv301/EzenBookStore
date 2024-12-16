@@ -33,15 +33,15 @@
                         <div class="mb-3 form-group">
                             <label class="form-label">배송 주소</label>
                             <div class="input-group">
-                                <input th:value="${user.addr}" type="text" class="form-control payment-addr" placeholder="주소를 입력해주세요." required>
+                                <input th:value="${user.addr}" type="text" id="addr" class="form-control payment-addr" placeholder="주소를 입력해주세요." required>
                                 <div class="input-group-append">
                                     <button type="button" class="btn btn-secondary" id="searchAddress">검색</button>
                                 </div>
                             </div>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label">상세 주소</label>
-                            <input th:value="${user.addrextra}" type="text" class="form-control payment-addrextra"
+                        <div class="form-group mb-3">
+                            <label for="addrextra" class="form-label">상세 주소</label>
+                            <input th:value="${user.addrextra}" type="text" id="addrextra" class="form-control payment-addrextra"
                             placeholder="상세주소를 입력해주세요." required>
                         </div>
                         <hr>
