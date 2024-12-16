@@ -284,7 +284,7 @@ $(document).ready(function () {
         } else {
             $(this).removeClass('is-invalid').addClass('is-valid');
             $feedbackMessage.text('사용 가능한 아이디입니다. 중복검사를 해주세요.');
-            $feedbackMessage.css("color", "#28a745");
+            $feedbackMessage.css("color", "#ffc107");
         }
         $feedbackMessage.css("display", "block");
     });
@@ -792,11 +792,11 @@ $(document).ready(function () {
                     <div class="col-md-7">
                         <div class="card-body pl-0">
                             <input type="hidden" class="modalCartId" value="${cartId}">
-                            <p class="text-truncate">상품명: <span class="modalBookTitle">${title}</span></p>
-                            <p class="text-truncate">수량: <span class="modalQuantity">${quantity}</span></p>
-                            <p class="text-truncate">가격: <span class="origin-price modalTotalPrice">${itemTotalPrice.toLocaleString()}</span>원</p>
-                            <p class="text-truncate">할인율: <span class="dc-per modalDiscount">${discount}%</span></p>
-                            <p class="text-truncate">할인가: <span class="dc-Price modalDiscountedPrice">${itemDiscountedPrice.toLocaleString()}</span>원</p>
+                            <p>상품명: <span class="modalBookTitle">${title}</span></p>
+                            <p>수량: <span class="modalQuantity">${quantity}</span></p>
+                            <p>가격: <span class="modalTotalPrice">${itemTotalPrice.toLocaleString()}</span>원</p>
+                            <p>할인율: <span class="modalDiscount">${discount}%</span></p>
+                            <p>할인가: <span class="modalDiscountedPrice">${itemDiscountedPrice.toLocaleString()}</span>원</p>
                         </div>
                     </div>
                 </div>

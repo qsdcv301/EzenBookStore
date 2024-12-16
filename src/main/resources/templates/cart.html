@@ -32,7 +32,7 @@
                                 </div>
                                 <div class="col-md-4">
                                     <input type="hidden" class="cartId" th:value="${cart.id}">
-                                    <h5 class="card-title text-truncate">제목 : <span class="title" th:text="${cart.book.title}"></span></h5>
+                                    <h5 class="card-title">제목 : <span class="title" th:text="${cart.book.title}"></span></h5>
                                     <p class="card-text mb-0" th:text="'저자 : '+${cart.book.author}">저자 : </p>
                                     <p class="card-text mb-0">가격 : <span class="price" th:text="${cart.book.price}"></span></p>
                                     <p class="card-text mb-0">할인가 : <span class="text-danger fw-bold discountPrice"></span>

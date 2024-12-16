@@ -1,138 +1,126 @@
 <!doctype html>
 <html xmlns:th="http://www.thymeleaf.org" lang="ko">
-
 <head th:replace="~{fragments/css :: css}"></head>
-
 <body>
-    <header th:replace="~{fragments/header :: header}"></header>
-    <div class="container mt-5">
-        <div class="row paymentModal-Data cart-Data">
-            <!-- 상품 이미지 -->
-            <div class="col-md-7 mb-4 text-center">
-                <img th:src="${imagePath != '' ? imagePath : 'https://via.placeholder.com/100'}"
-                    th:alt="${book.id}+'상품 사진'" style="width: 300px;height: 400px; object-fit: cover" class="bookImage">
-            </div>
-
-            <!-- 상품 정보 -->
-            <div class="col-md-4 ms-5">
-                <input class="form-check-input cart-checkbox d-none" type="checkbox" checked>
-                <h1 class="mb-3" th:class="title" th:text="${book.title}"></h1>
-                <p><strong>저자:</strong> <span th:text="${book.author}"></span></p>
-                <p><strong>출판사:</strong> <span th:text="${book.publisher}"></span></p>
-                <p><strong>ISBN:</strong> <span th:text="${book.isbn}"></span></p>
-                <p><strong>출간일:</strong> <span th:text="${#dates.format(book.publishDate, 'yyyy-MM-dd')}"></span></p>
-                <p class="card-price">
-                    <strong>가격:</strong>
-                    <del class="text-decoration-line-through price" th:text="${book.price}">가격</del>
-                    <span class="text-danger fw-bold discount" th:text="${book.discount}+'%'">할인 퍼센트</span>
-                    <strong class="discountPrice" style="font-size: 1.4em;">할인된 금액</strong>
-                </p>
-                <p>
-                    <strong>배송 정보:</strong> 배송비 3,000원
-                </p>
-                <p class="no-gutters">
-                    <small>※주문 금액이 <span class="text-danger">1,5000원</span> 이상일 때에는 배송비 무료</small>
-                </p>
-
-                <div class="mb-3">
-                    <label class="form-label">수량:</label>
-                    <input type="number" class="form-control quantity" value="1" min="1" style="width: 100px;">
-                </div>
-                <button th:if="${userData}" class="btn btn-primary me-2 cartAdd" th:data-book-id="${book.id}"
-                    th:data-type="selected">
-                    <i class="bi bi-cart-plus"></i> 장바구니 담기
-                </button>
-                <button th:if="${userData}" class="btn btn-success me-2 paymentModalBtn" th:data-type="selected"
-                    data-toggle="modal" data-target="#paymentModal">
-                    <i class="bi bi-credit-card"></i> 바로 구매하기
-                </button>
-                <button th:unless="${userData}" class="btn btn-primary me-2 loginCheck" th:data-book-id="${book.id}"
-                    th:data-type="selected">
-                    <i class="bi bi-cart-plus"></i> 장바구니 담기
-                </button>
-                <button th:unless="${userData}" class="btn btn-success me-2 loginCheck" th:data-type="selected"
-                    data-toggle="modal" data-target="#paymentModal">
-                    <i class="bi bi-credit-card"></i> 바로 구매하기
-                </button>
-            </div>
+<header th:replace="~{fragments/header :: header}"></header>
+<div class="container mt-5">
+    <div class="row paymentModal-Data cart-Data">
+        <!-- 상품 이미지 -->
+        <div class="col-md-7 mb-4 text-center">
+            <img th:src="${imagePath != '' ? imagePath : 'https://via.placeholder.com/100'}" th:alt="${book.id}+'상품 사진'"
+                 style="width: 300px;height: 400px; object-fit: cover" class="bookImage">
         </div>
 
-        <!-- 탭 섹션 -->
-        <div class="row mt-3">
-            <div class="col">
-                <ul class="nav nav-tabs" id="myTab" role="tablist">
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="intro-tab" data-bs-toggle="tab" data-bs-target="#intro"
+        <!-- 상품 정보 -->
+        <div class="col-md-4 ms-5">
+            <input class="form-check-input cart-checkbox d-none" type="checkbox" checked>
+            <h1 class="mb-3" th:class="title" th:text="${book.title}"></h1>
+            <p><strong>저자:</strong> <span th:text="${book.author}"></span></p>
+            <p><strong>출판사:</strong> <span th:text="${book.publisher}"></span></p>
+            <p><strong>ISBN:</strong> <span th:text="${book.isbn}"></span></p>
+            <p><strong>출간일:</strong> <span th:text="${#dates.format(book.publishDate, 'yyyy-MM-dd')}"></span></p>
+            <p>
+                <strong>가격:</strong>
+                <span class="text-decoration-line-through price" th:text="${book.price}">가격</span>
+                <span class="text-danger fw-bold discount" th:text="${book.discount}+'%'">할인 퍼센트</span>
+            </p>
+            <p><strong>배송 정보:</strong> 배송비 3,000원</p>
+
+            <div class="mb-3">
+                <label class="form-label">수량:</label>
+                <input type="number" class="form-control quantity" value="1" min="1" style="width: 100px;">
+            </div>
+            <button th:if="${userData}" class="btn btn-primary me-2 cartAdd" th:data-book-id="${book.id}"
+                    th:data-type="selected">
+                <i class="bi bi-cart-plus"></i> 장바구니 담기
+            </button>
+            <button th:if="${userData}" class="btn btn-success me-2 paymentModalBtn" th:data-type="selected"
+                    data-toggle="modal"
+                    data-target="#paymentModal">
+                <i class="bi bi-credit-card"></i> 바로 구매하기
+            </button>
+            <button th:unless="${userData}" class="btn btn-primary me-2 loginCheck" th:data-book-id="${book.id}"
+                    th:data-type="selected">
+                <i class="bi bi-cart-plus"></i> 장바구니 담기
+            </button>
+            <button th:unless="${userData}" class="btn btn-success me-2 loginCheck" th:data-type="selected"
+                    data-toggle="modal"
+                    data-target="#paymentModal">
+                <i class="bi bi-credit-card"></i> 바로 구매하기
+            </button>
+        </div>
+    </div>
+
+    <!-- 탭 섹션 -->
+    <div class="row mt-3">
+        <div class="col">
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="intro-tab" data-bs-toggle="tab" data-bs-target="#intro"
                             type="button" role="tab">책 소개
-                        </button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="review-tab" data-bs-toggle="tab" data-bs-target="#review"
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="review-tab" data-bs-toggle="tab" data-bs-target="#review"
                             type="button" role="tab">리뷰
-                        </button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="return-tab" data-bs-toggle="tab" data-bs-target="#return"
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="return-tab" data-bs-toggle="tab" data-bs-target="#return"
                             type="button" role="tab">반품/교환
-                        </button>
-                    </li>
-                </ul>
-                <div class="tab-content" id="myTabContent">
-                    <div class="tab-pane fade show active overflow-auto" style="max-height: 550px;" id="intro"
-                        role="tabpanel">
-                        <h2 class="mt-3">책 소개</h2>
-                        <p th:utext="${bookDescription.description}"></p>
-                        <h3>목차</h3>
-                        <p th:utext="${bookDescription.contents}"></p>
-                        <h3>저자 소개</h3>
-                        <p th:utext="${bookDescription.writer}"></p>
-                    </div>
-                    <div class="tab-pane fade overflow-auto" style="max-height: 550px;" id="review" role="tabpanel">
-                        <h2 class="mt-3">리뷰</h2>
-                        <div id="review-list">
-                            <!-- 리뷰 내용 -->
-                            <div class="card mb-3" th:each="review, index : ${book.review}">
-                                <div class="card-body d-flex justify-content-between">
-                                    <div class="col-md-2">
-                                        <img th:src="${reviewImagePathList[index.index] != '' ? reviewImagePathList[index.index] : 'https://via.placeholder.com/100'}"
-                                            th:alt="${review.user.email}+'의 리뷰사진'"
-                                            class="img-thumbnail card-img reviewImg"
-                                            style="width: 145px; height: 200px; object-fit: cover;">
-                                    </div>
-                                    <div class="col-md-10">
-                                        <h5 class="card-title" th:text="${review.title}"></h5>
-                                        <p class="card-text" th:utext="${review.comment}"></p>
-                                        <p class="card-text"><small class="text-muted"
-                                                th:text="'작성자 : '+${review.user.name}+' | '">작성자</small><small
-                                                class="text-muted"
-                                                th:text="'날짜 : '+${#dates.format(review.createAt, 'yyyy-MM-dd')}">날짜</small>
-                                        </p>
-                                    </div>
+                    </button>
+                </li>
+            </ul>
+            <div class="tab-content" id="myTabContent">
+                <div class="tab-pane fade show active overflow-auto" style="max-height: 300px;" id="intro"
+                     role="tabpanel">
+                    <h2 class="mt-3">책 소개</h2>
+                    <p th:utext="${bookDescription.description}"></p>
+                    <h3>목차</h3>
+                    <p th:utext="${bookDescription.contents}"></p>
+                    <h3>저자 소개</h3>
+                    <p th:utext="${bookDescription.writer}"></p>
+                </div>
+                <div class="tab-pane fade overflow-auto" style="max-height: 300px;" id="review" role="tabpanel">
+                    <h2 class="mt-3">리뷰</h2>
+                    <div id="review-list">
+                        <!-- 리뷰 내용 -->
+                        <div class="card mb-3" th:each="review, index : ${book.review}">
+                            <div class="card-body d-flex justify-content-between">
+                                <div class="col-md-2">
+                                    <img th:src="${reviewImagePathList[index.index] != '' ? reviewImagePathList[index.index] : 'https://via.placeholder.com/100'}" th:alt="${review.user.email}+'의 리뷰사진'"
+                                         class="img-thumbnail card-img reviewImg" style="width: 145px; height: 200px; object-fit: cover;">
+                                </div>
+                                <div class="col-md-10">
+                                    <h5 class="card-title" th:text="${review.title}"></h5>
+                                    <p class="card-text" th:utext="${review.comment}"></p>
+                                    <p class="card-text"><small class="text-muted"
+                                                                th:text="'작성자 : '+${review.user.name}+' | '">작성자</small><small
+                                            class="text-muted"
+                                            th:text="'날짜 : '+${#dates.format(review.createAt, 'yyyy-MM-dd')}">날짜</small></p>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="tab-pane fade overflow-auto" style="max-height: 550px;" id="return" role="tabpanel">
-                        <h2 class="mt-3">반품/교환</h2>
-                        <p class="mt-4">구매하신 상품의 반품/교환은 상품 수령 후 7일 이내에 가능합니다. 단, 제품의 하자나 오배송의 경우는 30일 이내에 가능합니다.</p>
-                        <h3 class="mt-5">배송 관련 FAQ</h3>
-                        <p class="mt-4"><strong>Q: 배송은 얼마나 걸리나요?</strong><br>A: 일반적으로 결제 완료 후 1-3일 내에 배송이 시작되며, 지역에 따라
-                            1-2일 정도 소요됩니다.
-                        </p>
-                        <p class="mt-4"><strong>Q: 배송 조회는 어떻게 하나요?</strong><br>A: 주문 내역에서 송장번호를 확인하신 후, 해당 택배사 웹사이트에서
-                            조회하실 수 있습니다.
-                        </p>
+                </div>
+                <div class="tab-pane fade overflow-auto" style="max-height: 300px;" id="return" role="tabpanel">
+                    <h2 class="mt-3">반품/교환</h2>
+                    <p>구매하신 상품의 반품/교환은 상품 수령 후 7일 이내에 가능합니다. 단, 제품의 하자나 오배송의 경우는 30일 이내에 가능합니다.</p>
+                    <h3>배송 관련 FAQ</h3>
+                    <p><strong>Q: 배송은 얼마나 걸리나요?</strong><br>A: 일반적으로 결제 완료 후 1-3일 내에 배송이 시작되며, 지역에 따라 1-2일 정도 소요됩니다.
+                    </p>
+                    <p><strong>Q: 배송 조회는 어떻게 하나요?</strong><br>A: 주문 내역에서 송장번호를 확인하신 후, 해당 택배사 웹사이트에서 조회하실 수 있습니다.
+                    </p>
 
-                    </div>
                 </div>
             </div>
         </div>
     </div>
-    <th:block th:if="${userData}">
-        <div th:replace="~{fragments/paymentModal :: paymentModal}"></div>
-    </th:block>
-    <footer th:replace="~{fragments/footer :: footer}"></footer>
-    <div th:replace="~{fragments/script :: script-body}"></div> <!-- 하단 JS -->
+</div>
+<th:block th:if="${userData}">
+    <div th:replace="~{fragments/paymentModal :: paymentModal}"></div>
+</th:block>
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<div th:replace="~{fragments/script :: script-body}"></div> <!-- 하단 JS -->
 </body>
-
 </html>
