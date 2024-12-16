@@ -97,9 +97,9 @@
 
 | 다이어그램 유형       | 이미지                                                         |
 |-----------------------|----------------------------------------------------------------|
-| 개발자 아키텍처       | ![아키텍처 다이어그램](./read.me.image/00architecturediagram.png) |
-| 유저 흐름도           | ![유저 흐름도](./read.me.image/01architecturediagram.png)      |
-| 관리자 흐름도         | ![관리자 흐름도](./read.me.image/02architecturediagram.png)    |
+| 시스템 아키텍쳐 다이어그램       | ![아키텍처 다이어그램](./read.me.image/00architecturediagram.png) |
+| 프로세스 플로우 다이어그램           | ![유저 흐름도](./read.me.image/01architecturediagram.png)      |
+| 관리자 프로세스 다이어그램         | ![관리자 흐름도](./read.me.image/02architecturediagram.png)    |
 
 ---
 
