@@ -1405,6 +1405,7 @@ $(document).ready(function () {
         const myInfo = $(this).closest('.myInfo');
         const tel = myInfo.find('#tel').val();
         const birthday = myInfo.find('#birthdate').val();
+        const formattedTimestamp = `${birthday} 00:00:00`;
         const addr = myInfo.find('#addr').val();
         const addrextra = myInfo.find('#addrextra').val();
         if (tel.trim() === '' || addr.trim() === '' || addrextra === '' || birthday === '') {
@@ -1419,7 +1420,7 @@ $(document).ready(function () {
             data: {
                 userId: [userId],
                 tel: [tel],
-                birthday: [birthday],
+                birthday: formattedTimestamp,
                 addr: [addr],
                 addrextra: [addrextra],
             },
@@ -1444,7 +1445,8 @@ $(document).ready(function () {
         $.ajax({
             type: 'POST',
             url: '/user/delete',
-            data: { userId: [userId] },
+            traditional: true,
+            data: { userIdList: [userId] },
             success: function (response) {
                 if (response.success) {
                     alert("회원탈퇴 되었습니다. 로그인창으로 이동합니다.")

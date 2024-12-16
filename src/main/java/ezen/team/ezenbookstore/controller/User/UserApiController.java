@@ -32,9 +32,23 @@ public class UserApiController {
 
     @GetMapping("/loginSuccess")
     public String getLoginInfo(@AuthenticationPrincipal CustomOAuth2User user) {
-        User findUser = userFacadeService.processOAuthLogin(user);
-        return (findUser.getGrade() == 99) ? "redirect:/admin" : "redirect:/";
+        // processOAuthLogin 메서드 호출
+        Map<String, Object> findUser = userFacadeService.processOAuthLogin(user);
+
+        // 첫 로그인인 경우, /user/info로 리다이렉트
+        if (Boolean.TRUE.equals(findUser.get("first"))) {
+            return "redirect:/user/info?first=true";
+        } else {
+            // 관리자인 경우 /admin으로 리다이렉트
+            Integer grade = (Integer) findUser.get("grade");
+            if (grade == 99) {
+                return "redirect:/admin";
+            }
+            // 일반 사용자는 홈으로 리다이렉트
+            return "redirect:/";
+        }
     }
+
 
     @PostMapping("/findId")
     public ResponseEntity<Map<String, String>> findIdUser(@ModelAttribute User user) {
@@ -59,7 +73,7 @@ public class UserApiController {
     }
 
     @PostMapping("/delete")
-    public ResponseEntity<Map<String, Boolean>> deleteUser(@RequestParam List<String> userIdList) {
+    public ResponseEntity<Map<String, Boolean>> deleteUser(@RequestParam(name = "userIdList") List<String> userIdList) {
         Map<String, Boolean> response = new HashMap<>();
         try {
             for (String userIdStr : userIdList) {

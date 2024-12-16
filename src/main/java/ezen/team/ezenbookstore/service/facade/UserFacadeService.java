@@ -3,6 +3,7 @@ package ezen.team.ezenbookstore.service.facade;
 import ezen.team.ezenbookstore.entity.*;
 import ezen.team.ezenbookstore.service.*;
 import jakarta.servlet.http.HttpSession;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
@@ -29,29 +30,38 @@ public class UserFacadeService implements UserFacadeServiceInterface {
     private final OrderItemService orderItemService;
 
     // 사용자 등록
+    @Transactional
     @Override
     public void signupUser(User user) {
         userService.create(user);
     }
 
     // OAuth 로그인 정보 처리
+    @Transactional
     @Override
-    public User processOAuthLogin(CustomOAuth2User oAuthUser) {
+    public Map<String, Object> processOAuthLogin(CustomOAuth2User oAuthUser) {
         String provider = oAuthUser.getProvider();
         String email = oAuthUser.getEmail();
         String name = oAuthUser.getName();
 
         User findUser = userService.findByEmail(email);
+        Map<String, Object> response = new HashMap<>();
+
         if (findUser == null) {
-            return userService.create(User.builder()
+            User newUser = userService.create(User.builder()
                     .provider(provider)
                     .email(email)
                     .name(name)
                     .grade(1)
                     .build());
+            response.put("first", true); // 새로운 유저 생성
+            response.put("grade", newUser.getGrade());
         } else {
-            return findUser;
+            response.put("first", false); // 기존 유저
+            response.put("grade", findUser.getGrade());
         }
+
+        return response;
     }
 
     // ID 찾기
@@ -94,6 +104,7 @@ public class UserFacadeService implements UserFacadeServiceInterface {
     }
 
     // 비밀번호 업데이트
+    @Transactional
     @Override
     public boolean updatePassword(User user) {
         try {
@@ -109,6 +120,7 @@ public class UserFacadeService implements UserFacadeServiceInterface {
     }
 
     // 사용자 삭제 및 관련 엔티티 삭제
+    @Transactional
     @Override
     public boolean deleteUser(Long userId) {
         try {
@@ -125,10 +137,12 @@ public class UserFacadeService implements UserFacadeServiceInterface {
     }
 
     // 사용자 업데이트
+    @Transactional
     @Override
     public boolean updateUser(User user, User updatedInfo) {
         try {
-            User updatedUser = User.builder()
+            User findUser = userService.findById(user.getId());
+            User updatedUser = findUser.toBuilder()
                     .tel(updatedInfo.getTel() != null ? updatedInfo.getTel() : user.getTel())
                     .addr(updatedInfo.getAddr() != null ? updatedInfo.getAddr() : user.getAddr())
                     .addrextra(updatedInfo.getAddrextra() != null ? updatedInfo.getAddrextra() : user.getAddrextra())
