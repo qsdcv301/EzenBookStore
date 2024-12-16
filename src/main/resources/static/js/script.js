@@ -1344,8 +1344,7 @@ $(document).ready(function () {
             url: '/user/newPw',
             data: { email: confirmCurrentPasswordEmail, password: newPassword },
             success: function (response) {
-                if (response.success === "true") {
-                    $('#pwResultSuccess').html('비밀번호 변경 되었습니다.').show();
+                if (response.success === "success") {
                     if (confirm("비밀번호가 변경 되었습니다. 보안을 위해 로그아웃합니다.")) {
                         location.replace("/logout");
                     }
