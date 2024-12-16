@@ -794,9 +794,9 @@ $(document).ready(function () {
                             <input type="hidden" class="modalCartId" value="${cartId}">
                             <p class="text-truncate">상품명: <span class="modalBookTitle">${title}</span></p>
                             <p class="text-truncate">수량: <span class="modalQuantity">${quantity}</span></p>
-                            <p class="text-truncate">가격: <span class="modalTotalPrice">${itemTotalPrice.toLocaleString()}</span>원</p>
-                            <p class="text-truncate">할인율: <span class="modalDiscount">${discount}%</span></p>
-                            <p class="text-truncate">할인가: <span class="modalDiscountedPrice">${itemDiscountedPrice.toLocaleString()}</span>원</p>
+                            <p class="text-truncate">가격: <span class="origin-price modalTotalPrice">${itemTotalPrice.toLocaleString()}</span>원</p>
+                            <p class="text-truncate">할인율: <span class="dc-per modalDiscount">${discount}%</span></p>
+                            <p class="text-truncate">할인가: <span class="dc-Price modalDiscountedPrice">${itemDiscountedPrice.toLocaleString()}</span>원</p>
                         </div>
                     </div>
                 </div>
