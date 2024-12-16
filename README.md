@@ -55,11 +55,11 @@
 
 | 이름       | 역할                        | GitHub                                  | Email                         |
 |------------|-----------------------------|-----------------------------------------|-------------------------------|
-| 김태현    | [역할 입력 필요]            | [GitHub](https://github.com/qsdcv301)  | <qsdcv301@naver.com>            |
-| 채윤성    | [역할 입력 필요]            | [GitHub](https://github.com/ChaiTope)  | <gksmsk5094@gmail.com>          |
-| 이정인    | [역할 입력 필요]            | [GitHub](https://github.com/GreatOvOb)| <dlwjddls888@gmail.com>         |
-| 정재환    | [역할 입력 필요]            | [GitHub](https://github.com/JaeHwan2569)| <jjjhhh2569@gmail.com>         |
-| 황예주    | [역할 입력 필요]            | [GitHub](https://github.com/HwangYeJoo)| <jooland05@gmail.com>           |
+| 팀장 김태현    | [백엔드 (사용자 페이지)]            | [GitHub](https://github.com/qsdcv301)  | <qsdcv301@naver.com>            |
+| 채윤성    | [백엔드 (관리자 페이지)]            | [GitHub](https://github.com/ChaiTope)  | <gksmsk5094@gmail.com>          |
+| 이정인    | [백엔드 (관리자 페이지)]            | [GitHub](https://github.com/GreatOvOb)| <dlwjddls888@gmail.com>         |
+| 정재환    | [프론트엔드 (사용자 페이지)]            | [GitHub](https://github.com/JaeHwan2569)| <jjjhhh2569@gmail.com>         |
+| 황예주    | [프론트엔드 (관리자 페이지)]            | [GitHub](https://github.com/HwangYeJoo)| <jooland05@gmail.com>           |
 
 ---
 
