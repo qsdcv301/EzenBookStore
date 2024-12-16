@@ -21,7 +21,7 @@
             <p><strong>출간일:</strong> <span th:text="${#dates.format(book.publishDate, 'yyyy-MM-dd')}"></span></p>
             <p>
                 <strong>가격:</strong>
-                <span class="text-decoration-line-through price" th:text="${book.price}">가격</span>
+                <del class="price" th:text="${book.price}">가격</del>
                 <span class="text-danger fw-bold discount" th:text="${book.discount}+'%'">할인 퍼센트</span>
                 <strong class="discountPrice" style="font-size: 1.4em;">할인된 금액</strong>
             </p>
