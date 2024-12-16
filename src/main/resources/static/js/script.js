@@ -1330,8 +1330,8 @@ $(document).ready(function () {
 
     $('#changePassword').on('click', function (event) {
         event.preventDefault();
-        const newPassword = $('#newPassword').val();
-        const confirmNewPassword = $('#confirmNewPassword').val();
+        const newPassword = $('#userNewPassword').val();
+        const confirmNewPassword = $('#userConfirmNewPassword').val();
         const confirmCurrentPasswordEmail = $('#confirmCurrentPasswordEmail').val();
 
         if (newPassword !== confirmNewPassword) {
@@ -1344,7 +1344,7 @@ $(document).ready(function () {
             url: '/user/newPw',
             data: { email: confirmCurrentPasswordEmail, password: newPassword },
             success: function (response) {
-                if (response.success === "success") {
+                if (response.success === true) {
                     if (confirm("비밀번호가 변경 되었습니다. 보안을 위해 로그아웃합니다.")) {
                         location.replace("/logout");
                     }
