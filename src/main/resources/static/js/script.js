@@ -284,7 +284,7 @@ $(document).ready(function () {
         } else {
             $(this).removeClass('is-invalid').addClass('is-valid');
             $feedbackMessage.text('사용 가능한 아이디입니다. 중복검사를 해주세요.');
-            $feedbackMessage.css("color", "#ffc107");
+            $feedbackMessage.css("color", "#dc3545");
         }
         $feedbackMessage.css("display", "block");
     });
