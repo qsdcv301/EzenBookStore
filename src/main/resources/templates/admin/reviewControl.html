@@ -131,7 +131,6 @@
 <!-- JavaScript -->
 <script>
     $(document).ready(function () {
-        // 검색 버튼 클릭 이벤트
         $('#btnSearch').click(function () {
             const searchType = $('#searchType').val();
             const keyword = $('#keyword').val().trim();
@@ -165,7 +164,12 @@
             $('#detailUser').text(button.data('user-name'));
             $('#detailRating').text(button.data('rating'));
             $('#detailTitle').text(button.data('title'));
-            $('#detailComment').text(button.data('comment'));
+            let comment = button.data('comment');
+            comment = comment
+                .replace(/\n/g, '<br>')       // 줄바꿈(\n)을 <br> 태그로 변환
+                .replace(/ /g, '&nbsp;');     // 모든 공백을 &nbsp;로 변환
+
+            $('#detailComment').html(comment);
             $('#detailCreateAt').text(formatDate(button.data('create-at')));
 
             const imagePath = button.data('image-path') || '/images/default.png';

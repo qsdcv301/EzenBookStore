@@ -472,7 +472,13 @@ $(document).ready(function () {
                     $("#memberEmailDetail").val(response.email);
                     $("#phoneNumberDetail").val(response.tel);
                     $("#inquiryTitleDetail").val(response.title);
-                    $("#inquiryContentDetail").text(response.question);
+
+                    // 문의 내용의 줄바꿈과 공백 처리
+                    let formattedQuestion = response.question
+                        .replace(/<br\s*\/?>/g, '\n')  // <br> 또는 <br/>를 줄바꿈(\n)으로 변환
+                        .replace(/&nbsp;/g, ' ');      // &nbsp;를 공백으로 변환
+
+                    $("#inquiryContentDetail").val(formattedQuestion);
                     // 이미지 경로 설정
                     if (response.imagePath) {
                         // 이미지가 존재할 때: src를 설정하고, 요소를 보여줍니다.
@@ -486,8 +492,11 @@ $(document).ready(function () {
 
                     // 답변 여부에 따라 표시
                     if (response.answer && response.answer !== "") {
+                        let formattedAnswer = response.answer
+                            .replace(/\n/g, '<br>')     // 줄바꿈을 <br>로 변환
+                            .replace(/ /g, '&nbsp;');   // 공백을 &nbsp;로 변환
                         $("#adminReplyArea").show();
-                        $("#adminReplyContent").text(response.answer);
+                        $("#adminReplyContent").html(formattedAnswer);
                         $("#adminReplyAreaWaiting").hide();
                     } else {
                         $("#adminReplyArea").hide();
