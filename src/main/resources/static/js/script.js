@@ -1032,9 +1032,9 @@ $(document).ready(function () {
 
         // 방향 설정
         let direction;
-        if (selectedDirection === "low" || selectedDirection === "new") {
+        if (selectedDirection === "low") {
             direction = "asc";
-        } else if (selectedDirection === "high") {
+        } else if (selectedDirection === "high" || selectedDirection === "new") {
             direction = "desc";
         }
 
