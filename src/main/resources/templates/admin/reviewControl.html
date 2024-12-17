@@ -71,7 +71,9 @@
                         <td th:text="${review.user.name}"></td>
                         <td th:text="${review.rating}"></td>
                         <td th:text="${review.title}"></td>
-                        <td th:utext="${review.comment}"></td>
+                        <td>
+                            <div class="content-cell" th:utext="${review.comment}"></div>
+                        </td>
                         <td>
                             <button type="button" class="btn btn-info btn-sm view-btn"
                                     data-toggle="modal" data-target="#reviewDetailModal"

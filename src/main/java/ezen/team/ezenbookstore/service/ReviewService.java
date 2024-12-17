@@ -102,7 +102,7 @@ public class ReviewService implements ReviewServiceInterface{
             if (file != null && !file.isEmpty()) {
                 fileUploadService.uploadFile(file, createReview.getId().toString(), "review");
             }
-            byte status = 3;
+            byte status = 7;
             OrderItem newOrderItem = OrderItem.builder()
                     .id(orderItemId)
                     .book(orderItem.getBook())
