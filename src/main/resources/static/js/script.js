@@ -60,6 +60,14 @@ $(document).ready(function () {
         $('.loginValidation').submit();
     });
 
+    // 엔터 키 입력 시 로그인 버튼 클릭
+    $('#loginEmail, #loginPassword').on('keydown', function (e) {
+        if (e.keyCode === 13) { // Enter 키 감지
+            e.preventDefault(); // 기본 동작 막기
+            $('.localLoginBtn').click(); // 로그인 버튼 클릭 이벤트 호출
+        }
+    });
+
     //header
 
     // 서브메뉴 호버 효과
