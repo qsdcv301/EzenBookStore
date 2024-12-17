@@ -472,7 +472,13 @@ $(document).ready(function () {
                     $("#memberEmailDetail").val(response.email);
                     $("#phoneNumberDetail").val(response.tel);
                     $("#inquiryTitleDetail").val(response.title);
-                    $("#inquiryContentDetail").text(response.question);
+
+                    // 문의 내용의 줄바꿈과 공백 처리
+                    let formattedQuestion = response.question
+                        .replace(/<br\s*\/?>/g, '\n')  // <br> 또는 <br/>를 줄바꿈(\n)으로 변환
+                        .replace(/&nbsp;/g, ' ');      // &nbsp;를 공백으로 변환
+
+                    $("#inquiryContentDetail").val(formattedQuestion);
                     // 이미지 경로 설정
                     if (response.imagePath) {
                         // 이미지가 존재할 때: src를 설정하고, 요소를 보여줍니다.
@@ -486,8 +492,11 @@ $(document).ready(function () {
 
                     // 답변 여부에 따라 표시
                     if (response.answer && response.answer !== "") {
+                        let formattedAnswer = response.answer
+                            .replace(/\n/g, '<br>')     // 줄바꿈을 <br>로 변환
+                            .replace(/ /g, '&nbsp;');   // 공백을 &nbsp;로 변환
                         $("#adminReplyArea").show();
-                        $("#adminReplyContent").text(response.answer);
+                        $("#adminReplyContent").html(formattedAnswer);
                         $("#adminReplyAreaWaiting").hide();
                     } else {
                         $("#adminReplyArea").hide();
@@ -794,17 +803,17 @@ $(document).ready(function () {
             const modalItem = `
             <div class="card col paymentItems">
                 <div class="row g-0">
-                    <div class="col-md-5 pt-3 d-flex align-items-center justify-content-center">
-                        <img src="${bookImage}" alt="${bookImageAlt}" style="width: 100px;height: 150px;object-fit: cover">
+                    <div class="col-md-5 d-flex align-items-center justify-content-center">
+                        <img src="${bookImage}" alt="${bookImageAlt}" class="rounded rounded-2" style="width: 100px;height: 150px;object-fit: cover">
                     </div>
                     <div class="col-md-7">
                         <div class="card-body pl-0">
                             <input type="hidden" class="modalCartId" value="${cartId}">
-                            <p class="text-truncate">상품명: <span class="modalBookTitle">${title}</span></p>
-                            <p class="text-truncate">수량: <span class="modalQuantity">${quantity}</span></p>
-                            <p class="text-truncate">가격: <del class="origin-price modalTotalPrice">${itemTotalPrice.toLocaleString()}</del>원</p>
-                            <p class="text-truncate">할인율: <span class="text-danger dc-per modalDiscount">${discount}%</span></p>
-                            <p class="text-truncate">할인가: <span class="dc-Price modalDiscountedPrice">${itemDiscountedPrice.toLocaleString()}</span>원</p>
+                            <p class="text-truncate">상품명: <strong class="modalBookTitle">${title}</strong></p>
+                            <p class="text-truncate mb-1">수량: <span class="modalQuantity">${quantity}</span></p>
+                            <p class="text-truncate mb-1">가격: <del class="origin-price modalTotalPrice">${itemTotalPrice.toLocaleString()}</del>원</p>
+                            <p class="text-truncate mb-1">할인율: <span class="text-danger dc-per modalDiscount">${discount}%</span></p>
+                            <p class="text-truncate mb-1">할인가: <span class="dc-Price modalDiscountedPrice">${itemDiscountedPrice.toLocaleString()}</span>원</p>
                         </div>
                     </div>
                 </div>
@@ -1040,9 +1049,9 @@ $(document).ready(function () {
 
         // 방향 설정
         let direction;
-        if (selectedDirection === "low" || selectedDirection === "new") {
+        if (selectedDirection === "low") {
             direction = "asc";
-        } else if (selectedDirection === "high") {
+        } else if (selectedDirection === "high" || selectedDirection === "new") {
             direction = "desc";
         }
 

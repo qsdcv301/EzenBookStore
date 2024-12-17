@@ -2,34 +2,36 @@
     <!-- 상단 바 -->
     <div class="top-bar d-flex justify-content-end">
         <div class="container">
-        <!-- 로그인 전 -->
-        <div class="d-flex justify-content-end">
-            <span th:unless="${userData}">
-                  <a href="/login" class="text-white mx-2">로그인</a>
-                  <a href="/signup" class="text-white mx-2">회원가입</a>
-            </span>
-            <a th:if="${userData}" href="/logout" class="text-white mr-2">로그아웃</a>
-            <a href="/customerService" class="text-white ml-1">고객센터</a>
+            <!-- 로그인 전 -->
+            <div class="d-flex justify-content-end">
+                <span th:unless="${userData}">
+                    <a href="/login" class="text-white mx-2">로그인</a>
+                    <a href="/signup" class="text-white mx-2">회원가입</a>
+                </span>
+                <a th:if="${userData}" href="/logout" class="text-white mr-2">로그아웃</a>
+                <a href="/customerService" class="text-white ml-1">고객센터</a>
+            </div>
         </div>
-    </div>
     </div>
     <!-- 헤더 -->
     <div class="header">
         <div class="d-flex align-items-center justify-content-center pt-3"
-             style="color: #007bff; font-size: 14px; font-weight: 700;">
+            style="color: #007bff; font-size: 14px; font-weight: 700;">
             <p th:unless="${userData}"></p>
-            <span th:if="${userData}"><span th:text="${user.name}"></span>님, 환영합니다. | 등급: <span th:switch="${user.grade}">
-                <span th:case="1">일반 회원</span>
-                <span th:case="2">실버 회원</span>
-                <span th:case="3">골드 회원</span>
-                <span th:case="4">Vip 회원</span>
-                <span th:case="99">관리자</span>
-            </span> | 보유적립금: <span th:text="${#numbers.formatInteger(user.point, 0, 'COMMA')}"> Point</span>
+            <span th:if="${userData}"><span th:text="${user.name}"></span>님, 환영합니다. | 등급: <span
+                    th:switch="${user.grade}">
+                    <span th:case="1">일반 회원</span>
+                    <span th:case="2">실버 회원</span>
+                    <span th:case="3">골드 회원</span>
+                    <span th:case="4">Vip 회원</span>
+                    <span th:case="99">관리자</span>
+                </span> | 보유적립금: <span th:text="${#numbers.formatInteger(user.point, 0, 'COMMA')}"> Point</span>
         </div>
 
         <div class="container d-flex flex-wrap align-items-center justify-content-between pt-2 pb-4">
             <!-- Logo -->
-            <a href="/" class="navbar-brand mb-2 mb-lg-0">EzenBookStore</a>
+                
+                <a href="/" class="navbar-brand mb-2 mb-lg-0"><img src="/image/EZBookLogo.png" style="max-width: 60px; height: auto;" alt="">EzenBookStore</a>
 
             <!-- Search Bar -->
             <div class="search-bar mx-3 flex-grow-1">
@@ -48,14 +50,14 @@
             <div th:if="${userData}" class="user-menu d-flex align-items-center">
                 <a href="/cart" class="btn btn-outline-primary">
                     <i class="fas fa-shopping-cart mr-1"></i><span class="badge badge-pill badge-primary"
-                                                                   th:text="${cartSize}"></span>
+                        th:text="${cartSize}"></span>
                 </a>
                 <a href="/user/info" class="btn btn-outline-primary"><i class="fas fa-user"></i></a>
             </div>
             <div th:unless="${userData}" class="user-menu d-flex align-items-center">
                 <a href="/cart" class="btn btn-outline-primary loginCheck">
                     <i class="fas fa-shopping-cart mr-1"></i><span class="badge badge-pill badge-primary"
-                                                                   th:text="${cartSize}"></span>
+                        th:text="${cartSize}"></span>
                 </a>
                 <a href="/user/info" class="btn btn-outline-primary loginCheck"><i class="fas fa-user"></i></a>
             </div>
@@ -65,21 +67,22 @@
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
             <div class="container">
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
-                        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
                     <ul class="navbar-nav mb-2 mb-lg-0">
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="categoryDropdown" role="button"
-                               data-toggle="dropdown" aria-expanded="false">
+                                data-toggle="dropdown" aria-expanded="false">
                                 <i class="bi bi-list"></i> 카테고리
                             </a>
                             <div class="dropdown-menu" aria-labelledby="categoryDropdown">
                                 <div class="submenu-container">
                                     <!-- 국내도서 카테고리 메뉴 -->
                                     <div class="category-item" data-submenu="domestic">
-                                        <a th:href="@{/book(ifkr='0', category='', subcategory='')}" class="dropdown-item d-flex justify-content-between align-items-center">
+                                        <a th:href="@{/book(ifkr='0', category='', subcategory='')}"
+                                            class="dropdown-item d-flex justify-content-between align-items-center">
                                             국내도서
                                             <i class="bi bi-chevron-right"></i>
                                         </a>
@@ -87,8 +90,8 @@
                                             <div class="row">
                                                 <div class="col-3" th:each="category : ${categoryList}">
                                                     <a class="dropdown-item"
-                                                       th:href="@{/book(page=0, sort=${sort}, direction=${direction}, ifkr='0', category=${category.name}, subcategory='')}"
-                                                       th:text="${category.name}"></a>
+                                                        th:href="@{/book(page=0, sort=${sort}, direction=${direction}, ifkr='0', category=${category.name}, subcategory='')}"
+                                                        th:text="${category.name}"></a>
                                                 </div>
                                             </div>
                                         </div>
@@ -96,7 +99,8 @@
 
                                     <!-- 해외도서 카테고리 메뉴 -->
                                     <div class="category-item" data-submenu="foreign">
-                                        <a th:href="@{/book(ifkr='1', category='', subcategory='')}" class="dropdown-item d-flex justify-content-between align-items-center">
+                                        <a th:href="@{/book(ifkr='1', category='', subcategory='')}"
+                                            class="dropdown-item d-flex justify-content-between align-items-center">
                                             해외도서
                                             <i class="bi bi-chevron-right"></i>
                                         </a>
@@ -104,8 +108,8 @@
                                             <div class="row">
                                                 <div class="col-3" th:each="category : ${categoryList}">
                                                     <a class="dropdown-item"
-                                                       th:href="@{/book(page=0, sort=${sort}, direction=${direction}, ifkr='1', category=${category.name}, subcategory='')}"
-                                                       th:text="${category.name}"></a>
+                                                        th:href="@{/book(page=0, sort=${sort}, direction=${direction}, ifkr='1', category=${category.name}, subcategory='')}"
+                                                        th:text="${category.name}"></a>
                                                 </div>
                                             </div>
                                         </div>
@@ -114,7 +118,7 @@
                             </div>
                         </li>
                         <li class="nav-item"><a class="nav-link" href="/book?sort=count&direction=desc">베스트셀러</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/book?sort=publishDate&direction=asc">신상품</a>
+                        <li class="nav-item"><a class="nav-link" href="/book?sort=publishDate&direction=desc">신상품</a>
                         </li>
                         <li class="nav-item"><a class="nav-link" href="/book?ifkr=0">국내도서</a></li>
                         <li class="nav-item"><a class="nav-link" href="/book?ifkr=1">해외도서</a></li>

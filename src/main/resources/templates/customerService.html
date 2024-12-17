@@ -25,7 +25,7 @@
     <div class="tab-content mt-3">
         <div class="tab-pane fade" id="notice" role="tabpanel"
              th:classappend="${param.qnaPage == null} ? 'show active' : ''">
-            <h3>공지사항</h3>
+            <h3 class="mt-5">공지사항</h3>
             <table class="table table-striped">
                 <thead>
                 <tr>
@@ -55,17 +55,7 @@
                             <a class="page-link"
                                th:href="@{/customerService(noticePage=0)}"
                                aria-label="First">
-                                << 처음
-                            </a>
-                        </li>
-
-                        <!-- 이전 페이지 버튼 -->
-                        <li class="page-item"
-                            th:classappend="${noticePage.hasPrevious} ? '' : 'disabled'">
-                            <a class="page-link"
-                               th:href="@{/customerService(noticePage=${noticePage.number - 1})}"
-                               aria-label="Previous">
-                                이전
+                               <i class="bi bi-chevron-double-left"></i>
                             </a>
                         </li>
 
@@ -81,21 +71,12 @@
                                th:text="${i + 1}"></a>
                         </li>
 
-                        <!-- 다음 페이지 버튼 -->
-                        <li class="page-item" th:classappend="${noticePage.hasNext} ? '' : 'disabled'">
-                            <a class="page-link"
-                               th:href="@{/customerService(noticePage=${noticePage.number + 1})}"
-                               aria-label="Next">
-                                다음
-                            </a>
-                        </li>
-
                         <!-- 맨 뒤 페이지 버튼 -->
                         <li class="page-item" th:classappend="${noticePage.last} ? 'disabled' : ''">
                             <a class="page-link"
                                th:href="@{/customerService(noticePage=${noticePage.totalPages - 1})}"
                                aria-label="Last">
-                                끝 >>
+                               <i class="bi bi-chevron-double-right"></i>
                             </a>
                         </li>
                     </ul>

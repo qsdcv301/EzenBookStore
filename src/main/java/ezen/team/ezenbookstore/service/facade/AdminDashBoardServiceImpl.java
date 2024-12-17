@@ -6,9 +6,6 @@ import ezen.team.ezenbookstore.util.FormatUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,30 +32,10 @@ public class AdminDashBoardServiceImpl implements AdminDashBoardService {
         Long orders2CountValue = ordersService.countByStatus2();
         Long orders3CountValue = ordersService.countByStatus3();
         Long payment2CountValue = paymentService.countByStatus2();
-
-        // 오늘 자정부터 현재까지의 총 amount와 개수 가져오기
-        Object[] totalAmountAndCountSinceMidnight = paymentService.findTotalAmountAndCountSinceMidnight(LocalDateTime.of(LocalDate.now(), LocalTime.MIDNIGHT));
-        double totalAmountSinceMidnightValue = 0.0;
-        long countSinceMidnightValue = 0L;
-
-        if (totalAmountAndCountSinceMidnight.length > 0 && totalAmountAndCountSinceMidnight[0] instanceof Number) {
-            totalAmountSinceMidnightValue = ((Number) totalAmountAndCountSinceMidnight[0]).doubleValue();
-        }
-        if (totalAmountAndCountSinceMidnight.length > 1 && totalAmountAndCountSinceMidnight[1] instanceof Number) {
-            countSinceMidnightValue = ((Number) totalAmountAndCountSinceMidnight[1]).longValue();
-        }
-
-        // 이번 달의 시작부터 현재까지의 총 amount와 개수 가져오기
-        Object[] totalAmountAndCountSinceStartOfMonth = paymentService.findTotalAmountAndCountSinceStartOfMonth();
-        double totalAmountSinceStartOfMonthValue = 0.0;
-        long countSinceStartOfMonthValue = 0L;
-
-        if (totalAmountAndCountSinceStartOfMonth.length > 0 && totalAmountAndCountSinceStartOfMonth[0] instanceof Number) {
-            totalAmountSinceStartOfMonthValue = ((Number) totalAmountAndCountSinceStartOfMonth[0]).doubleValue();
-        }
-        if (totalAmountAndCountSinceStartOfMonth.length > 1 && totalAmountAndCountSinceStartOfMonth[1] instanceof Number) {
-            countSinceStartOfMonthValue = ((Number) totalAmountAndCountSinceStartOfMonth[1]).longValue();
-        }
+        Long findTotalAmountSinceMidnight = paymentService.findTotalAmountSinceMidnight();
+        Long findTotalCountSinceMidnight = paymentService.findTotalCountSinceMidnight();
+        Long findTotalAmountSinceStartOfMonth = paymentService.findTotalAmountSinceStartOfMonth();
+        Long findTotalCountSinceStartOfMonth = paymentService.findTotalCountSinceStartOfMonth();
 
         List<Long> monthlyAmounts = paymentService.findMonthlyAmountsUpToCurrentMonth();
 
@@ -71,13 +48,11 @@ public class AdminDashBoardServiceImpl implements AdminDashBoardService {
 
         String qnACount = qnACountValue != null ? FormatUtils.formatKorea(qnACountValue) : "0";
 
-        Long longTotalAmountSinceMidnight = totalAmountAndCountSinceMidnight[0] != null ? (long) Math.floor(totalAmountSinceMidnightValue) : 0L;
-        String totalAmountSinceMidnight = FormatUtils.formatCurrency(longTotalAmountSinceMidnight);
-        String totalCountSinceMidnight = FormatUtils.formatKorea(countSinceMidnightValue);
+        String totalAmountSinceMidnight = FormatUtils.formatCurrency(findTotalAmountSinceMidnight);
+        String totalCountSinceMidnight = FormatUtils.formatKorea(findTotalCountSinceMidnight);
 
-        Long longTotalAmountSinceStartOfMonth = totalAmountAndCountSinceStartOfMonth[0] != null ? (long) Math.floor(totalAmountSinceStartOfMonthValue) : 0L;
-        String totalAmountSinceStartOfMonth = FormatUtils.formatCurrency(longTotalAmountSinceStartOfMonth);
-        String totalCountSinceStartOfMonth = FormatUtils.formatKorea(countSinceStartOfMonthValue);
+        String totalAmountSinceStartOfMonth = FormatUtils.formatCurrency(findTotalAmountSinceStartOfMonth);
+        String totalCountSinceStartOfMonth = FormatUtils.formatKorea(findTotalCountSinceStartOfMonth);
 
         String delivery1Count = FormatUtils.formatKorea(delivery1CountValue);
         String delivery2Count = FormatUtils.formatKorea(delivery2CountValue);
@@ -90,7 +65,7 @@ public class AdminDashBoardServiceImpl implements AdminDashBoardService {
         List<Long> findMonthlyAmountsUpToCurrentMonth = monthlyAmounts != null ? monthlyAmounts : new ArrayList<>();
 
         // DTO 생성 및 반환
-        return AdminDashBoardDto.builder()
+        AdminDashBoardDto adminDashBoardDto = AdminDashBoardDto.builder()
                 .ordersCount(ordersCount)
                 .userCount(userCount)
                 .paymentTotalAmount(paymentTotalAmount)
@@ -108,6 +83,8 @@ public class AdminDashBoardServiceImpl implements AdminDashBoardService {
                 .payment2Count(payment2Count)
                 .findMonthlyAmountsUpToCurrentMonth(findMonthlyAmountsUpToCurrentMonth)
                 .build();
+        System.out.println(adminDashBoardDto);
+        return adminDashBoardDto;
     }
 
 }

@@ -62,17 +62,7 @@
               <a class="page-link"
                  th:href="${mypage != null} ? @{/user/info(qnaPage=0)} : @{/customerService(qnaPage=0)}"
                  aria-label="First">
-                << 처음
-              </a>
-            </li>
-
-            <!-- 이전 페이지 버튼 -->
-            <li class="page-item"
-                th:classappend="${qnaPage.hasPrevious} ? '' : 'disabled'">
-              <a class="page-link"
-                 th:href="${mypage != null} ? @{/user/info(qnaPage=${qnaPage.number - 1})} : @{/customerService(qnaPage=${qnaPage.number - 1})}"
-                 aria-label="Previous">
-                이전
+                 <i class="bi bi-chevron-double-left"></i>
               </a>
             </li>
 
@@ -88,21 +78,12 @@
                  th:text="${i + 1}"></a>
             </li>
 
-            <!-- 다음 페이지 버튼 -->
-            <li class="page-item" th:classappend="${qnaPage.hasNext} ? '' : 'disabled'">
-              <a class="page-link"
-                 th:href="${mypage != null} ? @{/user/info(qnaPage=${qnaPage.number + 1})} : @{/customerService(qnaPage=${qnaPage.number + 1})}"
-                 aria-label="Next">
-                다음
-              </a>
-            </li>
-
             <!-- 맨 뒤 페이지 버튼 -->
             <li class="page-item" th:classappend="${qnaPage.last} ? 'disabled' : ''">
               <a class="page-link"
                  th:href="${mypage != null} ? @{/user/info(qnaPage=${qnaPage.totalPages - 1})} : @{/customerService(qnaPage=${qnaPage.totalPages - 1})}"
                  aria-label="Last">
-                끝 >>
+                 <i class="bi bi-chevron-double-right"></i>
               </a>
             </li>
           </ul>

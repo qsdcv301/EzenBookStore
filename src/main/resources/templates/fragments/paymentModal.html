@@ -18,15 +18,15 @@
                     </div>
                     <div class="col-6 paymentInfo">
                         <h5>배송지 정보</h5>
-                        <div class="mb-3">
+                        <div class="mb-3 form-group">
                             <label class="form-label">아이디</label>
                             <input th:value="${user.email}" type="text" class="form-control payment-email" required readonly>
                         </div>
-                        <div class="mb-3">
+                        <div class="mb-3 form-group">
                             <label class="form-label">이름</label>
                             <input th:value="${user.name}" type="text" class="form-control payment-name" required>
                         </div>
-                        <div class="mb-3">
+                        <div class="mb-3 form-group">
                             <label class="form-label">연락처</label>
                             <input th:value="${user.tel}" type="text" id="userTel" class="form-control payment-tel" placeholder="하이폰(-)없이 입력해주세요." required>
                         </div>
