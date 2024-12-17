@@ -136,6 +136,7 @@
                                 <h5 class="card-title" th:text="${adminDashBoard.ordersCount} + '건'"></h5>
                                 <p class="card-text">전체 기간 동안의 주문 수</p>
                             </div>
+                            <a href="/admin/order" class="stretched-link"></a>
                         </div>
                     </div>
                     <div class="col-md-3">
@@ -145,6 +146,7 @@
                                 <h5 class="card-title" th:text="${adminDashBoard.userCount} + '명'"></h5>
                                 <p class="card-text">사이트에 가입된 회원 수</p>
                             </div>
+                            <a href="/admin/user" class="stretched-link"></a>
                         </div>
                     </div>
                     <div class="col-md-3">
@@ -154,6 +156,7 @@
                                 <h5 class="card-title" th:text="${adminDashBoard.paymentTotalAmount}"></h5>
                                 <p class="card-text">총 매출액</p>
                             </div>
+                            <a href="/admin/order" class="stretched-link"></a>
                         </div>
                     </div>
                     <div class="col-md-3">
@@ -163,6 +166,7 @@
                                 <h5 class="card-title" th:text="${adminDashBoard.qnACount} + '건'"></h5>
                                 <p class="card-text">문의가 들어온 수</p>
                             </div>
+                            <a href="/admin/qna" class="stretched-link"></a>
                         </div>
                     </div>
                 </div>
@@ -177,37 +181,37 @@
                                     <div class="col-md-12 pl-3 pr-3 d-flex justify-content-around">
 
                                         <div class="status-box" style="color: #007bff; background-color: #D7ECFB;">
-                                            <a href="#pending-payments">배송 준비중</a>
+                                            <a href="/admin/order" class="stretched-link">배송 준비중</a>
                                             <p th:text="${adminDashBoard.delivery1Count} + '건'"></p>
                                         </div>
 
                                         <div class="status-box" style="color: #007bff; background-color: #D7ECFB;">
-                                            <a href="#pending-payments">배송중</a>
+                                            <a href="/admin/order" class="stretched-link">배송중</a>
                                             <p th:text="${adminDashBoard.delivery2Count} + '건'"></p>
                                         </div>
 
                                         <div class="status-box" style="color: #007bff; background-color: #D7ECFB;">
-                                            <a href="#shipping">배송 완료</a>
+                                            <a href="/admin/order" class="stretched-link">배송 완료</a>
                                             <p th:text="${adminDashBoard.delivery3Count} + '건'"></p>
                                         </div>
 
                                         <div class="status-box" style="color: #007bff; background-color: #D7ECFB;">
-                                            <a href="#on-hold">보류건</a>
+                                            <a href="/admin/order" class="stretched-link">보류건</a>
                                             <p th:text="${adminDashBoard.delivery456Count} + '건'"></p>
                                         </div>
 
                                         <div class="status-box" style="color: #ff3265; background-color: #FFDCE5;">
-                                            <a href="#on-hold">취소 요청</a>
+                                            <a href="/admin/order" class="stretched-link">취소 요청</a>
                                             <p th:text="${adminDashBoard.orders2Count} + '건'"></p>
                                         </div>
 
                                         <div class="status-box" style="color: #ff3265; background-color: #FFDCE5;">
-                                            <a href="#on-hold">반품/교환 요청</a>
+                                            <a href="/admin/order" class="stretched-link">반품/교환 요청</a>
                                             <p th:text="${adminDashBoard.orders3Count} + '건'"></p>
                                         </div>
 
                                         <div class="status-box" style="color: #ff3265; background-color: #FFDCE5;">
-                                            <a href="#on-hold">환불건</a>
+                                            <a href="/admin/order" class="stretched-link">환불건</a>
                                             <p th:text="${adminDashBoard.payment2Count} + '건'"></p>
                                         </div>
                                     </div>
@@ -231,12 +235,14 @@
                                         <h5 class="font-weight-bold">TODAY</h5>
                                         <h4 th:text="${adminDashBoard.totalAmountSinceMidnight}"></h4>
                                         <p>주문: <span th:text="${adminDashBoard.totalCountSinceMidnight}"></span>건</p>
+                                        <a href="/admin/order" class="stretched-link"></a>
                                     </div>
                                     <div class="col-md-6">
                                         <h5 class="font-weight-bold">MONTH</h5>
                                         <h4 th:text="${adminDashBoard.totalAmountSinceStartOfMonth}"></h4>
                                         <p>주문: <span th:text="${adminDashBoard.totalCountSinceStartOfMonth}"></span>건
                                         </p>
+                                        <a href="/admin/order" class="stretched-link"></a>
                                     </div>
                                 </div>
                             </div>

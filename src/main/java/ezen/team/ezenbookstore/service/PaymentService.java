@@ -6,9 +6,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -146,16 +146,21 @@ public class PaymentService implements PaymentServiceInterface {
     }
 
     @Override
-    public Object[] findTotalAmountAndCountSinceMidnight(LocalDateTime startOfToday) {
-        // 직접 전달받은 startOfToday 값을 사용하도록 수정
-        return paymentRepository.findTotalAmountAndCountSinceMidnight(startOfToday);
+    public List<Long> findTotalAmountAndCountSinceMidnight() {
+        List<Long> object = paymentRepository.findTotalAmountAndCountSinceMidnight();
+        for(Object obj : object){
+            System.out.println(obj);
+        }
+        return paymentRepository.findTotalAmountAndCountSinceMidnight();
     }
 
     @Override
-    public Object[] findTotalAmountAndCountSinceStartOfMonth() {
-        // 이번 달의 시작 날짜를 구해서 전달하도록 수정
-        LocalDateTime startOfMonth = getStartOfMonth();
-        return paymentRepository.findTotalAmountAndCountSinceStartOfMonth(startOfMonth);
+    public List<Long> findTotalAmountAndCountSinceStartOfMonth() {
+        List<Long> object = paymentRepository.findTotalAmountAndCountSinceStartOfMonth();
+        for(Object obj : object){
+            System.out.println(obj);
+        }
+        return paymentRepository.findTotalAmountAndCountSinceStartOfMonth();
     }
 
     @Override
@@ -165,7 +170,6 @@ public class PaymentService implements PaymentServiceInterface {
         int currentMonth = today.getMonthValue();
 
         List<Object[]> result = paymentRepository.findMonthlyAmountsUpToCurrentMonth(currentYear, currentMonth);
-
         // 결과에서 amount 값만 추출하여 List<Long> 형태로 변환
         return result.stream()
                 .map(row -> (Long) row[1])

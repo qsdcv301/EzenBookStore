@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -16,12 +17,17 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
     Double findTotalAmount();
 
     // 오늘 자정부터 현재까지의 총 amount 합계와 개수
-    @Query("SELECT SUM(p.amount), COUNT(p) FROM Payment p WHERE p.paymentDate >= :startOfToday")
-    Object[] findTotalAmountAndCountSinceMidnight(LocalDateTime startOfToday);
+    @Query("SELECT SUM(p.amount), COUNT(p.id) FROM Payment p " +
+            "WHERE YEAR(p.paymentDate) = YEAR(CURRENT_DATE) " +
+            "AND MONTH(p.paymentDate) = MONTH(CURRENT_DATE) " +
+            "AND DAY(p.paymentDate) = DAY(CURRENT_DATE)")
+    List<Long> findTotalAmountAndCountSinceMidnight();
 
     // 이번 달의 시작부터 현재까지의 총 amount 합계와 개수
-    @Query("SELECT SUM(p.amount), COUNT(p) FROM Payment p WHERE p.paymentDate >= :startOfMonth")
-    Object[] findTotalAmountAndCountSinceStartOfMonth(LocalDateTime startOfMonth);
+    @Query("SELECT SUM(p.amount), COUNT(p.id) FROM Payment p " +
+            "WHERE YEAR(p.paymentDate) = YEAR(CURRENT_DATE) " +
+            "AND MONTH(p.paymentDate) = MONTH(CURRENT_DATE)")
+    List<Long> findTotalAmountAndCountSinceStartOfMonth();
 
     @Query("SELECT MONTH(p.paymentDate), SUM(p.amount) FROM Payment p " +
             "WHERE YEAR(p.paymentDate) = :year AND MONTH(p.paymentDate) <= :month " +
