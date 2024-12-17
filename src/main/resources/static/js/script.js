@@ -786,17 +786,17 @@ $(document).ready(function () {
             const modalItem = `
             <div class="card col paymentItems">
                 <div class="row g-0">
-                    <div class="col-md-5 pt-3 d-flex align-items-center justify-content-center">
-                        <img src="${bookImage}" alt="${bookImageAlt}" style="width: 100px;height: 150px;object-fit: cover">
+                    <div class="col-md-5 d-flex align-items-center justify-content-center">
+                        <img src="${bookImage}" alt="${bookImageAlt}" class="rounded rounded-2" style="width: 100px;height: 150px;object-fit: cover">
                     </div>
                     <div class="col-md-7">
                         <div class="card-body pl-0">
                             <input type="hidden" class="modalCartId" value="${cartId}">
-                            <p class="text-truncate">상품명: <span class="modalBookTitle">${title}</span></p>
-                            <p class="text-truncate">수량: <span class="modalQuantity">${quantity}</span></p>
-                            <p class="text-truncate">가격: <del class="origin-price modalTotalPrice">${itemTotalPrice.toLocaleString()}</del>원</p>
-                            <p class="text-truncate">할인율: <span class="text-danger dc-per modalDiscount">${discount}%</span></p>
-                            <p class="text-truncate">할인가: <span class="dc-Price modalDiscountedPrice">${itemDiscountedPrice.toLocaleString()}</span>원</p>
+                            <p class="text-truncate">상품명: <strong class="modalBookTitle">${title}</strong></p>
+                            <p class="text-truncate mb-1">수량: <span class="modalQuantity">${quantity}</span></p>
+                            <p class="text-truncate mb-1">가격: <del class="origin-price modalTotalPrice">${itemTotalPrice.toLocaleString()}</del>원</p>
+                            <p class="text-truncate mb-1">할인율: <span class="text-danger dc-per modalDiscount">${discount}%</span></p>
+                            <p class="text-truncate mb-1">할인가: <span class="dc-Price modalDiscountedPrice">${itemDiscountedPrice.toLocaleString()}</span>원</p>
                         </div>
                     </div>
                 </div>

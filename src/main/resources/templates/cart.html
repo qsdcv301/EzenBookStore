@@ -25,7 +25,7 @@
                                 <div class="col-md-1 text-right">
                                     <input class="form-check-input cart-checkbox" type="checkbox" checked>
                                 </div>
-                                <div class="col-md-2 pl-0">
+                                <div class="col-md-2 pl-0 d-flex justify-content-center">
                                     <img th:src="${imageList[index.index] != '' ? imageList[index.index] : 'https://via.placeholder.com/100'}"
                                          th:alt="${cart.book.id}+'번 책표지'" style="width: 100px;height: 150px;object-fit: cover" class="bookImage img-thumbnail">
                                     <a th:href="@{/book/detail(bookId=${cart.book.id})}" class="stretched-link text-decoration-none"></a>
@@ -34,11 +34,11 @@
                                     <input type="hidden" class="cartId" th:value="${cart.id}">
                                     <h5 class="card-title text-truncate">제목 : <span class="title" th:text="${cart.book.title}"></span></h5>
                                     <p class="card-text mb-0" th:text="'저자 : '+${cart.book.author}">저자 : </p>
-                                    <p class="card-text mb-0">가격 : <span class="price" th:text="${cart.book.price}"></span></p>
-                                    <p class="card-text mb-0">할인가 : <span class="text-danger fw-bold discountPrice"></span>
-                                    </p>
+                                    <p class="card-text mb-0">가격 : <del class="price" th:text="${cart.book.price}"></del></p>
                                     <p class="card-text mb-0">할인율 : <span class="text-danger fw-bold discount"
                                                                     th:text="${cart.book.discount}"></span>%
+                                    </p>
+                                    <p class="card-text mb-0">할인가 : <span class="text-danger fw-bold discountPrice"></span>
                                     </p>
                                 </div>
                                 <div class="col-md-5">

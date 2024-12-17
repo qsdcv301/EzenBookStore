@@ -163,17 +163,7 @@
                     <a class="page-link"
                        th:href="@{/user/info(orderPage=0,keywrod=${keyword},direction=${direction},deliveryStatus=${deliveryStatus},orderStatus=${orderStatus},dateRange=${dateRange},startDate=${startDate},endDate=${endDate})}"
                        aria-label="First">
-                        << 처음
-                    </a>
-                </li>
-
-                <!-- 이전 페이지 버튼 -->
-                <li class="page-item"
-                    th:classappend="${orderPage.hasPrevious} ? '' : 'disabled'">
-                    <a class="page-link"
-                       th:href="@{/user/info(orderPage=${orderPage.number -1},keywrod=${keyword},direction=${direction},deliveryStatus=${deliveryStatus},orderStatus=${orderStatus},dateRange=${dateRange},startDate=${startDate},endDate=${endDate})}"
-                       aria-label="Previous">
-                        이전
+                       <i class="bi bi-chevron-double-left"></i>
                     </a>
                 </li>
 
@@ -189,21 +179,12 @@
                        th:text="${i + 1}"></a>
                 </li>
 
-                <!-- 다음 페이지 버튼 -->
-                <li class="page-item" th:classappend="${orderPage.hasNext} ? '' : 'disabled'">
-                    <a class="page-link"
-                       th:href="@{/user/info(orderPage=${orderPage.number +1},keywrod=${keyword},direction=${direction},deliveryStatus=${deliveryStatus},orderStatus=${orderStatus},dateRange=${dateRange},startDate=${startDate},endDate=${endDate})}"
-                       aria-label="Next">
-                        다음
-                    </a>
-                </li>
-
                 <!-- 맨 뒤 페이지 버튼 -->
                 <li class="page-item" th:classappend="${orderPage.last} ? 'disabled' : ''">
                     <a class="page-link"
                        th:href="@{/user/info(orderPage=${orderPage.totalPages -1},keywrod=${keyword},direction=${direction},deliveryStatus=${deliveryStatus},orderStatus=${orderStatus},dateRange=${dateRange},startDate=${startDate},endDate=${endDate})}"
                        aria-label="Last">
-                        끝 >>
+                       <i class="bi bi-chevron-double-right"></i>
                     </a>
                 </li>
             </ul>
