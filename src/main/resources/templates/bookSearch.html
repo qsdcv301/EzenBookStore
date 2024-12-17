@@ -46,8 +46,8 @@
                                     </label>
                                 </div>
                             </div>
-                            <button type="button" class="btn btn-primary w-100 mb-3 research-btn">검색</button>
-                            <a href="/book/search" class="btn btn-success w-100 research-btn">검색 초기화</a>
+                            <button type="button" class="btn btn-primary w-100 mb-3 research-btn"><i class="fas fa-search mr-2"></i>검색</button>
+                            <a href="/book/search" class="btn btn-success w-100 research-btn"><i class="bi bi-arrow-clockwise mr-2"></i>검색 초기화</a>
                         </div>
                         <div class="mt-5">
                             <h2>국내</h2>
@@ -96,13 +96,13 @@
                                             <input class="form-check-input" type="checkbox" id="selectAll" style="transform: scale(1.5);">
                                             <label class="form-check-label" for="selectAll">전체 선택</label>
                                         </div>
-                                        <button th:if="${userData}" class="btn btn-primary ml-3 mt-3 cartAdd"
+                                        <button th:if="${userData}" class="btn btn-primary ml-3 mt-3 cartAdd" style="font-size: 1em;"
                                                 th:data-type="one"
-                                        >장바구니 담기
+                                        ><i class="bi bi-cart-plus mr-2"></i>장바구니 담기
                                         </button>
-                                        <button th:unless="${userData}" class="btn btn-primary ml-3 mt-3 loginCheck"
+                                        <button th:unless="${userData}" class="btn btn-primary ml-3 mt-3 loginCheck" style="font-size: 1em;"
                                                 th:data-type="one"
-                                        >장바구니 담기
+                                        ><i class="bi bi-cart-plus mr-2"></i>장바구니 담기
                                         </button>
                                     </div>
                                     <div class="d-flex justify-content-end mb-3">
@@ -188,26 +188,30 @@
                                                 <div
                                                         class="col-md-3 d-flex flex-column justify-content-center align-items-center">
                                                     <button th:if="${userData}"
-                                                            class="btn btn-primary btn-lg mb-2 w-75 cartAdd"
+                                                            class="btn btn-primary btn-lg mb-2 w-75 cartAdd" style="font-size: 1em;"
                                                             th:data-type="one"
-                                                            th:data-book-id="${book.id}">장바구니담기
+                                                            th:data-book-id="${book.id}">
+                                                            <i class="bi bi-cart-plus mr-2"></i>장바구니담기
                                                     </button>
                                                     <button th:if="${userData}"
-                                                            class="btn btn-outline-dark btn-lg w-75 paymentModalBtn"
+                                                            class="btn btn-outline-dark btn-lg w-75 paymentModalBtn"  style="font-size: 1em;"
                                                             th:data-type="one"
                                                             data-toggle="modal"
-                                                            data-target="#paymentModal">바로구매하기
+                                                            data-target="#paymentModal">
+                                                            <i class="bi bi-credit-card mr-1"></i> 바로구매하기
                                                     </button>
                                                     <button th:unless="${userData}"
-                                                            class="btn btn-primary btn-lg mb-2 w-75 loginCheck"
+                                                            class="btn btn-primary btn-lg mb-2 w-75 loginCheck"  style="font-size: 1em;"
                                                             th:data-type="one"
-                                                            th:data-book-id="${book.id}">장바구니담기
+                                                            th:data-book-id="${book.id}">
+                                                            <i class="bi bi-cart-plus mr-2"></i>장바구니담기
                                                     </button>
                                                     <button th:unless="${userData}"
-                                                            class="btn btn-outline-dark btn-lg w-75 loginCheck"
+                                                            class="btn btn-outline-dark btn-lg w-75 loginCheck"  style="font-size: 1em;"
                                                             th:data-type="one"
                                                             data-toggle="modal"
-                                                            data-target="#paymentModal">바로구매하기
+                                                            data-target="#paymentModal">
+                                                            <i class="bi bi-credit-card mr-1"></i> 바로구매하기
                                                     </button>
                                                 </div>
                                             </div>

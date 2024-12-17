@@ -34,7 +34,7 @@ header .top-bar a:hover {
 header .navbar-brand {
     font-size: 30px;
     font-weight: bold;
-    margin-right: -45px;
+    margin-right: -110px;
 }
 
 /* 검색바 스타일 */
@@ -140,7 +140,8 @@ header .category-item:hover {
     }
 
     header .search-bar {
-        max-width: 100%;
+        max-width: 60%;
+        margin: 10px auto;
     }
 
     header .user-menu a {
@@ -202,18 +203,6 @@ header .category-item:hover {
 @media screen and (max-width: 991px) {
     header .navbar-nav .nav-item.dropdown {
         display: none !important;
-    }
-}
-
-/* 가로 모드 (991px 이하) */
-@media screen and (max-width: 991px) and (orientation: landscape) {
-    header .search-bar {
-        max-width: 60%;
-        margin: 10px auto;
-    }
-
-    header .navbar-brand {
-        font-size: 20px;
     }
 }
 
