@@ -70,9 +70,11 @@
                         <td th:text="${review.book.title}"></td>
                         <td th:text="${review.user.name}"></td>
                         <td th:text="${review.rating}"></td>
-                        <td th:text="${review.title}"></td>
                         <td>
-                            <div class="content-cell" th:utext="${review.comment}"></div>
+                           <div class="content-cell-text" th:text="${review.title}"></div>
+                        </td>
+                        <td>
+                            <div class="content-cell-text" th:utext="${review.comment}"></div>
                         </td>
                         <td>
                             <button type="button" class="btn btn-info btn-sm view-btn"
@@ -131,7 +133,6 @@
 <!-- JavaScript -->
 <script>
     $(document).ready(function () {
-        // 검색 버튼 클릭 이벤트
         $('#btnSearch').click(function () {
             const searchType = $('#searchType').val();
             const keyword = $('#keyword').val().trim();
@@ -165,14 +166,27 @@
             $('#detailUser').text(button.data('user-name'));
             $('#detailRating').text(button.data('rating'));
             $('#detailTitle').text(button.data('title'));
-            $('#detailComment').text(button.data('comment'));
+            let comment = button.data('comment');
+            comment = comment
+                .replace(/\n/g, '<br>')       // 줄바꿈(\n)을 <br> 태그로 변환
+                .replace(/ /g, '&nbsp;');     // 모든 공백을 &nbsp;로 변환
+
+            $('#detailComment').html(comment);
             $('#detailCreateAt').text(formatDate(button.data('create-at')));
 
+            // 이미지 경로 설정
+            const imageElement = $('#detailImage');
+            const noImageText = '<p id="noImageText">이미지 없음</p>';
             const imagePath = button.data('image-path') || '/images/default.png';
-            if (imagePath === '/images/default.png' || imagePath === '') {
-                $('#detailImage').hide();
+
+            $('#noImageText').remove();
+            if (imagePath) {
+                // 이미지가 있으면 이미지 표시
+                imageElement.attr('src', imagePath).show();
             } else {
-                $('#detailImage').attr('src', imagePath).show();
+                // 이미지가 없으면 이미지 숨기고 "이미지 없음" 텍스트 추가
+                imageElement.hide();
+                imageElement.after(noImageText);
             }
         });
         // 날짜 포맷 함수

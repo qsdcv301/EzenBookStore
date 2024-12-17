@@ -157,6 +157,61 @@
 <div th:replace="~{fragments/script :: script-body}"></div>
 
 <script th:inline="javascript">
+    $(document).ready(function (){
+        /**
+         * JSON 객체나 문자열을 원래 텍스트로 변환하는 함수
+         * @param {any} data - 포맷된 JSON 객체나 문자열
+         * @returns {string} - 변환된 텍스트
+         */
+        function revertFormattedContent(data) {
+            let text;
+
+            if (typeof data === 'object' && data !== null) {
+                text = JSON.stringify(data);
+            } else if (typeof data === 'string') {
+                text = data;
+            } else {
+                console.warn(data);
+                return '';
+            }
+
+            // 문자열에서 포맷팅 처리
+            return text
+                .replace(/\r/g, '')                   // 캐리지 리턴(\r) 제거
+                .replace(/\n/g, '<br>')               // 줄바꿈(\n)을 <br> 태그로 변환
+                .replace(/&nbsp;/g, ' ');             // &nbsp;를 공백으로 변환
+        }
+
+
+        /**
+         * 요소의 텍스트 내용을 포맷팅하는 함수
+         * 1. 줄바꿈(\n)을 <br> 태그로 변환
+         * 2. 2개 이상의 연속된 공백을 &nbsp;로 변환
+         *
+         * @param {string} text - 포맷팅할 텍스트
+         * @returns {string} 포맷팅된 텍스트
+         */
+        function formatTextContent(text) {
+            return text
+                .replace(/\r/g, '')                  // 캐리지 리턴(\r) 제거
+                .replace(/<br\s*\/?>/g, '\n')        // <br> 또는 <br/>를 줄바꿈(\n)으로 변환
+                .replace(/&nbsp;/g, ' ');            // &nbsp;를 공백으로 변환
+        }
+        /**
+         * HTML 엔티티를 텍스트로 변환하는 함수
+         * @param {string} htmlText - HTML 형식의 텍스트
+         * @returns {string} - 변환된 텍스트
+         */
+        function htmlToPlainText(htmlText) {
+            if (!htmlText) return '';
+
+            return htmlText
+                .replace(/<br\s*\/?>/g, '\n')  // <br> 또는 <br/>를 줄바꿈(\n)으로 변환
+                .replace(/&nbsp;/g, ' ');      // &nbsp;를 공백으로 변환
+        }
+
+
+
     function restoreFilters() {
         const currentCategory = /*[[${currentCategory}]]*/ 'all';
         const currentStatus = /*[[${currentStatus}]]*/ 'all';
@@ -180,46 +235,46 @@
         window.location.href = `/admin/qna?page=${currentPage}&size=15&category=${categoryFilter}&status=${statusFilter}`;
     }
 
-    $(document).on('click', '.view-btn', function () {
-        const qnaId = $(this).data('qna-id');
-        $.ajax({
-            url: `/admin/qna/${qnaId}`,
-            type: 'GET',
-            success: function (response) {
-                $('#detailQnAId').text(qnaId);
-                $('#detailUserName').text(response.name);
-                $('#detailCategory').text(response.category);
-                const questionFormated = response.question
-                    .replace(/<br\s*\/?>/g, '\n')         // 줄바꿈을 br로
-                    .replace(/&nbsp;/g, ' ');             // &nbsp;를 공백으로
-                $('#detailTitle').text(response.title);
-                $('#detailQuestion').text(response.question);
-                const answerFormatted = response.answer
-                    .replace(/<br\s*\/?>/g, '\n')         // 줄바꿈을 br로
-                    .replace(/&nbsp;/g, ' ');             // &nbsp;를 공백으로
-                $('#editAnswer').val(answerFormatted || '');
-                // 이미지 경로 설정
-                if (response.imagePath) {
-                    $('#detailImg').attr('src', response.imagePath).show();
-                } else {
-                    $('#detailImg').hide();
-                }
+        $(document).on('click', '.view-btn', function () {
+            const qnaId = $(this).data('qna-id');
 
-                $('#qnaDetailModal').modal('show');
-            },
-            error: function () {
-                alert('QnA 상세 정보를 불러오는 데 실패했습니다.');
-            }
+            $.ajax({
+                url: `/admin/qna/${qnaId}`,
+                type: 'GET',
+                success: function (response) {
+                    console.log('Response:', response); // 서버에서 반환된 전체 응답 확인
+                    console.log('Question:', response.question); // 질문 내용 확인
+                    console.log('Answer:', response.answer); // 답변 내용 확인
+
+                    // 모달에 데이터 설정
+                    $('#detailQnAId').text(qnaId);
+                    $('#detailUserName').text(response.name);
+                    $('#detailCategory').text(response.category);
+                    $('#detailQuestion').html(response.question);
+                    $('#detailTitle').text(response.title);
+
+                    // HTML을 텍스트로 변환하여 textarea에 설정
+                    $('#editAnswer').val(htmlToPlainText(response.answer || ''));
+
+                    // 이미지 경로 설정
+                    if (response.imagePath) {
+                        $('#detailImg').attr('src', response.imagePath).show();
+                    } else {
+                        $('#detailImg').hide();
+                    }
+
+                    // 모달 표시
+                    $('#qnaDetailModal').modal('show');
+                },
+                error: function () {
+                    alert('QnA 상세 정보를 불러오는 데 실패했습니다.');
+                }
+            });
         });
-    });
 
     $('#saveAnswer').click(function () {
         const qnaId = $('#detailQnAId').text();
-        const answer = $('#editAnswer').val().replace(/\n/g, '<br>')                //* 줄바꿈처리*/
-            .replace(/ {2,}/g, function (match) {  //*공백처리*/
-                return match.replace(/ /g, '&nbsp;');
-            });
-
+        const answer = formatTextContent($('#editAnswer').val());             //* 줄바꿈처리*/
         const currentCategory = /*[[${currentCategory}]]*/ 'all';
         const currentStatus = /*[[${currentStatus}]]*/ 'all';
         const currentPage = /*[[${qnAPage.number}]]*/ 0;
@@ -312,6 +367,7 @@
     function parseLong(value) {
         return parseInt(value, 10);
     }
+    })
 </script>
 </body>
 </html>

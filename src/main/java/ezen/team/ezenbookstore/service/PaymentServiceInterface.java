@@ -3,7 +3,6 @@ package ezen.team.ezenbookstore.service;
 import ezen.team.ezenbookstore.entity.Payment;
 import ezen.team.ezenbookstore.entity.User;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 public interface PaymentServiceInterface {
@@ -25,9 +24,13 @@ public interface PaymentServiceInterface {
 
     Double findTotalAmount();
 
-    Object[] findTotalAmountAndCountSinceMidnight(LocalDateTime startOfToday);
+    Long findTotalAmountSinceMidnight();
 
-    Object[] findTotalAmountAndCountSinceStartOfMonth();
+    Long findTotalCountSinceMidnight();
+
+    Long findTotalAmountSinceStartOfMonth();
+
+    Long findTotalCountSinceStartOfMonth();
 
     List<Long> findMonthlyAmountsUpToCurrentMonth();
 
