@@ -263,7 +263,7 @@
         </main>
     </div>
 </div>
-<script>
+<script th:inline="javascript">
     // 현재 날짜를 가져와서 카드 헤더에 표시
     var today = new Date();
     var options = {year: 'numeric', month: 'long', day: 'numeric', weekday: 'long'};
@@ -272,27 +272,51 @@
 
     // 매출 차트 생성
     var ctx = $("#salesChart")[0].getContext("2d");
-    var labels = [];
-    var data = [/*[[${findMonthlyAmountsUpToCurrentMonth}]]*/];
 
-    // 데이터의 개수에 따라 라벨 생성
-    for (var i = 0; i < data.length; i++) {
-        labels.push((i + 1) + "월");
-    }
+    // 순수 데이터만 가져오기
+    /*<![CDATA[*/
+    var data = /*[[${adminDashBoard.findMonthlyAmountsUpToCurrentMonth}]]*/ 'default value'; // 타임리프 변수 읽기
+    /*]]>*/
+
+    // 데이터의 개수에 따라 단순 인덱스 라벨 생성 (0, 1, 2, ...)
+    var labels = Array.from({length: data.length}, (_, i) => i + 1);
+
     var salesChart = new Chart(ctx, {
         type: "line",
         data: {
-            labels: labels,
+            labels: labels, // 인덱스를 라벨로 사용
             datasets: [{
                 label: "매출 (₩)",
                 data: data,
                 borderColor: "#4eb5ff",
+                pointStyle: 'circle', // 원으로 포인트 스타일 설정
+                pointRadius: 5,       // 포인트 원의 크기 설정
+                pointHoverRadius: 7,  // 마우스 호버 시 포인트 크기 설정
                 fill: false
             }]
         },
         options: {
             responsive: true,
-            maintainAspectRatio: false
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    onClick: null // 범례(legend) 클릭 비활성화
+                }
+            },
+            scales: {
+                x: { // X축 라벨 설정
+                    title: {
+                        display: true,
+                        text: '데이터 순서'
+                    }
+                },
+                y: { // Y축 설정
+                    title: {
+                        display: true,
+                        text: '매출 (₩)'
+                    }
+                }
+            }
         }
     });
 </script>
