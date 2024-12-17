@@ -6,10 +6,6 @@ import ezen.team.ezenbookstore.util.FormatUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,32 +32,10 @@ public class AdminDashBoardServiceImpl implements AdminDashBoardService {
         Long orders2CountValue = ordersService.countByStatus2();
         Long orders3CountValue = ordersService.countByStatus3();
         Long payment2CountValue = paymentService.countByStatus2();
-        List<Long> totalAmountAndCountSinceMidnight = paymentService.findTotalAmountAndCountSinceMidnight();
-
-        double totalAmountSinceMidnightValue = 0;
-        long countSinceMidnightValue = 0;
-
-        if (totalAmountAndCountSinceMidnight != null && !totalAmountAndCountSinceMidnight.isEmpty() && totalAmountAndCountSinceMidnight.get(0) instanceof Number) {
-            totalAmountSinceMidnightValue = ((Number) totalAmountAndCountSinceMidnight.get(0)).doubleValue();
-        }
-
-        if (totalAmountAndCountSinceMidnight != null && totalAmountAndCountSinceMidnight.size() > 1 && totalAmountAndCountSinceMidnight.get(1) instanceof Number) {
-            countSinceMidnightValue = ((Number) totalAmountAndCountSinceMidnight.get(1)).longValue();
-        }
-
-// 이번 달의 시작부터 현재까지의 총 amount와 개수 가져오기
-        List<Long> totalAmountAndCountSinceStartOfMonth = paymentService.findTotalAmountAndCountSinceStartOfMonth();
-
-        double totalAmountSinceStartOfMonthValue = 0;
-        long countSinceStartOfMonthValue = 0;
-
-        if (totalAmountAndCountSinceStartOfMonth != null && !totalAmountAndCountSinceStartOfMonth.isEmpty() && totalAmountAndCountSinceStartOfMonth.get(0) instanceof Number) {
-            totalAmountSinceStartOfMonthValue = ((Number) totalAmountAndCountSinceStartOfMonth.get(0)).doubleValue();
-        }
-
-        if (totalAmountAndCountSinceStartOfMonth != null && totalAmountAndCountSinceStartOfMonth.size() > 1 && totalAmountAndCountSinceStartOfMonth.get(1) instanceof Number) {
-            countSinceStartOfMonthValue = ((Number) totalAmountAndCountSinceStartOfMonth.get(1)).longValue();
-        }
+        Long findTotalAmountSinceMidnight = paymentService.findTotalAmountSinceMidnight();
+        Long findTotalCountSinceMidnight = paymentService.findTotalCountSinceMidnight();
+        Long findTotalAmountSinceStartOfMonth = paymentService.findTotalAmountSinceStartOfMonth();
+        Long findTotalCountSinceStartOfMonth = paymentService.findTotalCountSinceStartOfMonth();
 
         List<Long> monthlyAmounts = paymentService.findMonthlyAmountsUpToCurrentMonth();
 
@@ -74,15 +48,11 @@ public class AdminDashBoardServiceImpl implements AdminDashBoardService {
 
         String qnACount = qnACountValue != null ? FormatUtils.formatKorea(qnACountValue) : "0";
 
-        Long longTotalAmountSinceMidnight = !totalAmountAndCountSinceMidnight.isEmpty() && totalAmountAndCountSinceMidnight.get(0) != null
-                ? (long) Math.floor(totalAmountSinceMidnightValue) : 0L;
-        String totalAmountSinceMidnight = FormatUtils.formatCurrency(longTotalAmountSinceMidnight);
-        String totalCountSinceMidnight = FormatUtils.formatKorea(countSinceMidnightValue);
+        String totalAmountSinceMidnight = FormatUtils.formatCurrency(findTotalAmountSinceMidnight);
+        String totalCountSinceMidnight = FormatUtils.formatKorea(findTotalCountSinceMidnight);
 
-        Long longTotalAmountSinceStartOfMonth = !totalAmountAndCountSinceStartOfMonth.isEmpty() && totalAmountAndCountSinceStartOfMonth.get(0) != null
-                ? (long) Math.floor(totalAmountSinceStartOfMonthValue) : 0L;
-        String totalAmountSinceStartOfMonth = FormatUtils.formatCurrency(longTotalAmountSinceStartOfMonth);
-        String totalCountSinceStartOfMonth = FormatUtils.formatKorea(countSinceStartOfMonthValue);
+        String totalAmountSinceStartOfMonth = FormatUtils.formatCurrency(findTotalAmountSinceStartOfMonth);
+        String totalCountSinceStartOfMonth = FormatUtils.formatKorea(findTotalCountSinceStartOfMonth);
 
         String delivery1Count = FormatUtils.formatKorea(delivery1CountValue);
         String delivery2Count = FormatUtils.formatKorea(delivery2CountValue);

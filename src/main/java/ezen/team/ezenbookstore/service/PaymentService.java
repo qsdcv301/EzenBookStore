@@ -6,13 +6,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static ezen.team.ezenbookstore.util.FormatUtils.getStartOfMonth;
 
 @Service
 @RequiredArgsConstructor
@@ -146,21 +142,23 @@ public class PaymentService implements PaymentServiceInterface {
     }
 
     @Override
-    public List<Long> findTotalAmountAndCountSinceMidnight() {
-        List<Long> object = paymentRepository.findTotalAmountAndCountSinceMidnight();
-        for(Object obj : object){
-            System.out.println(obj);
-        }
-        return paymentRepository.findTotalAmountAndCountSinceMidnight();
+    public Long findTotalAmountSinceMidnight() {
+        return paymentRepository.findTotalAmountSinceMidnight();
     }
 
     @Override
-    public List<Long> findTotalAmountAndCountSinceStartOfMonth() {
-        List<Long> object = paymentRepository.findTotalAmountAndCountSinceStartOfMonth();
-        for(Object obj : object){
-            System.out.println(obj);
-        }
-        return paymentRepository.findTotalAmountAndCountSinceStartOfMonth();
+    public Long findTotalCountSinceMidnight() {
+        return paymentRepository.findTotalCountSinceMidnight();
+    }
+
+    @Override
+    public Long findTotalAmountSinceStartOfMonth() {
+        return paymentRepository.findTotalAmountSinceStartOfMonth();
+    }
+
+    @Override
+    public Long findTotalCountSinceStartOfMonth() {
+        return paymentRepository.findTotalCountSinceStartOfMonth();
     }
 
     @Override
