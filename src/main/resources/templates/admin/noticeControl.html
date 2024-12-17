@@ -65,8 +65,10 @@
                         <td><input type="checkbox" name="checkBoxNotice" value="true"></td>
                         <td th:text="${notice.id}"></td>
                         <td th:text="${notice.title}"></td>
-                        <td th:utext="${notice.content}"></td>
                         <td>
+                            <div class="content-cell" th:utext="${notice.content}"></div>
+                        </td>
+                        <td class="notice-img-cell">
                             <img th:src="${@thymeleafFileUploadService.findImageFilePath(notice.id, 'notice')}" alt="이미지 없음" class="img-thumbnail">
                         </td>
                         <td>
