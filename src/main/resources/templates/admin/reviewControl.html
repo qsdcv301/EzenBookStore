@@ -70,9 +70,11 @@
                         <td th:text="${review.book.title}"></td>
                         <td th:text="${review.user.name}"></td>
                         <td th:text="${review.rating}"></td>
-                        <td th:text="${review.title}"></td>
                         <td>
-                            <div class="content-cell" th:utext="${review.comment}"></div>
+                           <div class="content-cell-text" th:text="${review.title}"></div>
+                        </td>
+                        <td>
+                            <div class="content-cell-text" th:utext="${review.comment}"></div>
                         </td>
                         <td>
                             <button type="button" class="btn btn-info btn-sm view-btn"
@@ -172,11 +174,19 @@
             $('#detailComment').html(comment);
             $('#detailCreateAt').text(formatDate(button.data('create-at')));
 
+            // 이미지 경로 설정
+            const imageElement = $('#detailImage');
+            const noImageText = '<p id="noImageText">이미지 없음</p>';
             const imagePath = button.data('image-path') || '/images/default.png';
-            if (imagePath === '/images/default.png' || imagePath === '') {
-                $('#detailImage').hide();
+
+            $('#noImageText').remove();
+            if (imagePath) {
+                // 이미지가 있으면 이미지 표시
+                imageElement.attr('src', imagePath).show();
             } else {
-                $('#detailImage').attr('src', imagePath).show();
+                // 이미지가 없으면 이미지 숨기고 "이미지 없음" 텍스트 추가
+                imageElement.hide();
+                imageElement.after(noImageText);
             }
         });
         // 날짜 포맷 함수
