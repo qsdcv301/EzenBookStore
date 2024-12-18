@@ -86,7 +86,7 @@ public class OrderItemService implements OrderItemServiceInterface {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Map<String, String> updateOrderItemAndUserPoint(Long orderItemId, Long point, @ModelAttribute("user") User user) {
+    public Map<String, String> updateOrderItemAndUserPoint(Long orderItemId, Long successPoint, @ModelAttribute("user") User user) {
         Map<String, String> response = new HashMap<>();
         OrderItem orderItem = findById(orderItemId);
         byte status = 3;
@@ -110,7 +110,7 @@ public class OrderItemService implements OrderItemServiceInterface {
         }
         User newUser = user.toBuilder()
                 .grade(userGrade)
-                .point(user.getPoint() + point)
+                .point(user.getPoint() + successPoint)
                 .build();
         userService.update(newUser);
         response.put("success", "true");
