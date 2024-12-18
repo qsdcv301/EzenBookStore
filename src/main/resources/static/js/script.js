@@ -1821,8 +1821,8 @@ $(document).ready(function () {
                             userGradePercent = 10;
                             break;
                         default:
-                            userGradePoint = 0;
-                            userGradePercent = 0;
+                            userGradePoint = 0.01;
+                            userGradePercent = 1;
                             break;
                     }
 
@@ -1862,7 +1862,7 @@ $(document).ready(function () {
             data: {
                 orderItemId: orderItemId,
                 userId: userId,
-                point: point,
+                successPoint: point,
             },
             success: function (response) {
                 if (response.success) {
