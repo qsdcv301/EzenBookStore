@@ -109,7 +109,7 @@ $(document).ready(function () {
                 window.location.href = `/book/search?keyword=${encodedKeyword}&val=${searchInput}`;
                 break;
             case "3":
-                encodedKeyword = encodeURIComponent("isbn]");
+                encodedKeyword = encodeURIComponent("[isbn]");
                 window.location.href = `/book/search?keyword=${encodedKeyword}&val=${searchInput}`;
                 break;
             case "4":
@@ -163,8 +163,8 @@ $(document).ready(function () {
 
     $('#nextBtn2').on('click', function () {
         if (validateStep2()) {
-            const userIdCehck = $(this).attr("data-check");
-            if (userIdCehck === 0) {
+            const userIdCheck = $(this).attr("data-check");
+            if (userIdCheck === 0) {
                 alert("아이디 중복검사를 진행 후 회원가입이 가능합니다.");
                 return;
             }
@@ -765,7 +765,7 @@ $(document).ready(function () {
 
     //     paymentModal
     // 결제 모달 버튼 클릭 시 초기화 및 계산
-    $(".paymentModalBtn").click(function () {
+    $(".paymentModalBtn").off("click").on("click", function () {
         $(".modal-items").empty(); // 모달의 기존 항목 비우기
 
         const isAllSelected = $(this).data("type") === "all";
@@ -804,7 +804,7 @@ $(document).ready(function () {
             <div class="card col paymentItems">
                 <div class="row g-0">
                     <div class="col-md-5 d-flex align-items-center justify-content-center">
-                        <img src="${bookImage}" alt="${bookImageAlt}" class="rounded rounded-2" style="width: 100px;height: 150px;object-fit: cover">
+                        <img src="${bookImage}" alt="${bookImageAlt}" class="rounded rounded-2 my-2" style="width: 100px;height: 150px;object-fit: cover">
                     </div>
                     <div class="col-md-7">
                         <div class="card-body pl-0">
@@ -936,7 +936,11 @@ $(document).ready(function () {
         let finalTotalPrice = parseInt(finalTotalPriceText, 10);
 
         if (maxPoints >= finalTotalPrice) {
-            maxPoints = Math.floor(finalTotalPrice / 100) * 100-100;
+            //최소 결제금액 100원으로설정
+            let adjustedPoints = Math.floor(finalTotalPrice / 100) * 100 - 100;
+            // 구매상품이 100원이하일때도 가정해서 음수가 되는것을 방지하며 최소 결제금액을 100원으로 설정
+            if (adjustedPoints < 0) adjustedPoints = 100;
+            maxPoints = adjustedPoints;
         }
 
         // 계산된 값을 input 창에 설정
@@ -1034,7 +1038,10 @@ $(document).ready(function () {
                 });
             });
         }
+
         (async function () {
+            console.log("결제 요청 시작");
+
             const response = await requestPayment({
                 pg: "html5_inicis",
                 pay_method: "card",
@@ -1046,37 +1053,30 @@ $(document).ready(function () {
                 buyer_tel: userTel,
             });
 
+            console.log("결제 응답: ", response);
+
             if (response.success) {
-                // 결제 성공 시 서버로 결제 결과 전달 및 검증
+                console.log("결제 성공. AJAX 요청 시작.");
                 try {
                     const serverResponse = await $.ajax({
                         url: '/order/payment',
                         type: 'POST',
-                        data: {
-                            imp_uid: response.imp_uid,
-                            paymentCode: response.merchant_uid,
-                            amount: amount,
-                            userName: userName,
-                            addr: userAddr,
-                            addrextra: userAddrextra,
-                            tel: userTel,
-                            titleList: titleList,
-                            quantityList: quantityList,
-                            cartIdList: cartIdList,
-                        },
+                        data: {...},
                     });
-
+                    console.log("서버 응답: ", serverResponse);
                     if (serverResponse.success) {
                         alert("결제가 완료되었습니다.");
                         location.reload();
                     } else {
-                        alert("결제에 실패했습니다.");
+                        alert("결제는 성공했지만 서버 처리가 실패했습니다.");
                     }
                 } catch (error) {
-                    alert("서버 오류가 발생했습니다.");
+                    console.error("AJAX 요청 중 오류: ", error);
+                    alert("서버와의 통신 중 문제가 발생했습니다.");
                 }
             } else {
-                alert("결제에 실패했습니다.");
+                console.error("결제 실패: ", response);
+                alert("결제 실패: " + (response.error_msg || "알 수 없는 오류"));
             }
         })();
     });
