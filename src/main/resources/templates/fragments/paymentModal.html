@@ -45,17 +45,18 @@
                             placeholder="상세주소를 입력해주세요." required>
                         </div>
                         <hr>
-                        <h5>결제 정보</h5>
+                        <h5>결제 정보(최소 결제 금액 100원)</h5>
                         <div>
                             <p class="mb-0">사용 가능한 적립금: <span id="available-points"
                                 th:text="${user.point}">999,999</span>원</p>
-                            <p><small class="text-black-50">*최소 100원부터 사용 가능합니다.</small></p>
+                            <p><small class="text-black-50">*최소 100원부터 100원단위로 사용 가능합니다.</small></p>
                             <label class="form-label">사용할 적립금</label>
                             <div class="d-flex">
                                 <input type="number" class="form-control payment-point w-50" id="used-points" value="0"
                                        th:min="0" step="100" th:max="${user.point}">
                                 <button class="btn btn-primary ml-3 w-50 point-all">전액 사용</button>
                             </div>
+                            <p class="pointErrorText alert alert-danger d-none" role="alert"></p>
                         </div>
                         <hr>
                         <p>출고 예정일 : <span id="expected-shipping-date" class="text-danger">xx년 xx월 xx일 (x)요일</span></p>

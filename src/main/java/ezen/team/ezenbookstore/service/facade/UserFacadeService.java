@@ -250,7 +250,7 @@ public class UserFacadeService implements UserFacadeServiceInterface {
             nextGrade = 100 - userOrderItemsSuccessCount;
         } else if (userOrderItemsSuccessCount >= 20) {
             nextGrade = 50 - userOrderItemsSuccessCount;
-        } else{
+        } else {
             nextGrade = 20 - userOrderItemsSuccessCount;
         }
 
