@@ -1916,8 +1916,9 @@ $(document).ready(function () {
     });
 
     // 리뷰 부분
-    $(document).on('click', '.reviewBtn', function () {
+    $(document).on('click', '.reviewBtn', function (e) {
         const orderItemId = $(this).attr('data-id');
+        const reviewPoint = $(this).attr('data-point');
         // AJAX 요청을 통해 상세 데이터 가져오기
         $.ajax({
             url: `/order/success/${orderItemId}`,
@@ -1929,7 +1930,7 @@ $(document).ready(function () {
                     $("#reviewProductPublisher").text(response.orderItemPublisher);
                     $("#reviewProductPrice").text(parseInt(response.orderItemPrice).toLocaleString('ko-KR') + '원');
                     $("#submitReview").attr("data-id", response.orderItemId);
-                    $("#submitReview").attr("data-point", $(".reviewBtn").attr("data-point"));
+                    $("#submitReview").attr("data-point", reviewPoint);
 
                     if (response.imagePath) {
                         $(".orderReviewImg").attr("src", response.imagePath);
