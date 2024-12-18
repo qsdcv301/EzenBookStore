@@ -107,7 +107,7 @@ public class OrdersService implements OrdersServiceInterface{
             authorList.add(orderItem.getBook().getAuthor());
             publisherList.add(orderItem.getBook().getPublisher());
             priceList.add(orderItem.getBook().getPrice().toString());
-            stockList.add(orderItem.getBook().getStock().toString());
+            stockList.add(orderItem.getQuantity().toString());
             orderItemList.add(orderItem.getId().toString());
             orderItemListStatus.add(orderItem.getStatus().toString());
             // 이미지 파일 경로 찾기

@@ -126,7 +126,7 @@ $(document).ready(function () {
     //footer
 
     $("#scrollTopBtn").on("click", function () {
-        $("html, body").animate({ scrollTop: 0 }, "slow");
+        $("html, body").animate({scrollTop: 0}, "slow");
     });
 
     $("#goHomeBtn").on("click", function () {
@@ -659,7 +659,7 @@ $(document).ready(function () {
             url: '/cart/delete',
             type: 'POST',
             traditional: true,
-            data: { cartId: cartIds },
+            data: {cartId: cartIds},
             success: function (response) {
                 if (response.success) {
                     alert("선택된 상품이 삭제되었습니다.");
@@ -880,6 +880,7 @@ $(document).ready(function () {
     // 전역변수설정
     let globalTotalDiscountedPrice = 0;
     let globalShippingFee = 0;
+
     // 주문 요약 업데이트 함수
     function updateOrderSummary(totalOriginalPrice, totalDiscount, shippingFee, totalDiscountedPrice, usedPoints) {
         globalTotalDiscountedPrice = totalDiscountedPrice;
@@ -1137,13 +1138,13 @@ $(document).ready(function () {
     function parseMoneyValues(price, discount) { //숫자의 문자열을 제거하고 순수 숫자만 남김
         const numericPrice = parseInt(price.replace(/[^0-9]/g, ""), 10) || 0;
         const numericDiscount = parseInt(discount.replace(/[^0-9]/g, ""), 10) || 0;
-        return { price: numericPrice, discount: numericDiscount };
+        return {price: numericPrice, discount: numericDiscount};
     }
 
     function formatMoneyValues(price, discount) { //순수한 숫자를 포맷팅하여 한국 원화를 표기
         const formattedPrice = price.toLocaleString("ko-KR") + "원";
         const discountedPrice = Math.floor(price * (1 - discount / 100)).toLocaleString("ko-KR") + "원";
-        return { formattedPrice, discountedPrice };
+        return {formattedPrice, discountedPrice};
     }
 
     //     bookSerach
@@ -1308,7 +1309,7 @@ $(document).ready(function () {
         $.ajax({
             type: 'POST',
             url: '/user/emailAuthentication',
-            data: { email: email },
+            data: {email: email},
             success: function (response) {
                 if (response.isEmail) {
                     alert('인증 코드가 이메일로 발송되었습니다.');
@@ -1358,7 +1359,7 @@ $(document).ready(function () {
         $.ajax({
             type: 'POST',
             url: '/user/findPw',
-            data: { tel: tel, email: email, verificationCode: verificationCode },
+            data: {tel: tel, email: email, verificationCode: verificationCode},
             success: function (response) {
                 if (response.success === "true") {
                     $("#initialForm").hide();
@@ -1402,7 +1403,7 @@ $(document).ready(function () {
         $.ajax({
             type: 'POST',
             url: '/user/newPw',
-            data: { email: confirmCurrentPasswordEmail, password: newPassword },
+            data: {email: confirmCurrentPasswordEmail, password: newPassword},
             success: function (response) {
                 if (response.success === true) {
                     if (confirm("비밀번호가 변경 되었습니다. 보안을 위해 로그아웃합니다.")) {
@@ -1434,7 +1435,7 @@ $(document).ready(function () {
         $.ajax({
             type: 'POST',
             url: '/user/newPw',
-            data: { email: email, password: password },
+            data: {email: email, password: password},
             success: function (response) {
                 if (response.success === "true") {
                     $('#pwResultSuccess').html('비밀번호 변경 되었습니다.').show();
@@ -1505,7 +1506,7 @@ $(document).ready(function () {
             type: 'POST',
             url: '/user/delete',
             traditional: true,
-            data: { userIdList: [userId] },
+            data: {userIdList: [userId]},
             success: function (response) {
                 if (response.success) {
                     alert("회원탈퇴 되었습니다. 로그인창으로 이동합니다.")
@@ -1619,6 +1620,9 @@ $(document).ready(function () {
                     orderDetailTableBody.empty(); // 기존 데이터 제거
                     let orderStatusCheck = 0;
                     for (let i = 0; i < response.titleList.length; i++) {
+                        const price = Number(response.priceList[i]);
+                        const stock = Number(response.stockList[i]);
+                        const reviewPoint = Math.floor((price * stock) * 0.005);
                         if (parseInt(response.orderItemListStatus[i]) !== 1) {
                             orderStatusCheck = 1;
                         }
@@ -1644,7 +1648,7 @@ $(document).ready(function () {
                                 <span class="text-truncate d-inline-block orderPublisher" style="max-width: 120px; vertical-align: top;">${response.publisherList[i]}</span>
                             </p>
                         </td>
-                        <td class="align-middle">1</td>
+                        <td class="align-middle">${response.stockList[i]}개</td>
                         <td class="align-middle">${response.priceList[i]}원</td>
                         <td class="align-middle">
                             <button class="btn btn-sm btn-warning text-white orderExchangeNreturnBtn" data-toggle="modal" data-target="#exchangeNreturn" data-id="${response.orderItemList[i]}" ${orderExchangeNreturnBtnDisabled}>교환/반품</button>
@@ -1653,7 +1657,7 @@ $(document).ready(function () {
                             <button class="btn btn-sm btn-success orderSuccessBtn" data-toggle="modal" data-target="#orderConfirmation" data-id="${response.orderItemList[i]}" ${orderSuccessBtnDisabled}>구매확정</button>
                         </td>
                         <td class="align-middle">
-                            <button class="btn btn-sm btn-primary reviewBtn" data-toggle="modal" data-target="#reviewModal" data-id="${response.orderItemList[i]}"  ${reviewBtnDisabled}>리뷰작성</button>
+                            <button class="btn btn-sm btn-primary reviewBtn" data-toggle="modal" data-target="#reviewModal" data-id="${response.orderItemList[i]}" data-point="${reviewPoint}" ${reviewBtnDisabled}>리뷰작성</button>
                         </td>
                     </tr>
                 `;
@@ -1697,7 +1701,7 @@ $(document).ready(function () {
         $.ajax({
             type: 'POST',
             url: '/order/orderCancel',
-            data: { orderId: orderId },
+            data: {orderId: orderId},
             success: function (response) {
                 if (response.success) {
                     alert("주문 취소 요청을 했습니다.");
@@ -1857,7 +1861,6 @@ $(document).ready(function () {
     $(document).on('click', '#confirmPurchaseBtn', function (event) {
         event.preventDefault();
         const orderItemId = $(this).attr('data-id');
-        const userId = $(this).attr('data-userId');
         const point = $("#savePoint").text();
 
         $.ajax({
@@ -1865,7 +1868,6 @@ $(document).ready(function () {
             url: '/order/success',
             data: {
                 orderItemId: orderItemId,
-                userId: userId,
                 successPoint: point,
             },
             success: function (response) {
@@ -1920,6 +1922,7 @@ $(document).ready(function () {
                     $("#reviewProductPublisher").text(response.orderItemPublisher);
                     $("#reviewProductPrice").text(parseInt(response.orderItemPrice).toLocaleString('ko-KR') + '원');
                     $("#submitReview").attr("data-id", response.orderItemId);
+                    $("#submitReview").attr("data-point", $(".reviewBtn").attr("data-point"));
 
                     if (response.imagePath) {
                         $(".orderReviewImg").attr("src", response.imagePath);
@@ -1947,7 +1950,8 @@ $(document).ready(function () {
             .replace(/ {2,}/g, function (match) {  //*공백처리*/
                 return match.replace(/ /g, '&nbsp;');
             });
-        const orderItemId = $("#submitReview").attr("data-id");
+        const orderItemId = $(this).attr("data-id");
+        const reviewPoint = $(this).attr("data-point");
         const fileInputs = $('#reviewFile')[0].files;
 
         if (!rating) {
@@ -1970,6 +1974,7 @@ $(document).ready(function () {
         formData.append('comment', reviewText);
         formData.append('orderItemId', orderItemId);
         formData.append('file', fileInputs[0]);
+        formData.append('reviewPoint', reviewPoint);
 
         $.ajax({
             type: 'POST',
@@ -2007,7 +2012,7 @@ $(document).ready(function () {
     $('#eventTabs a').on('click', function (e) {
         const tabId = $(this).attr('href').substring(1);
         const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?tab=' + tabId;
-        window.history.pushState({ path: newUrl }, '', newUrl);
+        window.history.pushState({path: newUrl}, '', newUrl);
     });
 
     // 카드 클릭 시 상세 페이지로 이동
@@ -2057,8 +2062,12 @@ $(document).ready(function () {
 
     // 호버 효과
     $('.product-item').hover(
-        function () { $(this).addClass('hovered'); },
-        function () { $(this).removeClass('hovered'); }
+        function () {
+            $(this).addClass('hovered');
+        },
+        function () {
+            $(this).removeClass('hovered');
+        }
     );
 
 });
