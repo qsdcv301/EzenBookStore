@@ -1,5 +1,6 @@
 package ezen.team.ezenbookstore.controller.User;
 
+import ezen.team.ezenbookstore.entity.User;
 import ezen.team.ezenbookstore.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,9 +24,11 @@ public class ReviewApiController {
                                                          @RequestParam(name = "comment") String comment,
                                                          @RequestParam(name = "rating") byte rating,
                                                          @RequestParam(name = "orderItemId") Long orderItemId,
+                                                         @ModelAttribute("user") User user,
                                                          @RequestParam(name = "file", required = false) MultipartFile file,
+                                                         @RequestParam(name = "reviewPoint") Long reviewPoint,
                                                          Model model) {
-        Map<String, String> response = reviewService.addReview(title, comment, rating, orderItemId, file, model);
+        Map<String, String> response = reviewService.addReview(title, comment, rating, orderItemId, user, file, reviewPoint, model);
         if (response.get("success").equals("true")) {
             return ResponseEntity.ok(response);
         } else {
