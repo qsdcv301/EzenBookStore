@@ -877,8 +877,13 @@ $(document).ready(function () {
 
     });
 
+    // 전역변수설정
+    let globalTotalDiscountedPrice = 0;
+    let globalShippingFee = 0;
     // 주문 요약 업데이트 함수
     function updateOrderSummary(totalOriginalPrice, totalDiscount, shippingFee, totalDiscountedPrice, usedPoints) {
+        globalTotalDiscountedPrice = totalDiscountedPrice;
+        globalShippingFee = shippingFee;
         const finalTotal = totalDiscountedPrice + shippingFee - usedPoints;
 
         // 주문 확인 정보 업데이트
@@ -892,6 +897,29 @@ $(document).ready(function () {
         <p>적립금 사용: -${usedPoints.toLocaleString()}원</p>
     `;
         $("#order-deduction-summary").html(deductionSummary);
+
+        //포인트 유효성 검사 실행
+        validatePoints();
+    }
+
+    // 포인트 유효성 검사 함수 추가
+    function validatePoints() {
+        let finalTotalText = $("#order-final-total").text().replace(/[^0-9]/g, "");
+        let finalTotal = parseInt(finalTotalText, 10) || 0;
+        let usedPoints = parseInt($("#used-points").val(), 10) || 0;
+
+        const $errorText = $(".pointErrorText");
+        let prePointTotalPrice = globalTotalDiscountedPrice + globalShippingFee;
+
+        if (usedPoints > prePointTotalPrice) {
+            // 에러 발생 시 d-none 클래스를 제거하여 alert 표시
+            $errorText.removeClass("d-none").text("사용 포인트가 결제 금액을 초과하였습니다. 다시 입력해주세요.");
+            return true; // 초과 상태를 true로 반환
+        } else {
+            // 에러가 없을 시 d-none 클래스를 추가하여 alert 숨기기 및 텍스트 초기화
+            $errorText.addClass("d-none").text("");
+            return false; // 초과 아님
+        }
     }
 
     $(".point-all").click(function (e) {
@@ -902,6 +930,15 @@ $(document).ready(function () {
 
         // 100 단위의 최대 사용 가능 포인트 계산
         let maxPoints = Math.floor(point / 100) * 100; // 100단위 내림 처리
+
+        console.log(maxPoints);
+
+        let finalTotalPriceText = $("#order-final-total").text().replace(/[^0-9]/g, "");
+        let finalTotalPrice = parseInt(finalTotalPriceText, 10);
+
+        if (maxPoints > finalTotalPrice) {
+            maxPoints = Math.floor(finalTotalPrice / 100) * 100;
+        }
 
         // 계산된 값을 input 창에 설정
         $("#used-points").val(maxPoints).trigger("blur");
@@ -951,7 +988,13 @@ $(document).ready(function () {
     $("#expected-shipping-date").text(formattedDate);
 
     $(".confirmPurchase").click(function (e) {
-        e.preventDefault();
+        //포인트가 결제 금액 초과시 결제 막기
+        const isPointExceeded = validatePoints();
+
+        if (isPointExceeded) {
+            alert("사용 포인트가 결제 금액을 초과하였습니다. 포인트를 조정해주세요.");
+            return;
+        }
 
         const name = $(".modalBookTitle").eq(0).text();
         const quantity = $(".modalQuantity").eq(0).text();
