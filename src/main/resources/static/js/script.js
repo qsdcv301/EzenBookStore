@@ -1475,7 +1475,7 @@ $(document).ready(function () {
         const formattedTimestamp = `${birthday} 00:00:00`;
         const addr = myInfo.find('#addr').val();
         const addrextra = myInfo.find('#addrextra').val();
-        if (tel.trim() === '' || addr.trim() === '' || addrextra === '' || birthday === '') {
+        if (tel === '' || addr === '' || addrextra === '' || birthday === '') {
             alert("수정 정보에 빈값은 허용되지 않습니다.");
             return;
         }
