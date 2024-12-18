@@ -804,7 +804,7 @@ $(document).ready(function () {
             <div class="card col paymentItems">
                 <div class="row g-0">
                     <div class="col-md-5 d-flex align-items-center justify-content-center">
-                        <img src="${bookImage}" alt="${bookImageAlt}" class="rounded rounded-2" style="width: 100px;height: 150px;object-fit: cover">
+                        <img src="${bookImage}" alt="${bookImageAlt}" class="rounded rounded-2 my-2" style="width: 100px;height: 150px;object-fit: cover">
                     </div>
                     <div class="col-md-7">
                         <div class="card-body pl-0">

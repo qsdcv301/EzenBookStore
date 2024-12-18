@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="ko">
 <div th:fragment="paymentModal" class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel"
      aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg modal-fullscreen-sm-down">
+    <div class="modal-dialog modal-dialog-centered modal-lg payment-modal">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="paymentModalLabel">주문 확인</h5>
@@ -10,9 +10,9 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body overflow-auto" style="max-height:750px">
+            <div class="modal-body">
                 <div class="row">
-                    <div class="col-lg-6 col-md-12">
+                    <div class="col-lg-6 col-md-12 item-box">
                         <h4>구매하실 상품</h4>
                         <div class="modal-items"></div>
                     </div>
