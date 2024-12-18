@@ -932,13 +932,11 @@ $(document).ready(function () {
         // 100 단위의 최대 사용 가능 포인트 계산
         let maxPoints = Math.floor(point / 100) * 100; // 100단위 내림 처리
 
-        console.log(maxPoints);
-
         let finalTotalPriceText = $("#order-final-total").text().replace(/[^0-9]/g, "");
         let finalTotalPrice = parseInt(finalTotalPriceText, 10);
 
-        if (maxPoints > finalTotalPrice) {
-            maxPoints = Math.floor(finalTotalPrice / 100) * 100;
+        if (maxPoints >= finalTotalPrice) {
+            maxPoints = Math.floor(finalTotalPrice / 100) * 100-100;
         }
 
         // 계산된 값을 input 창에 설정
@@ -1019,7 +1017,6 @@ $(document).ready(function () {
                 cartIdList.push(value);
             }
         });
-
         totalQuantity -= quantity;
         const userAddr = $(".payment-addr").val();
         const userAddrextra = $(".payment-addrextra").val();
@@ -1037,7 +1034,6 @@ $(document).ready(function () {
                 });
             });
         }
-
         (async function () {
             const response = await requestPayment({
                 pg: "html5_inicis",
