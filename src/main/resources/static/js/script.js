@@ -109,7 +109,7 @@ $(document).ready(function () {
                 window.location.href = `/book/search?keyword=${encodedKeyword}&val=${searchInput}`;
                 break;
             case "3":
-                encodedKeyword = encodeURIComponent("isbn]");
+                encodedKeyword = encodeURIComponent("[isbn]");
                 window.location.href = `/book/search?keyword=${encodedKeyword}&val=${searchInput}`;
                 break;
             case "4":
@@ -163,8 +163,8 @@ $(document).ready(function () {
 
     $('#nextBtn2').on('click', function () {
         if (validateStep2()) {
-            const userIdCehck = $(this).attr("data-check");
-            if (userIdCehck === 0) {
+            const userIdCheck = $(this).attr("data-check");
+            if (userIdCheck === 0) {
                 alert("아이디 중복검사를 진행 후 회원가입이 가능합니다.");
                 return;
             }
@@ -765,7 +765,7 @@ $(document).ready(function () {
 
     //     paymentModal
     // 결제 모달 버튼 클릭 시 초기화 및 계산
-    $(".paymentModalBtn").click(function () {
+    $(".paymentModalBtn").off("click").on("click", function () {
         $(".modal-items").empty(); // 모달의 기존 항목 비우기
 
         const isAllSelected = $(this).data("type") === "all";
@@ -935,7 +935,11 @@ $(document).ready(function () {
         let finalTotalPrice = parseInt(finalTotalPriceText, 10);
 
         if (maxPoints >= finalTotalPrice) {
-            maxPoints = Math.floor(finalTotalPrice / 100) * 100-100;
+            //최소 결제금액 100원으로설정
+            let adjustedPoints = Math.floor(finalTotalPrice / 100) * 100 - 100;
+            // 구매상품이 100원이하일때도 가정해서 음수가 되는것을 방지하며 최소 결제금액을 100원으로 설정
+            if (adjustedPoints < 0) adjustedPoints = 100;
+            maxPoints = adjustedPoints;
         }
 
         // 계산된 값을 input 창에 설정
