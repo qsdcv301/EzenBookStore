@@ -1038,7 +1038,10 @@ $(document).ready(function () {
                 });
             });
         }
+
         (async function () {
+            console.log("결제 요청 시작");
+
             const response = await requestPayment({
                 pg: "html5_inicis",
                 pay_method: "card",
@@ -1050,37 +1053,30 @@ $(document).ready(function () {
                 buyer_tel: userTel,
             });
 
+            console.log("결제 응답: ", response);
+
             if (response.success) {
-                // 결제 성공 시 서버로 결제 결과 전달 및 검증
+                console.log("결제 성공. AJAX 요청 시작.");
                 try {
                     const serverResponse = await $.ajax({
                         url: '/order/payment',
                         type: 'POST',
-                        data: {
-                            imp_uid: response.imp_uid,
-                            paymentCode: response.merchant_uid,
-                            amount: amount,
-                            userName: userName,
-                            addr: userAddr,
-                            addrextra: userAddrextra,
-                            tel: userTel,
-                            titleList: titleList,
-                            quantityList: quantityList,
-                            cartIdList: cartIdList,
-                        },
+                        data: {...},
                     });
-
+                    console.log("서버 응답: ", serverResponse);
                     if (serverResponse.success) {
                         alert("결제가 완료되었습니다.");
                         location.reload();
                     } else {
-                        alert("결제에 실패했습니다.");
+                        alert("결제는 성공했지만 서버 처리가 실패했습니다.");
                     }
                 } catch (error) {
-                    alert("서버 오류가 발생했습니다.");
+                    console.error("AJAX 요청 중 오류: ", error);
+                    alert("서버와의 통신 중 문제가 발생했습니다.");
                 }
             } else {
-                alert("결제에 실패했습니다.");
+                console.error("결제 실패: ", response);
+                alert("결제 실패: " + (response.error_msg || "알 수 없는 오류"));
             }
         })();
     });
