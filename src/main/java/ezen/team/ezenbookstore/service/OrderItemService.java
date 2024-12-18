@@ -90,11 +90,7 @@ public class OrderItemService implements OrderItemServiceInterface {
         Map<String, String> response = new HashMap<>();
         OrderItem orderItem = findById(orderItemId);
         byte status = 3;
-        OrderItem newOrderItem = OrderItem.builder()
-                .id(orderItem.getId())
-                .book(orderItem.getBook())
-                .orders(orderItem.getOrders())
-                .quantity(orderItem.getQuantity())
+        OrderItem newOrderItem = orderItem.toBuilder()
                 .status(status)
                 .build();
         update(newOrderItem);
@@ -112,17 +108,7 @@ public class OrderItemService implements OrderItemServiceInterface {
         } else {
             userGrade = 99;
         }
-        User newUser = User.builder()
-                .id(user.getId())
-                .provider(user.getProvider())
-                .email(user.getEmail())
-                .name(user.getName())
-                .password(user.getPassword())
-                .tel(user.getTel())
-                .addr(user.getAddr())
-                .addrextra(user.getAddrextra())
-                .createdAt(user.getCreatedAt())
-                .birthday(user.getBirthday())
+        User newUser = user.toBuilder()
                 .grade(userGrade)
                 .point(user.getPoint() + point)
                 .build();
