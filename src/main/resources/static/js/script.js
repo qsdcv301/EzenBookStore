@@ -1061,7 +1061,18 @@ $(document).ready(function () {
                     const serverResponse = await $.ajax({
                         url: '/order/payment',
                         type: 'POST',
-                        data: {...},
+                        data: {
+                            imp_uid: response.imp_uid,
+                            paymentCode: response.merchant_uid,
+                            amount: amount,
+                            userName: userName,
+                            addr: userAddr,
+                            addrextra: userAddrextra,
+                            tel: userTel,
+                            titleList: titleList,
+                            quantityList: quantityList,
+                            cartIdList: cartIdList,
+                        },
                     });
                     console.log("서버 응답: ", serverResponse);
                     if (serverResponse.success) {
