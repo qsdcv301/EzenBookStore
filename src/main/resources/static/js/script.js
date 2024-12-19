@@ -569,24 +569,9 @@ $(document).ready(function () {
         $(this).next('.custom-file-label').html(fileName);
     });
 
-    //     cart
+    //     cartjs
     const shippingFeeThreshold = 15000; // 배송비가 무료가 되는 기준 금액
     const baseShippingFee = 3000; // 기본 배송비
-
-    $('.edit-delete-buttons .cart-edit').on('click', function () {
-        const $cartItem = $(this).closest('.cart-item');
-        $cartItem.find('.quantity').prop("readonly", false); // readonly를 해제
-        $(this).closest('.cart-item').find('.edit-delete-buttons').hide();
-        $(this).closest('.cart-item').find('.save-cancel-buttons').show();
-    });
-
-    // 취소 버튼 클릭 시
-    $('.save-cancel-buttons .cart-cancel').on('click', function () {
-        const $cartItem = $(this).closest('.cart-item');
-        $cartItem.find('.quantity').prop("readonly", true); // readonly를 설정
-        $(this).closest('.cart-item').find('.save-cancel-buttons').hide();
-        $(this).closest('.cart-item').find('.edit-delete-buttons').show();
-    });
 
     // 전체 선택/해제
     $("#selectAll").click(function () {
@@ -609,6 +594,9 @@ $(document).ready(function () {
 
     // 선택 삭제 버튼 클릭 이벤트
     $("#deleteSelected").click(function () {
+        if(!confirm("선택한 장바구니 내역을 삭제하시겠습니까?")){
+            return;
+        }
         const selectedIds = $(".cart-checkbox:checked").map(function () {
             return $(this).closest(".cart-item").find(".cart-delete").attr("data-cart-id");
         }).get();
@@ -649,6 +637,9 @@ $(document).ready(function () {
 
     // 개별 삭제 버튼 클릭 이벤트
     $(".cart-delete").click(function () {
+        if(!confirm("해당 장바구니 내역을 삭제하시겠습니까?")){
+            return;
+        }
         const cartId = $(this).attr("data-cart-id");
         deleteCartItems([cartId]);
     });
@@ -804,7 +795,7 @@ $(document).ready(function () {
             <div class="card col paymentItems">
                 <div class="row g-0">
                     <div class="col-md-5 d-flex align-items-center justify-content-center">
-                        <img src="${bookImage}" alt="${bookImageAlt}" class="rounded rounded-2" style="width: 100px;height: 150px;object-fit: cover">
+                        <img src="${bookImage}" alt="${bookImageAlt}" class="rounded rounded-2 my-2" style="width: 100px;height: 150px;object-fit: cover">
                     </div>
                     <div class="col-md-7">
                         <div class="card-body pl-0">
@@ -1038,7 +1029,10 @@ $(document).ready(function () {
                 });
             });
         }
+
         (async function () {
+            console.log("결제 요청 시작");
+
             const response = await requestPayment({
                 pg: "html5_inicis",
                 pay_method: "card",
@@ -1050,8 +1044,10 @@ $(document).ready(function () {
                 buyer_tel: userTel,
             });
 
+            console.log("결제 응답: ", response);
+
             if (response.success) {
-                // 결제 성공 시 서버로 결제 결과 전달 및 검증
+                console.log("결제 성공. AJAX 요청 시작.");
                 try {
                     const serverResponse = await $.ajax({
                         url: '/order/payment',
@@ -1069,18 +1065,20 @@ $(document).ready(function () {
                             cartIdList: cartIdList,
                         },
                     });
-
+                    console.log("서버 응답: ", serverResponse);
                     if (serverResponse.success) {
                         alert("결제가 완료되었습니다.");
                         location.reload();
                     } else {
-                        alert("결제에 실패했습니다.");
+                        alert("결제는 성공했지만 서버 처리가 실패했습니다.");
                     }
                 } catch (error) {
-                    alert("서버 오류가 발생했습니다.");
+                    console.error("AJAX 요청 중 오류: ", error);
+                    alert("서버와의 통신 중 문제가 발생했습니다.");
                 }
             } else {
-                alert("결제에 실패했습니다.");
+                console.error("결제 실패: ", response);
+                alert("결제 실패: " + (response.error_msg || "알 수 없는 오류"));
             }
         })();
     });
@@ -1909,8 +1907,9 @@ $(document).ready(function () {
     });
 
     // 리뷰 부분
-    $(document).on('click', '.reviewBtn', function () {
+    $(document).on('click', '.reviewBtn', function (e) {
         const orderItemId = $(this).attr('data-id');
+        const reviewPoint = $(this).attr('data-point');
         // AJAX 요청을 통해 상세 데이터 가져오기
         $.ajax({
             url: `/order/success/${orderItemId}`,
@@ -1922,7 +1921,7 @@ $(document).ready(function () {
                     $("#reviewProductPublisher").text(response.orderItemPublisher);
                     $("#reviewProductPrice").text(parseInt(response.orderItemPrice).toLocaleString('ko-KR') + '원');
                     $("#submitReview").attr("data-id", response.orderItemId);
-                    $("#submitReview").attr("data-point", $(".reviewBtn").attr("data-point"));
+                    $("#submitReview").attr("data-point", reviewPoint);
 
                     if (response.imagePath) {
                         $(".orderReviewImg").attr("src", response.imagePath);
