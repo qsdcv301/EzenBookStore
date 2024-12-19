@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/admin")
 public class AdminDashBoardApiController {
 
-    private final OrdersService ordersService;
     private final AdminDashBoardServiceImpl adminDashBoardServiceImpl;
 
     @GetMapping({"","/"})

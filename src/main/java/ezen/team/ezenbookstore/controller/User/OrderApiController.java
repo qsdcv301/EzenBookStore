@@ -47,7 +47,7 @@ public class OrderApiController {
 
     @PostMapping("/success")
     public ResponseEntity<Map<String, String>> updateOrderItem(@RequestParam(name = "orderItemId") Long orderItemId,
-                                                               @RequestParam(name = "point") Long point,
+                                                               @RequestParam(name = "successPoint") Long point,
                                                                @ModelAttribute("user") User user) {
         Map<String, String> response = new HashMap<>();
         try {

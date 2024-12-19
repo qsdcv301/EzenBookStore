@@ -60,6 +60,14 @@ $(document).ready(function () {
         $('.loginValidation').submit();
     });
 
+    // 엔터 키 입력 시 로그인 버튼 클릭
+    $('#loginEmail, #loginPassword').on('keydown', function (e) {
+        if (e.keyCode === 13) { // Enter 키 감지
+            e.preventDefault(); // 기본 동작 막기
+            $('.localLoginBtn').click(); // 로그인 버튼 클릭 이벤트 호출
+        }
+    });
+
     //header
 
     // 서브메뉴 호버 효과
@@ -101,14 +109,14 @@ $(document).ready(function () {
                 window.location.href = `/book/search?keyword=${encodedKeyword}&val=${searchInput}`;
                 break;
             case "3":
-                encodedKeyword = encodeURIComponent("isbn]");
+                encodedKeyword = encodeURIComponent("[isbn]");
                 window.location.href = `/book/search?keyword=${encodedKeyword}&val=${searchInput}`;
                 break;
             case "4":
                 encodedKeyword = encodeURIComponent("[publisher]");
                 window.location.href = `/book/search?keyword=${encodedKeyword}&val=${searchInput}`;
                 break;
-            default :
+            default:
                 encodedKeyword = encodeURIComponent("[title,author,isbn,publisher]");
                 window.location.href = `/book/search?keyword=${encodedKeyword}&val=${searchInput}`;
                 break;
@@ -155,8 +163,8 @@ $(document).ready(function () {
 
     $('#nextBtn2').on('click', function () {
         if (validateStep2()) {
-            const userIdCehck = $(this).attr("data-check");
-            if (userIdCehck === 0) {
+            const userIdCheck = $(this).attr("data-check");
+            if (userIdCheck === 0) {
                 alert("아이디 중복검사를 진행 후 회원가입이 가능합니다.");
                 return;
             }
@@ -284,7 +292,7 @@ $(document).ready(function () {
         } else {
             $(this).removeClass('is-invalid').addClass('is-valid');
             $feedbackMessage.text('사용 가능한 아이디입니다. 중복검사를 해주세요.');
-            $feedbackMessage.css("color", "#ffc107");
+            $feedbackMessage.css("color", "#28a745");
         }
         $feedbackMessage.css("display", "block");
     });
@@ -464,7 +472,13 @@ $(document).ready(function () {
                     $("#memberEmailDetail").val(response.email);
                     $("#phoneNumberDetail").val(response.tel);
                     $("#inquiryTitleDetail").val(response.title);
-                    $("#inquiryContentDetail").text(response.question);
+
+                    // 문의 내용의 줄바꿈과 공백 처리
+                    let formattedQuestion = response.question
+                        .replace(/<br\s*\/?>/g, '\n')  // <br> 또는 <br/>를 줄바꿈(\n)으로 변환
+                        .replace(/&nbsp;/g, ' ');      // &nbsp;를 공백으로 변환
+
+                    $("#inquiryContentDetail").val(formattedQuestion);
                     // 이미지 경로 설정
                     if (response.imagePath) {
                         // 이미지가 존재할 때: src를 설정하고, 요소를 보여줍니다.
@@ -478,8 +492,11 @@ $(document).ready(function () {
 
                     // 답변 여부에 따라 표시
                     if (response.answer && response.answer !== "") {
+                        let formattedAnswer = response.answer
+                            .replace(/\n/g, '<br>')     // 줄바꿈을 <br>로 변환
+                            .replace(/ /g, '&nbsp;');   // 공백을 &nbsp;로 변환
                         $("#adminReplyArea").show();
-                        $("#adminReplyContent").text(response.answer);
+                        $("#adminReplyContent").html(formattedAnswer);
                         $("#adminReplyAreaWaiting").hide();
                     } else {
                         $("#adminReplyArea").hide();
@@ -693,7 +710,7 @@ $(document).ready(function () {
 
     // 페이지 초기 로드 시 주문 요약 업데이트
     updateSummary();
-//     bookDetail
+    //     bookDetail
     $(".cartAdd").click(function () {
         let selectedBookIds = [];
         let selectedBookQuantity = [];
@@ -746,9 +763,9 @@ $(document).ready(function () {
         });
     }
 
-//     paymentModal
-// 결제 모달 버튼 클릭 시 초기화 및 계산
-    $(".paymentModalBtn").click(function () {
+    //     paymentModal
+    // 결제 모달 버튼 클릭 시 초기화 및 계산
+    $(".paymentModalBtn").off("click").on("click", function () {
         $(".modal-items").empty(); // 모달의 기존 항목 비우기
 
         const isAllSelected = $(this).data("type") === "all";
@@ -786,17 +803,17 @@ $(document).ready(function () {
             const modalItem = `
             <div class="card col paymentItems">
                 <div class="row g-0">
-                    <div class="col-md-5 pt-3 d-flex align-items-center justify-content-center">
-                        <img src="${bookImage}" alt="${bookImageAlt}" style="width: 100px;height: 150px;object-fit: cover">
+                    <div class="col-md-5 d-flex align-items-center justify-content-center">
+                        <img src="${bookImage}" alt="${bookImageAlt}" class="rounded rounded-2 my-2" style="width: 100px;height: 150px;object-fit: cover">
                     </div>
                     <div class="col-md-7">
                         <div class="card-body pl-0">
                             <input type="hidden" class="modalCartId" value="${cartId}">
-                            <p>상품명: <span class="modalBookTitle">${title}</span></p>
-                            <p>수량: <span class="modalQuantity">${quantity}</span></p>
-                            <p>가격: <span class="modalTotalPrice">${itemTotalPrice.toLocaleString()}</span>원</p>
-                            <p>할인율: <span class="modalDiscount">${discount}%</span></p>
-                            <p>할인가: <span class="modalDiscountedPrice">${itemDiscountedPrice.toLocaleString()}</span>원</p>
+                            <p class="text-truncate">상품명: <strong class="modalBookTitle">${title}</strong></p>
+                            <p class="text-truncate mb-1">수량: <span class="modalQuantity">${quantity}</span></p>
+                            <p class="text-truncate mb-1">가격: <del class="origin-price modalTotalPrice">${itemTotalPrice.toLocaleString()}</del>원</p>
+                            <p class="text-truncate mb-1">할인율: <span class="text-danger dc-per modalDiscount">${discount}%</span></p>
+                            <p class="text-truncate mb-1">할인가: <span class="dc-Price modalDiscountedPrice">${itemDiscountedPrice.toLocaleString()}</span>원</p>
                         </div>
                     </div>
                 </div>
@@ -860,8 +877,14 @@ $(document).ready(function () {
 
     });
 
+    // 전역변수설정
+    let globalTotalDiscountedPrice = 0;
+    let globalShippingFee = 0;
+
     // 주문 요약 업데이트 함수
     function updateOrderSummary(totalOriginalPrice, totalDiscount, shippingFee, totalDiscountedPrice, usedPoints) {
+        globalTotalDiscountedPrice = totalDiscountedPrice;
+        globalShippingFee = shippingFee;
         const finalTotal = totalDiscountedPrice + shippingFee - usedPoints;
 
         // 주문 확인 정보 업데이트
@@ -875,6 +898,29 @@ $(document).ready(function () {
         <p>적립금 사용: -${usedPoints.toLocaleString()}원</p>
     `;
         $("#order-deduction-summary").html(deductionSummary);
+
+        //포인트 유효성 검사 실행
+        validatePoints();
+    }
+
+    // 포인트 유효성 검사 함수 추가
+    function validatePoints() {
+        let finalTotalText = $("#order-final-total").text().replace(/[^0-9]/g, "");
+        let finalTotal = parseInt(finalTotalText, 10) || 0;
+        let usedPoints = parseInt($("#used-points").val(), 10) || 0;
+
+        const $errorText = $(".pointErrorText");
+        let prePointTotalPrice = globalTotalDiscountedPrice + globalShippingFee;
+
+        if (usedPoints > prePointTotalPrice) {
+            // 에러 발생 시 d-none 클래스를 제거하여 alert 표시
+            $errorText.removeClass("d-none").text("사용 포인트가 결제 금액을 초과하였습니다. 다시 입력해주세요.");
+            return true; // 초과 상태를 true로 반환
+        } else {
+            // 에러가 없을 시 d-none 클래스를 추가하여 alert 숨기기 및 텍스트 초기화
+            $errorText.addClass("d-none").text("");
+            return false; // 초과 아님
+        }
     }
 
     $(".point-all").click(function (e) {
@@ -885,6 +931,17 @@ $(document).ready(function () {
 
         // 100 단위의 최대 사용 가능 포인트 계산
         let maxPoints = Math.floor(point / 100) * 100; // 100단위 내림 처리
+
+        let finalTotalPriceText = $("#order-final-total").text().replace(/[^0-9]/g, "");
+        let finalTotalPrice = parseInt(finalTotalPriceText, 10);
+
+        if (maxPoints >= finalTotalPrice) {
+            //최소 결제금액 100원으로설정
+            let adjustedPoints = Math.floor(finalTotalPrice / 100) * 100 - 100;
+            // 구매상품이 100원이하일때도 가정해서 음수가 되는것을 방지하며 최소 결제금액을 100원으로 설정
+            if (adjustedPoints < 0) adjustedPoints = 100;
+            maxPoints = adjustedPoints;
+        }
 
         // 계산된 값을 input 창에 설정
         $("#used-points").val(maxPoints).trigger("blur");
@@ -934,7 +991,13 @@ $(document).ready(function () {
     $("#expected-shipping-date").text(formattedDate);
 
     $(".confirmPurchase").click(function (e) {
-        e.preventDefault();
+        //포인트가 결제 금액 초과시 결제 막기
+        const isPointExceeded = validatePoints();
+
+        if (isPointExceeded) {
+            alert("사용 포인트가 결제 금액을 초과하였습니다. 포인트를 조정해주세요.");
+            return;
+        }
 
         const name = $(".modalBookTitle").eq(0).text();
         const quantity = $(".modalQuantity").eq(0).text();
@@ -958,7 +1021,6 @@ $(document).ready(function () {
                 cartIdList.push(value);
             }
         });
-
         totalQuantity -= quantity;
         const userAddr = $(".payment-addr").val();
         const userAddrextra = $(".payment-addrextra").val();
@@ -978,6 +1040,8 @@ $(document).ready(function () {
         }
 
         (async function () {
+            console.log("결제 요청 시작");
+
             const response = await requestPayment({
                 pg: "html5_inicis",
                 pay_method: "card",
@@ -989,8 +1053,10 @@ $(document).ready(function () {
                 buyer_tel: userTel,
             });
 
+            console.log("결제 응답: ", response);
+
             if (response.success) {
-                // 결제 성공 시 서버로 결제 결과 전달 및 검증
+                console.log("결제 성공. AJAX 요청 시작.");
                 try {
                     const serverResponse = await $.ajax({
                         url: '/order/payment',
@@ -1008,18 +1074,20 @@ $(document).ready(function () {
                             cartIdList: cartIdList,
                         },
                     });
-
+                    console.log("서버 응답: ", serverResponse);
                     if (serverResponse.success) {
                         alert("결제가 완료되었습니다.");
                         location.reload();
                     } else {
-                        alert("결제에 실패했습니다.");
+                        alert("결제는 성공했지만 서버 처리가 실패했습니다.");
                     }
                 } catch (error) {
-                    alert("서버 오류가 발생했습니다.");
+                    console.error("AJAX 요청 중 오류: ", error);
+                    alert("서버와의 통신 중 문제가 발생했습니다.");
                 }
             } else {
-                alert("결제에 실패했습니다.");
+                console.error("결제 실패: ", response);
+                alert("결제 실패: " + (response.error_msg || "알 수 없는 오류"));
             }
         })();
     });
@@ -1032,9 +1100,9 @@ $(document).ready(function () {
 
         // 방향 설정
         let direction;
-        if (selectedDirection === "low" || selectedDirection === "new") {
+        if (selectedDirection === "low") {
             direction = "asc";
-        } else if (selectedDirection === "high") {
+        } else if (selectedDirection === "high" || selectedDirection === "new") {
             direction = "desc";
         }
 
@@ -1191,7 +1259,7 @@ $(document).ready(function () {
         window.location.href = `/book/search?keyword=${encodedKeyword}&val=${encodedVal}&page=${page}&sort=${encodedSort}&direction=${encodedDirection}&ifkr=${ifkr}&category=${encodedCategory}&subcategory=${encodedSubcategory}`;
     });
 
-// URL 파라미터를 객체 형태로 가져오는 함수
+    // URL 파라미터를 객체 형태로 가져오는 함수
     function getUrlParams() {
         let params = {};
         let queryString = window.location.search.substring(1);
@@ -1330,8 +1398,8 @@ $(document).ready(function () {
 
     $('#changePassword').on('click', function (event) {
         event.preventDefault();
-        const newPassword = $('#newPassword').val();
-        const confirmNewPassword = $('#confirmNewPassword').val();
+        const newPassword = $('#userNewPassword').val();
+        const confirmNewPassword = $('#userConfirmNewPassword').val();
         const confirmCurrentPasswordEmail = $('#confirmCurrentPasswordEmail').val();
 
         if (newPassword !== confirmNewPassword) {
@@ -1344,8 +1412,7 @@ $(document).ready(function () {
             url: '/user/newPw',
             data: {email: confirmCurrentPasswordEmail, password: newPassword},
             success: function (response) {
-                if (response.success === "true") {
-                    $('#pwResultSuccess').html('비밀번호 변경 되었습니다.').show();
+                if (response.success === true) {
                     if (confirm("비밀번호가 변경 되었습니다. 보안을 위해 로그아웃합니다.")) {
                         location.replace("/logout");
                     }
@@ -1405,9 +1472,10 @@ $(document).ready(function () {
         const myInfo = $(this).closest('.myInfo');
         const tel = myInfo.find('#tel').val();
         const birthday = myInfo.find('#birthdate').val();
+        const formattedTimestamp = `${birthday} 00:00:00`;
         const addr = myInfo.find('#addr').val();
         const addrextra = myInfo.find('#addrextra').val();
-        if (tel.trim() === '' || addr.trim() === '' || addrextra === '' || birthday === '') {
+        if (tel === '' || addr === '' || addrextra === '' || birthday === '') {
             alert("수정 정보에 빈값은 허용되지 않습니다.");
             return;
         }
@@ -1419,7 +1487,7 @@ $(document).ready(function () {
             data: {
                 userId: [userId],
                 tel: [tel],
-                birthday: [birthday],
+                birthday: formattedTimestamp,
                 addr: [addr],
                 addrextra: [addrextra],
             },
@@ -1444,7 +1512,8 @@ $(document).ready(function () {
         $.ajax({
             type: 'POST',
             url: '/user/delete',
-            data: {userId: [userId]},
+            traditional: true,
+            data: {userIdList: [userId]},
             success: function (response) {
                 if (response.success) {
                     alert("회원탈퇴 되었습니다. 로그인창으로 이동합니다.")
@@ -1545,7 +1614,7 @@ $(document).ready(function () {
         updateMainModalData(ordersId);
     });
 
-// 메인 모달 데이터 업데이트 함수 분리
+    // 메인 모달 데이터 업데이트 함수 분리
     function updateMainModalData(ordersId) {
         // AJAX 요청을 통해 상세 데이터 가져오기
         $.ajax({
@@ -1558,6 +1627,9 @@ $(document).ready(function () {
                     orderDetailTableBody.empty(); // 기존 데이터 제거
                     let orderStatusCheck = 0;
                     for (let i = 0; i < response.titleList.length; i++) {
+                        const price = Number(response.priceList[i]);
+                        const stock = Number(response.stockList[i]);
+                        const reviewPoint = Math.floor((price * stock) * 0.005);
                         if (parseInt(response.orderItemListStatus[i]) !== 1) {
                             orderStatusCheck = 1;
                         }
@@ -1583,7 +1655,7 @@ $(document).ready(function () {
                                 <span class="text-truncate d-inline-block orderPublisher" style="max-width: 120px; vertical-align: top;">${response.publisherList[i]}</span>
                             </p>
                         </td>
-                        <td class="align-middle">1</td>
+                        <td class="align-middle">${response.stockList[i]}개</td>
                         <td class="align-middle">${response.priceList[i]}원</td>
                         <td class="align-middle">
                             <button class="btn btn-sm btn-warning text-white orderExchangeNreturnBtn" data-toggle="modal" data-target="#exchangeNreturn" data-id="${response.orderItemList[i]}" ${orderExchangeNreturnBtnDisabled}>교환/반품</button>
@@ -1592,7 +1664,7 @@ $(document).ready(function () {
                             <button class="btn btn-sm btn-success orderSuccessBtn" data-toggle="modal" data-target="#orderConfirmation" data-id="${response.orderItemList[i]}" ${orderSuccessBtnDisabled}>구매확정</button>
                         </td>
                         <td class="align-middle">
-                            <button class="btn btn-sm btn-primary reviewBtn" data-toggle="modal" data-target="#reviewModal" data-id="${response.orderItemList[i]}"  ${reviewBtnDisabled}>리뷰작성</button>
+                            <button class="btn btn-sm btn-primary reviewBtn" data-toggle="modal" data-target="#reviewModal" data-id="${response.orderItemList[i]}" data-point="${reviewPoint}" ${reviewBtnDisabled}>리뷰작성</button>
                         </td>
                     </tr>
                 `;
@@ -1747,25 +1819,25 @@ $(document).ready(function () {
                     let userGradePercent = 0;
 
                     switch (userGrade) {
-                        case "1" :
+                        case "1":
                             userGradePoint = 0.01;
                             userGradePercent = 1;
                             break;
-                        case "2" :
+                        case "2":
                             userGradePoint = 0.02;
                             userGradePercent = 2;
                             break;
-                        case "3" :
+                        case "3":
                             userGradePoint = 0.05;
                             userGradePercent = 5;
                             break;
-                        case "4" :
+                        case "4":
                             userGradePoint = 0.1;
                             userGradePercent = 10;
                             break;
                         default:
-                            userGradePoint = 0;
-                            userGradePercent = 0;
+                            userGradePoint = 0.01;
+                            userGradePercent = 1;
                             break;
                     }
 
@@ -1796,7 +1868,6 @@ $(document).ready(function () {
     $(document).on('click', '#confirmPurchaseBtn', function (event) {
         event.preventDefault();
         const orderItemId = $(this).attr('data-id');
-        const userId = $(this).attr('data-userId');
         const point = $("#savePoint").text();
 
         $.ajax({
@@ -1804,8 +1875,7 @@ $(document).ready(function () {
             url: '/order/success',
             data: {
                 orderItemId: orderItemId,
-                userId: userId,
-                point: point,
+                successPoint: point,
             },
             success: function (response) {
                 if (response.success) {
@@ -1846,8 +1916,9 @@ $(document).ready(function () {
     });
 
     // 리뷰 부분
-    $(document).on('click', '.reviewBtn', function () {
+    $(document).on('click', '.reviewBtn', function (e) {
         const orderItemId = $(this).attr('data-id');
+        const reviewPoint = $(this).attr('data-point');
         // AJAX 요청을 통해 상세 데이터 가져오기
         $.ajax({
             url: `/order/success/${orderItemId}`,
@@ -1859,6 +1930,7 @@ $(document).ready(function () {
                     $("#reviewProductPublisher").text(response.orderItemPublisher);
                     $("#reviewProductPrice").text(parseInt(response.orderItemPrice).toLocaleString('ko-KR') + '원');
                     $("#submitReview").attr("data-id", response.orderItemId);
+                    $("#submitReview").attr("data-point", reviewPoint);
 
                     if (response.imagePath) {
                         $(".orderReviewImg").attr("src", response.imagePath);
@@ -1886,7 +1958,8 @@ $(document).ready(function () {
             .replace(/ {2,}/g, function (match) {  //*공백처리*/
                 return match.replace(/ /g, '&nbsp;');
             });
-        const orderItemId = $("#submitReview").attr("data-id");
+        const orderItemId = $(this).attr("data-id");
+        const reviewPoint = $(this).attr("data-point");
         const fileInputs = $('#reviewFile')[0].files;
 
         if (!rating) {
@@ -1909,6 +1982,7 @@ $(document).ready(function () {
         formData.append('comment', reviewText);
         formData.append('orderItemId', orderItemId);
         formData.append('file', fileInputs[0]);
+        formData.append('reviewPoint', reviewPoint);
 
         $.ajax({
             type: 'POST',
@@ -1956,5 +2030,52 @@ $(document).ready(function () {
             window.location.href = url;
         }
     });
+
+    // 상품 카드 클릭 이벤트
+    $('.product-item').on('click', function (e) {
+        if (!$(e.target).closest('.book-image-link').length) {
+            var checkbox = $(this).find('.cart-checkbox');
+            checkbox.prop('checked', !checkbox.prop('checked'));
+            updateSelectedItems();
+            e.preventDefault();
+        }
+    });
+
+    // 체크박스 클릭 이벤트
+    $('.cart-checkbox').on('click', function (e) {
+        e.stopPropagation();
+        updateSelectedItems();
+    });
+
+    // 이미지 클릭 이벤트
+    $('.book-image-link').on('click', function (e) {
+        e.stopPropagation();
+    });
+
+    // 전체 선택 체크박스 이벤트
+    $('#selectAll').on('change', function () {
+        $('.cart-checkbox').prop('checked', $(this).prop('checked'));
+        updateSelectedItems();
+    });
+
+    // 개별 체크박스 변경 이벤트
+    $('.cart-checkbox').on('change', function () {
+        updateSelectedItems();
+    });
+
+    function updateSelectedItems() {
+        var selectedCount = $('.cart-checkbox:checked').length;
+        console.log('선택된 항목 수:', selectedCount);
+    }
+
+    // 호버 효과
+    $('.product-item').hover(
+        function () {
+            $(this).addClass('hovered');
+        },
+        function () {
+            $(this).removeClass('hovered');
+        }
+    );
 
 });

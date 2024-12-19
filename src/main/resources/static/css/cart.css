@@ -1,7 +1,20 @@
-.quantity-input {
+.cart-con .quantity-input {
     width: 70px;
 }
 
-.cart-item {
+.cart-con .cart-item {
     margin-bottom: 1rem;
 }
+.cart-con .cart-box {
+    overflow-y: auto;
+    max-height: 440px;
+}
+
+@media (max-width: 767px) {
+    .cart-con .cart-box {
+        overflow-y: auto;
+        max-height: 400px;
+    }
+
+}
+

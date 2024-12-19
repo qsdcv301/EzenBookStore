@@ -25,9 +25,10 @@
                                th:value="${#dates.format(user.birthday, 'yyyy-MM-dd')}">
                     </div>
                     <div class="form-group col-md-6">
-                        <label for="tel">연락처</label>
-                        <input type="tel" class="form-control" id="tel"
-                               placeholder="010-1234-5678" th:value="${user.tel}">
+                        <label for="userTel">연락처</label>
+                        <input type="tel" class="form-control" id="userTel"
+                               placeholder="번호는 하이폰(-)없이 입력해주세요." th:value="${user.tel}" required>
+                        <div class="invalid-feedback">올바른 전화번호 형식을 입력해주세요.</div>
                     </div>
                 </div>
                 <div class="form-group">
@@ -94,15 +95,15 @@
                                                     '오류'}" readonly>
                         </div>
                         <div class="form-group">
-                            <label>다음 등급까지</label>
-                            <input type="text" class="form-control" value="구매확정 15회" readonly>
+                            <label>다음 등급까지 주문확정 개수</label>
+                            <input type="text" class="form-control" th:value="${nextGrade}" readonly>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <h5>적립금 정보</h5>
                         <div class="form-group">
                             <label>현재 보유 적립금</label>
-                            <input type="text" class="form-control" th:value="${user.point}" readonly>
+                            <input type="text" class="form-control" th:value="${#numbers.formatInteger(user.point, 0, 'COMMA')}" readonly>
                         </div>
                     </div>
                 </div>
@@ -133,7 +134,7 @@
 
     <!-- 비밀번호 변경 모달 -->
     <div class="modal fade" id="changePasswordModal" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
+        <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">비밀번호 변경</h5>
@@ -155,13 +156,13 @@
                         </div>
                         <div id="newPasswordFields" style="display: none;">
                             <div class="form-group">
-                                <label for="newPassword">새 비밀번호</label>
-                                <input type="password" class="form-control" id="newPassword"
+                                <label for="userNewPassword">새 비밀번호</label>
+                                <input type="password" class="form-control" id="userNewPassword"
                                        required>
                             </div>
                             <div class="form-group">
-                                <label for="confirmNewPassword">새 비밀번호 확인</label>
-                                <input type="password" class="form-control" id="confirmNewPassword"
+                                <label for="userConfirmNewPassword">새 비밀번호 확인</label>
+                                <input type="password" class="form-control" id="userConfirmNewPassword"
                                        required>
                             </div>
                         </div>

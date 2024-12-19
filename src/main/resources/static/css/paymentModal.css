@@ -1,0 +1,29 @@
+.payment-modal .modal-body {
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.payment-modal .item-box{
+    max-height: 650px;
+    overflow-y: auto;
+}
+
+@media (max-width: 767px) {
+    .payment-modal .modal-content {
+        height: 100%;
+    }
+    
+    .payment-modal .modal-body {
+        max-height: 80vh;
+        overflow-y: auto;
+    }
+    
+    .payment-modal .form-control, .btn {
+        font-size: 16px;
+    }
+
+    .payment-modal .item-box{
+        max-height: 380px;
+        overflow-y: auto;
+    }
+}

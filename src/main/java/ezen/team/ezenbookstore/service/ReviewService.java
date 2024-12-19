@@ -20,12 +20,13 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class ReviewService implements ReviewServiceInterface{
+public class ReviewService implements ReviewServiceInterface {
 
     private final ReviewRepository reviewRepository;
     private final FileUploadService fileUploadService;
     private final OrderItemService orderItemService;
     private final TextFormatService textFormatService;
+    private final UserService userService;
 
     @Override
     public Review findById(Long id) {
@@ -86,10 +87,9 @@ public class ReviewService implements ReviewServiceInterface{
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Map<String, String> addReview(String title, String comment, byte rating, Long orderItemId, MultipartFile file, Model model) {
+    public Map<String, String> addReview(String title, String comment, byte rating, Long orderItemId, User user, MultipartFile file, Long reviewPoint, Model model) {
         Map<String, String> response = new HashMap<>();
         try {
-            User user = (User) model.getAttribute("user");
             OrderItem orderItem = orderItemService.findById(orderItemId);
             Review newReview = Review.builder()
                     .title(title)
@@ -102,15 +102,15 @@ public class ReviewService implements ReviewServiceInterface{
             if (file != null && !file.isEmpty()) {
                 fileUploadService.uploadFile(file, createReview.getId().toString(), "review");
             }
-            byte status = 3;
-            OrderItem newOrderItem = OrderItem.builder()
-                    .id(orderItemId)
-                    .book(orderItem.getBook())
-                    .orders(orderItem.getOrders())
-                    .quantity(orderItem.getQuantity())
+            byte status = 7;
+            OrderItem newOrderItem = orderItem.toBuilder()
                     .status(status)
                     .build();
             orderItemService.update(newOrderItem);
+            User newUser = user.toBuilder()
+                    .point(user.getPoint() + reviewPoint)
+                    .build();
+            userService.update(newUser);
             response.put("success", "true");
         } catch (Exception e) {
             response.put("success", "false");
@@ -132,6 +132,7 @@ public class ReviewService implements ReviewServiceInterface{
     public Page<Review> findAllByBookTitle(String title, Pageable pageable) {
         return reviewRepository.findAllByBook_TitleContaining(title, pageable);
     }
+
     @Override
     public Page<Review> getAllReviewsWithImages(Pageable pageable) {
         Page<Review> reviewPage = reviewRepository.findAll(pageable);

@@ -51,17 +51,7 @@
                             <a class="page-link"
                                th:href="@{/event(onPage=0, offPage=${offPage})}"
                                aria-label="First">
-                                << 처음
-                            </a>
-                        </li>
-
-                        <!-- 이전 페이지 버튼 -->
-                        <li class="page-item"
-                            th:classappend="${onEvent.hasPrevious} ? '' : 'disabled'">
-                            <a class="page-link"
-                               th:href="@{/event(onPage=${onEvent.number - 1}, offPage=${offPage})}"
-                               aria-label="Previous">
-                                이전
+                               <i class="bi bi-chevron-double-left"></i>
                             </a>
                         </li>
 
@@ -77,21 +67,12 @@
                                th:text="${i + 1}"></a>
                         </li>
 
-                        <!-- 다음 페이지 버튼 -->
-                        <li class="page-item" th:classappend="${onEvent.hasNext} ? '' : 'disabled'">
-                            <a class="page-link"
-                               th:href="@{/event(onPage=${onEvent.number + 1}, offPage=${offPage})}"
-                               aria-label="Next">
-                                다음
-                            </a>
-                        </li>
-
                         <!-- 맨 뒤 페이지 버튼 -->
                         <li class="page-item" th:classappend="${onEvent.last} ? 'disabled' : ''">
                             <a class="page-link"
                                th:href="@{/event(onPage=${onEvent.totalPages - 1}, offPage=${offPage})}"
                                aria-label="Last">
-                                끝 >>
+                               <i class="bi bi-chevron-double-right"></i>
                             </a>
                         </li>
                     </ul>

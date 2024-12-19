@@ -32,9 +32,9 @@ header .top-bar a:hover {
 
 /* 로고 스타일 */
 header .navbar-brand {
-    font-size: 30px;
+    font-size: 1.5rem;
     font-weight: bold;
-    margin-right: -45px;
+    margin-right: -90px;
 }
 
 /* 검색바 스타일 */
@@ -140,7 +140,8 @@ header .category-item:hover {
     }
 
     header .search-bar {
-        max-width: 100%;
+        max-width: 60%;
+        margin: 10px auto;
     }
 
     header .user-menu a {
@@ -149,6 +150,12 @@ header .category-item:hover {
 
     header .navbar-brand {
         font-size: 24px;
+        margin-left: 50px;
+        margin-right: 20px;
+    }
+
+    header .navbar-brand span{
+        display: none;
     }
 
 }
@@ -166,6 +173,10 @@ header .category-item:hover {
     header .navbar-brand {
         font-size: 20px;
         margin-right: 0;
+    }
+
+    header .navbar-brand span{
+        display: none;
     }
 
     header .search-bar {
@@ -198,22 +209,14 @@ header .category-item:hover {
     }
 
 }
-/* 모바일 및 태블릿에서 카테고리 메뉴 숨기기 */
+
 @media screen and (max-width: 991px) {
     header .navbar-nav .nav-item.dropdown {
         display: none !important;
     }
-}
 
-/* 가로 모드 (991px 이하) */
-@media screen and (max-width: 991px) and (orientation: landscape) {
-    header .search-bar {
-        max-width: 60%;
-        margin: 10px auto;
-    }
-
-    header .navbar-brand {
-        font-size: 20px;
+    header .navbar-brand span{
+        display: none;
     }
 }
 

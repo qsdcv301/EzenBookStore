@@ -85,11 +85,11 @@
                                 <input class="form-check-input checkboxScale" type="checkbox" id="selectAll">
                                 <label class="form-check-label" for="selectAll">전체 선택</label>
                             </div>
-                            <button th:if="${userData}" class="btn btn-primary ml-3 mt-3 cartAdd"
-                            >장바구니 담기
+                            <button th:if="${userData}" class="btn btn-primary ml-3 mt-3 cartAdd"  style="font-size: 1em;"
+                            ><i class="bi bi-cart-plus mr-2"></i>장바구니 담기
                             </button>
-                            <button th:unless="${userData}" class="btn btn-primary ml-3 mt-3 loginCheck"
-                            >장바구니 담기
+                            <button th:unless="${userData}" class="btn btn-primary ml-3 mt-3 loginCheck"  style="font-size: 1em;"
+                            ><i class="bi bi-cart-plus mr-2"></i>장바구니 담기
                             </button>
                         </div>
                         <div class="d-flex justify-content-end mb-3">

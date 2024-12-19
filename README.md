@@ -184,4 +184,4 @@
 
 ## 📎 부록
 
-- 📑 **참조 문서**: [GoogleSheets](https://docs.google.com/spreadsheets/d/1ABl90LxOWC4B3PIknlzmOfYaD1EMgwfHcxZY2cWX2GE/edit?gid=244139402#gid=244139402)
+- 📑 **협업 문서**: [GoogleSheets](https://docs.google.com/spreadsheets/d/1ABl90LxOWC4B3PIknlzmOfYaD1EMgwfHcxZY2cWX2GE/edit?gid=244139402#gid=244139402)

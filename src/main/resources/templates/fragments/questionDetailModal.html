@@ -1,7 +1,7 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="ko">
 <div th:fragment="questionDetailModal" class="modal fade" id="inquiryDetailModal" tabindex="-1" role="dialog"
-     aria-labelledby="inquiryDetailModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
+    aria-labelledby="inquiryDetailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title" id="inquiryDetailModalLabel">문의 상세 내용</h4>
@@ -9,34 +9,30 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body overflow-auto" style="max-height: 750px;">
                 <div>
                     <div class="row">
                         <div class="form-group row col-md-6">
                             <label for="inquiryTypeDetail" class="col-sm-4 col-form-label">문의
                                 유형</label>
                             <div class="col-sm-8">
-                                <input type="text" class="form-control" id="inquiryTypeDetail"
-                                       value="주문/결제" disabled>
+                                <input type="text" class="form-control" id="inquiryTypeDetail" value="주문/결제" disabled>
                             </div>
                         </div>
                         <div class="form-group row col-md-6">
-                            <label for="memberNameDetail"
-                                   class="col-sm-4 col-form-label">회원명</label>
+                            <label for="memberNameDetail" class="col-sm-4 col-form-label">회원명</label>
                             <div class="col-sm-8">
                                 <input type="text" class="form-control" id="memberNameDetail" disabled>
                             </div>
                         </div>
                         <div class="form-group row col-md-6">
-                            <label for="memberEmailDetail"
-                                   class="col-sm-4 col-form-label">이메일</label>
+                            <label for="memberEmailDetail" class="col-sm-4 col-form-label">이메일</label>
                             <div class="col-sm-8">
                                 <input type="email" class="form-control" id="memberEmailDetail" disabled>
                             </div>
                         </div>
                         <div class="form-group row col-md-6">
-                            <label for="phoneNumberDetail"
-                                   class="col-sm-4 col-form-label">전화번호</label>
+                            <label for="phoneNumberDetail" class="col-sm-4 col-form-label">전화번호</label>
                             <div class="col-sm-8">
                                 <input type="tel" class="form-control" id="phoneNumberDetail" disabled>
                             </div>
@@ -51,8 +47,10 @@
                         </div>
                         <div class="form-group col-md-12 inquiryImage">
                             <label for="inquiryContentImage">문의사진</label>
-                            <img id="inquiryContentImage" class="w-100" src="" alt="문의사진"
-                                 style="max-width: 100%; object-fit: cover;">
+                            <div class="upload-area d-flex justify-content-center border border-secondary-50 rounded rounded-1">
+                                <img id="inquiryContentImage" class="py-3" src="" alt="문의사진"
+                                    style="max-height: 300px; width: auto;">
+                            </div>
                         </div>
                     </div>
                 </div>

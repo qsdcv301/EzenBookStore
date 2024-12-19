@@ -3,7 +3,7 @@
 <head th:replace="~{fragments/css :: css}"></head>
 <body>
 <header th:replace="~{fragments/header :: header}"></header>
-<div class="container mt-5">
+<div class="cart-con container mt-5">
     <h1 class="mb-4">장바구니</h1>
     <div class="row">
         <div class="col-md-8">
@@ -17,7 +17,7 @@
                         <i class="bi bi-trash"></i> 선택 삭제
                     </button>
                 </div>
-                <div class="card-body overflow-auto" style="max-height: 700px;">
+                <div class="card-body cart-box">
                     <!-- 상품 1 -->
                     <div class="cart-item paymentModal-Data card" th:each="cart, index : ${cartList}">
                         <div class="card-body">
@@ -25,20 +25,20 @@
                                 <div class="col-md-1 text-right">
                                     <input class="form-check-input cart-checkbox" type="checkbox" checked>
                                 </div>
-                                <div class="col-md-2 pl-0">
+                                <div class="col-md-2 pl-0 d-flex justify-content-center">
                                     <img th:src="${imageList[index.index] != '' ? imageList[index.index] : 'https://via.placeholder.com/100'}"
                                          th:alt="${cart.book.id}+'번 책표지'" style="width: 100px;height: 150px;object-fit: cover" class="bookImage img-thumbnail">
                                     <a th:href="@{/book/detail(bookId=${cart.book.id})}" class="stretched-link text-decoration-none"></a>
                                 </div>
                                 <div class="col-md-4">
                                     <input type="hidden" class="cartId" th:value="${cart.id}">
-                                    <h5 class="card-title">제목 : <span class="title" th:text="${cart.book.title}"></span></h5>
+                                    <h5 class="card-title text-truncate">제목 : <span class="title" th:text="${cart.book.title}"></span></h5>
                                     <p class="card-text mb-0" th:text="'저자 : '+${cart.book.author}">저자 : </p>
-                                    <p class="card-text mb-0">가격 : <span class="price" th:text="${cart.book.price}"></span></p>
-                                    <p class="card-text mb-0">할인가 : <span class="text-danger fw-bold discountPrice"></span>
-                                    </p>
+                                    <p class="card-text mb-0">가격 : <del class="price" th:text="${cart.book.price}"></del></p>
                                     <p class="card-text mb-0">할인율 : <span class="text-danger fw-bold discount"
                                                                     th:text="${cart.book.discount}"></span>%
+                                    </p>
+                                    <p class="card-text mb-0">할인가 : <span class="text-danger fw-bold discountPrice"></span>
                                     </p>
                                 </div>
                                 <div class="col-md-5">
@@ -48,7 +48,7 @@
                                                th:value="${cart.quantity}" min="1" readonly>
                                         <div class="edit-delete-buttons">
                                             <button class="btn btn-success btn-sm cart-edit">
-                                                수정
+                                                <i class="bi bi-pencil-square"></i> 수정
                                             </button>
                                             <button class="btn btn-danger btn-sm cart-delete" th:data-cart-id="${cart.id}">
                                                 <i class="bi bi-trash"></i> 삭제

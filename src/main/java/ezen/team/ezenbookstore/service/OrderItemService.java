@@ -19,6 +19,7 @@ public class OrderItemService implements OrderItemServiceInterface {
 
     private final OrderItemRepository orderItemRepository;
     private final UserService userService;
+    private final FileUploadService fileUploadService;
 
     @Override
     public OrderItem findById(Long id) {
@@ -68,6 +69,8 @@ public class OrderItemService implements OrderItemServiceInterface {
         String status = orderItem.getStatus().toString();
         String bookId = orderItem.getBook().getId().toString();
         String userGrade = user.getGrade().toString();
+        String bookImagePath = fileUploadService.findImageFilePath(orderItem.getBook().getId(),"book");
+        response.put("imagePath", bookImagePath);
         response.put("success", "true");
         response.put("bookId", bookId);
         response.put("orderItemId", id.toString());
@@ -83,15 +86,11 @@ public class OrderItemService implements OrderItemServiceInterface {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Map<String, String> updateOrderItemAndUserPoint(Long orderItemId, Long point, @ModelAttribute("user") User user) {
+    public Map<String, String> updateOrderItemAndUserPoint(Long orderItemId, Long successPoint, @ModelAttribute("user") User user) {
         Map<String, String> response = new HashMap<>();
         OrderItem orderItem = findById(orderItemId);
         byte status = 3;
-        OrderItem newOrderItem = OrderItem.builder()
-                .id(orderItem.getId())
-                .book(orderItem.getBook())
-                .orders(orderItem.getOrders())
-                .quantity(orderItem.getQuantity())
+        OrderItem newOrderItem = orderItem.toBuilder()
                 .status(status)
                 .build();
         update(newOrderItem);
@@ -109,19 +108,9 @@ public class OrderItemService implements OrderItemServiceInterface {
         } else {
             userGrade = 99;
         }
-        User newUser = User.builder()
-                .id(user.getId())
-                .provider(user.getProvider())
-                .email(user.getEmail())
-                .name(user.getName())
-                .password(user.getPassword())
-                .tel(user.getTel())
-                .addr(user.getAddr())
-                .addrextra(user.getAddrextra())
-                .createdAt(user.getCreatedAt())
-                .birthday(user.getBirthday())
+        User newUser = user.toBuilder()
                 .grade(userGrade)
-                .point(user.getPoint() + point)
+                .point(user.getPoint() + successPoint)
                 .build();
         userService.update(newUser);
         response.put("success", "true");

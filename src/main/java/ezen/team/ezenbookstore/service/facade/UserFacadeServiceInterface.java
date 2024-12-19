@@ -17,7 +17,7 @@ public interface UserFacadeServiceInterface {
 
     boolean updatePassword(User user);
 
-    User processOAuthLogin(CustomOAuth2User oAuthUser);
+    Map<String, Object> processOAuthLogin(CustomOAuth2User oAuthUser);
 
     boolean updateUser(User user, User updatedInfo);
 

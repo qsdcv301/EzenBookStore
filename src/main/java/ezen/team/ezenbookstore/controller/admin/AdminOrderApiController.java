@@ -57,7 +57,7 @@ public class AdminOrderApiController {
             @RequestParam String deliveryStatus,
             @RequestParam String paymentStatus,
             @RequestParam String orderStatus
-    ){
+    ) {
         Map<String, Boolean> response = new HashMap<>();
         // orderId가 null 또는 빈 값일 경우 처리
         if (orderId == null || orderId.isEmpty()) {
@@ -90,6 +90,16 @@ public class AdminOrderApiController {
                 if (delivery != null && deliveryStatusByte != null) {
                     delivery.setStatus(deliveryStatusByte);
                     deliveryService.updateStatus(delivery);
+                    if (deliveryStatusByte == 3) {
+                        List<OrderItem> orderItems = orders.getOrderItems();
+                        for (OrderItem orderItem : orderItems) {
+                            OrderItem orderItemStatus = orderItemService.findById(orderItem.getId());
+                            orderItemStatus = orderItemStatus.toBuilder()
+                                    .status((byte) 2)
+                                    .build();
+                            orderItemService.update(orderItemStatus);
+                        }
+                    }
                 }
 
                 // Payment 상태 업데이트
@@ -133,7 +143,6 @@ public class AdminOrderApiController {
         ordersItemService.deleteOrdersItem(ordersItemId);
         return ResponseEntity.ok().build();
     }
-
 
 
 }
