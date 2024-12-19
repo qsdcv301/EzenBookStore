@@ -33,12 +33,12 @@
                             <option th:value="content" th:selected="${searchType == 'content'}">내용</option>
                         </select>
                         <input type="text" id="keyword" class="form-control mr-2" placeholder="검색어를 입력하세요" th:value="${keyword}">
+                        <button type="button" id="btnReset" class="btn btn-secondary mr-2">초기화</button>
                         <button type="button" id="btnSearch" class="btn btn-primary mr-2">검색</button>
-                        <button type="button" id="btnReset" class="btn btn-secondary">초기화</button>
                     </form>
                     <div>
-                        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#addModal">이벤트 추가 <i class="far fa-plus-square"></i></button>
                         <button type="button" id="deleteEvent" class="btn btn-danger">선택 삭제</button>
+                        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#addModal">이벤트 추가 <i class="far fa-plus-square"></i></button>
                     </div>
                 </div>
 
