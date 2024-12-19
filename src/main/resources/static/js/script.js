@@ -569,24 +569,9 @@ $(document).ready(function () {
         $(this).next('.custom-file-label').html(fileName);
     });
 
-    //     cart
+    //     cartjs
     const shippingFeeThreshold = 15000; // 배송비가 무료가 되는 기준 금액
     const baseShippingFee = 3000; // 기본 배송비
-
-    $('.edit-delete-buttons .cart-edit').on('click', function () {
-        const $cartItem = $(this).closest('.cart-item');
-        $cartItem.find('.quantity').prop("readonly", false); // readonly를 해제
-        $(this).closest('.cart-item').find('.edit-delete-buttons').hide();
-        $(this).closest('.cart-item').find('.save-cancel-buttons').show();
-    });
-
-    // 취소 버튼 클릭 시
-    $('.save-cancel-buttons .cart-cancel').on('click', function () {
-        const $cartItem = $(this).closest('.cart-item');
-        $cartItem.find('.quantity').prop("readonly", true); // readonly를 설정
-        $(this).closest('.cart-item').find('.save-cancel-buttons').hide();
-        $(this).closest('.cart-item').find('.edit-delete-buttons').show();
-    });
 
     // 전체 선택/해제
     $("#selectAll").click(function () {
@@ -609,6 +594,9 @@ $(document).ready(function () {
 
     // 선택 삭제 버튼 클릭 이벤트
     $("#deleteSelected").click(function () {
+        if(!confirm("선택한 장바구니 내역을 삭제하시겠습니까?")){
+            return;
+        }
         const selectedIds = $(".cart-checkbox:checked").map(function () {
             return $(this).closest(".cart-item").find(".cart-delete").attr("data-cart-id");
         }).get();
@@ -649,6 +637,9 @@ $(document).ready(function () {
 
     // 개별 삭제 버튼 클릭 이벤트
     $(".cart-delete").click(function () {
+        if(!confirm("해당 장바구니 내역을 삭제하시겠습니까?")){
+            return;
+        }
         const cartId = $(this).attr("data-cart-id");
         deleteCartItems([cartId]);
     });

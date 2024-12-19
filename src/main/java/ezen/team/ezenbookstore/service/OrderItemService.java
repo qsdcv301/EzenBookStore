@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -69,7 +70,7 @@ public class OrderItemService implements OrderItemServiceInterface {
         String status = orderItem.getStatus().toString();
         String bookId = orderItem.getBook().getId().toString();
         String userGrade = user.getGrade().toString();
-        String bookImagePath = fileUploadService.findImageFilePath(orderItem.getBook().getId(),"book");
+        String bookImagePath = fileUploadService.findImageFilePath(orderItem.getBook().getId(), "book");
         response.put("imagePath", bookImagePath);
         response.put("success", "true");
         response.put("bookId", bookId);
@@ -138,7 +139,27 @@ public class OrderItemService implements OrderItemServiceInterface {
         orderItemRepository.deleteById(ordersItemId);
     }
 
+    @Override
+    public List<OrderItem> findAllByStatus(Byte status) {
+        return orderItemRepository.findAllByStatus(status);
+    }
+
+    @Override
     public List<OrderItem> getOrderItemsByOrderId(Long orderId) {
         return orderItemRepository.findAllByOrders_Id(orderId);
     }
+
+    @Override
+    public List<OrderItem> findAllByDeliveryCompletedStatus() {
+        // orderitem status 2 = 배송완료
+        return findAllByStatus((byte) 2);
+    }
+
+    @Override
+    public List<OrderItem> findAllByOrders_OrderDateBeforeAndStatus(Timestamp timestamp) {
+        // orderitem status 2 = 배송완료
+        Byte status = 2;
+        return orderItemRepository.findAllByOrders_OrderDateBeforeAndStatus(timestamp, status);
+    }
+
 }
