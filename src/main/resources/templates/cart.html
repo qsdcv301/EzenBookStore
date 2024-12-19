@@ -27,18 +27,26 @@
                                 </div>
                                 <div class="col-md-2 pl-0 d-flex justify-content-center">
                                     <img th:src="${imageList[index.index] != '' ? imageList[index.index] : 'https://via.placeholder.com/100'}"
-                                         th:alt="${cart.book.id}+'번 책표지'" style="width: 100px;height: 150px;object-fit: cover" class="bookImage img-thumbnail">
-                                    <a th:href="@{/book/detail(bookId=${cart.book.id})}" class="stretched-link text-decoration-none"></a>
+                                         th:alt="${cart.book.id}+'번 책표지'"
+                                         style="width: 100px;height: 150px;object-fit: cover"
+                                         class="bookImage img-thumbnail">
+                                    <a th:href="@{/book/detail(bookId=${cart.book.id})}"
+                                       class="stretched-link text-decoration-none"></a>
                                 </div>
                                 <div class="col-md-4">
                                     <input type="hidden" class="cartId" th:value="${cart.id}">
-                                    <h5 class="card-title text-truncate">제목 : <span class="title" th:text="${cart.book.title}"></span></h5>
+                                    <h5 class="card-title text-truncate">제목 : <span class="title"
+                                                                                    th:text="${cart.book.title}"></span>
+                                    </h5>
                                     <p class="card-text mb-0" th:text="'저자 : '+${cart.book.author}">저자 : </p>
-                                    <p class="card-text mb-0">가격 : <del class="price" th:text="${cart.book.price}"></del></p>
-                                    <p class="card-text mb-0">할인율 : <span class="text-danger fw-bold discount"
-                                                                    th:text="${cart.book.discount}"></span>%
+                                    <p class="card-text mb-0">가격 :
+                                        <del class="price" th:text="${cart.book.price}"></del>
                                     </p>
-                                    <p class="card-text mb-0">할인가 : <span class="text-danger fw-bold discountPrice"></span>
+                                    <p class="card-text mb-0">할인율 : <span class="text-danger fw-bold discount"
+                                                                          th:text="${cart.book.discount}"></span>%
+                                    </p>
+                                    <p class="card-text mb-0">할인가 : <span
+                                            class="text-danger fw-bold discountPrice"></span>
                                     </p>
                                 </div>
                                 <div class="col-md-5">
@@ -47,11 +55,13 @@
                                         <input type="number" class="form-control quantity-input quantity"
                                                th:value="${cart.quantity}" min="1">
                                         <div class="edit-delete-buttons">
-                                            <button class="btn btn-success btn-sm cart-update" th:data-cart-id="${cart.id}">
-                                                <i class="bi bi-pencil-square"></i> 수정
-                                            </button>
-                                            <button class="btn btn-danger btn-sm cart-delete" th:data-cart-id="${cart.id}">
+                                            <button class="btn btn-danger btn-sm cart-delete"
+                                                    th:data-cart-id="${cart.id}">
                                                 <i class="bi bi-trash"></i> 삭제
+                                            </button>
+                                            <button class="btn btn-success btn-sm cart-update"
+                                                    th:data-cart-id="${cart.id}">
+                                                <i class="bi bi-pencil-square"></i> 수정
                                             </button>
                                         </div>
                                     </div>
