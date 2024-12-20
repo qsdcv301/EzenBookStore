@@ -34,17 +34,18 @@
                         </select>
                         <input type="text" id="keyword" name="keyword" class="form-control mr-2" placeholder="검색어를 입력하세요"
                                style="width: 300px;" th:value="${keyword}">
+                        <button type="button" class="btn btn-secondary btnResetNotice mr-2">초기화</button>
                         <button type="submit" class="btn btn-primary mr-2">조회</button>
-                        <button type="button" class="btn btn-secondary btnResetNotice">초기화</button>
                     </form>
 
                     <div>
+                        <!-- 선택 삭제 버튼 -->
+                        <button id="deleteNotice" class="btn btn-danger">삭제</button>
+
                         <!-- 공지사항 추가 버튼 -->
                         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addNoticeModal">
                             공지사항 추가 <i class="far fa-plus-square"></i>
                         </button>
-                        <!-- 선택 삭제 버튼 -->
-                        <button id="deleteNotice" class="btn btn-danger">삭제</button>
                     </div>
                 </div>
 
