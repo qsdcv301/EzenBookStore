@@ -27,7 +27,7 @@
                     <div class="form-group col-md-6">
                         <label for="userTel">연락처</label>
                         <input type="tel" class="form-control" id="userTel"
-                               placeholder="번호는 하이폰(-)없이 입력해주세요." required>
+                               placeholder="번호는 하이폰(-)없이 입력해주세요."  th:value="${user.tel}" required>
                         <div class="invalid-feedback">올바른 전화번호 형식을 입력해주세요.</div>
                     </div>
                 </div>
