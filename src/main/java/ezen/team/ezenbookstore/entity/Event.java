@@ -8,7 +8,9 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import java.sql.Timestamp;
 
-@Data
+@Getter
+@Setter
+@ToString
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
