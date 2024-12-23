@@ -8,14 +8,15 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import java.util.List;
 
-@Data
+@Getter
+@Setter
+@ToString
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @DynamicInsert
 @DynamicUpdate
 @Builder(toBuilder = true)
-@ToString
 @Table(name = "category")
 public class Category {
 

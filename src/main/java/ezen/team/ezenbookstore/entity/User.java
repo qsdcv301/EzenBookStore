@@ -14,7 +14,9 @@ import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Collections;
 
-@Data
+@Getter
+@Setter
+@ToString
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
