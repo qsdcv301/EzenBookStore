@@ -1,4 +1,5 @@
-<div th:fragment="userOrdersDetailModal" class="modal fade" id="orderDetailModal" tabindex="-1" role="dialog" aria-labelledby="orderDetailModalTitle">
+<div th:fragment="userOrdersDetailModal" class="modal fade" id="orderDetailModal" tabindex="-1" role="dialog"
+    aria-labelledby="orderDetailModalTitle">
     <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -17,18 +18,18 @@
                             <div class="table-responsive overflow-auto" style="max-height: 425px;">
                                 <table class="table table-bordered table-striped">
                                     <thead>
-                                    <tr class="text-center align-middle">
-                                        <th>표지</th>
-                                        <th>상품정보</th>
-                                        <th>수량</th>
-                                        <th>가격</th>
-                                        <th>관리</th>
-                                        <th>구매확정</th>
-                                        <th>리뷰관리</th>
-                                    </tr>
+                                        <tr class="text-center align-middle">
+                                            <th>표지</th>
+                                            <th>상품정보</th>
+                                            <th>수량</th>
+                                            <th>가격</th>
+                                            <th>관리</th>
+                                            <th>구매확정</th>
+                                            <th>리뷰관리</th>
+                                        </tr>
                                     </thead>
                                     <tbody id="orderDetailTableBody">
-                                    <!--                 내용 채우기-->
+                                        <!--                 내용 채우기-->
                                     </tbody>
                                 </table>
                             </div>
@@ -61,8 +62,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-danger orderCancel" style="display: none">주문 취소</button>
                 <button type="button" class="btn btn-secondary closeDetailBtn" data-dismiss="modal">닫기</button>
+                <button type="button" class="btn btn-danger orderCancel" style="display: none">주문 취소</button>
             </div>
         </div>
     </div>
