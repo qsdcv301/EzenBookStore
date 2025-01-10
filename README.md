@@ -3,7 +3,7 @@
 ## 1. 🚀 프로젝트 이름
 
 **Ezen Book Store**  
-🔗 [웹사이트 바로가기](http://ezbook.store)
+🔗 [웹사이트 바로가기](http://ezenbookstore.kro.kr/)
 
 ---
 
